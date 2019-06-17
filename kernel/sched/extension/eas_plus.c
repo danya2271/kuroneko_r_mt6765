@@ -109,7 +109,7 @@ static inline void fillin_cluster(struct cluster_info *cinfo,
 	cinfo->cpu = cpumask_any(&cinfo->pod->possible_cpus);
 
 	for_each_cpu(cpu, &pod->possible_cpus) {
-		cpu_perf = arch_scale_cpu_capacity(NULL, cpu);
+		cpu_perf = arch_scale_cpu_capacity(cpu);
 		pr_info("cpu=%d, cpu_perf=%lu\n", cpu, cpu_perf);
 		if (cpu_perf > 0)
 			break;
