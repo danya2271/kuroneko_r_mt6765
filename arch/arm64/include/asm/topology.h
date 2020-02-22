@@ -56,6 +56,9 @@ int pcibus_to_node(struct pci_bus *bus);
 #define arch_cpu_cluster_id topology_physical_package_id
 #define arch_nr_clusters topology_nr_clusters
 
+/* Replace task scheduler's default thermal pressure retrieve API */
+#define arch_scale_thermal_pressure topology_get_thermal_pressure
+
 #include <asm-generic/topology.h>
 
 #endif /* _ASM_ARM_TOPOLOGY_H */
