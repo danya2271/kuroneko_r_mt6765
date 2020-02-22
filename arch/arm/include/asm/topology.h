@@ -44,6 +44,9 @@ int topology_nr_clusters(void);
 #define arch_cpu_cluster_id topology_physical_package_id
 #define arch_nr_clusters topology_nr_clusters
 
+/* Replace task scheduler's default thermal pressure retrieve API */
+#define arch_scale_thermal_pressure topology_get_thermal_pressure
+
 #else
 
 static inline void init_cpu_topology(void) { }
