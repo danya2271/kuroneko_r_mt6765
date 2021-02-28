@@ -153,6 +153,15 @@ static void mtk_wdt_mark_stage(struct mtk_wdt_dev *mtk_wdt)
 	if (!wdt_base)
 		return;
 
+	readl(wdt_base + WDT_NONRST2);
+
+	if (!mtk_wdt)
+		return;
+
+	wdt_base = mtk_wdt->wdt_base;
+	if (!wdt_base)
+		return;
+
 	reg = readl(wdt_base + WDT_NONRST2);
 	reg = (reg & ~(RGU_STAGE_MASK << WDT_NONRST2_STAGE_OFS)) |
 	      (RGU_STAGE_KERNEL << WDT_NONRST2_STAGE_OFS);
@@ -208,30 +217,6 @@ static void mtk_wdt_hw_init(struct device_node *np,
 	reg = readl(wdt_base + WDT_MODE);
 	reg |= WDT_MODE_DDR_RSVD | WDT_MODE_KEY;
 	writel(reg, wdt_base + WDT_MODE);
-}
-
-static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
-			   unsigned long action, void *data)
-{
-	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
-	void __iomem *wdt_base = mtk_wdt->wdt_base;
-	u32 mode;
-
-	/*
-	 * Force the RGU into reset mode before asserting SWRST.  Leaving dual
-	 * mode or the interrupt path enabled can turn the reboot request into
-	 * a watchdog interrupt followed by a delayed timeout reset.
-	 */
-	mode = readl(wdt_base + WDT_MODE);
-	mode &= ~(WDT_MODE_DUAL_EN | WDT_MODE_IRQ_EN);
-	writel(WDT_MODE_KEY | mode, wdt_base + WDT_MODE);
-
-	while (1) {
-		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
-		mdelay(5);
-	}
-
-	return 0;
 }
 
 static int mtk_wdt_ping(struct watchdog_device *wdt_dev)
@@ -299,7 +284,7 @@ static int mtk_wdt_start(struct watchdog_device *wdt_dev)
 		return ret;
 
 	reg = ioread32(wdt_base + WDT_MODE);
-	reg |= (WDT_MODE_EN | WDT_MODE_KEY | WDT_MODE_DDR_RSVD);
+	reg |= (WDT_MODE_EN | WDT_MODE_KEY);
 	iowrite32(reg, wdt_base + WDT_MODE);
 
 	set_bit(WDOG_HW_RUNNING, &mtk_wdt->wdt_dev.status);
@@ -323,7 +308,6 @@ static const struct watchdog_ops mtk_wdt_ops = {
 	.stop		= mtk_wdt_stop,
 	.ping		= mtk_wdt_ping,
 	.set_timeout	= mtk_wdt_set_timeout,
-	.restart	= mtk_wdt_restart,
 };
 
 static int mtk_wdt_probe(struct platform_device *pdev)
