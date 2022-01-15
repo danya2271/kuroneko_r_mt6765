@@ -7,6 +7,7 @@ subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/
 subdir-ccflags-y += -I$(srctree)/drivers/mmc/host/mediatek/$(MTK_PLATFORM)
 
 obj-$(CONFIG_MTK_MET) += met_drv/
+obj-y += met_drv_v2/
 obj-$(CONFIG_MTK_BASE_POWER) += base/
 obj-$(CONFIG_MTK_PWM)	    += pwm/
 obj-$(CONFIG_MTK_IRTX_PWM_SUPPORT) += irtx/
