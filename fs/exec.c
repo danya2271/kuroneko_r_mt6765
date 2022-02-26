@@ -1061,6 +1061,7 @@ static int exec_mmap(struct mm_struct *mm)
 
 	local_irq_disable();
 	active_mm = tsk->active_mm;
+	lru_gen_add_mm(mm);
 	tsk->active_mm = mm;
 	tsk->mm = mm;
 	/*
@@ -1075,6 +1076,7 @@ static int exec_mmap(struct mm_struct *mm)
 	activate_mm(active_mm, mm);
 	if (IS_ENABLED(CONFIG_ARCH_WANT_IRQS_OFF_ACTIVATE_MM))
 		local_irq_enable();
+	lru_gen_use_mm(mm);
 	tsk->mm->vmacache_seqnum = 0;
 	vmacache_flush(tsk);
 	task_unlock(tsk);
