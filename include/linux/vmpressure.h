@@ -29,26 +29,28 @@ struct vmpressure {
 
 struct mem_cgroup;
 
-#ifdef CONFIG_MEMCG
+extern int vmpressure_notifier_register(struct notifier_block *nb);
+extern int vmpressure_notifier_unregister(struct notifier_block *nb);
 extern void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,
-		       unsigned long scanned, unsigned long reclaimed,
-		       int order);
+					   unsigned long scanned, unsigned long reclaimed,
+					   int order);
 extern void vmpressure_prio(gfp_t gfp, struct mem_cgroup *memcg, int prio,
-										   int order);
+							int order);
 
+#ifdef CONFIG_MEMCG
 extern void vmpressure_init(struct vmpressure *vmpr);
 extern void vmpressure_cleanup(struct vmpressure *vmpr);
 extern struct vmpressure *memcg_to_vmpressure(struct mem_cgroup *memcg);
 extern struct cgroup_subsys_state *vmpressure_to_css(struct vmpressure *vmpr);
 extern int vmpressure_register_event(struct mem_cgroup *memcg,
-				     struct eventfd_ctx *eventfd,
-				     const char *args);
+									 struct eventfd_ctx *eventfd,
+									 const char *args);
 extern void vmpressure_unregister_event(struct mem_cgroup *memcg,
-					struct eventfd_ctx *eventfd);
+										struct eventfd_ctx *eventfd);
 #else
-static inline void vmpressure(gfp_t gfp, struct mem_cgroup *memcg, bool tree,
-			      unsigned long scanned, unsigned long reclaimed) {}
-static inline void vmpressure_prio(gfp_t gfp, struct mem_cgroup *memcg,
-				   int prio) {}
+static inline struct vmpressure *memcg_to_vmpressure(struct mem_cgroup *memcg)
+{
+	return NULL;
+}
 #endif /* CONFIG_MEMCG */
 #endif /* __LINUX_VMPRESSURE_H */
