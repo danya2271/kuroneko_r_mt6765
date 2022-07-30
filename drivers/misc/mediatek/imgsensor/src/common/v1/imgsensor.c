@@ -2936,6 +2936,7 @@ static ssize_t imgsensor_name_show(struct device *dev, struct device_attribute *
 			}
 
 			pr_info("[chenxy] i:%d\n", i);
+
 			for(j=0; j < i; j++) {
 				if(!strcmp("hynix_hi1337_i", dst[j]) || !strcmp("hynix_hi1337_ii", dst[j]) || !strcmp("hynix_hi1337_iii", dst[j]) || !strcmp("hynix_hi1337_iiii", dst[j])){
 					num1 = sprintf(buf, "WIDE=%s\n", dst[j]);
