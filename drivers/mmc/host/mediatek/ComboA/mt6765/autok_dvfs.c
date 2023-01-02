@@ -515,7 +515,7 @@ void msdc_dvfs_reg_backup_init(struct msdc_host *host)
 #else
 void msdc_dvfs_reg_backup_init(struct msdc_host *host)
 {
-	pr_debug("msdc%d:notice %s info", host->id, __func__);
+	pr_no_debug("msdc%d:notice %s info", host->id, __func__);
 }
 #endif
 
@@ -866,11 +866,11 @@ int sd_runtime_autok_merge(struct msdc_host *host)
 		merge_window = host->autok_res[AUTOK_VCORE_MERGE][i];
 		if (merge_window < AUTOK_MERGE_MIN_WIN) {
 			merge_result = -2;
-			pr_info("[AUTOK]%s:merge_window[%d] less than %d\n",
+			pr_no_info("[AUTOK]%s:merge_window[%d] less than %d\n",
 				__func__, i, AUTOK_MERGE_MIN_WIN);
 		}
 		if (merge_window != 0xFF)
-			pr_info("[AUTOK]merge_value = %d\n", merge_window);
+			pr_no_info("[AUTOK]merge_value = %d\n", merge_window);
 	}
 
 	if (merge_result == 0) {
@@ -879,7 +879,7 @@ int sd_runtime_autok_merge(struct msdc_host *host)
 		memcpy(host->autok_res[AUTOK_VCORE_LEVEL0],
 			host->autok_res[AUTOK_VCORE_MERGE],
 				TUNING_PARA_SCAN_COUNT);
-		pr_info("[AUTOK]No need change para when dvfs\n");
+		pr_no_info("[AUTOK]No need change para when dvfs\n");
 	} else if (merge_result == -1) {
 		autok_tuning_parameter_init(host,
 			host->autok_res[AUTOK_VCORE_LEVEL0]);
@@ -907,7 +907,7 @@ int emmc_runtime_autok_merge(u32 opcode)
 	 && !(host->mmc->caps2 & MMC_CAP2_HS200_1_8V_SDR)) {
 		return ret;
 	}
-	pr_info("emmc runtime autok merge\n");
+	pr_no_info("emmc runtime autok merge\n");
 	base = host->base;
 
 	memcpy(host->autok_res[AUTOK_VCORE_LEVEL0],
@@ -930,19 +930,19 @@ int emmc_runtime_autok_merge(u32 opcode)
 		merge_window = host->autok_res[AUTOK_VCORE_MERGE][i];
 		if (merge_window < AUTOK_MERGE_MIN_WIN) {
 			merge_result = -2;
-			pr_info("[AUTOK]%s:merge_window[%d] less than %d\n",
+			pr_no_info("[AUTOK]%s:merge_window[%d] less than %d\n",
 				__func__, i, AUTOK_MERGE_MIN_WIN);
 		}
 		if (merge_window != 0xFF)
-			pr_info("[AUTOK]merge_value = %d\n", merge_window);
+			pr_no_info("[AUTOK]merge_value = %d\n", merge_window);
 	}
 
 	if (merge_result == 0) {
 		autok_tuning_parameter_init(host,
 			host->autok_res[AUTOK_VCORE_MERGE]);
-		pr_info("[AUTOK]No need change para when dvfs\n");
+		pr_no_info("[AUTOK]No need change para when dvfs\n");
 	} else if (host->use_hw_dvfs == 1) {
-		pr_info("[AUTOK]Need change para when dvfs\n");
+		pr_no_info("[AUTOK]Need change para when dvfs\n");
 	} else if (host->use_hw_dvfs == 0) {
 		if (merge_result == -1)
 			autok_tuning_parameter_init(host,
@@ -954,7 +954,7 @@ int emmc_runtime_autok_merge(u32 opcode)
 				host->autok_res[AUTOK_VCORE_LEVEL1],
 					TUNING_PARA_SCAN_COUNT);
 		}
-		pr_info("[AUTOK]restore legacy window\n");
+		pr_no_info("[AUTOK]restore legacy window\n");
 	}
 #endif
 
@@ -996,7 +996,7 @@ int emmc_autok(void)
 		return -1;
 	}
 
-	pr_info("emmc autok\n");
+	pr_no_info("emmc autok\n");
 	base = host->base;
 	mmc_claim_host(host->mmc);
 
@@ -1011,7 +1011,7 @@ int emmc_autok(void)
 			vcore_step2);
 
 		if (vcore_step2 == vcore_step1) {
-			pr_info("skip duplicated vcore autok\n");
+			pr_no_info("skip duplicated vcore autok\n");
 			memcpy(host->autok_res[i], host->autok_res[i-1],
 				TUNING_PARA_SCAN_COUNT);
 		} else {
@@ -1036,19 +1036,19 @@ int emmc_autok(void)
 		if (merge_window < AUTOK_MERGE_MIN_WIN)
 			merge_result = -1;
 		if (merge_window != 0xFF)
-			pr_info("[AUTOK]merge_value = %d\n", merge_window);
+			pr_no_info("[AUTOK]merge_value = %d\n", merge_window);
 	}
 
 	if (merge_result == 0) {
 		autok_tuning_parameter_init(host,
 			host->autok_res[AUTOK_VCORE_MERGE]);
-		pr_info("[AUTOK]No need change para when dvfs\n");
+		pr_no_info("[AUTOK]No need change para when dvfs\n");
 	} else if (host->use_hw_dvfs == 1) {
-		pr_info("[AUTOK]Need change para when dvfs\n");
+		pr_no_info("[AUTOK]Need change para when dvfs\n");
 	} else if (host->use_hw_dvfs == 0) {
 		autok_tuning_parameter_init(host,
 			host->autok_res[AUTOK_VCORE_LEVEL0]);
-		pr_info("[AUTOK]Need lock vcore\n");
+		pr_no_info("[AUTOK]Need lock vcore\n");
 		host->lock_vcore = 1;
 	}
 

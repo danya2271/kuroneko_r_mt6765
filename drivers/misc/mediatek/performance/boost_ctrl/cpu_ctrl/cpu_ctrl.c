@@ -221,16 +221,6 @@ static ssize_t perfmgr_perfserv_freq_proc_write(struct file *filp
 			i++;
 		}
 	}
-
-	if (i < arg_num) {
-		pr_debug(
-				"@%s: number of arguments < %d!\n",
-				__func__, arg_num);
-	} else {
-		powerhal_tid = current->pid;
-		update_userlimit_cpu_freq(CPU_KIR_PERF
-				, perfmgr_clusters, freq_limit);
-	}
 out:
 	free_page((unsigned long)buf);
 	kfree(freq_limit);
@@ -298,14 +288,6 @@ static ssize_t perfmgr_boot_freq_proc_write(struct file *filp,
 			i++;
 		}
 	}
-
-	if (i < arg_num)
-		pr_debug("@%s: number of arguments < %d!\n",
-				__func__, arg_num);
-	else
-		update_userlimit_cpu_freq(CPU_KIR_BOOT,
-				perfmgr_clusters, freq_limit);
-
 out:
 	free_page((unsigned long)buf);
 	kfree(freq_limit);

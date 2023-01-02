@@ -153,7 +153,7 @@ void msdc_get_cache_region(struct work_struct *work)
 		g_usrdata_part_end = g_usrdata_part_start + part.nr_sects;
 	}
 
-	pr_info("cache(0x%llX~0x%llX, usrdata(0x%llX~0x%llX)\n",
+	pr_no_info("cache(0x%llX~0x%llX, usrdata(0x%llX~0x%llX)\n",
 		g_cache_part_start, g_cache_part_end,
 		g_usrdata_part_start, g_usrdata_part_end);
 
@@ -161,7 +161,7 @@ void msdc_get_cache_region(struct work_struct *work)
 		!g_usrdata_part_start || !g_usrdata_part_end) &&
 		retry++ < 5) {
 		/* re-schedule, if part info not ready */
-		pr_info("part info not ready re-schedule(%d) %s\n",
+		pr_no_info("part info not ready re-schedule(%d) %s\n",
 			retry, __func__);
 		schedule_delayed_work(&get_cache_info, msecs_to_jiffies(1000));
 	}
