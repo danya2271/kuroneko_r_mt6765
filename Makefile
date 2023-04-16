@@ -673,9 +673,9 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, int-in-bool-context)
 KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
 
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
-KBUILD_CFLAGS   += -Os
+KBUILD_CFLAGS	+= -Oz $(call cc-disable-warning,maybe-uninitialized,) --param max-inline-insns-auto=4
 else
-KBUILD_CFLAGS   += -O3
+KBUILD_CFLAGS	+= -O3 $(call cc-disable-warning,maybe-uninitialized,) --param max-inline-insns-auto=4
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
