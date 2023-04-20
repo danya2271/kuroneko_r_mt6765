@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0
 /*
  * Copyright (c) 2019 MediaTek Inc.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include "imgsensor_common.h"
@@ -14,7 +13,6 @@ static const struct i2c_device_id gi2c_dev_id[] = {
 	{IMGSENSOR_I2C_DRV_NAME_0, 0},
 	{IMGSENSOR_I2C_DRV_NAME_1, 0},
 	{IMGSENSOR_I2C_DRV_NAME_2, 0},
-	{IMGSENSOR_I2C_DRV_NAME_3, 0},
 	{}
 };
 
@@ -29,10 +27,6 @@ static const struct of_device_id gof_device_id_1[] = {
 };
 static const struct of_device_id gof_device_id_2[] = {
 	{ .compatible = IMGSENSOR_I2C_OF_DRV_NAME_2, },
-	{}
-};
-static const struct of_device_id gof_device_id_3[] = {
-	{ .compatible = IMGSENSOR_I2C_OF_DRV_NAME_3, },
 	{}
 };
 #endif
@@ -55,13 +49,6 @@ static int
 imgsensor_i2c_probe_2(struct i2c_client *client, const struct i2c_device_id *id)
 {
 	gi2c.inst[IMGSENSOR_I2C_DEV_2].pi2c_client = client;
-	return 0;
-}
-
-static int
-imgsensor_i2c_probe_3(struct i2c_client *client, const struct i2c_device_id *id)
-{
-	gi2c.inst[IMGSENSOR_I2C_DEV_3].pi2c_client = client;
 	return 0;
 }
 
@@ -103,18 +90,6 @@ static struct i2c_driver gi2c_driver[IMGSENSOR_I2C_DEV_MAX_NUM] = {
 		.owner = THIS_MODULE,
 #ifdef CONFIG_OF
 		.of_match_table = gof_device_id_2,
-#endif
-		},
-		.id_table = gi2c_dev_id,
-	},
-	{
-		.probe = imgsensor_i2c_probe_3,
-		.remove = imgsensor_i2c_remove,
-		.driver = {
-		.name = IMGSENSOR_I2C_DRV_NAME_3,
-		.owner = THIS_MODULE,
-#ifdef CONFIG_OF
-		.of_match_table = gof_device_id_3,
 #endif
 		},
 		.id_table = gi2c_dev_id,

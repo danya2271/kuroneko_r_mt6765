@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: GPL-2.0 */
 /*
  * Copyright (c) 2019 MediaTek Inc.
- * Copyright (C) 2021 XiaoMi, Inc.
  */
 
 #include "imgsensor_common.h"
@@ -15,7 +14,7 @@
 
 
 #define IMGSENSOR_HW_POWER_INFO_MAX	12
-#define IMGSENSOR_HW_SENSOR_MAX_NUM	15
+#define IMGSENSOR_HW_SENSOR_MAX_NUM	8
 
 enum IMGSENSOR_HW_PIN {
 	IMGSENSOR_HW_PIN_NONE = 0,
@@ -90,18 +89,15 @@ enum IMGSENSOR_HW_ID {
 #define IMGSENSOR_I2C_DRV_NAME_0  "kd_camera_hw"
 #define IMGSENSOR_I2C_DRV_NAME_1  "kd_camera_hw_bus2"
 #define IMGSENSOR_I2C_DRV_NAME_2  "kd_camera_hw_bus3"
-#define IMGSENSOR_I2C_DRV_NAME_3  "kd_camera_hw_bus4"
 
 #define IMGSENSOR_I2C_OF_DRV_NAME_0 "mediatek,camera_main"
 #define IMGSENSOR_I2C_OF_DRV_NAME_1 "mediatek,camera_sub"
 #define IMGSENSOR_I2C_OF_DRV_NAME_2 "mediatek,camera_main_two"
-#define IMGSENSOR_I2C_OF_DRV_NAME_3 "mediatek,camera_main_three"
 
 enum IMGSENSOR_I2C_DEV {
 	IMGSENSOR_I2C_DEV_0,
 	IMGSENSOR_I2C_DEV_1,
 	IMGSENSOR_I2C_DEV_2,
-	IMGSENSOR_I2C_DEV_3,
 	IMGSENSOR_I2C_DEV_MAX_NUM,
 };
 
