@@ -57,9 +57,6 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 		freq_to_set[i].min = i4Freq;
 		freq_to_set[i].max = i4Freq;
 	}
-
-	update_userlimit_cpu_freq(CPU_KIR_WIFI, u4ClusterNum, freq_to_set);
-
 	if (u4TarPerfLevel >= u4BoostCpuTh) {
 		if (!fgRequested) {
 			fgRequested = 1;
