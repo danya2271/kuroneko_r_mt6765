@@ -180,7 +180,7 @@ static uint32_t kalPerMonUpdate(IN struct ADAPTER *prAdapter);
 #define  KGIDT_VALUE(v) v
 #endif
 
-const struct firmware *fw_entry;
+const struct firmware *firmware_entry;
 
 /* Default */
 static uint8_t *apucFwName[] = {
@@ -265,7 +265,7 @@ uint32_t kalFirmwareOpen(IN struct GLUE_INFO *prGlueInfo,
 		 *               "/firmware/image"
 		 * Linux path: "/lib/firmware", "/lib/firmware/update"
 		 */
-		ret = _kalRequestFirmware(&fw_entry, apucNameTable[ucNameIdx],
+		ret = _kalRequestFirmware(&firmware_entry, apucNameTable[ucNameIdx],
 				       prGlueInfo->prDev);
 
 		if (ret) {
@@ -311,7 +311,7 @@ error_open:
 /*----------------------------------------------------------------------------*/
 uint32_t kalFirmwareClose(IN struct GLUE_INFO *prGlueInfo)
 {
-	release_firmware(fw_entry);
+	release_firmware(firmware_entry);
 
 	return WLAN_STATUS_SUCCESS;
 }
@@ -336,12 +336,12 @@ uint32_t kalFirmwareLoad(IN struct GLUE_INFO *prGlueInfo,
 	ASSERT(pu4Size);
 	ASSERT(prBuf);
 
-	if ((fw_entry == NULL) || (fw_entry->size == 0)
-	    || (fw_entry->data == NULL)) {
+	if ((firmware_entry == NULL) || (firmware_entry->size == 0)
+	    || (firmware_entry->data == NULL)) {
 		goto error_read;
 	} else {
-		memcpy(prBuf, fw_entry->data, fw_entry->size);
-		*pu4Size = fw_entry->size;
+		memcpy(prBuf, firmware_entry->data, firmware_entry->size);
+		*pu4Size = firmware_entry->size;
 	}
 
 	return WLAN_STATUS_SUCCESS;
@@ -369,7 +369,7 @@ uint32_t kalFirmwareSize(IN struct GLUE_INFO *prGlueInfo,
 	ASSERT(prGlueInfo);
 	ASSERT(pu4Size);
 
-	*pu4Size = fw_entry->size;
+	*pu4Size = firmware_entry->size;
 
 	return WLAN_STATUS_SUCCESS;
 }
