@@ -2,6 +2,7 @@
 #
 # Makefile for the linux kernel.
 #
+KBUILD_CFLAGS += -Os
 obj-$(CONFIG_ARM_PSCI_FW)	+= psci.o
 obj-$(CONFIG_ARM_PSCI_CHECKER)	+= psci_checker.o
 obj-$(CONFIG_ARM_SCPI_PROTOCOL)	+= arm_scpi.o

@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Copyright (C) 2010-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.2 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, with the Front-Cover Texts being "A GNU Manual,"
+and with the Back-Cover Texts as in (a) below.  A copy of the
+license is included in the section entitled "GNU Free Documentation
+License."
+
+(a) The FSF's Back-Cover Text is: "You have the freedom to
+copy and modify this GNU manual. -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Top (GCC libquadmath)</title>
+
+<meta name="description" content="Top (GCC libquadmath)">
+<meta name="keywords" content="Top (GCC libquadmath)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="#Top" rel="start" title="Top">
+<link href="#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="Typedef-and-constants.html" rel="next" title="Typedef and constants">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<h1 class="settitle" align="center">GCC libquadmath</h1>
+
+
+
+
+
+
+<span id="SEC_Overview"></span>
+<h2 class="shortcontents-heading">Short Table of Contents</h2>
+
+<div class="shortcontents">
+<ul class="no-bullet">
+<li><a id="stoc-Typedef-and-constants-1" href="#toc-Typedef-and-constants-1">1 Typedef and constants</a></li>
+<li><a id="stoc-Math-Library-Routines-1" href="#toc-Math-Library-Routines-1">2 Math Library Routines</a></li>
+<li><a id="stoc-I_002fO-Library-Routines-1" href="#toc-I_002fO-Library-Routines-1">3 I/O Library Routines</a></li>
+<li><a id="stoc-GNU-Free-Documentation-License-1" href="#toc-GNU-Free-Documentation-License-1">GNU Free Documentation License</a></li>
+<li><a id="stoc-Reporting-Bugs-1" href="#toc-Reporting-Bugs-1">4 Reporting Bugs</a></li>
+</ul>
+</div>
+
+<span id="SEC_Contents"></span>
+<h2 class="contents-heading">Table of Contents</h2>
+
+<div class="contents">
+
+<ul class="no-bullet">
+  <li><a id="toc-Typedef-and-constants-1" href="Typedef-and-constants.html#Typedef-and-constants">1 Typedef and constants</a></li>
+  <li><a id="toc-Math-Library-Routines-1" href="Math-Library-Routines.html#Math-Library-Routines">2 Math Library Routines</a></li>
+  <li><a id="toc-I_002fO-Library-Routines-1" href="I_002fO-Library-Routines.html#I_002fO-Library-Routines">3 I/O Library Routines</a>
+  <ul class="no-bullet">
+    <li><a id="toc-strtoflt128-_002d_002d_002d-Convert-from-string" href="strtoflt128.html#strtoflt128">3.1 <code>strtoflt128</code> &mdash; Convert from string</a></li>
+    <li><a id="toc-quadmath_005fsnprintf-_002d_002d_002d-Convert-to-string" href="quadmath_005fsnprintf.html#quadmath_005fsnprintf">3.2 <code>quadmath_snprintf</code> &mdash; Convert to string</a></li>
+  </ul></li>
+  <li><a id="toc-GNU-Free-Documentation-License-1" href="GNU-Free-Documentation-License.html#GNU-Free-Documentation-License">GNU Free Documentation License</a>
+  <ul class="no-bullet">
+    <li><a id="toc-ADDENDUM_003a-How-to-use-this-License-for-your-documents" href="GNU-Free-Documentation-License.html#ADDENDUM_003a-How-to-use-this-License-for-your-documents">ADDENDUM: How to use this License for your documents</a></li>
+  </ul></li>
+  <li><a id="toc-Reporting-Bugs-1" href="Reporting-Bugs.html#Reporting-Bugs">4 Reporting Bugs</a></li>
+</ul>
+</div>
+
+
+
+<span id="Top"></span><div class="header">
+<p>
+Next: <a href="Typedef-and-constants.html" accesskey="n" rel="next">Typedef and constants</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>]</p>
+</div>
+<hr>
+<span id="Introduction"></span><h1 class="top">Introduction</h1>
+<span id="index-Introduction"></span>
+
+<p>This manual documents the usage of libquadmath, the GCC Quad-Precision
+Math Library Application Programming Interface (API).
+</p>
+
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="Typedef-and-constants.html" accesskey="1">Typedef and constants</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">Defined data types and constants
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Math-Library-Routines.html" accesskey="2">Math Library Routines</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The Libquadmath math runtime application
+                               programming interface.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="I_002fO-Library-Routines.html" accesskey="3">I/O Library Routines</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">The Libquadmath I/O runtime application
+                               programming interface.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="GNU-Free-Documentation-License.html" accesskey="4">GNU Free Documentation License</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+                               How you can copy and share this manual.
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="Reporting-Bugs.html" accesskey="5">Reporting Bugs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">How to report bugs in GCC Libquadmath.
+</td></tr>
+</table>
+
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="Typedef-and-constants.html" accesskey="n" rel="next">Typedef and constants</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>]</p>
+</div>
+
+
+
+</body>
+</html>

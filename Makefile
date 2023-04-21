@@ -429,7 +429,8 @@ KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
-KBUILD_LDFLAGS :=
+KBUILD_LDFLAGS := -O3 -mcpu=cortex-a53+crc -mtune=cortex-a53
+KBUILD_CFLAGS := -mcpu=cortex-a53+crc -mtune=cortex-a53
 GCC_PLUGINS_CFLAGS :=
 CLANG_FLAGS :=
 
@@ -674,7 +675,7 @@ KBUILD_CFLAGS	+= $(call cc-disable-warning, address-of-packed-member)
 ifdef CONFIG_CC_OPTIMIZE_FOR_SIZE
 KBUILD_CFLAGS   += -Os
 else
-KBUILD_CFLAGS   += -O2
+KBUILD_CFLAGS   += -O3
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one

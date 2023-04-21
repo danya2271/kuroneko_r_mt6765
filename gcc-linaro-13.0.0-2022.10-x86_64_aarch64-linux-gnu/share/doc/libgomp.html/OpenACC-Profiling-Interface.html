@@ -1,0 +1,381 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Copyright (C) 2006-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with the
+Invariant Sections being "Funding Free Software", the Front-Cover
+texts being (a) (see below), and with the Back-Cover Texts being (b)
+(see below).  A copy of the license is included in the section entitled
+"GNU Free Documentation License".
+
+(a) The FSF's Front-Cover Text is:
+
+A GNU Manual
+
+(b) The FSF's Back-Cover Text is:
+
+You have freedom to copy and modify this GNU Manual, like GNU
+     software.  Copies published by the Free Software Foundation raise
+     funds for GNU development. -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>OpenACC Profiling Interface (GNU libgomp)</title>
+
+<meta name="description" content="OpenACC Profiling Interface (GNU libgomp)">
+<meta name="keywords" content="OpenACC Profiling Interface (GNU libgomp)">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="index.html" rel="start" title="Top">
+<link href="Library-Index.html" rel="index" title="Library Index">
+<link href="index.html#SEC_Contents" rel="contents" title="Table of Contents">
+<link href="index.html" rel="up" title="Top">
+<link href="OpenMP_002dImplementation-Specifics.html" rel="next" title="OpenMP-Implementation Specifics">
+<link href="OpenACC-Library-Interoperability.html" rel="prev" title="OpenACC Library Interoperability">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<span id="OpenACC-Profiling-Interface"></span><div class="header">
+<p>
+Next: <a href="OpenMP_002dImplementation-Specifics.html" accesskey="n" rel="next">OpenMP-Implementation Specifics</a>, Previous: <a href="OpenACC-Library-Interoperability.html" accesskey="p" rel="prev">OpenACC Library Interoperability</a>, Up: <a href="index.html" accesskey="u" rel="up">Top</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Library-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+<hr>
+<span id="OpenACC-Profiling-Interface-1"></span><h2 class="chapter">10 OpenACC Profiling Interface</h2>
+
+<span id="Implementation-Status-and-Implementation_002dDefined-Behavior"></span><h3 class="section">10.1 Implementation Status and Implementation-Defined Behavior</h3>
+
+<p>We&rsquo;re implementing the OpenACC Profiling Interface as defined by the
+OpenACC 2.6 specification.  We&rsquo;re clarifying some aspects here as
+<em>implementation-defined behavior</em>, while they&rsquo;re still under
+discussion within the OpenACC Technical Committee.
+</p>
+<p>This implementation is tuned to keep the performance impact as low as
+possible for the (very common) case that the Profiling Interface is
+not enabled.  This is relevant, as the Profiling Interface affects all
+the <em>hot</em> code paths (in the target code, not in the offloaded
+code).  Users of the OpenACC Profiling Interface can be expected to
+understand that performance will be impacted to some degree once the
+Profiling Interface has gotten enabled: for example, because of the
+<em>runtime</em> (libgomp) calling into a third-party <em>library</em> for
+every event that has been registered.
+</p>
+<p>We&rsquo;re not yet accounting for the fact that <cite>OpenACC events may
+occur during event processing</cite>.
+We just handle one case specially, as required by CUDA 9.0
+<code>nvprof</code>, that <code>acc_get_device_type</code>
+(<a href="acc_005fget_005fdevice_005ftype.html">acc_get_device_type</a>)) may be called from
+<code>acc_ev_device_init_start</code>, <code>acc_ev_device_init_end</code>
+callbacks.
+</p>
+<p>We&rsquo;re not yet implementing initialization via a
+<code>acc_register_library</code> function that is either statically linked
+in, or dynamically via <code>LD_PRELOAD</code>.
+Initialization via <code>acc_register_library</code> functions dynamically
+loaded via the <code>ACC_PROFLIB</code> environment variable does work, as
+does directly calling <code>acc_prof_register</code>,
+<code>acc_prof_unregister</code>, <code>acc_prof_lookup</code>.
+</p>
+<p>As currently there are no inquiry functions defined, calls to
+<code>acc_prof_lookup</code> will always return <code>NULL</code>.
+</p>
+<p>There aren&rsquo;t separate <em>start</em>, <em>stop</em> events defined for the
+event types <code>acc_ev_create</code>, <code>acc_ev_delete</code>,
+<code>acc_ev_alloc</code>, <code>acc_ev_free</code>.  It&rsquo;s not clear if these
+should be triggered before or after the actual device-specific call is
+made.  We trigger them after.
+</p>
+<p>Remarks about data provided to callbacks:
+</p>
+<dl compact="compact">
+<dt><code>acc_prof_info.event_type</code></dt>
+<dd><p>It&rsquo;s not clear if for <em>nested</em> event callbacks (for example,
+<code>acc_ev_enqueue_launch_start</code> as part of a parent compute
+construct), this should be set for the nested event
+(<code>acc_ev_enqueue_launch_start</code>), or if the value of the parent
+construct should remain (<code>acc_ev_compute_construct_start</code>).  In
+this implementation, the value will generally correspond to the
+innermost nested event type.
+</p>
+</dd>
+<dt><code>acc_prof_info.device_type</code></dt>
+<dd><ul>
+<li> For <code>acc_ev_compute_construct_start</code>, and in presence of an
+<code>if</code> clause with <em>false</em> argument, this will still refer to
+the offloading device type.
+It&rsquo;s not clear if that&rsquo;s the expected behavior.
+
+</li><li> Complementary to the item before, for
+<code>acc_ev_compute_construct_end</code>, this is set to
+<code>acc_device_host</code> in presence of an <code>if</code> clause with
+<em>false</em> argument.
+It&rsquo;s not clear if that&rsquo;s the expected behavior.
+
+</li></ul>
+
+</dd>
+<dt><code>acc_prof_info.thread_id</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.async</code></dt>
+<dd><ul>
+<li> Not yet implemented correctly for
+<code>acc_ev_compute_construct_start</code>.
+
+</li><li> In a compute construct, for host-fallback
+execution/<code>acc_device_host</code> it will always be
+<code>acc_async_sync</code>.
+It&rsquo;s not clear if that&rsquo;s the expected behavior.
+
+</li><li> For <code>acc_ev_device_init_start</code> and <code>acc_ev_device_init_end</code>,
+it will always be <code>acc_async_sync</code>.
+It&rsquo;s not clear if that&rsquo;s the expected behavior.
+
+</li></ul>
+
+</dd>
+<dt><code>acc_prof_info.async_queue</code></dt>
+<dd><p>There is no <cite>limited number of asynchronous queues</cite> in libgomp.
+This will always have the same value as <code>acc_prof_info.async</code>.
+</p>
+</dd>
+<dt><code>acc_prof_info.src_file</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.func_name</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.line_no</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.end_line_no</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.func_line_no</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_prof_info.func_end_line_no</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_event_info.event_type</code>, <code>acc_event_info.*.event_type</code></dt>
+<dd><p>Relating to <code>acc_prof_info.event_type</code> discussed above, in this
+implementation, this will always be the same value as
+<code>acc_prof_info.event_type</code>.
+</p>
+</dd>
+<dt><code>acc_event_info.*.parent_construct</code></dt>
+<dd><ul>
+<li> Will be <code>acc_construct_parallel</code> for all OpenACC compute
+constructs as well as many OpenACC Runtime API calls; should be the
+one matching the actual construct, or
+<code>acc_construct_runtime_api</code>, respectively.
+
+</li><li> Will be <code>acc_construct_enter_data</code> or
+<code>acc_construct_exit_data</code> when processing variable mappings
+specified in OpenACC <em>declare</em> directives; should be
+<code>acc_construct_declare</code>.
+
+</li><li> For implicit <code>acc_ev_device_init_start</code>,
+<code>acc_ev_device_init_end</code>, and explicit as well as implicit
+<code>acc_ev_alloc</code>, <code>acc_ev_free</code>,
+<code>acc_ev_enqueue_upload_start</code>, <code>acc_ev_enqueue_upload_end</code>,
+<code>acc_ev_enqueue_download_start</code>, and
+<code>acc_ev_enqueue_download_end</code>, will be
+<code>acc_construct_parallel</code>; should reflect the real parent
+construct.
+
+</li></ul>
+
+</dd>
+<dt><code>acc_event_info.*.implicit</code></dt>
+<dd><p>For <code>acc_ev_alloc</code>, <code>acc_ev_free</code>,
+<code>acc_ev_enqueue_upload_start</code>, <code>acc_ev_enqueue_upload_end</code>,
+<code>acc_ev_enqueue_download_start</code>, and
+<code>acc_ev_enqueue_download_end</code>, this currently will be <code>1</code>
+also for explicit usage.
+</p>
+</dd>
+<dt><code>acc_event_info.data_event.var_name</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_event_info.data_event.host_ptr</code></dt>
+<dd><p>For <code>acc_ev_alloc</code>, and <code>acc_ev_free</code>, this is always
+<code>NULL</code>.
+</p>
+</dd>
+<dt><code>typedef union acc_api_info</code></dt>
+<dd><p>&hellip; as printed in <cite>5.2.3. Third Argument: API-Specific
+Information</cite>.  This should obviously be <code>typedef <em>struct</em>
+acc_api_info</code>.
+</p>
+</dd>
+<dt><code>acc_api_info.device_api</code></dt>
+<dd><p>Possibly not yet implemented correctly for
+<code>acc_ev_compute_construct_start</code>,
+<code>acc_ev_device_init_start</code>, <code>acc_ev_device_init_end</code>:
+will always be <code>acc_device_api_none</code> for these event types.
+For <code>acc_ev_enter_data_start</code>, it will be
+<code>acc_device_api_none</code> in some cases.
+</p>
+</dd>
+<dt><code>acc_api_info.device_type</code></dt>
+<dd><p>Always the same as <code>acc_prof_info.device_type</code>.
+</p>
+</dd>
+<dt><code>acc_api_info.vendor</code></dt>
+<dd><p>Always <code>-1</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_api_info.device_handle</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_api_info.context_handle</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+<dt><code>acc_api_info.async_handle</code></dt>
+<dd><p>Always <code>NULL</code>; not yet implemented.
+</p>
+</dd>
+</dl>
+
+<p>Remarks about certain event types:
+</p>
+<dl compact="compact">
+<dt><code>acc_ev_device_init_start</code>, <code>acc_ev_device_init_end</code></dt>
+<dd><ul>
+<li> When a compute construct triggers implicit
+<code>acc_ev_device_init_start</code> and <code>acc_ev_device_init_end</code>
+events, they currently aren&rsquo;t <em>nested within</em> the corresponding
+<code>acc_ev_compute_construct_start</code> and
+<code>acc_ev_compute_construct_end</code>, but they&rsquo;re currently observed
+<em>before</em> <code>acc_ev_compute_construct_start</code>.
+It&rsquo;s not clear what to do: the standard asks us provide a lot of
+details to the <code>acc_ev_compute_construct_start</code> callback, without
+(implicitly) initializing a device before?
+
+</li><li> Callbacks for these event types will not be invoked for calls to the
+<code>acc_set_device_type</code> and <code>acc_set_device_num</code> functions.
+It&rsquo;s not clear if they should be.
+
+</li></ul>
+
+</dd>
+<dt><code>acc_ev_enter_data_start</code>, <code>acc_ev_enter_data_end</code>, <code>acc_ev_exit_data_start</code>, <code>acc_ev_exit_data_end</code></dt>
+<dd><ul>
+<li> Callbacks for these event types will also be invoked for OpenACC
+<em>host_data</em> constructs.
+It&rsquo;s not clear if they should be.
+
+</li><li> Callbacks for these event types will also be invoked when processing
+variable mappings specified in OpenACC <em>declare</em> directives.
+It&rsquo;s not clear if they should be.
+
+</li></ul>
+
+</dd>
+</dl>
+
+<p>Callbacks for the following event types will be invoked, but dispatch
+and information provided therein has not yet been thoroughly reviewed:
+</p>
+<ul>
+<li> <code>acc_ev_alloc</code>
+</li><li> <code>acc_ev_free</code>
+</li><li> <code>acc_ev_update_start</code>, <code>acc_ev_update_end</code>
+</li><li> <code>acc_ev_enqueue_upload_start</code>, <code>acc_ev_enqueue_upload_end</code>
+</li><li> <code>acc_ev_enqueue_download_start</code>, <code>acc_ev_enqueue_download_end</code>
+</li></ul>
+
+<p>During device initialization, and finalization, respectively,
+callbacks for the following event types will not yet be invoked:
+</p>
+<ul>
+<li> <code>acc_ev_alloc</code>
+</li><li> <code>acc_ev_free</code>
+</li></ul>
+
+<p>Callbacks for the following event types have not yet been implemented,
+so currently won&rsquo;t be invoked:
+</p>
+<ul>
+<li> <code>acc_ev_device_shutdown_start</code>, <code>acc_ev_device_shutdown_end</code>
+</li><li> <code>acc_ev_runtime_shutdown</code>
+</li><li> <code>acc_ev_create</code>, <code>acc_ev_delete</code>
+</li><li> <code>acc_ev_wait_start</code>, <code>acc_ev_wait_end</code>
+</li></ul>
+
+<p>For the following runtime library functions, not all expected
+callbacks will be invoked (mostly concerning implicit device
+initialization):
+</p>
+<ul>
+<li> <code>acc_get_num_devices</code>
+</li><li> <code>acc_set_device_type</code>
+</li><li> <code>acc_get_device_type</code>
+</li><li> <code>acc_set_device_num</code>
+</li><li> <code>acc_get_device_num</code>
+</li><li> <code>acc_init</code>
+</li><li> <code>acc_shutdown</code>
+</li></ul>
+
+<p>Aside from implicit device initialization, for the following runtime
+library functions, no callbacks will be invoked for shared-memory
+offloading devices (it&rsquo;s not clear if they should be):
+</p>
+<ul>
+<li> <code>acc_malloc</code>
+</li><li> <code>acc_free</code>
+</li><li> <code>acc_copyin</code>, <code>acc_present_or_copyin</code>, <code>acc_copyin_async</code>
+</li><li> <code>acc_create</code>, <code>acc_present_or_create</code>, <code>acc_create_async</code>
+</li><li> <code>acc_copyout</code>, <code>acc_copyout_async</code>, <code>acc_copyout_finalize</code>, <code>acc_copyout_finalize_async</code>
+</li><li> <code>acc_delete</code>, <code>acc_delete_async</code>, <code>acc_delete_finalize</code>, <code>acc_delete_finalize_async</code>
+</li><li> <code>acc_update_device</code>, <code>acc_update_device_async</code>
+</li><li> <code>acc_update_self</code>, <code>acc_update_self_async</code>
+</li><li> <code>acc_map_data</code>, <code>acc_unmap_data</code>
+</li><li> <code>acc_memcpy_to_device</code>, <code>acc_memcpy_to_device_async</code>
+</li><li> <code>acc_memcpy_from_device</code>, <code>acc_memcpy_from_device_async</code>
+</li></ul>
+
+
+<hr>
+<div class="header">
+<p>
+Next: <a href="OpenMP_002dImplementation-Specifics.html" accesskey="n" rel="next">OpenMP-Implementation Specifics</a>, Previous: <a href="OpenACC-Library-Interoperability.html" accesskey="p" rel="prev">OpenACC Library Interoperability</a>, Up: <a href="index.html" accesskey="u" rel="up">Top</a> &nbsp; [<a href="index.html#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="Library-Index.html" title="Index" rel="index">Index</a>]</p>
+</div>
+
+
+
+</body>
+</html>

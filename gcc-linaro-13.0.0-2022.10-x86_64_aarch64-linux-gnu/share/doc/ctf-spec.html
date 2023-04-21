@@ -1,0 +1,2132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<!-- Copyright (C) 2021-2022 Free Software Foundation, Inc.
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU General Public License, Version 3 or any
+later version published by the Free Software Foundation.  A copy of the
+license is included in the section entitled "GNU General Public
+License".
+ -->
+<!-- Created by GNU Texinfo 6.7, http://www.gnu.org/software/texinfo/ -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>The CTF File Format</title>
+
+<meta name="description" content="The CTF File Format">
+<meta name="keywords" content="The CTF File Format">
+<meta name="resource-type" content="document">
+<meta name="distribution" content="global">
+<meta name="Generator" content="makeinfo">
+<link href="#Top" rel="start" title="Top">
+<link href="#Index" rel="index" title="Index">
+<link href="#SEC_Contents" rel="contents" title="Table of Contents">
+<style type="text/css">
+<!--
+a.summary-letter {text-decoration: none}
+blockquote.indentedblock {margin-right: 0em}
+div.display {margin-left: 3.2em}
+div.example {margin-left: 3.2em}
+div.lisp {margin-left: 3.2em}
+kbd {font-style: oblique}
+pre.display {font-family: inherit}
+pre.format {font-family: inherit}
+pre.menu-comment {font-family: serif}
+pre.menu-preformatted {font-family: serif}
+span.nolinebreak {white-space: nowrap}
+span.roman {font-family: initial; font-weight: normal}
+span.sansserif {font-family: sans-serif; font-weight: normal}
+ul.no-bullet {list-style: none}
+-->
+</style>
+
+
+</head>
+
+<body lang="en">
+<h1 class="settitle" align="center">The CTF File Format</h1>
+
+
+
+<span id="SEC_Contents"></span>
+<h2 class="contents-heading">Table of Contents</h2>
+
+<div class="contents">
+
+<ul class="no-bullet">
+  <li><a id="toc-Overview-1" href="#Overview">Overview</a></li>
+  <li><a id="toc-CTF-archives" href="#CTF-archive">1 CTF archives</a></li>
+  <li><a id="toc-CTF-dictionaries-1" href="#CTF-dictionaries">2 CTF dictionaries</a>
+  <ul class="no-bullet">
+    <li><a id="toc-CTF-Preamble-1" href="#CTF-Preamble">2.1 CTF Preamble</a>
+    <ul class="no-bullet">
+      <li><a id="toc-CTF-file_002dwide-flags-1" href="#CTF-file_002dwide-flags">2.1.1 CTF file-wide flags</a></li>
+    </ul></li>
+    <li><a id="toc-CTF-header-1" href="#CTF-header">2.2 CTF header</a></li>
+    <li><a id="toc-The-type-section-1" href="#The-type-section">2.3 The type section</a>
+    <ul class="no-bullet">
+      <li><a id="toc-The-info-word_002c-ctt_005finfo" href="#The-info-word">2.3.1 The info word, ctt_info</a></li>
+      <li><a id="toc-Type-indexes-and-type-IDs-1" href="#Type-indexes-and-type-IDs">2.3.2 Type indexes and type IDs</a></li>
+      <li><a id="toc-Type-kinds-1" href="#Type-kinds">2.3.3 Type kinds</a></li>
+      <li><a id="toc-Integer-types-1" href="#Integer-types">2.3.4 Integer types</a></li>
+      <li><a id="toc-Floating_002dpoint-types-1" href="#Floating_002dpoint-types">2.3.5 Floating-point types</a></li>
+      <li><a id="toc-Slices-1" href="#Slices">2.3.6 Slices</a></li>
+      <li><a id="toc-Pointers_002c-typedefs_002c-and-cvr_002dquals" href="#Pointers-typedefs-and-cvr_002dquals">2.3.7 Pointers, typedefs, and cvr-quals</a></li>
+      <li><a id="toc-Arrays-1" href="#Arrays">2.3.8 Arrays</a></li>
+      <li><a id="toc-Function-pointers-1" href="#Function-pointers">2.3.9 Function pointers</a></li>
+      <li><a id="toc-Enums-1" href="#Enums">2.3.10 Enums</a></li>
+      <li><a id="toc-Structs-and-unions-1" href="#Structs-and-unions">2.3.11 Structs and unions</a></li>
+      <li><a id="toc-Forward-declarations-1" href="#Forward-declarations">2.3.12 Forward declarations</a></li>
+    </ul></li>
+    <li><a id="toc-The-symtypetab-sections-1" href="#The-symtypetab-sections">2.4 The symtypetab sections</a></li>
+    <li><a id="toc-The-variable-section-1" href="#The-variable-section">2.5 The variable section</a></li>
+    <li><a id="toc-The-label-section-1" href="#The-label-section">2.6 The label section</a></li>
+    <li><a id="toc-The-string-section-1" href="#The-string-section">2.7 The string section</a></li>
+    <li><a id="toc-Data-models-1" href="#Data-models">2.8 Data models</a></li>
+    <li><a id="toc-Limits-of-CTF-1" href="#Limits-of-CTF">2.9 Limits of CTF</a></li>
+  </ul></li>
+  <li><a id="toc-Index-1" href="#Index" rel="index">Index</a></li>
+</ul>
+</div>
+
+
+<span id="Top"></span><div class="header">
+<p>
+ &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-CTF-file-format"></span><h1 class="top">The CTF file format</h1>
+
+<p>This manual describes version 3 of the CTF file format, which is
+intended to model the C type system in a fashion that C programs can
+consume at runtime.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#Overview" accesskey="1">Overview</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#CTF-archive" accesskey="2">CTF archives</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#CTF-dictionaries" accesskey="3">CTF dictionaries</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Index" rel="index" accesskey="4">Index</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<span id="Overview"></span><div class="header">
+<p>
+Next: <a href="#CTF-archive" accesskey="n" rel="next">CTF archive</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Overview-1"></span><h2 class="unnumbered">Overview</h2>
+<span id="index-Overview"></span>
+
+<p>The CTF file format compactly describes C types and the association
+between function and data symbols and types: if embedded in ELF objects,
+it can exploit the ELF string table to reduce duplication further.
+There is no real concept of namespacing: only top-level types are
+described, not types scoped to within single functions.
+</p>
+<p>CTF dictionaries can be <em>children</em> of other dictionaries, in a
+one-level hierarchy: child dictionaries can refer to types in the
+parent, but the opposite is not sensible (since if you refer to a child
+type in the parent, the actual type you cited would vary depending on
+what child was attached).  This parent/child definition is recorded in
+the child, but only as a recommendation: users of the API have to attach
+parents to children explicitly, and can choose to attach a child to any
+parent they like, or to none, though doing so might lead to unpleasant
+consequences like dangling references to types.  See section <a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a>.  Type lookups in child dicts that are not associated with a
+parent at all will fail with <code>ECTF_NOPARENT</code> if a parent type was
+needed.
+</p>
+<p>The associated API to generate, merge together, and query this file
+format will be described in the accompanying <code>libctf</code> manual once
+it is written.  There is no API to modify dictionaries once they&rsquo;ve been
+written out: CTF is a write-once file format.  (However, it is always
+possible to dynamically create a new child dictionary on the fly and
+attach it to a pre-existing, read-only parent.)
+</p>
+<p>There are two major pieces to CTF: the <em>archive</em> and the
+<em>dictionary</em>.  Some relatives and ancestors of CTF call dictionaries
+<em>containers</em>: the archive format is unique to this variant of CTF.
+(Much of the source code still uses the old term.)
+</p>
+<p>The archive file format is a very simple mmappable archive used to group
+multiple dictionaries together into groups: it is expected to slowly go
+away and be replaced by other mechanisms, but right now it is an
+important part of the file format, used to group dictionaries containing
+types with conflicting definitions in different TUs with the overarching
+dictionary used to store all other types.  (Even when archives go away,
+the <code>libctf</code> API used to access them will remain, and access the
+other mechanisms that replace it instead.)
+</p>
+<p>The CTF dictionary consists of a <em>preamble</em>, which does not vary
+between versions of the CTF file format, and a <em>header</em> and some
+number of <em>sections</em>, which can vary between versions.
+</p>
+<p>The rest of this specification describes the format of these sections,
+first for the latest version of CTF, then for all earlier versions
+supported by <code>libctf</code>: the earlier versions are defined in terms of
+their differences from the next later one.  We describe each part of the
+format first by reproducing the C structure which defines that part,
+then describing it at greater length in terms of file offsets.
+</p>
+<p>The description of the file format ends with a description of relevant
+limits that apply to it.  These limits can vary between file format
+versions.
+</p>
+<p>This document is quite young, so for now the C code in <samp>ctf.h</samp>
+should be presumed correct when this document conflicts with it.
+</p>
+<hr>
+<span id="CTF-archive"></span><div class="header">
+<p>
+Next: <a href="#CTF-dictionaries" accesskey="n" rel="next">CTF dictionaries</a>, Previous: <a href="#Overview" accesskey="p" rel="prev">Overview</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="CTF-archives"></span><h2 class="chapter">1 CTF archives</h2>
+<span id="index-archive_002c-CTF-archive"></span>
+
+<p>The CTF archive format maps names to CTF dictionaries.  The names may
+contain any character other than \0, but for now archives containing
+slashes in the names may not extract correctly.  It is possible to
+insert multiple members with the same name, but these are quite hard to
+access reliably (you have to iterate through all the members rather than
+opening by name) so this is not recommended.
+</p>
+<p>CTF archives are not themselves compressed: the constituent components,
+CTF dictionaries, can be compressed.  (See section <a href="#CTF-header">CTF header</a>).
+</p>
+<p>CTF archives usually contain a collection of related dictionaries, one
+parent and many children of that parent.  CTF archives can have a member
+with a <em>default name</em>, <code>.ctf</code> (which can be represented as
+<code>NULL</code> in the API).  If present, this member is usually the parent
+of all the children, but it is possible for CTF producers to emit
+parents with different names if they wish (usually for backward-
+compatibility purposes).
+</p>
+<p><code>.ctf</code> sections in ELF objects consist of a single CTF dictionary
+rather than an archive of dictionaries if and only if the section
+contains no types with identical names but conflicting definitions: if
+two conflicting definitions exist, the deduplicator will place the type
+most commonly referred to by other types in the parent and will place
+the other type in a child named after the translation unit it is found
+in, and will emit a CTF archive containing both dictionaries instead of
+a raw dictionary.  All types that refer to such conflicting types are
+also placed in the per-translation-unit child.
+</p>
+<p>The definition of an archive in <samp>ctf.h</samp> is as follows:
+</p>
+<pre class="verbatim">struct ctf_archive
+{
+  uint64_t ctfa_magic;
+  uint64_t ctfa_model;
+  uint64_t ctfa_nfiles;
+  uint64_t ctfa_names;
+  uint64_t ctfa_ctfs;
+};
+
+typedef struct ctf_archive_modent
+{
+  uint64_t name_offset;
+  uint64_t ctf_offset;
+} ctf_archive_modent_t;
+</pre>
+<p>(Note one irregularity here: the <code>ctf_archive_t</code> is not a typedef
+to <code>struct ctf_archive</code>, but a different typedef, private to
+<code>libctf</code>, so that things that are not really archives can be made
+to appear as if they were.)
+</p>
+<p>All the above items are always in little-endian byte order, regardless
+of the machine endianness.
+</p>
+<p>The archive header has the following fields:
+</p>
+<span id="index-struct-ctf_005farchive"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint64_t ctfa_magic</code>
+<span id="index-ctfa_005fmagic"></span>
+<span id="index-struct-ctf_005farchive_002c-ctfa_005fmagic"></span></td><td>The magic number for archives, <code>CTFA_MAGIC</code>: 0x8b47f2a4d7623eeb.
+<span id="index-CTFA_005fMAGIC"></span></td></tr>
+<tr><td>0x08</td><td><code>uint64_t ctfa_model</code>
+<span id="index-ctfa_005fmodel"></span>
+<span id="index-struct-ctf_005farchive_002c-ctfa_005fmodel"></span></td><td>The data model for this archive: an arbitrary integer that serves no
+purpose but to be handed back by the libctf API. See section <a href="#Data-models">Data models</a>.</td></tr>
+<tr><td>0x10</td><td><code>uint64_t ctfa_nfiles</code>
+<span id="index-ctfa_005fnfiles"></span>
+<span id="index-struct-ctf_005farchive_002c-ctfa_005fnfiles"></span></td><td>The number of CTF dictionaries in this archive.</td></tr>
+<tr><td>0x18</td><td><code>uint64_t ctfa_names</code>
+<span id="index-ctfa_005fnames"></span>
+<span id="index-struct-ctf_005farchive_002c-ctfa_005fnames"></span></td><td>Offset of the name table, in bytes from the start of the archive.
+The name table is an array of <code>struct ctf_archive_modent_t[ctfa_nfiles]</code>.</td></tr>
+<tr><td>0x20</td><td><code>uint64_t ctfa_ctfs</code>
+<span id="index-ctfa_005fctfs"></span>
+<span id="index-struct-ctf_005farchive_002c-ctfa_005fctfs"></span></td><td>Offset of the CTF table.  Each element starts with a <code>uint64_t</code> size,
+followed by a CTF dictionary.</td></tr>
+</table>
+
+<p>The array pointed to by <code>ctfa_names</code> is an array of entries of
+<code>ctf_archive_modent</code>:
+</p>
+<span id="index-struct-ctf_005farchive_005fmodent"></span>
+<span id="index-ctf_005farchive_005fmodent_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint64_t name_offset</code>
+<span id="index-name_005foffset"></span>
+<span id="index-struct-ctf_005farchive_005fmodent_002c-name_005foffset"></span>
+<span id="index-ctf_005farchive_005fmodent_005ft_002c-name_005foffset"></span></td><td>Offset of this name, in bytes from the start of the archive.</td></tr>
+<tr><td>0x08</td><td><code>uint64_t ctf_offset</code>
+<span id="index-ctf_005foffset"></span>
+<span id="index-struct-ctf_005farchive_005fmodent_002c-ctf_005foffset"></span>
+<span id="index-ctf_005farchive_005fmodent_005ft_002c-ctf_005foffset"></span></td><td>Offset of this CTF dictionary, in bytes from the start of the archive.</td></tr>
+</table>
+
+<p>The <code>ctfa_names</code> array is sorted into ASCIIbetical order by name
+(i.e. by the result of dereferencing the <code>name_offset</code>).
+</p>
+<p>The archive file also contains a name table and a table of CTF
+dictionaries: these are pointed to by the structures above.  The name
+table is a simple strtab which is not required to be sorted; the
+dictionary array is described above in the entry for <code>ctfa_ctfs</code>.
+</p>
+<p>The relative order of these various parts is not defined, except that
+the header naturally always comes first.
+</p>
+<hr>
+<span id="CTF-dictionaries"></span><div class="header">
+<p>
+Next: <a href="#Index" accesskey="n" rel="next">Index</a>, Previous: <a href="#CTF-archive" accesskey="p" rel="prev">CTF archive</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="CTF-dictionaries-1"></span><h2 class="chapter">2 CTF dictionaries</h2>
+<span id="index-dictionary_002c-CTF-dictionary"></span>
+
+<p>CTF dictionaries consist of a header, starting with a premable, and a
+number of sections.
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#CTF-Preamble" accesskey="1">CTF Preamble</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#CTF-header" accesskey="2">CTF header</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#The-type-section" accesskey="3">The type section</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#The-symtypetab-sections" accesskey="4">The symtypetab sections</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#The-variable-section" accesskey="5">The variable section</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#The-label-section" accesskey="6">The label section</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#The-string-section" accesskey="7">The string section</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Data-models" accesskey="8">Data models</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Limits-of-CTF" accesskey="9">Limits of CTF</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<span id="CTF-Preamble"></span><div class="header">
+<p>
+Next: <a href="#CTF-header" accesskey="n" rel="next">CTF header</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="CTF-Preamble-1"></span><h3 class="section">2.1 CTF Preamble</h3>
+
+<p>The preamble is the only part of the CTF dictionary whose format cannot
+vary between versions.  It is never compressed.  It is correspondingly
+simple:
+</p>
+<pre class="verbatim">typedef struct ctf_preamble
+{
+  unsigned short ctp_magic;
+  unsigned char ctp_version;
+  unsigned char ctp_flags;
+} ctf_preamble_t;
+</pre>
+<p><code>#define</code>s are provided under the names <code>cth_magic</code>,
+<code>cth_version</code> and <code>cth_flags</code> to make the fields of the
+<code>ctf_preamble_t</code> appear to be part of the <code>ctf_header_t</code>, so
+consuming programs rarely need to consider the existence of the preamble
+as a separate structure.
+</p>
+<span id="index-struct-ctf_005fpreamble"></span>
+<span id="index-ctf_005fpreamble_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>unsigned short ctp_magic</code>
+<span id="index-ctp_005fmagic"></span>
+<span id="index-cth_005fmagic"></span>
+<span id="index-ctf_005fpreamble_005ft_002c-ctp_005fmagic"></span>
+<span id="index-struct-ctf_005fpreamble_002c-ctp_005fmagic"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fmagic"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fmagic"></span></td><td>The magic number for CTF dictionaries, <code>CTF_MAGIC</code>: 0xdff2.
+<span id="index-CTF_005fMAGIC"></span></td></tr>
+<tr><td>0x02</td><td><code>unsigned char ctp_version</code>
+<span id="index-ctp_005fversion"></span>
+<span id="index-cth_005fversion"></span>
+<span id="index-ctf_005fpreamble_005ft_002c-ctp_005fversion"></span>
+<span id="index-struct-ctf_005fpreamble_002c-ctp_005fversion"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fversion"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fversion"></span></td><td>The version number of this CTF dictionary.</td></tr>
+<tr><td>0x03</td><td><code>ctp_flags</code>
+<span id="index-ctp_005fflags"></span>
+<span id="index-cth_005fflags"></span>
+<span id="index-ctf_005fpreamble_005ft_002c-ctp_005fflags"></span>
+<span id="index-struct-ctf_005fpreamble_002c-ctp_005fflags"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fflags"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fflags"></span></td><td>Flags for this CTF file. See section <a href="#CTF-file_002dwide-flags">CTF file-wide flags</a>.</td></tr>
+</table>
+
+<span id="index-alignment"></span>
+<p>Every element of a dictionary must be naturally aligned unless otherwise
+specified.  (This restriction will be lifted in later versions.)
+</p>
+<span id="index-endianness"></span>
+<p>CTF dictionaries are stored in the native endianness of the system that
+generates them: the consumer (e.g., <code>libctf</code>) can detect whether to
+endian-flip a CTF dictionary by inspecting the <code>ctp_magic</code>. (If it
+appears as 0xf2df, endian-flipping is needed.)
+</p>
+<p>The version of the CTF dictionary can be determined by inspecting
+<code>ctp_version</code>.  The following versions are currently valid, and
+<code>libctf</code> can read all of them:
+</p>
+<span id="index-CTF_005fVERSION_005f3"></span>
+<span id="index-CTF-versions_002c-versions"></span>
+<table>
+<thead><tr><th>Version</th><th>Number</th><th>Description</th></tr></thead>
+<tr><td><code>CTF_VERSION_1</code></td><td>1</td><td>First version, rare. Very similar to Solaris CTF.</td></tr>
+<tr><td><code>CTF_VERSION_1_UPGRADED_3</code></td><td>2</td><td>First version, upgraded to v3 or higher and written out again.
+Name may change. Very rare.</td></tr>
+<tr><td><code>CTF_VERSION_2</code></td><td>3</td><td>Second version, with many range limits lifted.</td></tr>
+<tr><td><code>CTF_VERSION_3</code></td><td>4</td><td>Third and current version, documented here.</td></tr>
+</table>
+
+<p>This section documents <code>CTF_VERSION_3</code>.
+</p>
+<span id="index-ctp_005fflags-1"></span>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#CTF-file_002dwide-flags" accesskey="1">CTF file-wide flags</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<span id="CTF-file_002dwide-flags"></span><div class="header">
+<p>
+Up: <a href="#CTF-Preamble" accesskey="u" rel="up">CTF Preamble</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="CTF-file_002dwide-flags-1"></span><h4 class="subsection">2.1.1 CTF file-wide flags</h4>
+
+<p>The preamble contains bitflags in its <code>ctp_flags</code> field that
+describe various file-wide properties.  Some of the flags are valid only
+for particular file-format versions, which means the flags can be used
+to fix file-format bugs.  Consumers that see unknown flags should
+accordingly assume that the dictionary is not comprehensible, and
+refuse to open them.
+</p>
+<p>The following flags are currently defined.  Many are bug workarounds,
+valid only in CTFv3, and will not be valid in any future versions: the
+same values may be reused for other flags in v4+.
+</p>
+<table>
+<thead><tr><th>Flag</th><th>Versions</th><th>Value</th><th>Meaning
+<span id="index-CTF_005fF_005fCOMPRESS"></span></th></tr></thead>
+<tr><td><code>CTF_F_COMPRESS</code></td><td>All</td><td>0x1</td><td>Compressed with zlib
+<span id="index-CTF_005fF_005fNEWFUNCINFO"></span></td></tr>
+<tr><td><code>CTF_F_NEWFUNCINFO</code></td><td>3 only</td><td>0x2</td><td>&ldquo;New-format&rdquo; func info section.
+<span id="index-CTF_005fF_005fIDXSORTED"></span></td></tr>
+<tr><td><code>CTF_F_IDXSORTED</code></td><td>3+</td><td>0x4</td><td>The index section is
+in sorted order
+<span id="index-CTF_005fF_005fDYNSTR"></span></td></tr>
+<tr><td><code>CTF_F_DYNSTR</code></td><td>3 only</td><td>0x8</td><td>The external strtab is
+in <code>.dynstr</code> and the symtab used is <code>.dynsym</code>.
+See section <a href="#The-string-section">The string section</a></td></tr>
+</table>
+
+<p><code>CTF_F_NEWFUNCINFO</code> and <code>CTF_F_IDXSORTED</code> relate to the
+function info and data object sections. See section <a href="#The-symtypetab-sections">The symtypetab sections</a>.
+</p>
+<p>Further flags (and further compression methods) wil be added in future.
+</p>
+<hr>
+<span id="CTF-header"></span><div class="header">
+<p>
+Next: <a href="#The-type-section" accesskey="n" rel="next">The type section</a>, Previous: <a href="#CTF-Preamble" accesskey="p" rel="prev">CTF Preamble</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="CTF-header-1"></span><h3 class="section">2.2 CTF header</h3>
+<span id="index-CTF-header"></span>
+<span id="index-Sections_002c-header"></span>
+
+<p>The CTF header is the first part of a CTF dictionary, including the
+preamble.  All parts of it other than the preamble (see section <a href="#CTF-Preamble">CTF Preamble</a>)
+can vary between CTF file versions and are never compressed.  It
+contains things that apply to the dictionary as a whole, and a table of
+the sections into which the rest of the dictionary is divided.  The
+sections tile the file: each section runs from the offset given until
+the start of the next section.  Only the last section cannot follow this
+rule, so the header has a length for it instead.
+</p>
+<p>All section offsets, here and in the rest of the CTF file, are relative to the
+<em>end</em> of the header.  (This is annoyingly different to how offsets in CTF
+archives are handled.)
+</p>
+<p>This is the first structure to include offsets into the string table, which are
+not straight references because CTF dictionaries can include references into the
+ELF string table to save space, as well as into the string table internal to the
+CTF dictionary.  See section <a href="#The-string-section">The string section</a> for more on these.  Offset 0 is
+always the null string.
+</p>
+<pre class="verbatim">typedef struct ctf_header
+{
+  ctf_preamble_t cth_preamble;
+  uint32_t cth_parlabel;
+  uint32_t cth_parname;
+  uint32_t cth_cuname;
+  uint32_t cth_lbloff;
+  uint32_t cth_objtoff;
+  uint32_t cth_funcoff;
+  uint32_t cth_objtidxoff;
+  uint32_t cth_funcidxoff;
+  uint32_t cth_varoff;
+  uint32_t cth_typeoff;
+  uint32_t cth_stroff;
+  uint32_t cth_strlen;
+} ctf_header_t;
+</pre>
+<p>In detail:
+</p>
+<span id="index-struct-ctf_005fheader"></span>
+<span id="index-ctf_005fheader_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>ctf_preamble_t cth_preamble</code>
+<span id="index-cth_005fpreamble"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fpreamble"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fpreamble"></span></td><td>The preamble (conceptually embedded in the header). See section <a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td>0x04</td><td><code>uint32_t cth_parlabel</code>
+<span id="index-cth_005fparlabel"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fparlabel"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fparlabel"></span></td><td>The parent label, if deduplication happened against a specific label: a
+strtab offset. See section <a href="#The-label-section">The label section</a>. Currently unused and always 0, but may
+be used in future when semantics are attached to the label section.</td></tr>
+<tr><td>0x08</td><td><code>uint32_t cth_parname</code>
+<span id="index-cth_005fparname"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fparname"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fparname"></span></td><td>The name of the parent dictionary deduplicated against: a strtab offset.
+Interpretation is up to the consumer (usually a CTF archive member name).  0
+(the null string) if this is not a child dictionary.</td></tr>
+<tr><td>0x1c</td><td><code>uint32_t cth_cuname</code>
+<span id="index-cth_005fcuname"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fcuname"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fcuname"></span></td><td>The name of the compilation unit, for consumers like GDB that want to
+know the name of CUs associated with single CUs: a strtab offset.  0 if this
+dictionary describes types from many CUs.</td></tr>
+<tr><td>0x10</td><td><code>uint32_t cth_lbloff</code>
+<span id="index-cth_005flbloff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005flbloff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005flbloff"></span></td><td>The offset of the label section, which tiles the type space into
+named regions.  See section <a href="#The-label-section">The label section</a>.</td></tr>
+<tr><td>0x14</td><td><code>uint32_t cth_objtoff</code>
+<span id="index-cth_005fobjtoff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fobjtoff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fobjtoff"></span></td><td>The offset of the data object symtypetab section, which maps ELF data symbols to
+types.  See section <a href="#The-symtypetab-sections">The symtypetab sections</a>.</td></tr>
+<tr><td>0x18</td><td><code>uint32_t cth_funcoff</code>
+<span id="index-cth_005ffuncoff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005ffuncoff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005ffuncoff"></span></td><td>The offset of the function info symtypetab section, which maps ELF function
+symbols to a return type and arg types.  See section <a href="#The-symtypetab-sections">The symtypetab sections</a>.</td></tr>
+<tr><td>0x1c</td><td><code>uint32_t cth_objtidxoff</code>
+<span id="index-cth_005fobjtidxoff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fobjtidxoff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fobjtidxoff"></span></td><td>The offset of the object index section, which maps ELF object symbols to
+entries in the data object section.  See section <a href="#The-symtypetab-sections">The symtypetab sections</a>.</td></tr>
+<tr><td>0x20</td><td><code>uint32_t cth_funcidxoff</code>
+<span id="index-cth_005ffuncidxoff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005ffuncidxoff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005ffuncidxoff"></span></td><td>The offset of the function info index section, which maps ELF function
+symbols to entries in the function info section. See section <a href="#The-symtypetab-sections">The symtypetab sections</a>.</td></tr>
+<tr><td>0x24</td><td><code>uint32_t cth_varoff</code>
+<span id="index-cth_005fvaroff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fvaroff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fvaroff"></span></td><td>The offset of the variable section, which maps string names to types.
+See section <a href="#The-variable-section">The variable section</a>.</td></tr>
+<tr><td>0x28</td><td><code>uint32_t cth_typeoff</code>
+<span id="index-cth_005ftypeoff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005ftypeoff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005ftypeoff"></span></td><td>The offset of the type section, the core of CTF, which describes types
+ using variable-length array elements. See section <a href="#The-type-section">The type section</a>.</td></tr>
+<tr><td>0x2c</td><td><code>uint32_t cth_stroff</code>
+<span id="index-cth_005fstroff"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fstroff"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fstroff"></span></td><td>The offset of the string section. See section <a href="#The-string-section">The string section</a>.</td></tr>
+<tr><td>0x30</td><td><code>uint32_t cth_strlen</code>
+<span id="index-cth_005fstrlen"></span>
+<span id="index-struct-ctf_005fheader_002c-cth_005fstrlen"></span>
+<span id="index-ctf_005fheader_005ft_002c-cth_005fstrlen"></span></td><td>The length of the string section (not an offset!).  The CTF file ends
+at this point.</td></tr>
+</table>
+
+<p>Everything from this point on (until the end of the file at <code>cth_stroff</code> +
+<code>cth_strlen</code>) is compressed with zlib if <code>CTF_F_COMPRESS</code> is set in
+the preamble&rsquo;s <code>ctp_flags</code>.
+</p>
+<hr>
+<span id="The-type-section"></span><div class="header">
+<p>
+Next: <a href="#The-symtypetab-sections" accesskey="n" rel="next">The symtypetab sections</a>, Previous: <a href="#CTF-header" accesskey="p" rel="prev">CTF header</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-type-section-1"></span><h3 class="section">2.3 The type section</h3>
+<span id="index-Type-section"></span>
+<span id="index-Sections_002c-type"></span>
+
+<p>This section is the most important section in CTF, describing all the top-level
+types in the program.  It consists of an array of type structures, each of which
+describes a type of some <em>kind</em>: each kind of type has some amount of
+variable-length data associated with it (some kinds have none).  The amount of
+variable-length data associated with a given type can be determined by
+inspecting the type, so the reading code can walk through the types in sequence
+at opening time.
+</p>
+<p>Each type structure is one of a set of overlapping structures in a discriminated
+union of sorts: the variable-length data for each type immediately follows the
+type&rsquo;s type structure.  Here&rsquo;s the largest of the overlapping structures, which
+is only needed for huge types and so is very rarely seen:
+</p>
+<pre class="verbatim">typedef struct ctf_type
+{
+  uint32_t ctt_name;
+  uint32_t ctt_info;
+  __extension__
+  union
+  {
+    uint32_t ctt_size;
+    uint32_t ctt_type;
+  };
+  uint32_t ctt_lsizehi;
+  uint32_t ctt_lsizelo;
+} ctf_type_t;
+</pre>
+<p>Here&rsquo;s the much more common smaller form:
+</p>
+<pre class="verbatim">typedef struct ctf_stype
+{
+  uint32_t ctt_name;
+  uint32_t ctt_info;
+  __extension__
+  union
+  {
+    uint32_t ctt_size;
+    uint32_t ctt_type;
+  };
+} ctf_type_t;
+</pre>
+<p>If <code>ctt_size</code> is the #define <code>CTF_LSIZE_SENT</code>, 0xffffffff, this type
+is described by a <code>ctf_type_t</code>: otherwise, a <code>ctf_stype_t</code>.
+<span id="index-CTF_005fLSIZE_005fSENT"></span>
+</p>
+<p>Here&rsquo;s what the fields mean:
+</p>
+<span id="index-struct-ctf_005ftype"></span>
+<span id="index-struct-ctf_005fstype"></span>
+<span id="index-ctf_005ftype_005ft"></span>
+<span id="index-ctf_005fstype_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint32_t ctt_name</code>
+<span id="index-ctt_005fname"></span></td><td>Strtab offset of the type name, if any (0 if none).</td></tr>
+<tr><td>0x04</td><td><code>uint32_t ctt_info</code>
+<span id="index-ctt_005finfo"></span>
+<span id="index-struct-ctf_005ftype_002c-ctt_005finfo"></span>
+<span id="index-ctf_005ftype_005ft_002c-ctt_005finfo"></span>
+<span id="index-struct-ctf_005fstype_002c-ctt_005finfo"></span>
+<span id="index-ctf_005fstype_005ft_002c-ctt_005finfo"></span></td><td>The <em>info word</em>, containing information on the kind of this type, its
+variable-length data and whether it is visible to name lookup. See See section <a href="#The-info-word">The info word, ctt_info</a>.</td></tr>
+<tr><td>0x08</td><td><code>uint32_t ctt_size</code>
+<span id="index-ctt_005fsize"></span>
+<span id="index-struct-ctf_005ftype_002c-ctt_005fsize"></span>
+<span id="index-ctf_005ftype_005ft_002c-ctt_005fsize"></span>
+<span id="index-struct-ctf_005fstype_002c-ctt_005fsize"></span>
+<span id="index-ctf_005fstype_005ft_002c-ctt_005fsize"></span></td><td>The size of this type, if this type is of a kind for which a size needs
+to be recorded (constant-size types don&rsquo;t need one).  If this is
+<code>CTF_LSIZE_SENT</code>, this type is a huge type described by <code>ctf_type_t</code>.</td></tr>
+<tr><td>0x08</td><td><code>uint32_t ctt_type</code>
+<span id="index-ctt_005ftype"></span>
+<span id="index-struct-ctf_005fstype_002c-ctt_005ftype"></span>
+<span id="index-ctf_005fstype_005ft_002c-ctt_005ftype"></span></td><td>The type this type refers to, if this type is of a kind which refers to
+other types (like a pointer).  All such types are fixed-size, and no types that
+are variable-size refer to other types, so <code>ctt_size</code> and <code>ctt_type</code>
+overlap.  All type kinds that use <code>ctt_type</code> are described by
+<code>ctf_stype_t</code>, not <code>ctf_type_t</code>. See section <a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a>.</td></tr>
+<tr><td>0x0c (<code>ctf_type_t</code> only)</td><td><code>uint32_t ctt_lsizehi</code>
+<span id="index-ctt_005flsizehi"></span>
+<span id="index-struct-ctf_005ftype_002c-ctt_005flsizehi"></span>
+<span id="index-ctf_005ftype_005ft_002c-ctt_005flsizehi"></span></td><td>The high 32 bits of the size of a very large type. The <code>CTF_TYPE_LSIZE</code> macro
+can be used to get a 64-bit size out of this field and the next one.
+<code>CTF_SIZE_TO_LSIZE_HI</code> splits the <code>ctt_lsizehi</code> out of it again.
+<span id="index-CTF_005fTYPE_005fLSIZE"></span>
+<span id="index-CTF_005fSIZE_005fTO_005fLSIZE_005fHI"></span></td></tr>
+<tr><td>0x10 (<code>ctf_type_t</code> only)</td><td><code>uint32_t ctt_lsizelo</code>
+<span id="index-ctt_005flsizelo"></span>
+<span id="index-struct-ctf_005ftype_002c-ctt_005flsizelo"></span>
+<span id="index-ctf_005ftype_005ft_002c-ctt_005flsizelo"></span></td><td>The low 32 bits of the size of a very large type.
+<code>CTF_SIZE_TO_LSIZE_LO</code> splits the <code>ctt_lsizelo</code> out of a 64-bit size.
+<span id="index-CTF_005fSIZE_005fTO_005fLSIZE_005fLO"></span></td></tr>
+</table>
+
+<p>Two aspects of this need further explanation: the info word, and what exactly a
+type ID is and how you determine it.  (Information on the various type-kind-
+dependent things, like whether <code>ctt_size</code> or <code>ctt_type</code> is used,
+is described in the section devoted to each kind.)
+</p>
+<table class="menu" border="0" cellspacing="0">
+<tr><td align="left" valign="top">&bull; <a href="#The-info-word" accesskey="1">The info word, ctt_info</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Type-indexes-and-type-IDs" accesskey="2">Type indexes and type IDs</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Type-kinds" accesskey="3">Type kinds</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Integer-types" accesskey="4">Integer types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Floating_002dpoint-types" accesskey="5">Floating-point types</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Slices" accesskey="6">Slices</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Pointers-typedefs-and-cvr_002dquals" accesskey="7">Pointers, typedefs, and cvr-quals</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Arrays" accesskey="8">Arrays</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Function-pointers" accesskey="9">Function pointers</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Enums">Enums</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Structs-and-unions">Structs and unions</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+<tr><td align="left" valign="top">&bull; <a href="#Forward-declarations">Forward declarations</a></td><td>&nbsp;&nbsp;</td><td align="left" valign="top">
+</td></tr>
+</table>
+
+<hr>
+<span id="The-info-word"></span><div class="header">
+<p>
+Next: <a href="#Type-indexes-and-type-IDs" accesskey="n" rel="next">Type indexes and type IDs</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-info-word_002c-ctt_005finfo"></span><h4 class="subsection">2.3.1 The info word, ctt_info</h4>
+
+<p>The info word is a bitfield split into three parts.  From MSB to LSB:
+</p>
+<table>
+<thead><tr><th>Bit offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>26&ndash;31</td><td><code>kind</code></td><td>Type kind: see section <a href="#Type-kinds">Type kinds</a>.</td></tr>
+<tr><td>25</td><td><code>isroot</code></td><td>1 if this type is visible to name lookup</td></tr>
+<tr><td>0&ndash;24</td><td><code>vlen</code></td><td>Length of variable-length data for this type (some kinds only).
+The variable-length data directly follows the <code>ctf_type_t</code> or
+<code>ctf_stype_t</code>.  This is a kind-dependent array length value,
+not a length in bytes.  Some kinds have no variable-length data, or
+fixed-size variable-length data, and do not use this value.</td></tr>
+</table>
+
+<p>The most mysterious of these is undoubtedly <code>isroot</code>.  This indicates
+whether types with names (nonzero <code>ctt_name</code>) are visible to name lookup:
+if zero, this type is considered a <em>non-root type</em> and you can&rsquo;t look it up
+by name at all.  Multiple types with the same name in the same C namespace
+(struct, union, enum, other) can exist in a single dictionary, but only one of
+them may have a nonzero value for <code>isroot</code>.  <code>libctf</code> validates this
+at open time and refuses to open dictionaries that violate this constraint.
+</p>
+<p>Historically, this feature was introduced for the encoding of bitfields
+(see section <a href="#Integer-types">Integer types</a>): for instance, int bitfields will all be named
+<code>int</code> with different widths or offsets, but only the full-width one at
+offset zero is wanted when you look up the type named <code>int</code>.  With the
+introduction of slices (see section <a href="#Slices">Slices</a>) as a more general bitfield encoding
+mechanism, this is less important, but we still use non-root types to handle
+conflicts if the linker API is used to fuse multiple translation units into one
+dictionary and those translation units contain types with the same name and
+conflicting definitions.  (We do not discuss this further here, because the
+linker never does this: only specialized type mergers do, like that used for the
+Linux kernel.  The libctf documentation will describe this in more detail.)
+</p>
+<p>The <code>CTF_TYPE_INFO</code> macro can be used to compose an info word from
+a <code>kind</code>, <code>isroot</code>, and <code>vlen</code>; <code>CTF_V2_INFO_KIND</code>,
+<code>CTF_V2_INFO_ISROOT</code> and <code>CTF_V2_INFO_VLEN</code> pick it apart again.
+<span id="index-CTF_005fTYPE_005fINFO"></span>
+<span id="index-CTF_005fV2_005fINFO_005fKIND"></span>
+<span id="index-CTF_005fV2_005fINFO_005fISROOT"></span>
+<span id="index-CTF_005fV2_005fINFO_005fVLEN"></span>
+</p>
+<hr>
+<span id="Type-indexes-and-type-IDs"></span><div class="header">
+<p>
+Next: <a href="#Type-kinds" accesskey="n" rel="next">Type kinds</a>, Previous: <a href="#The-info-word" accesskey="p" rel="prev">The info word</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Type-indexes-and-type-IDs-1"></span><h4 class="subsection">2.3.2 Type indexes and type IDs</h4>
+<span id="index-Type-indexes"></span>
+<span id="index-Type-IDs"></span>
+<span id="index-Type_002c-IDs-of"></span>
+<span id="index-Type_002c-indexes-of"></span>
+<span id="index-ctf_005fid_005ft"></span>
+
+<span id="index-Parent-range"></span>
+<span id="index-Child-range"></span>
+<span id="index-Type-IDs_002c-ranges"></span>
+<p>Types are referred to within the CTF file via <em>type IDs</em>.  A type ID is a
+number from 0 to <em>2^32</em>, from a space divided in half.  Types <em>2^31-1</em>
+and below are in the <em>parent range</em>: these IDs are used for dictionaries
+that have not had any other dictionary <code>ctf_import</code>ed into it as a parent.
+Both completely standalone dictionaries and parent dictionaries with children
+hanging off them have types in this range.  Types <em>2^31</em> and above are in
+the <em>child range</em>: only types in child dictionaries are in this range.
+</p>
+<p>These IDs appear in <code>ctf_type_t.ctt_type</code> (see section <a href="#The-type-section">The type section</a>), but
+the types themselves have no visible ID: quite intentionally, because adding an
+ID uses space, and every ID is different so they don&rsquo;t compress well.  The IDs
+are implicit: at open time, the consumer walks through the entire type section
+and counts the types in the type section. The type section is an array of
+variable-length elements, so each entry could be considered as having an index,
+starting from 1. We count these indexes and associate each with its
+corresponding <code>ctf_type_t</code> or <code>ctf_stype_t</code>.
+</p>
+<p>Lookups of types with IDs in the parent space look in the parent dictionary if
+this dictionary has one associated with it; lookups of types with IDs in the
+child space error out if the dictionary does not have a parent, and otherwise
+convert the ID into an index by shaving off the top bit and look up the index
+in the child.
+</p>
+<p>These properties mean that the same dictionary can be used as a parent of child
+dictionaries and can also be used directly with no children at all, but a
+dictionary created as a child dictionary must always be associated with a parent
+&mdash; usually, the same parent &mdash; because its references to its own types have
+the high bit turned on and this is only flipped off again if this is a child
+dictionary.  (This is not a problem, because if you <em>don&rsquo;t</em> associate the
+child with a parent, any references within it to its parent types will fail, and
+there are almost certain to be many such references, or why is it a child at
+all?)
+</p>
+<p>This does mean that consumers should keep a close eye on the distinction between
+type IDs and type indexes: if you mix them up, everything will appear to work as
+long as you&rsquo;re only using parent dictionaries or standalone dictionaries, but as
+soon as you start using children, everything will fail horribly.
+</p>
+<p>Type index zero, and type ID zero, are used to indicate that this type cannot be
+represented in CTF as currently constituted: they are emitted by the compiler,
+but all type chains that terminate in the unknown type are erased at link time
+(structure fields that use them just vanish, etc).  So you will probably never
+see a use of type zero outside the symtypetab sections, where they serve as
+sentinels of sorts, to indicate symbols with no associated type.
+</p>
+<p>The macros <code>CTF_V2_TYPE_TO_INDEX</code> and <code>CTF_V2_INDEX_TO_TYPE</code> may help
+in translation between types and indexes: <code>CTF_V2_TYPE_ISPARENT</code> and
+<code>CTF_V2_TYPE_ISCHILD</code> can be used to tell whether a given ID is in the
+parent or child range.
+<span id="index-CTF_005fV2_005fTYPE_005fTO_005fINDEX"></span>
+<span id="index-CTF_005fV2_005fINDEX_005fTO_005fTYPE"></span>
+<span id="index-CTF_005fV2_005fTYPE_005fISPARENT"></span>
+<span id="index-CTF_005fV2_005fTYPE_005fISCHILD"></span>
+</p>
+<p>It is quite possible and indeed common for type IDs to point forward in the
+dictionary, as well as backward.
+</p>
+<hr>
+<span id="Type-kinds"></span><div class="header">
+<p>
+Next: <a href="#Integer-types" accesskey="n" rel="next">Integer types</a>, Previous: <a href="#Type-indexes-and-type-IDs" accesskey="p" rel="prev">Type indexes and type IDs</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Type-kinds-1"></span><h4 class="subsection">2.3.3 Type kinds</h4>
+<span id="index-Type-kinds"></span>
+<span id="index-Type_002c-kinds-of"></span>
+
+<p>Every type in CTF is of some <em>kind</em>. Each kind is some variety of C type:
+all structures are a single kind, as are all unions, all pointers, all arrays,
+all integers regardless of their bitfield width, etc.  The kind of a type is
+given in the <code>kind</code> field of the <code>ctt_info</code> word (see section <a href="#The-info-word">The info word, ctt_info</a>).
+</p>
+<p>The space of type kinds is only a quarter full so far, so there is plenty of
+room for expansion.  It is likely that in future versions of the file format,
+types with smaller kinds will be more efficiently encoded than types with larger
+kinds, so their numerical value will actually start to matter in future. (So
+these IDs will probably change their numerical values in a later release of this
+format, to move more frequently-used kinds like structures and cv-quals towards
+the top of the space, and move rarely-used kinds like integers downwards. Yes,
+integers are rare: how many kinds of <code>int</code> are there in a program? They&rsquo;re
+just very frequently <em>referenced</em>.)
+</p>
+<p>Here&rsquo;s the set of kinds so far.  Each kind has a <code>#define</code> associated with
+it, also given here.
+</p>
+<table>
+<thead><tr><th>Kind</th><th>Macro</th><th>Purpose</th></tr></thead>
+<tr><td>0</td><td><code>CTF_K_UNKNOWN</code></td><td>Indicates a type that cannot be represented in CTF, or that is being skipped.
+It is very similar to type ID 0, except that you can have <em>multiple</em>, distinct types
+of kind <code>CTF_K_UNKNOWN</code>.
+<span id="index-CTF_005fK_005fUNKNOWN"></span></td></tr>
+<tr><td>1</td><td><code>CTF_K_INTEGER</code></td><td>An integer type. See section <a href="#Integer-types">Integer types</a>.</td></tr>
+<tr><td>2</td><td><code>CTF_K_FLOAT</code></td><td>A floating-point type. See section <a href="#Floating_002dpoint-types">Floating-point types</a>.</td></tr>
+<tr><td>3</td><td><code>CTF_K_POINTER</code></td><td>A pointer. See section <a href="#Pointers-typedefs-and-cvr_002dquals">Pointers, typedefs, and cvr-quals</a>.</td></tr>
+<tr><td>4</td><td><code>CTF_K_ARRAY</code></td><td>An array. See section <a href="#Arrays">Arrays</a>.</td></tr>
+<tr><td>5</td><td><code>CTF_K_FUNCTION</code></td><td>A function pointer. See section <a href="#Function-pointers">Function pointers</a>.</td></tr>
+<tr><td>6</td><td><code>CTF_K_STRUCT</code></td><td>A structure. See section <a href="#Structs-and-unions">Structs and unions</a>.</td></tr>
+<tr><td>7</td><td><code>CTF_K_UNION</code></td><td>A union. See section <a href="#Structs-and-unions">Structs and unions</a>.</td></tr>
+<tr><td>8</td><td><code>CTF_K_ENUM</code></td><td>An enumerated type. See section <a href="#Enums">Enums</a>.</td></tr>
+<tr><td>9</td><td><code>CTF_K_FORWARD</code></td><td>A forward. See section <a href="#Forward-declarations">Forward declarations</a>.</td></tr>
+<tr><td>10</td><td><code>CTF_K_TYPEDEF</code></td><td>A typedef. See section <a href="#Pointers-typedefs-and-cvr_002dquals">Pointers, typedefs, and cvr-quals</a>.</td></tr>
+<tr><td>11</td><td><code>CTF_K_VOLATILE</code></td><td>A volatile-qualified type. See section <a href="#Pointers-typedefs-and-cvr_002dquals">Pointers, typedefs, and cvr-quals</a>.</td></tr>
+<tr><td>12</td><td><code>CTF_K_CONST</code></td><td>A const-qualified type. See section <a href="#Pointers-typedefs-and-cvr_002dquals">Pointers, typedefs, and cvr-quals</a>.</td></tr>
+<tr><td>13</td><td><code>CTF_K_RESTRICT</code></td><td>A restrict-qualified type. See section <a href="#Pointers-typedefs-and-cvr_002dquals">Pointers, typedefs, and cvr-quals</a>.</td></tr>
+<tr><td>14</td><td><code>CTF_K_SLICE</code></td><td>A slice, a change of the bit-width or offset of some other type. See section <a href="#Slices">Slices</a>.</td></tr>
+</table>
+
+<p>Now we cover all type kinds in turn. Some are more complicated than others.
+</p>
+<hr>
+<span id="Integer-types"></span><div class="header">
+<p>
+Next: <a href="#Floating_002dpoint-types" accesskey="n" rel="next">Floating-point types</a>, Previous: <a href="#Type-kinds" accesskey="p" rel="prev">Type kinds</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Integer-types-1"></span><h4 class="subsection">2.3.4 Integer types</h4>
+<span id="index-Integer-types"></span>
+<span id="index-Types_002c-integer"></span>
+<span id="index-int"></span>
+<span id="index-long"></span>
+<span id="index-long-long"></span>
+<span id="index-short"></span>
+<span id="index-char"></span>
+<span id="index-bool"></span>
+<span id="index-unsigned-int"></span>
+<span id="index-unsigned-long"></span>
+<span id="index-unsigned-long-long"></span>
+<span id="index-unsigned-short"></span>
+<span id="index-unsigned-char"></span>
+<span id="index-signed-int"></span>
+<span id="index-signed-long"></span>
+<span id="index-signed-long-long"></span>
+<span id="index-signed-short"></span>
+<span id="index-signed-char"></span>
+<span id="index-CTF_005fK_005fINTEGER"></span>
+
+<p>Integral types are all represented as types of kind <code>CTF_K_INTEGER</code>.  These
+types fill out <code>ctt_size</code> in the <code>ctf_stype_t</code> with the size in bytes
+of the integral type in question.  They are always represented by
+<code>ctf_stype_t</code>, never <code>ctf_type_t</code>. Their variable-length data is one
+<code>uint32_t</code> in length: <code>vlen</code> in the info word should be disregarded
+and is always zero.
+</p>
+<p>The variable-length data for integers has multiple items packed into it much
+like the info word does.
+</p>
+<table>
+<thead><tr><th>Bit offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>24&ndash;31</td><td>Encoding</td><td>The desired display representation of this integer. You can extract this
+field with the <code>CTF_INT_ENCODING</code> macro.  See below.
+<span id="index-CTF_005fINT_005fENCODING"></span></td></tr>
+<tr><td>16&ndash;23</td><td>Offset</td><td>The offset of this integral type in bits from the start of its enclosing
+structure field, adjusted for endianness: see section <a href="#Structs-and-unions">Structs and unions</a>.  You can
+extract this field with the <code>CTF_INT_OFFSET</code> macro.
+<span id="index-CTF_005fINT_005fOFFSET"></span></td></tr>
+<tr><td>0&ndash;15</td><td>Bit-width</td><td>The width of this integral type in bits.  You can extract this field with
+the <code>CTF_INT_BITS</code> macro.
+<span id="index-CTF_005fINT_005fBITS"></span></td></tr>
+</table>
+
+<p>If you choose, bitfields can be represented using the things above as a sort of
+integral type with the <code>isroot</code> bit flipped off and the offset and bits
+values set in the vlen word: you can populate it with the <code>CTF_INT_DATA</code>
+macro.  (But it may be more convenient to represent them using slices of a
+full-width integer: see section <a href="#Slices">Slices</a>.)
+<span id="index-CTF_005fINT_005fDATA"></span>
+</p>
+<p>Integers that are bitfields usually have a <code>ctt_size</code> rounded up to the
+nearest power of two in bytes, for natural alignment (e.g. a 17-bit integer
+would have a <code>ctt_size</code> of 4).  However, not all types are naturally
+aligned on all architectures: packed structures may in theory use integral
+bitfields with different <code>ctt_size</code>, though this is rarely observed.
+</p>
+<p>The <em>encoding</em> for integers is a bit-field comprised of the values below,
+which consumers can use to decide how to display values of this type:
+</p>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x01</td><td><code>CTF_INT_SIGNED</code></td><td>If set, this is a signed int: if false, unsigned.
+<span id="index-CTF_005fINT_005fSIGNED"></span></td></tr>
+<tr><td>0x02</td><td><code>CTF_INT_CHAR</code></td><td>If set, this is a char type.  It is platform-dependent whether unadorned
+<code>char</code> is signed or not: the <code>CTF_CHAR</code> macro produces an integral
+type suitable for the definition of <code>char</code> on this platform.
+<span id="index-CTF_005fINT_005fCHAR"></span>
+<span id="index-CTF_005fCHAR"></span></td></tr>
+<tr><td>0x04</td><td><code>CTF_INT_BOOL</code></td><td>If set, this is a boolean type.  (It is theoretically possible to turn this
+and <code>CTF_INT_CHAR</code> on at the same time, but it is not clear what this would
+mean.)
+<span id="index-CTF_005fINT_005fBOOL"></span></td></tr>
+<tr><td>0x08</td><td><code>CTF_INT_VARARGS</code></td><td>If set, this is a varargs-promoted value in a K&amp;R function definition.
+This is not currently produced or consumed by anything that we know of: it is set
+aside for future use.</td></tr>
+</table>
+
+<p>The GCC &ldquo;<code>Complex int</code>&rdquo; and fixed-point extensions are not yet supported:
+references to such types will be emitted as type 0.
+</p>
+<hr>
+<span id="Floating_002dpoint-types"></span><div class="header">
+<p>
+Next: <a href="#Slices" accesskey="n" rel="next">Slices</a>, Previous: <a href="#Integer-types" accesskey="p" rel="prev">Integer types</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Floating_002dpoint-types-1"></span><h4 class="subsection">2.3.5 Floating-point types</h4>
+<span id="index-Floating_002dpoint-types"></span>
+<span id="index-Types_002c-floating_002dpoint"></span>
+<span id="index-float"></span>
+<span id="index-double"></span>
+<span id="index-signed-float"></span>
+<span id="index-signed-double"></span>
+<span id="index-unsigned-float"></span>
+<span id="index-unsigned-double"></span>
+<span id="index-Complex_002c-float"></span>
+<span id="index-Complex_002c-double"></span>
+<span id="index-Complex_002c-signed-float"></span>
+<span id="index-Complex_002c-signed-double"></span>
+<span id="index-Complex_002c-unsigned-float"></span>
+<span id="index-Complex_002c-unsigned-double"></span>
+<span id="index-CTF_005fK_005fFLOAT"></span>
+
+<p>Floating-point types are all represented as types of kind <code>CTF_K_FLOAT</code>.
+Like integers, These types fill out <code>ctt_size</code> in the <code>ctf_stype_t</code>
+with the size in bytes of the floating-point type in question.  They are always
+represented by <code>ctf_stype_t</code>, never <code>ctf_type_t</code>.
+</p>
+<p>This part of CTF shows many rough edges in the more obscure corners of
+floating-point handling, and is likely to change in format v4.
+</p>
+<p>The variable-length data for floats has multiple items packed into it just like
+integers do:
+</p>
+<table>
+<thead><tr><th>Bit offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>24&ndash;31</td><td>Encoding</td><td>The desired display representation of this float. You can extract this
+field with the <code>CTF_FP_ENCODING</code> macro.  See below.
+<span id="index-CTF_005fFP_005fENCODING"></span></td></tr>
+<tr><td>16&ndash;23</td><td>Offset</td><td>The offset of this floating-point type in bits from the start of its enclosing
+structure field, adjusted for endianness: see section <a href="#Structs-and-unions">Structs and unions</a>.  You can
+extract this field with the <code>CTF_FP_OFFSET</code> macro.
+<span id="index-CTF_005fFP_005fOFFSET"></span></td></tr>
+<tr><td>0&ndash;15</td><td>Bit-width</td><td>The width of this floating-point type in bits.  You can extract this field with
+the <code>CTF_FP_BITS</code> macro.
+<span id="index-CTF_005fFP_005fBITS"></span></td></tr>
+</table>
+
+<p>The purpose of the floating-point offset and bit-width is somewhat opaque, since
+there are no such things as floating-point bitfields in C: the bit-width should
+be filled out with the full width of the type in bits, and the offset should
+always be zero.  It is likely that these fields will go away in the future.  As
+with integers, you can use <code>CTF_FP_DATA</code> to assemble one of these vlen
+items from its component parts.
+<span id="index-CTF_005fINT_005fDATA-1"></span>
+</p>
+<p>The <em>encoding</em> for floats is not a bitfield but a simple value indicating
+the display representation.  Many of these are unused, relate to
+Solaris-specific compiler extensions, and will be recycled in future: some are
+unused and will become used in future.
+</p>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>1</td><td><code>CTF_FP_SINGLE</code></td><td>This is a single-precision IEEE 754 <code>float</code>.
+<span id="index-CTF_005fFP_005fSINGLE"></span></td></tr>
+<tr><td>2</td><td><code>CTF_FP_DOUBLE</code></td><td>This is a double-precision IEEE 754 <code>double</code>.
+<span id="index-CTF_005fFP_005fDOUBLE"></span></td></tr>
+<tr><td>3</td><td><code>CTF_FP_CPLX</code></td><td>This is a <code>Complex float</code>.
+<span id="index-CTF_005fFP_005fCPLX"></span></td></tr>
+<tr><td>4</td><td><code>CTF_FP_DCPLX</code></td><td>This is a <code>Complex double</code>.
+<span id="index-CTF_005fFP_005fDCPLX"></span></td></tr>
+<tr><td>5</td><td><code>CTF_FP_LDCPLX</code></td><td>This is a <code>Complex long double</code>.
+<span id="index-CTF_005fFP_005fLDCPLX"></span></td></tr>
+<tr><td>6</td><td><code>CTF_FP_LDOUBLE</code></td><td>This is a <code>long double</code>.
+<span id="index-CTF_005fFP_005fLDOUBLE"></span></td></tr>
+<tr><td>7</td><td><code>CTF_FP_INTRVL</code></td><td>This is a <code>float</code> interval type, a Solaris-specific extension.
+Unused: will be recycled.
+<span id="index-CTF_005fFP_005fINTRVL"></span>
+<span id="index-Unused-bits"></span></td></tr>
+<tr><td>8</td><td><code>CTF_FP_DINTRVL</code></td><td>This is a <code>double</code> interval type, a Solaris-specific extension.
+Unused: will be recycled.
+<span id="index-CTF_005fFP_005fDINTRVL"></span>
+<span id="index-Unused-bits-1"></span></td></tr>
+<tr><td>9</td><td><code>CTF_FP_LDINTRVL</code></td><td>This is a <code>long double</code> interval type, a Solaris-specific extension.
+Unused: will be recycled.
+<span id="index-CTF_005fFP_005fLDINTRVL"></span>
+<span id="index-Unused-bits-2"></span></td></tr>
+<tr><td>10</td><td><code>CTF_FP_IMAGRY</code></td><td>This is a the imaginary part of a <code>Complex float</code>. Not currently
+generated. May change.
+<span id="index-CTF_005fFP_005fIMAGRY"></span>
+<span id="index-Unused-bits-3"></span></td></tr>
+<tr><td>11</td><td><code>CTF_FP_DIMAGRY</code></td><td>This is a the imaginary part of a <code>Complex double</code>. Not currently
+generated. May change.
+<span id="index-CTF_005fFP_005fDIMAGRY"></span>
+<span id="index-Unused-bits-4"></span></td></tr>
+<tr><td>12</td><td><code>CTF_FP_LDIMAGRY</code></td><td>This is a the imaginary part of a <code>Complex long double</code>. Not currently
+generated. May change.
+<span id="index-CTF_005fFP_005fLDIMAGRY"></span>
+<span id="index-Unused-bits-5"></span></td></tr>
+</table>
+
+<p>The use of the complex floating-point encodings is obscure: it is possible that
+<code>CTF_FP_CPLX</code> is meant to be used for only the real part of complex types,
+and <code>CTF_FP_IMAGRY</code> et al for the imaginary part &ndash; but for now, we are
+emitting <code>CTF_FP_CPLX</code> to cover the entire type, with no way to get at its
+constituent parts. There appear to be no uses of these encodings anywhere, so
+they are quite likely to change incompatibly in future.
+</p>
+<hr>
+<span id="Slices"></span><div class="header">
+<p>
+Next: <a href="#Pointers-typedefs-and-cvr_002dquals" accesskey="n" rel="next">Pointers typedefs and cvr-quals</a>, Previous: <a href="#Floating_002dpoint-types" accesskey="p" rel="prev">Floating-point types</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Slices-1"></span><h4 class="subsection">2.3.6 Slices</h4>
+<span id="index-Slices"></span>
+<span id="index-Types_002c-slices-of-integral"></span>
+<span id="index-CTF_005fK_005fSLICE"></span>
+
+<p>Slices, with kind <code>CTF_K_SLICE</code>, are an unusual CTF construct: they do not
+directly correspond to any C type, but are a way to model other types in a more
+convenient fashion for CTF generators.
+</p>
+<p>A slice is like a pointer or other reference type in that they are always
+represented by <code>ctf_stype_t</code>: but unlike pointers and other reference
+types, they populate the <code>ctt_size</code> field just like integral types do, and
+come with an attached encoding and transform the encoding of the underlying
+type.  The underlying type is described in the variable-length data, similarly
+to structure and union fields: see below.  Requests for the type size should
+also chase down to the referenced type.
+</p>
+<p>Slices are always nameless: <code>ctt_name</code> is always zero for them.
+</p>
+<p>(The <code>libctf</code> API behaviour is unusual as well, and justifies the existence
+of slices: <code>ctf_type_kind</code> never returns <code>CTF_K_SLICE</code> but always the
+underlying type kind, so that consumers never need to know about slices: they
+can tell if an apparent integer is actually a slice if they need to by calling
+<code>ctf_type_reference</code>, which will uniquely return the underlying integral
+type rather than erroring out with <code>ECTF_NOTREF</code> if this is actually a
+slice. So slices act just like an integer with an encoding, but more closely
+mirror DWARF and other debugging information formats by allowing CTF file
+creators to represent a bitfield as a slice of an underlying integral type.)
+<span id="index-Slices_002c-effect-on-ctf_005ftype_005fkind"></span>
+<span id="index-Slices_002c-effect-on-ctf_005ftype_005freference"></span>
+<span id="index-libctf_002c-effect-of-slices"></span>
+</p>
+<p>The vlen in the info word for a slice should be ignored and is always zero. The
+variable-length data for a slice is a single <code>ctf_slice_t</code>:
+</p>
+<pre class="verbatim">typedef struct ctf_slice
+{
+  uint32_t cts_type;
+  unsigned short cts_offset;
+  unsigned short cts_bits;
+} ctf_slice_t;
+</pre>
+<span id="index-struct-ctf_005fslice"></span>
+<span id="index-ctf_005fslice_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x0</td><td><code>uint32_t cts_type</code>
+<span id="index-cts_005ftype"></span>
+<span id="index-struct-ctf_005fslice_002c-cts_005ftype"></span>
+<span id="index-ctf_005fslice_005ft_002c-cts_005ftype"></span></td><td>The type this slice is a slice of.  Must be an integral type (or a
+floating-point type, but this nonsensical option will go away in v4.)</td></tr>
+<tr><td>0x4</td><td><code>unsigned short cts_offset</code>
+<span id="index-cts_005foffset"></span>
+<span id="index-struct-ctf_005fslice_002c-cts_005foffset"></span>
+<span id="index-ctf_005fslice_005ft_002c-cts_005foffset"></span></td><td>The offset of this integral type in bits from the start of its enclosing
+structure field, adjusted for endianness: see section <a href="#Structs-and-unions">Structs and unions</a>. Identical
+semantics to the <code>CTF_INT_OFFSET</code> field: see section <a href="#Integer-types">Integer types</a>.  This field
+is much too long, because the maximum possible offset of an integral type would
+easily fit in a char: this field is bigger just for the sake of alignment.  This
+will change in v4.</td></tr>
+<tr><td>0x6</td><td><code>unsigned short cts_bits</code>
+<span id="index-cts_005fbits"></span>
+<span id="index-struct-ctf_005fslice_002c-cts_005fbits"></span>
+<span id="index-ctf_005fslice_005ft_002c-cts_005fbits"></span></td><td>The bit-width of this integral type. Identical semantics to the
+<code>CTF_INT_BITS</code> field: see section <a href="#Integer-types">Integer types</a>.  As above, this field is
+really too large and will shrink in v4.</td></tr>
+</table>
+
+<hr>
+<span id="Pointers-typedefs-and-cvr_002dquals"></span><div class="header">
+<p>
+Next: <a href="#Arrays" accesskey="n" rel="next">Arrays</a>, Previous: <a href="#Slices" accesskey="p" rel="prev">Slices</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Pointers_002c-typedefs_002c-and-cvr_002dquals"></span><h4 class="subsection">2.3.7 Pointers, typedefs, and cvr-quals</h4>
+<span id="index-Pointers"></span>
+<span id="index-Typedefs"></span>
+<span id="index-cvr_002dquals"></span>
+<span id="index-typedef"></span>
+<span id="index-const"></span>
+<span id="index-volatile"></span>
+<span id="index-restrict"></span>
+<span id="index-CTF_005fK_005fPOINTER"></span>
+<span id="index-CTF_005fK_005fTYPEDEF"></span>
+<span id="index-CTF_005fK_005fCONST"></span>
+<span id="index-CTF_005fK_005fVOLATILE"></span>
+<span id="index-CTF_005fK_005fRESTRICT"></span>
+
+<p>Pointers, <code>typedef</code>s, and <code>const</code>, <code>volatile</code> and <code>restrict</code>
+qualifiers are represented identically except for their type kind (though they
+may be treated differently by consuming libraries like <code>libctf</code>, since
+pointers affect assignment-compatibility in ways cvr-quals do not, and they may
+have different alignment requirements, etc).
+</p>
+<p>All of these are represented by <code>ctf_stype_t</code>, have no variable data at
+all, and populate <code>ctt_type</code> with the type ID of the type they point
+to. These types can stack: a <code>CTF_K_RESTRICT</code> can point to a
+<code>CTF_K_CONST</code> which can point to a <code>CTF_K_POINTER</code> etc.
+</p>
+<p>They are all unnamed: <code>ctt_name</code> is 0.
+</p>
+<p>The size of <code>CTF_K_POINTER</code> is derived from the data model (see section <a href="#Data-models">Data models</a>), i.e. in practice, from the target machine ABI, and is not explicitly
+represented.  The size of other kinds in this set should be determined by
+chasing ctf_types as necessary until a non-typedef/const/volatile/restrict is
+found, and using that.
+</p>
+<hr>
+<span id="Arrays"></span><div class="header">
+<p>
+Next: <a href="#Function-pointers" accesskey="n" rel="next">Function pointers</a>, Previous: <a href="#Pointers-typedefs-and-cvr_002dquals" accesskey="p" rel="prev">Pointers typedefs and cvr-quals</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Arrays-1"></span><h4 class="subsection">2.3.8 Arrays</h4>
+<span id="index-Arrays"></span>
+
+<p>Arrays are encoded as types of kind <code>CTF_K_ARRAY</code> in a <code>ctf_stype_t</code>.
+Both size and kind for arrays are zero.  The variable-length data is a
+<code>ctf_array_t</code>: <code>vlen</code> in the info word should be disregarded and is
+always zero.
+</p>
+<pre class="verbatim">typedef struct ctf_array
+{
+  uint32_t cta_contents;
+  uint32_t cta_index;
+  uint32_t cta_nelems;
+} ctf_array_t;
+</pre>
+<span id="index-struct-ctf_005farray"></span>
+<span id="index-ctf_005farray_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x0</td><td><code>uint32_t cta_contents</code>
+<span id="index-cta_005fcontents"></span>
+<span id="index-struct-ctf_005farray_002c-cta_005fcontents"></span>
+<span id="index-ctf_005farray_005ft_002c-cta_005fcontents"></span></td><td>The type of the array elements: a type ID.</td></tr>
+<tr><td>0x4</td><td><code>uint32_t cta_index</code>
+<span id="index-cta_005findex"></span>
+<span id="index-struct-ctf_005farray_002c-cta_005findex"></span>
+<span id="index-ctf_005farray_005ft_002c-cta_005findex"></span></td><td>The type of the array index: a type ID of an integral type.
+If this is a variable-length array, the index type ID will be 0
+(but the actual index type of this array is probably <code>int</code>).
+Probably redundant and may be dropped in v4.</td></tr>
+<tr><td>0x8</td><td><code>uint32_t cta_nelems</code>
+<span id="index-cta_005fnelems"></span>
+<span id="index-struct-ctf_005farray_002c-cta_005fnelems"></span>
+<span id="index-ctf_005farray_005ft_002c-cta_005fnelems"></span></td><td>The number of array elements.  0 for VLAs, and also for
+the historical variety of VLA which has explicit zero dimensions (which will
+have a nonzero <code>cta_index</code>.)</td></tr>
+</table>
+
+<p>The size of an array can be computed by simple multiplication of the size of the
+<code>cta_contents</code> type by the <code>cta_nelems</code>.
+</p>
+<hr>
+<span id="Function-pointers"></span><div class="header">
+<p>
+Next: <a href="#Enums" accesskey="n" rel="next">Enums</a>, Previous: <a href="#Arrays" accesskey="p" rel="prev">Arrays</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Function-pointers-1"></span><h4 class="subsection">2.3.9 Function pointers</h4>
+<span id="index-Function-pointers"></span>
+<span id="index-Pointers_002c-to-functions"></span>
+
+<p>Function pointers are explicitly represented in the CTF type section by a type
+of kind <code>CTF_K_FUNCTION</code>, always encoded with a <code>ctf_stype_t</code>.  The
+<code>ctt_type</code> is the function return type ID.  The <code>vlen</code> in the info
+word is the number of arguments, each of which is a type ID, a <code>uint32_t</code>:
+if the last argument is 0, this is a varargs function and the number of
+arguments is one less than indicated by the vlen.
+</p>
+<p>If the number of arguments is odd, a single <code>uint32_t</code> of padding is
+inserted to maintain alignment.
+</p>
+<hr>
+<span id="Enums"></span><div class="header">
+<p>
+Next: <a href="#Structs-and-unions" accesskey="n" rel="next">Structs and unions</a>, Previous: <a href="#Function-pointers" accesskey="p" rel="prev">Function pointers</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Enums-1"></span><h4 class="subsection">2.3.10 Enums</h4>
+<span id="index-Enums"></span>
+<span id="index-enum"></span>
+<span id="index-CTF_005fK_005fENUM"></span>
+
+<p>Enumerated types are represented as types of kind <code>CTF_K_ENUM</code> in a
+<code>ctf_stype_t</code>.  The <code>ctt_size</code> is always the size of an int from the
+data model (enum bitfields are implemented via slices).  The <code>vlen</code> is a
+count of enumerations, each of which is represented by a <code>ctf_enum_t</code> in
+the vlen:
+</p>
+<pre class="verbatim">typedef struct ctf_enum
+{
+  uint32_t cte_name;
+  int32_t cte_value;
+} ctf_enum_t;
+</pre>
+<span id="index-struct-ctf_005fenum"></span>
+<span id="index-ctf_005fenum_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x0</td><td><code>uint32_t cte_name</code>
+<span id="index-cte_005fname"></span>
+<span id="index-struct-ctf_005fenum_002c-cte_005fname"></span>
+<span id="index-ctf_005fenum_005ft_002c-cte_005fname"></span></td><td>Strtab offset of the enumeration name.  Must not be 0.</td></tr>
+<tr><td>0x4</td><td><code>int32_t cte_value</code>
+<span id="index-cte_005fvalue"></span>
+<span id="index-struct-ctf_005fenum_002c-cte_005fvalue"></span>
+<span id="index-ctf_005fenum_005ft_002c-cte_005fvalue"></span></td><td>The enumeration value.</td></tr>
+</table>
+
+<p>Enumeration values larger than <em>2^32</em> are not yet supported and are omitted
+from the enumeration.  (v4 will lift this restriction by encoding the value
+differently.)
+</p>
+<p>Forward declarations of enums are not implemented with this kind: see section <a href="#Forward-declarations">Forward declarations</a>.
+</p>
+<p>Enumerated type names, as usual in C, go into their own namespace, and do not
+conflict with non-enums, structs, or unions with the same name.
+</p>
+<hr>
+<span id="Structs-and-unions"></span><div class="header">
+<p>
+Next: <a href="#Forward-declarations" accesskey="n" rel="next">Forward declarations</a>, Previous: <a href="#Enums" accesskey="p" rel="prev">Enums</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Structs-and-unions-1"></span><h4 class="subsection">2.3.11 Structs and unions</h4>
+<span id="index-Structures"></span>
+<span id="index-Unions"></span>
+<span id="index-struct"></span>
+<span id="index-union"></span>
+<span id="index-CTF_005fK_005fSTRUCT"></span>
+<span id="index-CTF_005fK_005fUNION"></span>
+
+<p>Structures and unions are represnted as types of kind <code>CTF_K_STRUCT</code> and
+<code>CTF_K_UNION</code>: their representation is otherwise identical, and it is
+perfectly allowed for &ldquo;structs&rdquo; to contain overlapping fields etc, so we will
+treat them together for the rest of this section.
+</p>
+<p>They fill out <code>ctt_size</code>, and use <code>ctf_type_t</code> in preference to
+<code>ctf_stype_t</code> if the structure size is greater than <code>CTF_MAX_SIZE</code>
+(0xfffffffe).
+<span id="index-CTF_005fMAX_005fLSIZE"></span>
+</p>
+<p>The vlen for structures and unions is a count of structure fields, but the type
+used to represent a structure field (and thus the size of the variable-length
+array element representing the type) depends on the size of the structure: truly
+huge structures, greater than <code>CTF_LSTRUCT_THRESH</code> bytes in length, use a
+different type.  (<code>CTF_LSTRUCT_THRESH</code> is 536870912, so such structures are
+vanishingly rare: in v4, this representation will change somewhat for greater
+compactness. It&rsquo;s inherited from v1, where the limits were much lower.)
+<span id="index-CTF_005fLSTRUCT_005fTHRESH"></span>
+</p>
+<p>Most structures can get away with using <code>ctf_member_t</code>:
+</p>
+<pre class="verbatim">typedef struct ctf_member_v2
+{
+  uint32_t ctm_name;
+  uint32_t ctm_offset;
+  uint32_t ctm_type;
+} ctf_member_t;
+</pre>
+<p>Huge structures that are represented by <code>ctf_type_t</code> rather than
+<code>ctf_stype_t</code> have to use <code>ctf_lmember_t</code>, which splits the offset as
+<code>ctf_type_t</code> splits the size:
+</p>
+<pre class="verbatim">typedef struct ctf_lmember_v2
+{
+  uint32_t ctlm_name;
+  uint32_t ctlm_offsethi;
+  uint32_t ctlm_type;
+  uint32_t ctlm_offsetlo;
+} ctf_lmember_t;
+</pre>
+<p>Here&rsquo;s what the fields of <code>ctf_member</code> mean:
+</p>
+<span id="index-struct-ctf_005fmember_005fv2"></span>
+<span id="index-ctf_005fmember_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint32_t ctm_name</code>
+<span id="index-ctm_005fname"></span>
+<span id="index-struct-ctf_005fmember_005fv2_002c-ctm_005fname"></span>
+<span id="index-ctf_005fmember_005ft_002c-ctm_005fname"></span></td><td>Strtab offset of the field name.</td></tr>
+<tr><td>0x04</td><td><code>uint32_t ctm_offset</code>
+<span id="index-ctm_005foffset"></span>
+<span id="index-struct-ctf_005fmember_005fv2_002c-ctm_005foffset"></span>
+<span id="index-ctf_005fmember_005ft_002c-ctm_005foffset"></span></td><td>The offset of this field <em>in bits</em>.  (Usually, for bitfields, this is
+machine-word-aligned and the individual field has an offset in bits, but
+the format allows for the offset to be encoded in bits here.)</td></tr>
+<tr><td>0x08</td><td><code>uint32_t ctm_type</code>
+<span id="index-ctm_005ftype"></span>
+<span id="index-struct-ctf_005fmember_005fv2_002c-ctm_005ftype"></span>
+<span id="index-ctf_005fmember_005ft_002c-ctm_005ftype"></span></td><td>The type ID of the type of the field.</td></tr>
+</table>
+
+<p>Here&rsquo;s what the fields of the very similar <code>ctf_lmember</code> mean:
+</p>
+<span id="index-struct-ctf_005flmember_005fv2"></span>
+<span id="index-ctf_005flmember_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint32_t ctlm_name</code>
+<span id="index-ctlm_005fname"></span>
+<span id="index-struct-ctf_005flmember_005fv2_002c-ctlm_005fname"></span>
+<span id="index-ctf_005flmember_005ft_002c-ctlm_005fname"></span></td><td>Strtab offset of the field name.</td></tr>
+<tr><td>0x04</td><td><code>uint32_t ctlm_offsethi</code>
+<span id="index-ctlm_005foffsethi"></span>
+<span id="index-struct-ctf_005flmember_005fv2_002c-ctlm_005foffsethi"></span>
+<span id="index-ctf_005flmember_005ft_002c-ctlm_005foffsethi"></span></td><td>The high 32 bits of the offset of this field in bits.</td></tr>
+<tr><td>0x08</td><td><code>uint32_t ctlm_type</code>
+<span id="index-ctm_005ftype-1"></span>
+<span id="index-struct-ctf_005flmember_005fv2_002c-ctlm_005ftype"></span>
+<span id="index-ctf_005fmember_005ft_002c-ctlm_005ftype"></span></td><td>The type ID of the type of the field.</td></tr>
+<tr><td>0x0c</td><td><code>uint32_t ctlm_offsetlo</code>
+<span id="index-ctlm_005foffsetlo"></span>
+<span id="index-struct-ctf_005flmember_005fv2_002c-ctlm_005foffsetlo"></span>
+<span id="index-ctf_005flmember_005ft_002c-ctlm_005foffsetlo"></span></td><td>The low 32 bits of the offset of this field in bits.</td></tr>
+</table>
+
+<p>Macros <code>CTF_LMEM_OFFSET</code>, <code>CTF_OFFSET_TO_LMEMHI</code> and
+<code>CTF_OFFSET_TO_LMEMLO</code> serve to extract and install the values of the
+<code>ctlm_offset</code> fields, much as with the split size fields in
+<code>ctf_type_t</code>.
+</p>
+<p>Unnamed structure and union fields are simply implemented by collapsing the
+unnamed field&rsquo;s members into the containing structure or union: this does mean
+that a structure containing an unnamed union can end up being a &ldquo;structure&rdquo;
+with multiple members at the same offset.  (A future format revision may
+collapse <code>CTF_K_STRUCT</code> and <code>CTF_K_UNION</code> into the same kind and
+decide among them based on whether their members do in fact overlap.)
+</p>
+<p>Structure and union type names, as usual in C, go into their own namespace,
+just as enum type names do.
+</p>
+<p>Forward declarations of structures and unions are not implemented with this
+kind: see section <a href="#Forward-declarations">Forward declarations</a>.
+</p>
+<hr>
+<span id="Forward-declarations"></span><div class="header">
+<p>
+Previous: <a href="#Structs-and-unions" accesskey="p" rel="prev">Structs and unions</a>, Up: <a href="#The-type-section" accesskey="u" rel="up">The type section</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Forward-declarations-1"></span><h4 class="subsection">2.3.12 Forward declarations</h4>
+<span id="index-Forwards"></span>
+<span id="index-enum-1"></span>
+<span id="index-struct-1"></span>
+<span id="index-union-1"></span>
+<span id="index-CTF_005fK_005fFORWARD"></span>
+
+<p>When the compiler encounters a forward declaration of a struct, union, or enum,
+it emits a type of kind <code>CTF_K_FORWARD</code>.  If it later encounters a non-
+forward declaration of the same thing, it marks the forward as non-root-visible:
+before link time, therefore, non-root-visible forwards indicate that a
+non-forward is coming.
+</p>
+<p>After link time, forwards are fused with their corresponding non-forwards by the
+deduplicator where possible.  They are kept if there is no non-forward
+definition (maybe it&rsquo;s not visible from any TU at all) or if <code>multiple</code>
+conflicting structures with the same name might match it.  Otherwise, all other
+forwards are converted to structures, unions, or enums as appropriate, even
+across TUs if only one structure could correspond to the forward (after all,
+all types across all TUs land in the same dictionary unless they conflict,
+so promoting forwards to their concrete type seems most helpful).
+</p>
+<p>A forward has a rather strange representation: it is encoded with a
+<code>ctf_stype_t</code> but the <code>ctt_type</code> is populated not with a type (if it&rsquo;s
+a forward, we don&rsquo;t have an underlying type yet: if we did, we&rsquo;d have promoted
+it and this wouldn&rsquo;t be a forward any more) but with the <code>kind</code> of the
+forward.  This means that we can distinguish forwards to structs, enums and
+unions reliably and ensure they land in the appropriate namespace even before
+the actual struct, union or enum is found.
+</p>
+<hr>
+<span id="The-symtypetab-sections"></span><div class="header">
+<p>
+Next: <a href="#The-variable-section" accesskey="n" rel="next">The variable section</a>, Previous: <a href="#The-type-section" accesskey="p" rel="prev">The type section</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-symtypetab-sections-1"></span><h3 class="section">2.4 The symtypetab sections</h3>
+<span id="index-Symtypetab-section"></span>
+<span id="index-Sections_002c-symtypetab"></span>
+<span id="index-Function-info-section"></span>
+<span id="index-Sections_002c-function-info"></span>
+<span id="index-Data-object-section"></span>
+<span id="index-Sections_002c-data-object"></span>
+<span id="index-Function-info-index-section"></span>
+<span id="index-Sections_002c-function-info-index"></span>
+<span id="index-Data-object-index-section"></span>
+<span id="index-Sections_002c-data-object-index"></span>
+<span id="index-CTF_005fF_005fIDXSORTED-1"></span>
+<span id="index-CTF_005fF_005fDYNSTR-1"></span>
+<span id="index-Bug-workarounds_002c-CTF_005fF_005fDYNSTR"></span>
+
+<p>These are two very simple sections with identical formats, used by consumers to
+map from ELF function and data symbols directly to their types. So they are
+usually populated only in CTF sections that are embedded in ELF objects.
+</p>
+<p>Their format is very simple: an array of type IDs. Which symbol each type ID
+corresponds to depends on whether the optional <em>index section</em> associated
+with this symtypetab section has any content.
+</p>
+<p>If the index section is nonempty, it is an array of <code>uint32_t</code> string table
+offsets, each giving the name of the symbol whose type is at the same offset in
+the corresponding non-index section: users can look up symbols in such a table
+by name.  The index section and corresponding symtypetab section is usually
+ASCIIbetically sorted (indicated by the <code>CTF_F_IDXSORTED</code> flag in the
+header): if it&rsquo;s sorted, it can be bsearched for a symbol name rather than
+having to use a slower linear search.
+</p>
+<p>If the data object index section is empty, the entries in the data object and
+function info sections are associated 1:1 with ELF symbols of type
+<code>STT_OBJECT</code> (for data object) or <code>STT_FUNC</code> (for function info) with
+a nonzero value: the linker shuffles the symtypetab sections to correspond with
+the order of the symbols in the ELF file.  Symbols with no name, undefined
+symbols and symbols named &ldquo;<code>_START_</code>&rdquo; and &ldquo;<code>_END_</code>&rdquo; are skipped
+and never appear in either section.  Symbols that have no corresponding type are
+represented by type ID 0. The section may have fewer entries than the symbol
+table, in which case no later entries have associated types.  This format is
+more compact than an indexed form if most entries have types (since there is no
+need to record any symbol names), but if the producer and consumer disagree even
+slightly about which symbols are omitted, the types of all further symbols will
+be wrong!
+</p>
+<p>The compiler always emits indexed symtypetab tables, because there is no symbol
+table yet. The linker will always have to read them all in and always works
+through them from start to end, so there is no benefit having the compiler sort
+them either. The linker (actually, <code>libctf</code>&rsquo;s linking machinery) will
+automatically sort unsorted indexed sections, and convert indexed sections that
+contain a lot of pads into the more compact, unindexed form.
+</p>
+<p>If child dicts are in use, only symbols that use types actually mentioned in the
+child appear in the child&rsquo;s symtypetab: symbols that use only types in the
+parent appear in the parent&rsquo;s symtypetab instead. So the child&rsquo;s symtypetab will
+almost always be very sparse, and thus will usually use the indexed form even in
+fully linked objects. (It is, of course, impossible for symbols to exist that
+use types from multiple child dicts at once, since it&rsquo;s impossible to declare a
+function in C that uses types that are only visible in two different, disjoint
+translation units.)
+</p>
+<hr>
+<span id="The-variable-section"></span><div class="header">
+<p>
+Next: <a href="#The-label-section" accesskey="n" rel="next">The label section</a>, Previous: <a href="#The-symtypetab-sections" accesskey="p" rel="prev">The symtypetab sections</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-variable-section-1"></span><h3 class="section">2.5 The variable section</h3>
+<span id="index-Variable-section"></span>
+<span id="index-Sections_002c-variable"></span>
+
+<p>The variable section is a simple array mapping names (strtab entries) to type
+IDs, intended to provide a replacement for the data object section in dynamic
+situations in which there is no static ELF strtab but the consumer instead hands
+back names.  The section is sorted into ASCIIbetical order by name for rapid
+lookup, like the CTF archive name table.
+</p>
+<p>The section is an array of these structures:
+</p>
+<pre class="verbatim">typedef struct ctf_varent
+{
+  uint32_t ctv_name;
+  uint32_t ctv_type;
+} ctf_varent_t;
+</pre>
+<span id="index-struct-ctf_005fvarent"></span>
+<span id="index-ctf_005fvarent_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint32_t ctv_name</code>
+<span id="index-ctv_005fname"></span>
+<span id="index-struct-ctf_005fvarent_002c-ctv_005fname"></span>
+<span id="index-ctf_005fvarent_005ft_002c-ctv_005fname"></span></td><td>Strtab offset of the name</td></tr>
+<tr><td>0x04</td><td><code>uint32_t ctv_type</code>
+<span id="index-ctv_005ftype"></span>
+<span id="index-struct-ctf_005fvarent_002c-ctv_005ftype"></span>
+<span id="index-ctf_005fvarent_005ft_002c-ctv_005ftype"></span></td><td>Type ID of this type</td></tr>
+</table>
+
+<p>There is no analogue of the function info section yet: v4 will probably drop
+this section in favour of a way to put both indexed (thus, named) and nonindexed
+symbols into the symtypetab sections at the same time.
+</p>
+<hr>
+<span id="The-label-section"></span><div class="header">
+<p>
+Next: <a href="#The-string-section" accesskey="n" rel="next">The string section</a>, Previous: <a href="#The-variable-section" accesskey="p" rel="prev">The variable section</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-label-section-1"></span><h3 class="section">2.6 The label section</h3>
+<span id="index-Label-section"></span>
+<span id="index-Sections_002c-label"></span>
+
+<p>The label section is a currently-unused facility allowing the tiling of the type
+space with names taken from the strtab.  The section is an array of these
+structures:
+</p>
+<pre class="verbatim">typedef struct ctf_lblent
+{
+  uint32_t ctl_label;
+  uint32_t ctl_type;
+} ctf_lblent_t;
+</pre>
+<span id="index-struct-ctf_005flblent"></span>
+<span id="index-ctf_005flblent_005ft"></span>
+<table>
+<thead><tr><th>Offset</th><th>Name</th><th>Description</th></tr></thead>
+<tr><td>0x00</td><td><code>uint32_t ctl_label</code>
+<span id="index-ctl_005flabel"></span>
+<span id="index-struct-ctf_005flblent_002c-ctl_005flabel"></span>
+<span id="index-ctf_005flblent_005ft_002c-ctl_005flabel"></span></td><td>Strtab offset of the label</td></tr>
+<tr><td>0x04</td><td><code>uint32_t ctl_type</code>
+<span id="index-ctl_005ftype"></span>
+<span id="index-struct-ctf_005flblent_002c-ctl_005ftype"></span>
+<span id="index-ctf_005flblent_005ft_002c-ctl_005ftype"></span></td><td>Type ID of the last type covered by this label</td></tr>
+</table>
+
+<p>Semantics will be attached to labels soon, probably in v4 (the plan is to use
+them to allow multiple disjoint namespaces in a single CTF file, removing many
+uses of CTF archives, in particular in the <code>.ctf</code> section in ELF objects).
+</p>
+<hr>
+<span id="The-string-section"></span><div class="header">
+<p>
+Next: <a href="#Data-models" accesskey="n" rel="next">Data models</a>, Previous: <a href="#The-label-section" accesskey="p" rel="prev">The label section</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="The-string-section-1"></span><h3 class="section">2.7 The string section</h3>
+<span id="index-String-section"></span>
+<span id="index-Sections_002c-string"></span>
+
+<p>This section is a simple ELF-format strtab, starting with a zero byte (thus
+ensuring that the string with offset 0 is the null string, as assumed elsewhere
+in this spec).  The strtab is usually ASCIIbetically sorted to somewhat improve
+compression efficiency.
+</p>
+<p>Where the strtab is unusual is the <em>references</em> to it.  CTF has two
+string tables, the internal strtab and an external strtab associated
+with the CTF dictionary at open time: usually, this is the ELF dynamic
+strtab (<code>.dynstr</code>) of a CTF dictionary embedded in an ELF file.  We
+distinguish between these strtabs by the most significant bit, bit 31,
+of the 32-bit strtab references: if it is 0, the offset is in the
+internal strtab: if 1, the offset is in the external strtab.
+</p>
+<span id="index-CTF_005fF_005fDYNSTR-2"></span>
+<span id="index-Bug-workarounds_002c-CTF_005fF_005fDYNSTR-1"></span>
+<p>There is a bug workaround in this area: in format v3 (the first version
+to have working support for external strtabs), the external strtab is
+<code>.strtab</code> unless the <code>CTF_F_DYNSTR</code> flag is set on the
+dictionary (see section <a href="#CTF-file_002dwide-flags">CTF file-wide flags</a>).  Format v4 will introduce a
+header field that explicitly names the external strtab, making this flag
+unnecessary.
+</p>
+<hr>
+<span id="Data-models"></span><div class="header">
+<p>
+Next: <a href="#Limits-of-CTF" accesskey="n" rel="next">Limits of CTF</a>, Previous: <a href="#The-string-section" accesskey="p" rel="prev">The string section</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Data-models-1"></span><h3 class="section">2.8 Data models</h3>
+<span id="index-Data-models"></span>
+
+<p>The data model is a simple integer which indicates the ABI in use on this
+platform. Right now, it is very simple, distinguishing only between 32- and
+64-bit types: a model of 1 indicates ILP32, 2 indicats LP64. The mapping from
+ABI integer to type sizes is hardwired into <code>libctf</code>: currently, we use
+this to hardwire the size of pointers, function pointers, and enumerated types,
+</p>
+<p>This is a very kludgy corner of CTF and will probably be replaced with explicit
+header fields to record this sort of thing in future.
+</p>
+<hr>
+<span id="Limits-of-CTF"></span><div class="header">
+<p>
+Previous: <a href="#Data-models" accesskey="p" rel="prev">Data models</a>, Up: <a href="#CTF-dictionaries" accesskey="u" rel="up">CTF dictionaries</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Limits-of-CTF-1"></span><h3 class="section">2.9 Limits of CTF</h3>
+<span id="index-Limits"></span>
+
+<p>The following limits are imposed by various aspects of CTF version 3:
+</p>
+<dl compact="compact">
+<dt><code>CTF_MAX_TYPE</code></dt>
+<dd><p>Maximum type identifier (maximum number of types accessible with parent and
+child containers in use): 0xfffffffe
+</p></dd>
+<dt><code>CTF_MAX_PTYPE</code></dt>
+<dd><p>Maximum type identifier in a parent dictioanry: maximum number of types in any
+one dictionary: 0x7fffffff
+</p></dd>
+<dt><code>CTF_MAX_NAME</code></dt>
+<dd><p>Maximum offset into a string table: 0x7fffffff
+</p></dd>
+<dt><code>CTF_MAX_VLEN</code></dt>
+<dd><p>Maximum number of members in a struct, union, or enum: maximum number of
+function args: 0xffffff
+</p></dd>
+<dt><code>CTF_MAX_SIZE</code></dt>
+<dd><p>Maximum size of a <code>ctf_stype_t</code> in bytes before we fall back to
+<code>ctf_type_t</code>: 0xfffffffe bytes
+</p></dd>
+</dl>
+
+<p>Other maxima without associated macros:
+</p><ul>
+<li> Maximum value of an enumerated type: 2^32
+</li><li> Maximum size of an array element: 2^32
+</li></ul>
+
+<p>These maxima are generally considered to be too low, because C programs can and
+do exceed them: they will be lifted in format v4.
+</p>
+<hr>
+<span id="Index"></span><div class="header">
+<p>
+Previous: <a href="#CTF-dictionaries" accesskey="p" rel="prev">CTF dictionaries</a>, Up: <a href="#Top" accesskey="u" rel="up">Top</a> &nbsp; [<a href="#SEC_Contents" title="Table of contents" rel="contents">Contents</a>][<a href="#Index" title="Index" rel="index">Index</a>]</p>
+</div>
+<span id="Index-1"></span><h2 class="unnumbered">Index</h2>
+
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Index_cp_letter-A"><b>A</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-B"><b>B</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-C"><b>C</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-D"><b>D</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-E"><b>E</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-F"><b>F</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-I"><b>I</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-L"><b>L</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-N"><b>N</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-O"><b>O</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-P"><b>P</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-R"><b>R</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-S"><b>S</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-T"><b>T</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-U"><b>U</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-V"><b>V</b></a>
+ &nbsp; 
+</td></tr></table>
+<table class="index-cp" border="0">
+<tr><td></td><th align="left">Index Entry</th><td>&nbsp;</td><th align="left"> Section</th></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-A">A</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-alignment">alignment</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-archive_002c-CTF-archive">archive, CTF archive</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Arrays">Arrays</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-B">B</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-bool">bool</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Bug-workarounds_002c-CTF_005fF_005fDYNSTR">Bug workarounds, CTF_F_DYNSTR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Bug-workarounds_002c-CTF_005fF_005fDYNSTR-1">Bug workarounds, CTF_F_DYNSTR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-string-section">The string section</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-C">C</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-char">char</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Child-range">Child range</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-double">Complex, double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-float">Complex, float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-signed-double">Complex, signed double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-signed-float">Complex, signed float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-unsigned-double">Complex, unsigned double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Complex_002c-unsigned-float">Complex, unsigned float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-const">const</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cta_005fcontents">cta_contents</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cta_005findex">cta_index</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cta_005fnelems">cta_nelems</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cte_005fname">cte_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cte_005fvalue">cte_value</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF-header">CTF header</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF-versions_002c-versions">CTF versions, versions</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctfa_005fctfs">ctfa_ctfs</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctfa_005fmagic">ctfa_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTFA_005fMAGIC">CTFA_MAGIC</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctfa_005fmodel">ctfa_model</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctfa_005fnames">ctfa_names</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctfa_005fnfiles">ctfa_nfiles</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farchive_005fmodent_005ft">ctf_archive_modent_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farchive_005fmodent_005ft_002c-ctf_005foffset">ctf_archive_modent_t, ctf_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farchive_005fmodent_005ft_002c-name_005foffset">ctf_archive_modent_t, name_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farray_005ft">ctf_array_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farray_005ft_002c-cta_005fcontents">ctf_array_t, cta_contents</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farray_005ft_002c-cta_005findex">ctf_array_t, cta_index</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005farray_005ft_002c-cta_005fnelems">ctf_array_t, cta_nelems</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fCHAR">CTF_CHAR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fenum_005ft">ctf_enum_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fenum_005ft_002c-cte_005fname">ctf_enum_t, cte_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fenum_005ft_002c-cte_005fvalue">ctf_enum_t, cte_value</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fBITS">CTF_FP_BITS</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fCPLX">CTF_FP_CPLX</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fDCPLX">CTF_FP_DCPLX</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fDIMAGRY">CTF_FP_DIMAGRY</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fDINTRVL">CTF_FP_DINTRVL</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fDOUBLE">CTF_FP_DOUBLE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fENCODING">CTF_FP_ENCODING</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fIMAGRY">CTF_FP_IMAGRY</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fINTRVL">CTF_FP_INTRVL</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fLDCPLX">CTF_FP_LDCPLX</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fLDIMAGRY">CTF_FP_LDIMAGRY</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fLDINTRVL">CTF_FP_LDINTRVL</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fLDOUBLE">CTF_FP_LDOUBLE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fOFFSET">CTF_FP_OFFSET</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fFP_005fSINGLE">CTF_FP_SINGLE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fCOMPRESS">CTF_F_COMPRESS</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-file_002dwide-flags">CTF file-wide flags</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fDYNSTR">CTF_F_DYNSTR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-file_002dwide-flags">CTF file-wide flags</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fDYNSTR-1">CTF_F_DYNSTR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fDYNSTR-2">CTF_F_DYNSTR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-string-section">The string section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fIDXSORTED">CTF_F_IDXSORTED</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-file_002dwide-flags">CTF file-wide flags</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fIDXSORTED-1">CTF_F_IDXSORTED</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fF_005fNEWFUNCINFO">CTF_F_NEWFUNCINFO</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-file_002dwide-flags">CTF file-wide flags</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft">ctf_header_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fcuname">ctf_header_t, cth_cuname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fflags">ctf_header_t, cth_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005ffuncidxoff">ctf_header_t, cth_funcidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005ffuncoff">ctf_header_t, cth_funcoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005flbloff">ctf_header_t, cth_lbloff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fmagic">ctf_header_t, cth_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fobjtidxoff">ctf_header_t, cth_objtidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fobjtoff">ctf_header_t, cth_objtoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fparlabel">ctf_header_t, cth_parlabel</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fparname">ctf_header_t, cth_parname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fpreamble">ctf_header_t, cth_preamble</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fstrlen">ctf_header_t, cth_strlen</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fstroff">ctf_header_t, cth_stroff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005ftypeoff">ctf_header_t, cth_typeoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fvaroff">ctf_header_t, cth_varoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fheader_005ft_002c-cth_005fversion">ctf_header_t, cth_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fid_005ft">ctf_id_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fBITS">CTF_INT_BITS</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fBOOL">CTF_INT_BOOL</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fCHAR">CTF_INT_CHAR</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fDATA">CTF_INT_DATA</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fDATA-1">CTF_INT_DATA</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fENCODING">CTF_INT_ENCODING</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fOFFSET">CTF_INT_OFFSET</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fINT_005fSIGNED">CTF_INT_SIGNED</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fCONST">CTF_K_CONST</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fENUM">CTF_K_ENUM</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fFLOAT">CTF_K_FLOAT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fFORWARD">CTF_K_FORWARD</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Forward-declarations">Forward declarations</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fINTEGER">CTF_K_INTEGER</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fPOINTER">CTF_K_POINTER</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fRESTRICT">CTF_K_RESTRICT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fSLICE">CTF_K_SLICE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fSTRUCT">CTF_K_STRUCT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fTYPEDEF">CTF_K_TYPEDEF</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fUNION">CTF_K_UNION</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fUNKNOWN">CTF_K_UNKNOWN</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-kinds">Type kinds</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fK_005fVOLATILE">CTF_K_VOLATILE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flblent_005ft">ctf_lblent_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flblent_005ft_002c-ctl_005flabel">ctf_lblent_t, ctl_label</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flblent_005ft_002c-ctl_005ftype">ctf_lblent_t, ctl_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flmember_005ft">ctf_lmember_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flmember_005ft_002c-ctlm_005fname">ctf_lmember_t, ctlm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flmember_005ft_002c-ctlm_005foffsethi">ctf_lmember_t, ctlm_offsethi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005flmember_005ft_002c-ctlm_005foffsetlo">ctf_lmember_t, ctlm_offsetlo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fLSIZE_005fSENT">CTF_LSIZE_SENT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fLSTRUCT_005fTHRESH">CTF_LSTRUCT_THRESH</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fMAGIC">CTF_MAGIC</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fMAX_005fLSIZE">CTF_MAX_LSIZE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fmember_005ft">ctf_member_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fmember_005ft_002c-ctlm_005ftype">ctf_member_t, ctlm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fmember_005ft_002c-ctm_005fname">ctf_member_t, ctm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fmember_005ft_002c-ctm_005foffset">ctf_member_t, ctm_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fmember_005ft_002c-ctm_005ftype">ctf_member_t, ctm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005foffset">ctf_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fpreamble_005ft">ctf_preamble_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fpreamble_005ft_002c-ctp_005fflags">ctf_preamble_t, ctp_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fpreamble_005ft_002c-ctp_005fmagic">ctf_preamble_t, ctp_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fpreamble_005ft_002c-ctp_005fversion">ctf_preamble_t, ctp_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fSIZE_005fTO_005fLSIZE_005fHI">CTF_SIZE_TO_LSIZE_HI</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fSIZE_005fTO_005fLSIZE_005fLO">CTF_SIZE_TO_LSIZE_LO</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fslice_005ft">ctf_slice_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fslice_005ft_002c-cts_005fbits">ctf_slice_t, cts_bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fslice_005ft_002c-cts_005foffset">ctf_slice_t, cts_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fslice_005ft_002c-cts_005ftype">ctf_slice_t, cts_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fstype_005ft">ctf_stype_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fstype_005ft_002c-ctt_005finfo">ctf_stype_t, ctt_info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fstype_005ft_002c-ctt_005fsize">ctf_stype_t, ctt_size</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fstype_005ft_002c-ctt_005ftype">ctf_stype_t, ctt_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fTYPE_005fINFO">CTF_TYPE_INFO</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-info-word">The info word</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fTYPE_005fLSIZE">CTF_TYPE_LSIZE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005ftype_005ft">ctf_type_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005ftype_005ft_002c-ctt_005finfo">ctf_type_t, ctt_info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005ftype_005ft_002c-ctt_005flsizehi">ctf_type_t, ctt_lsizehi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005ftype_005ft_002c-ctt_005flsizelo">ctf_type_t, ctt_lsizelo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005ftype_005ft_002c-ctt_005fsize">ctf_type_t, ctt_size</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fINDEX_005fTO_005fTYPE">CTF_V2_INDEX_TO_TYPE</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fINFO_005fISROOT">CTF_V2_INFO_ISROOT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-info-word">The info word</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fINFO_005fKIND">CTF_V2_INFO_KIND</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-info-word">The info word</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fINFO_005fVLEN">CTF_V2_INFO_VLEN</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-info-word">The info word</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fTYPE_005fISCHILD">CTF_V2_TYPE_ISCHILD</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fTYPE_005fISPARENT">CTF_V2_TYPE_ISPARENT</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fV2_005fTYPE_005fTO_005fINDEX">CTF_V2_TYPE_TO_INDEX</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fvarent_005ft">ctf_varent_t</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fvarent_005ft_002c-ctv_005fname">ctf_varent_t, ctv_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctf_005fvarent_005ft_002c-ctv_005ftype">ctf_varent_t, ctv_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-CTF_005fVERSION_005f3">CTF_VERSION_3</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fcuname">cth_cuname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fflags">cth_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005ffuncidxoff">cth_funcidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005ffuncoff">cth_funcoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005flbloff">cth_lbloff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fmagic">cth_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fobjtidxoff">cth_objtidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fobjtoff">cth_objtoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fparlabel">cth_parlabel</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fparname">cth_parname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fpreamble">cth_preamble</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fstrlen">cth_strlen</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fstroff">cth_stroff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005ftypeoff">cth_typeoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fvaroff">cth_varoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cth_005fversion">cth_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctlm_005fname">ctlm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctlm_005foffsethi">ctlm_offsethi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctlm_005foffsetlo">ctlm_offsetlo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctl_005flabel">ctl_label</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctl_005ftype">ctl_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctm_005fname">ctm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctm_005foffset">ctm_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctm_005ftype">ctm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctm_005ftype-1">ctm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctp_005fflags">ctp_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctp_005fflags-1">ctp_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctp_005fmagic">ctp_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctp_005fversion">ctp_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cts_005fbits">cts_bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cts_005foffset">cts_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cts_005ftype">cts_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005finfo">ctt_info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005flsizehi">ctt_lsizehi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005flsizelo">ctt_lsizelo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005fname">ctt_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005fsize">ctt_size</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctt_005ftype">ctt_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctv_005fname">ctv_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-ctv_005ftype">ctv_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-cvr_002dquals">cvr-quals</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-D">D</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Data-models">Data models</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Data-models">Data models</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Data-object-index-section">Data object index section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Data-object-section">Data object section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-dictionary_002c-CTF-dictionary">dictionary, CTF dictionary</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-dictionaries">CTF dictionaries</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-double">double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-E">E</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-endianness">endianness</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-enum">enum</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-enum-1">enum</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Forward-declarations">Forward declarations</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Enums">Enums</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-F">F</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-float">float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Floating_002dpoint-types">Floating-point types</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Forwards">Forwards</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Forward-declarations">Forward declarations</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Function-info-index-section">Function info index section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Function-info-section">Function info section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Function-pointers">Function pointers</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Function-pointers">Function pointers</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-I">I</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-int">int</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Integer-types">Integer types</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-L">L</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Label-section">Label section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-libctf_002c-effect-of-slices">libctf, effect of slices</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Limits">Limits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Limits-of-CTF">Limits of CTF</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-long">long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-long-long">long long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-N">N</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-name_005foffset">name_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-O">O</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Overview">Overview</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Overview">Overview</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-P">P</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Parent-range">Parent range</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Pointers">Pointers</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Pointers_002c-to-functions">Pointers, to functions</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Function-pointers">Function pointers</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-R">R</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-restrict">restrict</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-S">S</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-data-object">Sections, data object</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-data-object-index">Sections, data object index</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-function-info">Sections, function info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-function-info-index">Sections, function info index</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-header">Sections, header</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-label">Sections, label</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-string">Sections, string</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-string-section">The string section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-symtypetab">Sections, symtypetab</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-type">Sections, type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Sections_002c-variable">Sections, variable</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-short">short</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-char">signed char</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-double">signed double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-float">signed float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-int">signed int</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-long">signed long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-long-long">signed long long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-signed-short">signed short</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Slices">Slices</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Slices_002c-effect-on-ctf_005ftype_005fkind">Slices, effect on ctf_type_kind</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Slices_002c-effect-on-ctf_005ftype_005freference">Slices, effect on ctf_type_reference</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-String-section">String section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-string-section">The string section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct">struct</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-1">struct</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Forward-declarations">Forward declarations</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive">struct ctf_archive</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_002c-ctfa_005fctfs">struct ctf_archive, ctfa_ctfs</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_002c-ctfa_005fmagic">struct ctf_archive, ctfa_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_002c-ctfa_005fmodel">struct ctf_archive, ctfa_model</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_002c-ctfa_005fnames">struct ctf_archive, ctfa_names</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_002c-ctfa_005fnfiles">struct ctf_archive, ctfa_nfiles</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_005fmodent">struct ctf_archive_modent</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_005fmodent_002c-ctf_005foffset">struct ctf_archive_modent, ctf_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farchive_005fmodent_002c-name_005foffset">struct ctf_archive_modent, name_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-archive">CTF archive</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farray">struct ctf_array</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farray_002c-cta_005fcontents">struct ctf_array, cta_contents</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farray_002c-cta_005findex">struct ctf_array, cta_index</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005farray_002c-cta_005fnelems">struct ctf_array, cta_nelems</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Arrays">Arrays</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fenum">struct ctf_enum</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fenum_002c-cte_005fname">struct ctf_enum, cte_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fenum_002c-cte_005fvalue">struct ctf_enum, cte_value</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Enums">Enums</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader">struct ctf_header</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fcuname">struct ctf_header, cth_cuname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fflags">struct ctf_header, cth_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005ffuncidxoff">struct ctf_header, cth_funcidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005ffuncoff">struct ctf_header, cth_funcoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005flbloff">struct ctf_header, cth_lbloff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fmagic">struct ctf_header, cth_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fobjtidxoff">struct ctf_header, cth_objtidxoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fobjtoff">struct ctf_header, cth_objtoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fparlabel">struct ctf_header, cth_parlabel</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fparname">struct ctf_header, cth_parname</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fpreamble">struct ctf_header, cth_preamble</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fstrlen">struct ctf_header, cth_strlen</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fstroff">struct ctf_header, cth_stroff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005ftypeoff">struct ctf_header, cth_typeoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fvaroff">struct ctf_header, cth_varoff</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-header">CTF header</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fheader_002c-cth_005fversion">struct ctf_header, cth_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flblent">struct ctf_lblent</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flblent_002c-ctl_005flabel">struct ctf_lblent, ctl_label</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flblent_002c-ctl_005ftype">struct ctf_lblent, ctl_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-label-section">The label section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flmember_005fv2">struct ctf_lmember_v2</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flmember_005fv2_002c-ctlm_005fname">struct ctf_lmember_v2, ctlm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flmember_005fv2_002c-ctlm_005foffsethi">struct ctf_lmember_v2, ctlm_offsethi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flmember_005fv2_002c-ctlm_005foffsetlo">struct ctf_lmember_v2, ctlm_offsetlo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005flmember_005fv2_002c-ctlm_005ftype">struct ctf_lmember_v2, ctlm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fmember_005fv2">struct ctf_member_v2</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fmember_005fv2_002c-ctm_005fname">struct ctf_member_v2, ctm_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fmember_005fv2_002c-ctm_005foffset">struct ctf_member_v2, ctm_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fmember_005fv2_002c-ctm_005ftype">struct ctf_member_v2, ctm_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fpreamble">struct ctf_preamble</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fpreamble_002c-ctp_005fflags">struct ctf_preamble, ctp_flags</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fpreamble_002c-ctp_005fmagic">struct ctf_preamble, ctp_magic</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fpreamble_002c-ctp_005fversion">struct ctf_preamble, ctp_version</a>:</td><td>&nbsp;</td><td valign="top"><a href="#CTF-Preamble">CTF Preamble</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fslice">struct ctf_slice</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fslice_002c-cts_005fbits">struct ctf_slice, cts_bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fslice_002c-cts_005foffset">struct ctf_slice, cts_offset</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fslice_002c-cts_005ftype">struct ctf_slice, cts_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fstype">struct ctf_stype</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fstype_002c-ctt_005finfo">struct ctf_stype, ctt_info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fstype_002c-ctt_005fsize">struct ctf_stype, ctt_size</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fstype_002c-ctt_005ftype">struct ctf_stype, ctt_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005ftype">struct ctf_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005ftype_002c-ctt_005finfo">struct ctf_type, ctt_info</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005ftype_002c-ctt_005flsizehi">struct ctf_type, ctt_lsizehi</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005ftype_002c-ctt_005flsizelo">struct ctf_type, ctt_lsizelo</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005ftype_002c-ctt_005fsize">struct ctf_type, ctt_size</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fvarent">struct ctf_varent</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fvarent_002c-ctv_005fname">struct ctf_varent, ctv_name</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-struct-ctf_005fvarent_002c-ctv_005ftype">struct ctf_varent, ctv_type</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Structures">Structures</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Symtypetab-section">Symtypetab section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-symtypetab-sections">The symtypetab sections</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-T">T</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type-IDs">Type IDs</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type-IDs_002c-ranges">Type IDs, ranges</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type-indexes">Type indexes</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type-kinds">Type kinds</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-kinds">Type kinds</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type-section">Type section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-type-section">The type section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type_002c-IDs-of">Type, IDs of</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type_002c-indexes-of">Type, indexes of</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-indexes-and-type-IDs">Type indexes and type IDs</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Type_002c-kinds-of">Type, kinds of</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Type-kinds">Type kinds</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-typedef">typedef</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Typedefs">Typedefs</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Types_002c-floating_002dpoint">Types, floating-point</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Types_002c-integer">Types, integer</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Types_002c-slices-of-integral">Types, slices of integral</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Slices">Slices</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-U">U</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-union">union</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-union-1">union</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Forward-declarations">Forward declarations</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unions">Unions</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Structs-and-unions">Structs and unions</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-char">unsigned char</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-double">unsigned double</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-float">unsigned float</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-int">unsigned int</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-long">unsigned long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-long-long">unsigned long long</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-unsigned-short">unsigned short</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Integer-types">Integer types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits-1">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits-2">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits-3">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits-4">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Unused-bits-5">Unused bits</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Floating_002dpoint-types">Floating-point types</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+<tr><th id="Index_cp_letter-V">V</th><td></td><td></td></tr>
+<tr><td></td><td valign="top"><a href="#index-Variable-section">Variable section</a>:</td><td>&nbsp;</td><td valign="top"><a href="#The-variable-section">The variable section</a></td></tr>
+<tr><td></td><td valign="top"><a href="#index-volatile">volatile</a>:</td><td>&nbsp;</td><td valign="top"><a href="#Pointers-typedefs-and-cvr_002dquals">Pointers typedefs and cvr-quals</a></td></tr>
+<tr><td colspan="4"> <hr></td></tr>
+</table>
+<table><tr><th valign="top">Jump to: &nbsp; </th><td><a class="summary-letter" href="#Index_cp_letter-A"><b>A</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-B"><b>B</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-C"><b>C</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-D"><b>D</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-E"><b>E</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-F"><b>F</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-I"><b>I</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-L"><b>L</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-N"><b>N</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-O"><b>O</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-P"><b>P</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-R"><b>R</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-S"><b>S</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-T"><b>T</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-U"><b>U</b></a>
+ &nbsp; 
+<a class="summary-letter" href="#Index_cp_letter-V"><b>V</b></a>
+ &nbsp; 
+</td></tr></table>
+
+<hr>
+
+
+
+</body>
+</html>

@@ -1,4 +1,4 @@
-OPTIM = -Os
+OPTIM = -O3
 
 $(info [GPU_DEBUG] MTK_PLATFORM = $(MTK_PLATFORM))
 
