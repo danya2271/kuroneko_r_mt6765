@@ -1008,11 +1008,6 @@ static inline void aee_rr_rec_cpu_post_dead_ktime(u64 val)
 {
 }
 
-static inline void aee_rr_rec_hang_detect_timeout_count(
-		unsigned int timeout)
-{
-}
-
 static inline void aee_sram_fiq_log(const char *msg)
 {
 }
