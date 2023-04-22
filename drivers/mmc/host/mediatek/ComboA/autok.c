@@ -2092,7 +2092,7 @@ static int autok_adjust_param(struct msdc_host *host,
 	switch (param) {
 	case READ_DATA_SMPL_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) READ_DATA_SMPL_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2103,7 +2103,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case WRITE_DATA_SMPL_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) WRITE_DATA_SMPL_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2114,7 +2114,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case DATA_DLYLINE_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DATA_DLYLINE_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2133,7 +2133,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case MSDC_DAT_TUNE_SEL:	/* 0-Dat tune 1-CLk tune ; */
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DAT_TUNE_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2152,7 +2152,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case MSDC_WCRC_ASYNC_FIFO_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) WCRC_ASYNC_FIFO_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2162,7 +2162,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case MSDC_RESP_ASYNC_FIFO_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) RESP_ASYNC_FIFO_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2172,7 +2172,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2182,7 +2182,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_FIFO_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_FIFO_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2192,7 +2192,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case RDATA_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) RDATA_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2202,7 +2202,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case RD_FIFO_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) RD_FIFO_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2212,7 +2212,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case WD_FIFO_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) WD_FIFO_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2222,7 +2222,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_RD_D_DLY1:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_RD_DLY out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2241,7 +2241,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_RD_D_DLY1_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_RD_DLY_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2260,7 +2260,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_RD_D_DLY2:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_RD_DLY2 out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2279,7 +2279,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_RD_D_DLY2_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_RD_DLY2_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2298,7 +2298,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case DAT_RD_D_DLY1:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DAT_RD_DLY out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2317,7 +2317,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case DAT_RD_D_DLY1_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DAT_RD_DLY_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2336,7 +2336,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case DAT_RD_D_DLY2:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DAT_RD_DLY2 out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2355,7 +2355,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case DAT_RD_D_DLY2_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) DAT_RD_DLY2_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2374,7 +2374,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case INT_DAT_LATCH_CK:
 		if ((rw == AUTOK_WRITE) && (*value > 7)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) INT_DAT_LATCH_CK out of range[0~7]\n",
 			     __func__, *value);
 			return -1;
@@ -2384,7 +2384,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CKGEN_MSDC_DLY_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CKGEN_MSDC_DLY_SEL out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2394,7 +2394,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case CMD_RSP_TA_CNTR:
 		if ((rw == AUTOK_WRITE) && (*value > 7)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) CMD_RSP_TA_CNTR out of range[0~7]\n",
 			     __func__, *value);
 			return -1;
@@ -2404,7 +2404,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case WRDAT_CRCS_TA_CNTR:
 		if ((rw == AUTOK_WRITE) && (*value > 7)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) WRDAT_CRCS_TA_CNTR out of range[0~7]\n",
 			     __func__, *value);
 			return -1;
@@ -2414,7 +2414,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case SDC_RX_ENHANCE:
 		if ((rw == AUTOK_WRITE) && (*value > 7)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) SDC_RX_ENHANCE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2441,7 +2441,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case PAD_CLK_TXDLY_AUTOK:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) PAD_CLK_TXDLY out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2460,7 +2460,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_WDATA_MUX_EN:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_WDATA_MUX_EN out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2470,7 +2470,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_CMD_MUX_EN:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_CMD_MUX_EN out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2480,7 +2480,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_CMD_RESP_LATCH:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_CMD_LATCH out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2490,7 +2490,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_WDATA_EDGE:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_WDATA_EDGE out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2500,7 +2500,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DS_Z_DLY1:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DS_Z_DLY1 out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2519,7 +2519,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DS_Z_DLY1_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DS1_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2538,7 +2538,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DS_Z_DLY2:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DS_Z_DLY2 out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2557,7 +2557,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DS_Z_DLY2_SEL:
 		if ((rw == AUTOK_WRITE) && (*value > 1)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DS2_SEL out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2576,7 +2576,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DS_ZDLY_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DS_Z_DLY3 out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2595,7 +2595,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_CMD_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_CMD_TX_DLY out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2614,7 +2614,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA0_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA0_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2633,7 +2633,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA1_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA1_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2652,7 +2652,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA2_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA2_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2671,7 +2671,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA3_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA3_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2690,7 +2690,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA4_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA4_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2710,7 +2710,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA5_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA5_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2730,7 +2730,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA6_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA6_TX out of range[0~31]\n",
 			     __func__, *value);
 			return -1;
@@ -2750,7 +2750,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		break;
 	case EMMC50_DATA7_TX_DLY:
 		if ((rw == AUTOK_WRITE) && (*value > 31)) {
-			pr_debug
+			pr_no_debug
 			    ("[%s](%d) EMMC50_DATA7_TX out of range[0~1]\n",
 			     __func__, *value);
 			return -1;
@@ -2769,7 +2769,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		}
 		break;
 	default:
-		pr_debug
+		pr_no_debug
 		    ("[%s] Value of [AUTOK_PARAM] is wrong\n", __func__);
 		return -1;
 	}
@@ -2782,7 +2782,7 @@ static int autok_adjust_param(struct msdc_host *host,
 		if (param == CKGEN_MSDC_DLY_SEL)
 			mdelay(1);
 	} else {
-		pr_debug("[%s] Value of [int rw] is wrong\n", __func__);
+		pr_no_debug("[%s] Value of [int rw] is wrong\n", __func__);
 		return -1;
 	}
 
