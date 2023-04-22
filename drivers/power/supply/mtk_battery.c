@@ -829,13 +829,13 @@ void fg_custom_init_from_header(struct mtk_battery *gm)
 
 	fgauge_get_profile_id();
 
-	fg_cust_data->versionID1 = FG_DAEMON_CMD_FROM_USER_NUMBER;
+	fg_cust_data->versionID1 = 110;
 	fg_cust_data->versionID2 = sizeof(gm->fg_cust_data);
 	fg_cust_data->versionID3 = FG_KERNEL_CMD_FROM_USER_NUMBER;
 
 	if (gm->gauge != NULL) {
 		gauge_get_property(GAUGE_PROP_HW_VERSION, &version);
-		fg_cust_data->hardwareVersion = version;
+		fg_cust_data->hardwareVersion = 110;
 		fg_cust_data->pl_charger_status =
 			gm->gauge->hw_status.pl_charger_status;
 	}
