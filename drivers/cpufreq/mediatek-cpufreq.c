@@ -25,10 +25,10 @@
 #include <linux/slab.h>
 #include <linux/thermal.h>
 
-#define MIN_VOLT_SHIFT		(100000)
-#define MAX_VOLT_SHIFT		(200000)
-#define MAX_VOLT_LIMIT		(1150000)
-#define VOLT_TOL		(10000)
+#define MIN_VOLT_SHIFT		(10000)
+#define MAX_VOLT_SHIFT		(20000)
+#define MAX_VOLT_LIMIT		(115000)
+#define VOLT_TOL		(1000)
 
 /*
  * The struct mtk_cpu_dvfs_info holds necessary information for doing CPU DVFS
