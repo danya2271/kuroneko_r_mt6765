@@ -353,7 +353,7 @@ int tc_iopol32_nonzero(u32 mask, void __iomem *addr)
 		msleep(20);
 	}
 	if (polnum == 50) {
-		pr_err(DRV_NAME " iopol32_nonzero timeout\n");
+		pr_no_err(DRV_NAME " iopol32_nonzero timeout\n");
 		return -ETIME;
 	}
 	return 0;

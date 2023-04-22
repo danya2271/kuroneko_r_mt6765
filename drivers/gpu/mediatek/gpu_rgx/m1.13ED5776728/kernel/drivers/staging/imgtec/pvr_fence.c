@@ -81,7 +81,7 @@ static u32 pvr_fence_cache_refcount;
 			pfnDumpDebugPrintf(pvDumpDebugFile, fmt,         \
 					   ## __VA_ARGS__);              \
 		else                                                     \
-			pr_err(fmt "\n", ## __VA_ARGS__);                \
+			pr_no_err(fmt "\n", ## __VA_ARGS__);                \
 	} while (0)
 
 static inline void
@@ -390,7 +390,7 @@ pvr_fence_context_create(void *dev_cookie,
 #endif
 				fctx);
 	if (srv_err != PVRSRV_OK) {
-		pr_err("%s: failed to register command complete callback (%s)\n",
+		pr_no_err("%s: failed to register command complete callback (%s)\n",
 		       __func__, PVRSRVGetErrorString(srv_err));
 		goto err_free_fctx;
 	}
@@ -400,7 +400,7 @@ pvr_fence_context_create(void *dev_cookie,
 	if (pvr_fence_cache_refcount == 0) {
 		pvr_fence_cache = KMEM_CACHE(pvr_fence, 0);
 		if (!pvr_fence_cache) {
-			pr_err("%s: failed to allocate pvr_fence cache\n",
+			pr_no_err("%s: failed to allocate pvr_fence cache\n",
 					__func__);
 			mutex_unlock(&pvr_fence_cache_mutex);
 			goto err_unregister_cmd_complete_notify;
@@ -415,7 +415,7 @@ pvr_fence_context_create(void *dev_cookie,
 				DEBUG_REQUEST_LINUXFENCE,
 				fctx);
 	if (srv_err != PVRSRV_OK) {
-		pr_err("%s: failed to register debug request callback (%s)\n",
+		pr_no_err("%s: failed to register debug request callback (%s)\n",
 		       __func__, PVRSRVGetErrorString(srv_err));
 		goto err_free_pvr_fence_cache;
 	}
@@ -898,7 +898,7 @@ pvr_fence_create_from_fence(struct pvr_fence_context *fctx,
 				     pvr_fence_foreign_signal_sync);
 	if (err) {
 		if (err != -ENOENT) {
-			pr_err("%s: failed to add fence callback (err=%d)",
+			pr_no_err("%s: failed to add fence callback (err=%d)",
 			       __func__, err);
 			goto err_put_ref;
 		}

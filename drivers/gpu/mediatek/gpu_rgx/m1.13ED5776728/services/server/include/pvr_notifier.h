@@ -144,23 +144,10 @@ Debug Notifier Interface
 #include "mtk_pp.h"
 
 #if defined(MTK_DEBUG_PROC_PRINT)
-#define _MTKPP_GPULOG_FW(...) MTKPP_LOG(g_use_id, __VA_ARGS__)
-#define PVR_DUMPDEBUG_LOG(...)\
-	do {\
-		if (pfnDumpDebugPrintf)\
-			pfnDumpDebugPrintf(pvDumpDebugFile, __VA_ARGS__);\
-		else\
-			MTKPP_LOG(g_use_id, __VA_ARGS__);\
-	} while (0)
+#define _MTKPP_GPULOG_FW(...)
+#define PVR_DUMPDEBUG_LOG(...)
 #else
-#define PVR_DUMPDEBUG_LOG(...)                                \
-	do                                                        \
-	{                                                         \
-		if (pfnDumpDebugPrintf)                               \
-			pfnDumpDebugPrintf(pvDumpDebugFile, __VA_ARGS__); \
-		else                                                  \
-			PVR_LOG((__VA_ARGS__));                           \
-	} while (0)
+#define PVR_DUMPDEBUG_LOG(...)
 #endif
 
 struct _PVRSRV_DEVICE_NODE_;

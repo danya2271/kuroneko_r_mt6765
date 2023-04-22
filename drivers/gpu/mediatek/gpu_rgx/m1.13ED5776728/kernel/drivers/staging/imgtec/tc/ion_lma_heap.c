@@ -213,7 +213,7 @@ static int ion_lma_heap_map_user(struct ion_heap *mapper,
 		container_of(mapper, struct ion_lma_heap, heap);
 
 	if (!lma_heap->allow_cpu_map) {
-		pr_err("Trying to map_user fake secure ION handle\n");
+		pr_no_err("Trying to map_user fake secure ION handle\n");
 		return -EPERM;
 	}
 
@@ -243,7 +243,7 @@ static void *ion_lma_heap_map_kernel(struct ion_heap *heap,
 	paddr += lma_heap->offset;
 
 	if (!lma_heap->allow_cpu_map) {
-		pr_err("Trying to map_kernel fake secure ION handle\n");
+		pr_no_err("Trying to map_kernel fake secure ION handle\n");
 		return ERR_PTR(-EPERM);
 	}
 
@@ -269,7 +269,7 @@ static int ion_lma_dma_buf_mmap(struct dma_buf *dmabuf,
 
 	err = ion_lma_heap_map_user(buffer->heap, buffer, vma);
 	if (err)
-		pr_err("%s: Failed to map buffer to userspace\n", __func__);
+		pr_no_err("%s: Failed to map buffer to userspace\n", __func__);
 	mutex_unlock(&buffer->lock);
 
 	return err;
@@ -296,7 +296,7 @@ static int ion_lma_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
 	vaddr = ion_lma_heap_map_kernel(buffer->heap, buffer);
 	if (IS_ERR(vaddr)) {
 		err = PTR_ERR(vaddr);
-		pr_err("%s: Failed to map buffer to kernel space\n", __func__);
+		pr_no_err("%s: Failed to map buffer to kernel space\n", __func__);
 		goto unlock;
 	}
 

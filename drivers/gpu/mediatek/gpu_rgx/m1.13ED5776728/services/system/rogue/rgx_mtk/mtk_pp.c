@@ -427,7 +427,6 @@ static void MTKPP_WORKR_Handle(struct work_struct *_psWork)
 
 #endif
 
-int g_use_id;
 void MTKPP_Init(void)
 {
 	int i;
@@ -476,7 +475,6 @@ void MTKPP_Init(void)
 	INIT_WORK(&g_MTKPP_worker.sWork, MTKPP_WORKR_Handle);
 #endif
 
-	g_use_id = MTKPP_ID_FW;
 	g_init_done = 1;
 
 err_out:
@@ -507,7 +505,7 @@ void MTKPP_LOGTIME(enum MTKPP_ID id, const char *str)
 	if (g_init_done)
 		MTKPP_PrintQueueBuffer2(g_MTKPPdata[id], "%s", str);
 	else
-		pr_err("[PVR_K ] [not init] %s\n", str);
+		pr_no_err("[PVR_K ] [not init] %s\n", str);
 }
 
 void MTKPP_TriggerAEE(int bug_on)

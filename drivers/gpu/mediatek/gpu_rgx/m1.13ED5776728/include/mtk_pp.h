@@ -23,8 +23,6 @@ enum MTKPP_ID {
 	MTKPP_ID_SIZE
 };
 
-extern int g_use_id;
-
 enum MTKPP_BUFFERTYPE {
 	MTKPP_QUEUEBUFFER,
 	MTKPP_RINGBUFFER

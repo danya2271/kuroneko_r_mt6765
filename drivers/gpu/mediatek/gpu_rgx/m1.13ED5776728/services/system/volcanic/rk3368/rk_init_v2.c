@@ -170,7 +170,7 @@ void rkSetFrequency(IMG_UINT32 ui32Frequency)
 		return;
 	}
 	if (!g_platform->gpu_clk_node && !g_platform->clk_gpu) {
-		pr_err("%s:clk_gpu & gpu_clk_node is null\n", __func__);
+		pr_no_err("%s:clk_gpu & gpu_clk_node is null\n", __func__);
 		return;
 	}
 
