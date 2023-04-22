@@ -25,9 +25,9 @@
 #include "hynix_hi1337_i_Sensor.h"
 
 #define PFX "hi1337_camera_sensor"
-/*#define LOG_INF(format, args...)    \
-	no_printk(PFX "[%s] " format, __func__, ##args) */
-#define LOG_INF(format, args...)
+#define LOG_INF(format, args...)    \
+	pr_devel(PFX "[%s] " format, __func__, ##args)
+
 //PDAF
 #define ENABLE_PDAF 1
 #define e2prom 0
@@ -36,6 +36,7 @@
 
 extern bool read_hi1337_eeprom( kal_uint16 addr, BYTE *data, kal_uint32 size); 
 extern bool read_eeprom( kal_uint16 addr, BYTE * data, kal_uint32 size);
+extern unsigned char fusion_id_main[48];
 #define hi1337_vendor_id  0x02 //0x2 for truly
  
 
@@ -411,7 +412,7 @@ static void set_shutter_frame_length(
 	spin_lock_irqsave(&imgsensor_drv_lock, flags);
 	imgsensor.shutter = shutter;
 	spin_unlock_irqrestore(&imgsensor_drv_lock, flags);
-//	pr_no_err("hi1337 %s %d\n", __func__, __LINE__);
+//	pr_err("hi1337 %s %d\n", __func__, __LINE__);
 
 	spin_lock(&imgsensor_drv_lock);
 	if (frame_length > 1)
@@ -2564,6 +2565,134 @@ static void normal_video_setting(void)
 }
 
 #if MULTI_WRITE
+static kal_uint16 addr_data_pair_hs_video_hi1337[] = {
+
+/*
+DISP_WIDTH = 1280
+DISP_HEIGHT = 720
+DISP_NOTE = "HD"
+MIPI_SPEED = 480.00
+MIPI_LANE = 4
+DISP_DATAORDER = GR
+*/
+//Sensor Information////////////////////////////
+//Sensor			: Hi-1337
+//Date				: 2020-03-30
+//Customer			: Longcheer M505
+//Image size		: 1280x720
+//MCLK				: 24MHz
+//MIPI speed(Mbps)	: 480Mbps x 4Lane
+//Pixel order		: GR
+//Frame rate		: 120.03fps
+//PDAF				: 3 / PD-DPC on, Dyn-DPC on
+////////////////////////////////////////////////
+0x0B00, 0x0000,
+0x0204, 0x0000,
+0x0206, 0x02D0,
+0x020A, 0x033D,
+0x020E, 0x0341,
+0x0214, 0x0200,
+0x0216, 0x0200,
+0x0218, 0x0200,
+0x021A, 0x0200,
+0x0224, 0x020A,
+0x022A, 0x0017,
+0x022C, 0x0E3D,
+0x022E, 0x0A83,
+0x0234, 0x1111,
+0x0236, 0x3333,
+0x0238, 0x3333,
+0x023A, 0x1133,
+0x0248, 0x0100,
+0x0250, 0x0000,
+0x0252, 0x0006,
+0x0254, 0x0000,
+0x0256, 0x0000,
+0x0258, 0x0000,
+0x025A, 0x0000,
+0x025C, 0x0000,
+0x025E, 0x0202,
+0x0440, 0x0032,
+0x0F00, 0x0800,
+0x0F04, 0x0040,
+0x0B02, 0x0100,
+0x0B04, 0x00FC,
+0x0B12, 0x0500,
+0x0B14, 0x02D0,
+0x0B20, 0x0300,
+0x1100, 0x1100,
+0x1108, 0x0002,
+0x1118, 0x02A2,
+0x0A10, 0xB040,
+0x0C14, 0x00C0,
+0x0C18, 0x0F00,
+0x0C1A, 0x02D0,
+0x0730, 0x0001,
+0x0732, 0x0000,
+0x0734, 0x0300,
+0x0736, 0x0060,
+0x0738, 0x0003,
+0x073C, 0x0700,
+0x0740, 0x0000,
+0x0742, 0x0000,
+0x0744, 0x0300,
+0x0746, 0x00B4,
+0x0748, 0x0002,
+0x074A, 0x0900,
+0x074C, 0x0200,
+0x074E, 0x0100,
+0x0750, 0x0000,
+0x1200, 0x0926,
+0x1202, 0x0E00,
+0x120E, 0x6027,
+0x1210, 0x8027,
+0x1000, 0x0300,
+0x1002, 0xC311,
+0x1004, 0x2BB0,
+0x1010, 0x0456,
+0x1012, 0x0097,
+0x1014, 0x0020,
+0x1016, 0x0020,
+0x101A, 0x0020,
+0x1020, 0xC104,
+0x1022, 0x0512,
+0x1024, 0x0305,
+0x1026, 0x0808,
+0x1028, 0x0D06,
+0x102A, 0x0705,
+0x102C, 0x0D00,
+0x1038, 0x0000,
+0x103E, 0x0201,
+0x1042, 0x0008,
+0x1044, 0x0120,
+0x1046, 0x01B0,
+0x1048, 0x0090,
+0x1066, 0x046A,
+0x1600, 0x0000,
+0x1608, 0x0020,
+0x160A, 0x1200,
+0x160C, 0x001A,
+0x160E, 0x0D80,
+
+
+
+};
+#endif
+
+static void hs_video_setting(void)
+{
+
+#if MULTI_WRITE
+	hi1337_table_write_cmos_sensor(
+		addr_data_pair_hs_video_hi1337,
+		sizeof(addr_data_pair_hs_video_hi1337) /
+		sizeof(kal_uint16));
+#else
+
+#endif
+}
+
+#if MULTI_WRITE
 static kal_uint16 addr_data_pair_slim_video_hi1337[] = {
 
 /*
@@ -2826,12 +2955,17 @@ static kal_uint16 read_cmos_sensor_hi1337(kal_uint32 addr)
 
 static void hi1337_fusion_id_read(void)
 {
+	int i;
+	for (i=0; i<9; i++) {
+		fusion_id_main[i] = read_cmos_sensor_hi1337(0x10+i);
+		pr_devel("%s %d fusion_id_front[%d]=0x%2x\n",__func__, __LINE__, i, fusion_id_main[i]);
+	}
 }
 static int hi1337_vendor_id_read(int addr)
 {
 	int  flag = 0;
 	flag = read_cmos_sensor_hi1337(0x1);
-    no_printk("hynix_hi1337_I  read vendor id , form 0x01 is: 0x%x\n", flag);
+    pr_info("hynix_hi1337_I  read vendor id , form 0x01 is: 0x%x\n", flag);
 	return flag;
 }
 
@@ -2843,7 +2977,7 @@ static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
     
 	flag = hi1337_vendor_id_read(0x01);
 	if(flag != hi1337_vendor_id){
-        no_printk("hynix_hi1337_I match vendor id fail, reead vendor id is: 0x%x,expect vendor id is 0x%x \n", flag,hi1337_vendor_id);
+        pr_info("hynix_hi1337_I match vendor id fail, reead vendor id is: 0x%x,expect vendor id is 0x%x \n", flag,hi1337_vendor_id);
 		return ERROR_SENSOR_CONNECT_FAIL;
 	}else{
         hi1337_fusion_id_read();
@@ -2968,7 +3102,7 @@ static kal_uint32 close(void)
 static kal_uint32 preview(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] preview mode start\n");
+    pr_info("[hi1337] preview mode start\n");
     spin_lock(&imgsensor_drv_lock);
     imgsensor.sensor_mode = IMGSENSOR_MODE_PREVIEW;
     imgsensor.pclk = imgsensor_info.pre.pclk;
@@ -3000,7 +3134,7 @@ static kal_uint32 preview(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 static kal_uint32 capture(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] capture mode start\n");
+    pr_info("[hi1337] capture mode start\n");
     spin_lock(&imgsensor_drv_lock);
     imgsensor.sensor_mode = IMGSENSOR_MODE_CAPTURE;
 
@@ -3029,7 +3163,7 @@ static kal_uint32 capture(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 static kal_uint32 normal_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			  MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] normal video mode start\n");
+    pr_info("[hi1337] normal video mode start\n");
 	spin_lock(&imgsensor_drv_lock);
 	imgsensor.sensor_mode = IMGSENSOR_MODE_VIDEO;
 	imgsensor.pclk = imgsensor_info.normal_video.pclk;
@@ -3046,7 +3180,7 @@ static kal_uint32 normal_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 static kal_uint32 hs_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] hs video mode start\n");
+    pr_info("[hi1337] hs video mode start\n");
     spin_lock(&imgsensor_drv_lock);
     imgsensor.sensor_mode = IMGSENSOR_MODE_HIGH_SPEED_VIDEO;
     imgsensor.pclk = imgsensor_info.hs_video.pclk;
@@ -3058,13 +3192,14 @@ static kal_uint32 hs_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
     imgsensor.dummy_pixel = 0;
     imgsensor.autoflicker_en = KAL_FALSE;
     spin_unlock(&imgsensor_drv_lock);
+    hs_video_setting();
     return ERROR_NONE;
 }    /*    hs_video   */
 
 static kal_uint32 slim_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 		      MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] slim video mode start\n");
+    pr_info("[hi1337] slim video mode start\n");
     spin_lock(&imgsensor_drv_lock);
     imgsensor.sensor_mode = IMGSENSOR_MODE_SLIM_VIDEO;
     imgsensor.pclk = imgsensor_info.slim_video.pclk;
@@ -3083,7 +3218,7 @@ static kal_uint32 slim_video(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 static kal_uint32 custom1(MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-    no_printk("[hi1337] custom1 mode start\n");
+    pr_info("[hi1337] custom1 mode start\n");
     spin_lock(&imgsensor_drv_lock);
     imgsensor.sensor_mode = IMGSENSOR_MODE_CUSTOM1;
     imgsensor.pclk = imgsensor_info.custom1.pclk;
@@ -3529,7 +3664,7 @@ static kal_uint32 set_test_pattern_mode(kal_bool enable)
 
 static kal_uint32 streaming_control(kal_bool enable)
 {
-	no_printk("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
+	pr_debug("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
 
 	if (enable)
 		write_cmos_sensor(0x0b00, 0x0100); // stream on

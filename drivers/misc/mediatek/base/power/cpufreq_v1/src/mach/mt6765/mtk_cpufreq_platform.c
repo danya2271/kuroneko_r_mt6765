@@ -84,9 +84,9 @@ struct mt_cpu_dvfs cpu_dvfs[NR_MT_CPU_DVFS] = {
 static int set_cur_volt_proc_cpu(struct buck_ctrl_t *buck_p,
 	unsigned int volt)
 {
-	unsigned int max_volt = MAX_VPROC_VOLT + 325;
+	unsigned int max_volt = MAX_VPROC_VOLT + 625;
 
-	return regulator_set_voltage(regulator_proc1, volt * 9, max_volt * 10);
+	return regulator_set_voltage(regulator_proc1, volt * 10, max_volt * 10);
 }
 
 static unsigned int get_cur_volt_proc_cpu(struct buck_ctrl_t *buck_p)
@@ -123,10 +123,10 @@ static unsigned int mt6357_vproc_settletime(unsigned int old_volt,
 static int set_cur_volt_sram_cpu(struct buck_ctrl_t *buck_p,
 	unsigned int volt)
 {
-	unsigned int max_volt = MAX_VSRAM_VOLT + 325;
+	unsigned int max_volt = MAX_VSRAM_VOLT + 625;
 
 	return regulator_set_voltage(regulator_sram1,
-	volt * 9, max_volt * 10);
+	volt * 10, max_volt * 10);
 }
 
 static unsigned int get_cur_volt_sram_cpu(struct buck_ctrl_t *buck_p)

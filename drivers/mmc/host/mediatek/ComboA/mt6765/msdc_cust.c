@@ -433,7 +433,7 @@ void msdc_HQA_set_voltage(struct msdc_host *host)
 	if (vio18_cal_orig < 0)
 		pmic_read_interface(REG_VIO_VOCAL_SW, &vio18_cal,
 			VIO_VOCAL_SW_MASK, VIO_VOCAL_SW_SHIFT);
-	pr_no_info("[MSDC%d HQA] orig Vcore 0x%x, Vio18_cal 0x%x\n",
+	pr_info("[MSDC%d HQA] orig Vcore 0x%x, Vio18_cal 0x%x\n",
 		host->id, vcore_orig, vio18_cal_orig);
 
 #if defined(MSDC_HQA_HV) || defined(MSDC_HQA_LV)
@@ -456,7 +456,7 @@ void msdc_HQA_set_voltage(struct msdc_host *host)
 		pmic_config_interface(REG_VIO_VOCAL_SW, vio18_cal,
 			VIO_VOCAL_SW_MASK, VIO_VOCAL_SW_SHIFT);
 
-	pr_no_info("[MSDC%d HQA] adj Vcore 0x%x, Vio18_cal 0x%x\n",
+	pr_info("[MSDC%d HQA] adj Vcore 0x%x, Vio18_cal 0x%x\n",
 		host->id, vcore, vio18_cal);
 #endif
 }
@@ -1280,7 +1280,7 @@ int msdc_of_parse(struct platform_device *pdev, struct mmc_host *mmc)
 	}
 
 	if (host->base_top)
-		pr_no_debug("of_iomap for MSDC%d TOP base @ 0x%p\n",
+		pr_debug("of_iomap for MSDC%d TOP base @ 0x%p\n",
 			host->id, host->base_top);
 #endif
 
@@ -1339,13 +1339,13 @@ int msdc_dt_init(struct platform_device *pdev, struct mmc_host *mmc)
 	if (gpio_base == NULL) {
 		np = of_find_compatible_node(NULL, NULL, "mediatek,gpio");
 		gpio_base = of_iomap(np, 0);
-		pr_no_debug("of_iomap for gpio base @ 0x%p\n", gpio_base);
+		pr_debug("of_iomap for gpio base @ 0x%p\n", gpio_base);
 	}
 
 	if (msdc_io_cfg_bases[id] == NULL) {
 		np = of_find_compatible_node(NULL, NULL, ioconfig_names[id]);
 		msdc_io_cfg_bases[id] = of_iomap(np, 0);
-		pr_no_debug("of_iomap for MSDC%d IOCFG base @ 0x%p\n",
+		pr_debug("of_iomap for MSDC%d IOCFG base @ 0x%p\n",
 			id, msdc_io_cfg_bases[id]);
 	}
 
@@ -1354,7 +1354,7 @@ int msdc_dt_init(struct platform_device *pdev, struct mmc_host *mmc)
 			syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 			"topckgen");
 		if (IS_ERR(topckgen_base))
-			pr_no_info("regmap of topckgen base @ 0x%p\n",
+			pr_info("regmap of topckgen base @ 0x%p\n",
 				topckgen_base);
 	}
 
@@ -1363,7 +1363,7 @@ int msdc_dt_init(struct platform_device *pdev, struct mmc_host *mmc)
 			syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 			"infracfg");
 		if (IS_ERR(infracfg_ao_base))
-			pr_no_info("regmap of infracfg_ao base @ 0x%p\n",
+			pr_info("regmap of infracfg_ao base @ 0x%p\n",
 				infracfg_ao_base);
 	}
 

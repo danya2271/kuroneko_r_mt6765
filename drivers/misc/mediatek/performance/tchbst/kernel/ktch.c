@@ -54,6 +54,21 @@ int ktch_get_target_freq(void)
 
 void set_freq(int enable, int core, int freq)
 {
+	struct cpu_ctrl_data freq_to_set[perfmgr_clusters];
+	int i, targetclu;
+
+	targetclu = get_min_clstr_cap();
+
+	for (i = 0 ; i < perfmgr_clusters ; i++) {
+		freq_to_set[i].min = -1;
+		freq_to_set[i].max = -1;
+	}
+
+	if (enable)
+		freq_to_set[targetclu].min = freq;
+
+	update_userlimit_cpu_freq(CPU_KIR_PERFTOUCH,
+			perfmgr_clusters, freq_to_set);
 }
 
 static int ktchboost_thread(void *ptr)

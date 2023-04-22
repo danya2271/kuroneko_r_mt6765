@@ -37,7 +37,7 @@
 #define DEBUG_MMC_IOCTL
 #ifdef DEBUG_MMC_IOCTL
 #define MMC_IOCTL_DECLARE_INT32(var) int var
-#define MMC_IOCTL_PR_DBG(fmt, args...)   pr_no_debug(fmt, ##args)
+#define MMC_IOCTL_PR_DBG(fmt, args...)   pr_debug(fmt, ##args)
 #else
 #define MMC_IOCTL_DECLARE_INT32(...)
 #define MMC_IOCTL_PR_DBG(fmt, args...)
@@ -157,7 +157,7 @@ static int simple_sd_ioctl_set_bootpart(struct msdc_ioctl *msdc_ctl)
 
 	ret = mmc_get_ext_csd(mmc->card, &l_buf);
 	if (ret) {
-		pr_no_debug("mmc_get_ext_csd error, set boot partition\n");
+		pr_debug("mmc_get_ext_csd error, set boot partition\n");
 		goto end;
 	}
 
@@ -169,7 +169,7 @@ static int simple_sd_ioctl_set_bootpart(struct msdc_ioctl *msdc_ctl)
 	if ((bootpart != EMMC_BOOT1_EN)
 	 && (bootpart != EMMC_BOOT2_EN)
 	 && (bootpart != EMMC_BOOT_USER)) {
-		pr_no_debug("set boot partition error, not support %d\n",
+		pr_debug("set boot partition error, not support %d\n",
 			bootpart);
 		ret = -EFAULT;
 		goto end;
@@ -179,11 +179,11 @@ static int simple_sd_ioctl_set_bootpart(struct msdc_ioctl *msdc_ctl)
 		/* active boot partition */
 		l_buf[EXT_CSD_PART_CFG] &= ~0x38;
 		l_buf[EXT_CSD_PART_CFG] |= (bootpart << 3);
-		pr_no_debug("mmc_switch set %x\n", l_buf[EXT_CSD_PART_CFG]);
+		pr_debug("mmc_switch set %x\n", l_buf[EXT_CSD_PART_CFG]);
 		ret = mmc_switch(mmc->card, 0, EXT_CSD_PART_CFG,
 			l_buf[EXT_CSD_PART_CFG], 1000);
 		if (ret) {
-			pr_no_debug("mmc_switch error, set boot partition\n");
+			pr_debug("mmc_switch error, set boot partition\n");
 		} else {
 			mmc->card->ext_csd.part_config =
 				l_buf[EXT_CSD_PART_CFG];
@@ -272,10 +272,10 @@ int simple_sd_ioctl_rw(struct msdc_ioctl *msdc_ctl)
 #ifdef CONFIG_MTK_EMMC_CQ_SUPPORT
 	if (mmc->card->ext_csd.cmdq_en) {
 		/* cmdq enabled, turn it off first */
-		pr_no_debug("[MSDC_DBG] cmdq enabled, turn it off\n");
+		pr_debug("[MSDC_DBG] cmdq enabled, turn it off\n");
 		ret = mmc_cmdq_disable(mmc->card);
 		if (ret) {
-			pr_no_debug("[MSDC_DBG] turn off cmdq en failed\n");
+			pr_debug("[MSDC_DBG] turn off cmdq en failed\n");
 			goto rw_end;
 		} else
 			is_cmdq_en = true;
@@ -364,7 +364,7 @@ skip_sbc_prepare:
 	msdc_cmd.arg = msdc_ctl->address;
 
 	if (!mmc_card_blockaddr(mmc->card)) {
-		pr_no_debug("this device use byte address!!\n");
+		pr_debug("this device use byte address!!\n");
 		msdc_cmd.arg <<= 9;
 	}
 	msdc_cmd.flags = MMC_RSP_SPI_R1 | MMC_RSP_R1 | MMC_CMD_ADTC;
@@ -394,10 +394,10 @@ skip_sbc_prepare:
 
 #ifdef CONFIG_MTK_EMMC_CQ_SUPPORT
 	if (is_cmdq_en) {
-		pr_no_debug("[MSDC_DBG] turn on cmdq\n");
+		pr_debug("[MSDC_DBG] turn on cmdq\n");
 		ret = mmc_cmdq_enable(host_ctl->mmc->card);
 		if (ret)
-			pr_no_debug("[MSDC_DBG] turn on cmdq en failed\n");
+			pr_debug("[MSDC_DBG] turn on cmdq en failed\n");
 		else
 			is_cmdq_en = false;
 	}
@@ -426,10 +426,10 @@ rw_end:
 
 #ifdef CONFIG_MTK_EMMC_CQ_SUPPORT
 	if (is_cmdq_en) {
-		pr_no_debug("[MSDC_DBG] turn on cmdq\n");
+		pr_debug("[MSDC_DBG] turn on cmdq\n");
 		ret = mmc_cmdq_enable(mmc->card);
 		if (ret)
-			pr_no_debug("[MSDC_DBG] turn on cmdq en failed\n");
+			pr_debug("[MSDC_DBG] turn on cmdq en failed\n");
 		else
 			is_cmdq_en = false;
 	}
@@ -531,7 +531,7 @@ static int simple_sd_ioctl_get_bootpart(struct msdc_ioctl *msdc_ctl)
 
 	ret = mmc_get_ext_csd(mmc->card, &l_buf);
 	if (ret) {
-		pr_no_debug("mmc_get_ext_csd error, get boot part\n");
+		pr_debug("mmc_get_ext_csd error, get boot part\n");
 		goto end;
 	}
 	bootpart = (l_buf[EXT_CSD_PART_CFG] & 0x38) >> 3;
@@ -593,7 +593,7 @@ static int simple_sd_ioctl_get_partition_size(struct msdc_ioctl *msdc_ctl)
 		partitionsize = msdc_get_user_capacity(host_ctl);
 		break;
 	default:
-		pr_no_debug("not support partition =%d\n", msdc_ctl->partition);
+		pr_debug("not support partition =%d\n", msdc_ctl->partition);
 		partitionsize = 0;
 		break;
 	}
@@ -728,7 +728,7 @@ static int simple_mmc_erase_func(unsigned int start, unsigned int size)
 
 	msdc_switch_part(host, 0);
 
-	pr_no_debug("[%s]: start=0x%x, size=%d, arg=0x%x, can_trim=(0x%x), EXT_CSD_SEC_GB_CL_EN=0x%lx\n",
+	pr_debug("[%s]: start=0x%x, size=%d, arg=0x%x, can_trim=(0x%x), EXT_CSD_SEC_GB_CL_EN=0x%lx\n",
 		__func__, start, size, arg,
 		mmc->card->ext_csd.sec_feature_support,
 		EXT_CSD_SEC_GB_CL_EN);
@@ -826,7 +826,7 @@ static int simple_mmc_erase_partition(unsigned char *name)
 		 */
 
 		if (msdc_get_part_info(name, &part)) {
-			pr_no_debug("erase %s, start sector: 0x%x, size: 0x%x\n",
+			pr_debug("erase %s, start sector: 0x%x, size: 0x%x\n",
 				name, (u32)part.start_sect, (u32)part.nr_sects);
 			simple_mmc_erase_func(part.start_sect, part.nr_sects);
 		}
@@ -868,17 +868,17 @@ static long simple_sd_ioctl(struct file *file, unsigned int cmd,
 		switch (cmd) {
 #ifdef CONFIG_PWR_LOSS_MTK_TEST
 		case MSDC_REINIT_SDCARD:
-			pr_no_info("sd ioctl re-init!!\n");
+			pr_info("sd ioctl re-init!!\n");
 			ret = sd_ioctl_reinit((struct msdc_ioctl *)arg);
 			break;
 
 		case MSDC_CD_PIN_EN_SDCARD:
-			pr_no_info("sd ioctl cd pin\n");
+			pr_info("sd ioctl cd pin\n");
 			ret = sd_ioctl_cd_pin_en((struct msdc_ioctl *)arg);
 			break;
 
 		case MSDC_SD_POWER_OFF:
-			pr_no_info("sd ioctl power off!!!\n");
+			pr_info("sd ioctl power off!!!\n");
 			host = mtk_msdc_host[1];
 			if (host && host->mmc) {
 				mmc_claim_host(host->mmc);
@@ -888,7 +888,7 @@ static long simple_sd_ioctl(struct file *file, unsigned int cmd,
 			break;
 
 		case MSDC_SD_POWER_ON:
-			pr_no_info("sd ioctl power on!!!\n");
+			pr_info("sd ioctl power on!!!\n");
 			host = mtk_msdc_host[1];
 			/* FIX ME: kernel 3.18 does not provide
 			 * mmc_resume_host,
@@ -1215,7 +1215,7 @@ static int simple_sd_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	pr_no_debug("in misc_sd_probe function\n");
+	pr_debug("in misc_sd_probe function\n");
 
 	return ret;
 }
@@ -1248,7 +1248,7 @@ static int __init simple_sd_init(void)
 		pr_notice(DRV_NAME_MISC ": Can't register driver\n");
 		return ret;
 	}
-	pr_no_debug(DRV_NAME_MISC ": MediaTek simple SD/MMC Card Driver\n");
+	pr_debug(DRV_NAME_MISC ": MediaTek simple SD/MMC Card Driver\n");
 
 	/*msdc0 is for emmc only, just for emmc */
 	/* ret = misc_register(&simple_msdc_em_dev[host->id]); */
