@@ -167,7 +167,6 @@ static int dyn_fsync_init(void)
 {
 	int sysfs_result;
 
-	register_power_suspend(&dyn_fsync_power_suspend_handler);
 	register_reboot_notifier(&dyn_fsync_notifier);
 	atomic_notifier_chain_register(&panic_notifier_list,
 		&dyn_fsync_panic_block);
@@ -190,7 +189,6 @@ static int dyn_fsync_init(void)
 
 static void dyn_fsync_exit(void)
 {
-	unregister_power_suspend(&dyn_fsync_power_suspend_handler);
 	unregister_reboot_notifier(&dyn_fsync_notifier);
 	atomic_notifier_chain_unregister(&panic_notifier_list,
 		&dyn_fsync_panic_block);
