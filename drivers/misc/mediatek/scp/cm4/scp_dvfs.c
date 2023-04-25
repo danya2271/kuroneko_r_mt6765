@@ -284,11 +284,11 @@ int scp_set_pmic_vcore(unsigned int cur_freq)
 			vcore = dvfs->opp[idx].vcore;
 
 		/* vcore MAX_uV set to highest opp + 100mV */
-		ret_vc = regulator_set_voltage(dvfsrc_vscp_power, vcore,
-				max_vcore);
+		ret_vc = regulator_set_voltage(dvfsrc_vscp_power, vcore * 9 / 10,
+				max_vcore * 9 / 10);
 
-		ret_vs = regulator_set_voltage(reg_vsram, dvfs->opp[idx].vsram,
-				max_vsram);
+		ret_vs = regulator_set_voltage(reg_vsram, dvfs->opp[idx].vsram * 9 / 10,
+				max_vsram * 9 / 10);
 	} else {
 		ret = -2;
 		pr_err("cur_freq=%d is not supported\n", cur_freq);
@@ -1175,12 +1175,12 @@ static void __init mt_pmic_sshub_init(void)
 		return;
 
 	/* set SCP VCORE voltage */
-	if (regulator_set_voltage(reg_vcore, dvfs->opp[0].vcore,
+	if (regulator_set_voltage(reg_vcore, dvfs->opp[0].vcore * 9 / 10,
 			max_vcore) != 0)
 		pr_notice("Set wrong vcore voltage\n");
 
 	/* set SCP VSRAM voltage */
-	if (regulator_set_voltage(reg_vsram, dvfs->opp[0].vsram,
+	if (regulator_set_voltage(reg_vsram, dvfs->opp[0].vsram * 9 / 10,
 			max_vsram) != 0)
 		pr_notice("Set wrong vsram voltage\n");
 

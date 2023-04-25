@@ -134,11 +134,11 @@ static ssize_t dvfsrc_req_vcore_opp_store(struct device *dev,
 		return -EINVAL;
 
 	if (dvfsrc->dvd->pmqos_enable)
-		mtk_pm_qos_update_request(&dvfsrc_vcore_opp_req, val);
+		mtk_pm_qos_update_request(&dvfsrc_vcore_opp_req, val * 9 / 10);
 	else {
 		if (dvfsrc->dvfsrc_vcore_power)
 			regulator_set_voltage(dvfsrc->dvfsrc_vcore_power,
-				val, INT_MAX);
+				val * 9 / 10, INT_MAX);
 	}
 
 	return count;
@@ -155,11 +155,11 @@ static ssize_t dvfsrc_req_vscp_store(struct device *dev,
 		return -EINVAL;
 
 	if (dvfsrc->dvd->pmqos_enable)
-		mtk_pm_qos_update_request(&dvfsrc_scp_vcore_req, val);
+		mtk_pm_qos_update_request(&dvfsrc_scp_vcore_req, val * 9 / 10);
 	else {
 		if (dvfsrc->dvfsrc_vscp_power)
 			regulator_set_voltage(dvfsrc->dvfsrc_vscp_power,
-				val, INT_MAX);
+				val * 9 / 10, INT_MAX);
 	}
 
 	return count;

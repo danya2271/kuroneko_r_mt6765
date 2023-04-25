@@ -98,7 +98,7 @@ s32 mmdvfs_wrapper_set_freq(u32 clk_id, u32 freq)
 	low_volt = mmdvfs_wrapper->voltages[i];
 	if (mmdvfs_wrapper->clks[clk_id].reg)
 		ret = regulator_set_voltage(mmdvfs_wrapper->clks[clk_id].reg,
-			low_volt, high_volt);
+			low_volt * 9 / 10, high_volt * 9 / 10);
 
 	return ret;
 }

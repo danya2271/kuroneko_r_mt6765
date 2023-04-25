@@ -1563,8 +1563,8 @@ static int32_t nvt_ts_get_regulator(bool get)
 	} else {
         if (regulator_count_voltages(ts->pwr_vdd) > 0) {
             ret = regulator_set_voltage(ts->pwr_vdd,
-                                        1600000,
-                                        1600000);
+                                        1500000,
+                                        1500000);
             if (ret) {
                 NVT_ERR("vddio regulator set_vtg failed,ret=%d", ret);
                 goto put_regulator;

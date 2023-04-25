@@ -1424,10 +1424,10 @@ static void __mt_gpufreq_vcore_volt_switch(unsigned int volt_target)
 		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_0);
 		g_cur_vcore_opp = VCORE_OPP_0;
 	} else if (volt_target > 65000) {
-		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_1);
+		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_1 * 9 / 10);
 		g_cur_vcore_opp = VCORE_OPP_1;
 	} else if (volt_target > 0) {
-		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_3);
+		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_3 * 9 / 10);
 		g_cur_vcore_opp = VCORE_OPP_3;
 	} else /* UNREQUEST */
 		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu,
