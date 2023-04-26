@@ -16,10 +16,6 @@ enum {
 	UPD_MEM_ID,
 	QOS_MEM_ID,
 	SWPM_MEM_ID,
-#if defined(CONFIG_MTK_GMO_RAM_OPTIMIZE) || defined(CONFIG_MTK_MET_MEM_ALLOC)
-#else
-	MET_MEM_ID,
-#endif
 	SMI_MEM_ID,
 	NUMS_MEM_ID,
 };

@@ -39,13 +39,6 @@ static struct sspm_reserve_mblock mt6765_sspm_reserve_mblock[NUMS_MEM_ID] = {
 		.num = SWPM_MEM_ID,
 		.size = 0xC00,  /* 3K */
 	},
-#if defined(CONFIG_MTK_GMO_RAM_OPTIMIZE) || defined(CONFIG_MTK_MET_MEM_ALLOC)
-#else
-	{
-		.num = MET_MEM_ID,
-		.size = 0x400000, /* 4M */
-	},
-#endif
 	/* TO align 64K, total is 1M+64K. The remaining size = 0xB900. */
 };
 #endif

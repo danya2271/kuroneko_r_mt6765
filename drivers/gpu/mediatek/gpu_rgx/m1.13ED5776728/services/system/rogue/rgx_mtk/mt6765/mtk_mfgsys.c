@@ -1347,12 +1347,7 @@ void MTKMFGSystemDeInit(void)
 
 int MTKRGXDeviceInit(PVRSRV_DEVICE_CONFIG *psDevConfig)
 {
-#if !defined(CONFIG_MTK_ENABLE_GMO)
-	_mtk_ged_log = ged_log_buf_alloc(64, 64 * 32,
-			GED_LOG_BUF_TYPE_RINGBUFFER, "PowerLog", "ppL");
-#else
 	_mtk_ged_log = 0;
-#endif /* CONFIG_MTK_ENABLE_GMO */
 
 #ifdef MTK_GPU_DVFS
 	/* Only Enable buck to get cg & mtcmos */
