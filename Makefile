@@ -701,6 +701,12 @@ KBUILD_CFLAGS += $(call cc-option,-fno-reorder-blocks,) \
                  $(call cc-option,-fno-partial-inlining)
 endif
 
+# According gcc docs when using computed gotos, disabling
+# gcse could result in better runtime performing
+ifneq ($(cc-name),clang)
+KBUILD_CFLAGS   += -fno-gcse
+endif
+
 ifeq ($(cc-name),clang)
 KBUILD_CFLAGS	+= -mllvm -inline-threshold=1
 KBUILD_CFLAGS	+= -mllvm -inlinehint-threshold=1
