@@ -72,26 +72,17 @@ class AdcObj(ModuleObj):
         gen_str += '''\t\tcompatible = "mediatek,adc_channel";\n'''
 
         # sort by the key, or the sequence is dissorted
-        sorted_list = sorted_key(ModuleObj.get_data(self).keys())
-        for key in sorted_list:
+        #sorted_list = sorted(ModuleObj.get_data(self).keys())
+        for key in sorted_key(list(ModuleObj.get_data(self).keys())):
             value = ModuleObj.get_data(self)[key]
 
             if value == "TEMPERATURE":
-                gen_str += '''\t\tmediatek,%s0 = <%d>;\n''' %(value.lower(), string.atoi(key[3:]))
-            elif value != "IO_CHANNELS" and not (value.startswith("IO_CHANNELS") and len(value) == 12 and int(value[-1]) in range(10)):
-                gen_str += '''\t\tmediatek,%s = <%d>;\n''' %(value.lower(), string.atoi(key[3:]))
+                gen_str += '''\t\tmediatek,%s0 = <%d>;\n''' %(value.lower(), int(key[3:]))
+            else:
+                gen_str += '''\t\tmediatek,%s = <%d>;\n''' %(value.lower(), int(key[3:]))
 
         gen_str += '''\t\tstatus = \"okay\";\n'''
         gen_str += '''\t};\n'''
-        gen_str += '''};\n\n'''
-
-        gen_str += '''&md_auxadc {\n'''
-
-        if value == "IO_CHANNELS":
-            gen_str += '''\tio-channels = <&auxadc 0>;\n'''
-        elif value.startswith("IO_CHANNELS") and len(value) == 12 and int(value[-1] )in range(10):
-            gen_str += '''\tio-channels = <&auxadc %d>;\n''' % string.atoi(value[-1])
-
         gen_str += '''};\n'''
 
         return gen_str
