@@ -135,7 +135,7 @@ static int packet_verify(struct nanohub_packet *packet)
 		   sizeof(struct nanohub_packet_crc));
 
 	if (cmp != 0)
-		pr_debug("nanohub: gen crc: %08x, got crc: %08x\n", crc.crc,
+		pr_no_debug("nanohub: gen crc: %08x, got crc: %08x\n", crc.crc,
 			 *(u32 *)&packet->data[packet->len]);
 
 	return cmp;
@@ -160,30 +160,30 @@ static int read_ack(struct nanohub_data *data,
 				     timeout);
 
 		if (ret == 0) {
-			pr_debug("nanohub: %s: %d: empty packet\n", __func__,
+			pr_no_debug("nanohub: %s: %d: empty packet\n", __func__,
 				 i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret < sizeof(struct nanohub_packet)) {
-			pr_debug("nanohub %s: %d: too small\n", __func__, i);
+			pr_no_debug("nanohub %s: %d: too small\n", __func__, i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret <
 			   sizeof(struct nanohub_packet) + response->len +
 			   sizeof(struct nanohub_packet_crc)) {
-			pr_debug("nanohub %s: %d: too small length\n",
+			pr_no_debug("nanohub %s: %d: too small length\n",
 				 __func__, i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret !=
 			   sizeof(struct nanohub_packet) + response->len +
 			   sizeof(struct nanohub_packet_crc)) {
-			pr_debug("nanohub %s: %d: wrong length\n", __func__,
+			pr_no_debug("nanohub %s: %d: wrong length\n", __func__,
 				 i);
 			ret = ERROR_NACK;
 			break;
 		} else if (packet_verify(response) != 0) {
-			pr_debug("nanohub %s: %d: invalid crc\n", __func__, i);
+			pr_no_debug("nanohub %s: %d: invalid crc\n", __func__, i);
 			ret = ERROR_NACK;
 			break;
 		}
@@ -207,30 +207,30 @@ static int read_msg(struct nanohub_data *data,
 				     timeout);
 
 		if (ret == 0) {
-			pr_debug("nanohub: %s: %d: empty packet\n", __func__,
+			pr_no_debug("nanohub: %s: %d: empty packet\n", __func__,
 				 i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret < sizeof(struct nanohub_packet)) {
-			pr_debug("nanohub: %s: %d: too small\n", __func__, i);
+			pr_no_debug("nanohub: %s: %d: too small\n", __func__, i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret <
 			   sizeof(struct nanohub_packet) + response->len +
 			   sizeof(struct nanohub_packet_crc)) {
-			pr_debug("nanohub: %s: %d: too small length\n",
+			pr_no_debug("nanohub: %s: %d: too small length\n",
 				 __func__, i);
 			ret = ERROR_NACK;
 			continue;
 		} else if (ret !=
 			   sizeof(struct nanohub_packet) + response->len +
 			   sizeof(struct nanohub_packet_crc)) {
-			pr_debug("nanohub: %s: %d: wrong length\n", __func__,
+			pr_no_debug("nanohub: %s: %d: wrong length\n", __func__,
 				 i);
 			ret = ERROR_NACK;
 			break;
 		} else if (packet_verify(response) != 0) {
-			pr_debug("nanohub: %s: %d: invalid crc\n", __func__,
+			pr_no_debug("nanohub: %s: %d: invalid crc\n", __func__,
 				 i);
 			ret = ERROR_NACK;
 			break;
@@ -464,7 +464,7 @@ static int nanohub_comms_download(struct nanohub_data *data,
 							sizeof(chunk_reply),
 							false, 10, 10);
 
-			pr_debug("nanohub: ret=%d, chunk_reply=%d, offset=%d\n",
+			pr_no_debug("nanohub: ret=%d, chunk_reply=%d, offset=%d\n",
 				 ret, chunk_reply, offset);
 			if (ret == sizeof(chunk_reply)) {
 				if (chunk_reply == CHUNK_REPLY_ACCEPTED) {

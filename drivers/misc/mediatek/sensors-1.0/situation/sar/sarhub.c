@@ -92,7 +92,7 @@ static int sar_factory_get_cali(int32_t data[3])
 	status = obj->cali_status;
 	spin_unlock(&calibration_lock);
 	if (status != 0) {
-		pr_debug("sar cali fail!\n");
+		pr_no_debug("sar cali fail!\n");
 		return -2;
 	}
 	return 0;
@@ -191,7 +191,7 @@ static int sarhub_local_init(void)
 
 	struct sarhub_ipi_data *obj;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
 		err = -ENOMEM;
@@ -256,7 +256,7 @@ static int __init sarhub_init(void)
 
 static void __exit sarhub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(sarhub_init);

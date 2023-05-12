@@ -426,7 +426,7 @@ static int __init step_chub_init(void)
 
 static void __exit step_chub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(step_chub_init);

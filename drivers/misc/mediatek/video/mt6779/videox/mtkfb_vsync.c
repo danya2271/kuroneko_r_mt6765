@@ -32,11 +32,11 @@
 #include "primary_display.h"
 /* #include "extd_info.h" */
 
-#define VSYNC_DBG(...) pr_debug(__VA_ARGS__)
+#define VSYNC_DBG(...) pr_no_debug(__VA_ARGS__)
 
-#define VSYNC_INF(...) pr_debug(__VA_ARGS__)
-#define VSYNC_WRN(...) pr_debug(__VA_ARGS__)
-#define VSYNC_ERR(...) pr_debug(__VA_ARGS__)
+#define VSYNC_INF(...) pr_no_debug(__VA_ARGS__)
+#define VSYNC_WRN(...) pr_no_debug(__VA_ARGS__)
+#define VSYNC_ERR(...) pr_no_debug(__VA_ARGS__)
 
 static size_t mtkfb_vsync_on;
 #define MTKFB_VSYNC_LOG(fmt, arg...) \
@@ -123,7 +123,7 @@ static long mtkfb_vsync_unlocked_ioctl(struct file *file, unsigned int cmd,
 				ret = -EFAULT;
 
 			up(&mtkfb_vsync_sem);
-			pr_debug("[MTKFB_VSYNC]: leave MTKFB_VSYNC_IOCTL, %d, ret:%d\n",
+			pr_no_debug("[MTKFB_VSYNC]: leave MTKFB_VSYNC_IOCTL, %d, ret:%d\n",
 				 __LINE__, ret);
 
 			return ret;

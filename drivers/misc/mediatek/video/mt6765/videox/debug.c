@@ -982,7 +982,7 @@ static void process_dbg_opt(const char *opt)
 				     &WR_mode, &loop_mode, &test_len,
 				     &burst_len, &latency);
 			if (ret != 5) {
-				pr_debug("%d error to parse cmd %s\n",
+				pr_no_debug("%d error to parse cmd %s\n",
 					__LINE__, opt);
 				return;
 			}

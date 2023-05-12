@@ -160,7 +160,7 @@ static int __init plat_sram_flag_init(void)
 
 	size = get_dbg_info_size(PLAT_SRAM_FLAG_KEY);
 	if (size != sizeof(struct plat_sram_flag)) {
-		pr_debug("[SRAM FLAG] Can't match plat_sram_flag size\n");
+		pr_no_debug("[SRAM FLAG] Can't match plat_sram_flag size\n");
 		return -EINVAL;
 	}
 

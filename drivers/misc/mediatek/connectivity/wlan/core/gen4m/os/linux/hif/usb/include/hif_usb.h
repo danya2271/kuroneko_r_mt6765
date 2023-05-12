@@ -97,7 +97,7 @@
  *
  */
 #if HIF_USB_DEBUG
-#define DPRINTK(fmt, args...) pr_debug("%s: " fmt, __func__, ## args)
+#define DPRINTK(fmt, args...) pr_no_debug("%s: " fmt, __func__, ## args)
 #else
 #define DPRINTK(fmt, args...)
 #endif

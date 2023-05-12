@@ -83,7 +83,7 @@ int dither_dbg_en;
 	pr_notice("[DITHER] %s: " fmt "\n", __func__, ##arg)
 #define DITHER_DBG(fmt, arg...) \
 	do { if (dither_dbg_en) \
-		pr_debug("[DITHER] %s: " fmt "\n",  __func__, ##arg); \
+		pr_no_debug("[DITHER] %s: " fmt "\n",  __func__, ##arg); \
 		} while (0)
 
 #define DITHER_REG(reg_base, index) ((reg_base) + 0x100 + (index) * 4)

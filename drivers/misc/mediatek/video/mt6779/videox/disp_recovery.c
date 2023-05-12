@@ -1078,7 +1078,7 @@ static int external_display_check_recovery_worker_kthread(void *data)
 			DISPCHECK("%s", msg);
 			continue;
 		}
-		pr_debug("[EXTD ext_disp_check]check thread waked up!\n");
+		pr_no_debug("[EXTD ext_disp_check]check thread waked up!\n");
 		ext_disp_esd_check_lock();
 		/* esd check and  recovery */
 

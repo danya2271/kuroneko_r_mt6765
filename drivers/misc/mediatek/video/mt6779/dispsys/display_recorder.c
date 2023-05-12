@@ -232,7 +232,7 @@ void dprec_event_op(enum DPREC_EVENT event)
 	len += scnprintf(dprec_string_buffer + len,
 			 dprec_string_max_length - len, "\n");
 
-	pr_debug("%s\n", dprec_string_buffer);
+	pr_no_debug("%s\n", dprec_string_buffer);
 }
 
 static long long nsec_high(unsigned long long nsec)
@@ -612,11 +612,11 @@ void dprec_start(struct dprec_logger_event *event, unsigned int val1,
 		spin_unlock_irqrestore(&gdprec_logger_spinlock, flags);
 	}
 	if (event->level & DPREC_LOGGER_LEVEL_MOBILE_LOG)
-		pr_debug("DISP/%s start,0x%08x,0x%08x\n",
+		pr_no_debug("DISP/%s start,0x%08x,0x%08x\n",
 			 event->name, val1, val2);
 
 	if (event->level & DPREC_LOGGER_LEVEL_UART_LOG)
-		pr_debug("DISP/%s start,0x%08x,0x%08x\n",
+		pr_no_debug("DISP/%s start,0x%08x,0x%08x\n",
 			 event->name, val1, val2);
 
 #ifdef CONFIG_TRACING
@@ -666,11 +666,11 @@ void dprec_done(struct dprec_logger_event *event, unsigned int val1,
 		spin_unlock_irqrestore(&gdprec_logger_spinlock, flags);
 	}
 	if (event->level & DPREC_LOGGER_LEVEL_MOBILE_LOG)
-		pr_debug("DISP/%s done,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s done,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 
 	if (event->level & DPREC_LOGGER_LEVEL_UART_LOG)
-		pr_debug("DISP/%s done,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s done,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 
 #ifdef CONFIG_TRACING
@@ -721,11 +721,11 @@ void dprec_trigger(struct dprec_logger_event *event, unsigned int val1,
 		spin_unlock_irqrestore(&gdprec_logger_spinlock, flags);
 	}
 	if (event->level & DPREC_LOGGER_LEVEL_MOBILE_LOG)
-		pr_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 
 	if (event->level & DPREC_LOGGER_LEVEL_UART_LOG)
-		pr_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 
 #ifdef CONFIG_TRACING
@@ -753,11 +753,11 @@ void dprec_submit(struct dprec_logger_event *event, unsigned int val1,
 		;
 
 	if (event->level & DPREC_LOGGER_LEVEL_MOBILE_LOG)
-		pr_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 
 	if (event->level & DPREC_LOGGER_LEVEL_UART_LOG)
-		pr_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
+		pr_no_debug("DISP/%s trigger,0x%08x,0x%08x\n", event->name,
 			 val1, val2);
 }
 
@@ -1064,7 +1064,7 @@ void dprec_reg_op(void *cmdq, unsigned int reg, unsigned int val,
 	len += scnprintf(dprec_string_buffer + len,
 			 dprec_string_max_length - len, "\n");
 
-	pr_debug("%s\n", dprec_string_buffer);
+	pr_no_debug("%s\n", dprec_string_buffer);
 }
 
 void dprec_logger_vdump(const char *fmt, ...)
@@ -1109,7 +1109,7 @@ char *dprec_logger_get_dump_addr()
 
 unsigned int dprec_logger_get_dump_len(void)
 {
-	pr_debug("dump_len %d\n", analysize_length);
+	pr_no_debug("dump_len %d\n", analysize_length);
 
 	return analysize_length;
 }

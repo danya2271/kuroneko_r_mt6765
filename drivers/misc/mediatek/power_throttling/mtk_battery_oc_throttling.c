@@ -119,7 +119,7 @@ static ssize_t battery_oc_protect_ut_show(
 {
 	struct battery_oc_priv *priv = dev_get_drvdata(pdev);
 
-	pr_debug("[%s] g_battery_oc_level=%d\n",
+	pr_no_debug("[%s] g_battery_oc_level=%d\n",
 		__func__, priv->oc_level);
 	return sprintf(buf, "%u\n", priv->oc_level);
 }
@@ -158,7 +158,7 @@ static ssize_t battery_oc_protect_stop_show(
 		struct device *pdev, struct device_attribute *attr,
 		char *buf)
 {
-	pr_debug("[%s] g_battery_oc_stop=%d\n",
+	pr_no_debug("[%s] g_battery_oc_stop=%d\n",
 		__func__, g_battery_oc_stop);
 	return sprintf(buf, "%u\n", g_battery_oc_stop);
 }

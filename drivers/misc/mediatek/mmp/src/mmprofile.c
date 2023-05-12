@@ -85,7 +85,7 @@ static bool mmp_trace_log_on;
 #define MMP_LOG(prio, fmt, arg...) \
 	do { \
 		if (mmp_log_on) \
-			pr_debug("MMP:%s(): "fmt"\n", __func__, ##arg); \
+			pr_no_debug("MMP:%s(): "fmt"\n", __func__, ##arg); \
 	} while (0)
 
 #define MMP_MSG(fmt, arg...) pr_info("MMP: %s(): "fmt"\n", __func__, ##arg)
@@ -1468,7 +1468,7 @@ static ssize_t mmprofile_dbgfs_start_read(struct file *file, char __user *buf,
 	MMP_LOG(ANDROID_LOG_DEBUG, "start=%d", mmprofile_globals.start);
 	r = sprintf(str, "start = %d\n", mmprofile_globals.start);
 	if (r < 0)
-		pr_debug("sprintf error\n");
+		pr_no_debug("sprintf error\n");
 
 	return simple_read_from_buffer(buf, size, ppos, str, r);
 }
@@ -1499,7 +1499,7 @@ static ssize_t mmprofile_dbgfs_enable_read(struct file *file, char __user *buf,
 	MMP_LOG(ANDROID_LOG_DEBUG, "enable=%d", mmprofile_globals.enable);
 	r = sprintf(str, "enable = %d\n", mmprofile_globals.enable);
 	if (r < 0)
-		pr_debug("sprintf error\n");
+		pr_no_debug("sprintf error\n");
 
 	return simple_read_from_buffer(buf, size, ppos, str, r);
 }
@@ -1813,7 +1813,7 @@ static long mmprofile_ioctl(struct file *file, unsigned int cmd,
 		retn = copy_from_user(&meta_log, p_meta_log_user,
 			sizeof(struct mmprofile_metalog_t));
 		if (retn) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -1823,13 +1823,13 @@ static long mmprofile_ioctl(struct file *file, unsigned int cmd,
 			sizeof(struct mmp_metadata_t));
 
 		if (retn) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
 
 		if (meta_data.size == 0 || meta_data.size > 0x3000000) {
-			pr_debug("[MMPROFILE]: meta_data.size Invalid! line:%d\n",
+			pr_no_debug("[MMPROFILE]: meta_data.size Invalid! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2102,7 +2102,7 @@ static long mmprofile_ioctl_compat(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&compat_meta_log, p_compat_meta_log_user,
 			sizeof(struct compat_mmprofile_metalog_t))) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2118,7 +2118,7 @@ static long mmprofile_ioctl_compat(struct file *file, unsigned int cmd,
 
 		if (meta_log.meta_data.size == 0 ||
 			meta_log.meta_data.size > 0x3000000) {
-			pr_debug("[MMPROFILE]: meta_log.meta_data.size Invalid! line:%d\n",
+			pr_no_debug("[MMPROFILE]: meta_log.meta_data.size Invalid! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2263,7 +2263,7 @@ static int mmprofile_mmap(struct file *file, struct vm_area_struct *vma)
 			if (remap_pfn_range
 			    (vma, pos, pfn, PAGE_SIZE, PAGE_SHARED))
 				return -EAGAIN;
-			/* pr_debug("pfn: 0x%08x\n", pfn); */
+			/* pr_no_debug("pfn: 0x%08x\n", pfn); */
 		}
 	} else if (mmprofile_globals.selected_buffer ==
 		MMPROFILE_PRIMARY_BUFFER) {

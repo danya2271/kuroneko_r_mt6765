@@ -1579,7 +1579,7 @@ static int dram_probe(struct platform_device *pdev)
 	void __iomem *base_temp[8];
 	struct device_node *node = NULL;
 
-	pr_debug("[DRAMC] module probe.\n");
+	pr_no_debug("[DRAMC] module probe.\n");
 
 	for (i = 0; i < (sizeof(base_temp) / sizeof(*base_temp)); i++) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);

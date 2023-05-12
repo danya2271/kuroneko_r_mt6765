@@ -28,7 +28,7 @@
 #define m4u_warn(string, args...)	pr_warn("[M4U] "string, ##args)
 #define m4u_info(string, args...)       pr_info("[M4U] "string, ##args)
 #define m4u_notice(string, args...)     pr_notice("[M4U] "string, ##args)
-#define m4u_debug(string, args...)      pr_debug("[M4U] "string, ##args)
+#define m4u_debug(string, args...)      pr_no_debug("[M4U] "string, ##args)
 
 #define M4U_LOG_LEVEL_HIGH    3
 #define M4U_LOG_LEVEL_MID     2
@@ -42,7 +42,7 @@ extern int gM4U_log_to_uart;
 			if (level > gM4U_log_to_uart)\
 				pr_info("[M4U] "string, ##args);\
 			else\
-				pr_debug("[M4U] "string, ##args);\
+				pr_no_debug("[M4U] "string, ##args);\
 		} \
 	} while (0)
 
@@ -73,7 +73,7 @@ extern int gM4U_log_to_uart;
 	} while (0)
 /*aee_kernel_warning(m4u_name, "[M4U] error:"string,##args); */
 #else
-#define M4UERR(string, args...)  pr_debug("[M4U]:"string, ##args)
+#define M4UERR(string, args...)  pr_no_debug("[M4U]:"string, ##args)
 
 #define m4u_aee_err(string, args...) \
 	{ \
@@ -81,7 +81,7 @@ extern int gM4U_log_to_uart;
 		int name_length = snprintf(m4u_name, 100, \
 			"[M4U]"string, ##args); \
 		if (name_length > 0) \
-			pr_debug("[M4U]:"string, ##args); \
+			pr_no_debug("[M4U]:"string, ##args); \
 	}
 
 #endif

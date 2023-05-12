@@ -81,7 +81,7 @@ static int tee_session_open_single_session_unlocked(void)
 	struct TEEC_UUID destination = SECMEM_TL_GP_UUID;
 
 	if (is_sess_ready) {
-		pr_debug("UT_SUITE:Session is already created!\n");
+		pr_no_debug("UT_SUITE:Session is already created!\n");
 		return TMEM_OK;
 	}
 
@@ -148,7 +148,7 @@ err_create_wsm_buffer:
 static int tee_session_close_single_session_unlocked(void)
 {
 	if (!is_sess_ready) {
-		pr_debug("Session is already closed!\n");
+		pr_no_debug("Session is already closed!\n");
 		return TMEM_OK;
 	}
 
@@ -190,7 +190,7 @@ int tee_session_close(void *tee_data, void *dev_desc)
 
 	sess_ref_cnt--;
 	if (sess_ref_cnt == 0) {
-		pr_debug("Try closing session!\n");
+		pr_no_debug("Try closing session!\n");
 		tee_session_close_single_session_unlocked();
 	}
 
@@ -239,7 +239,7 @@ static int secmem_execute(u32 cmd, struct secmem_param *param)
 	param->alignment = msg->alignment;
 	param->size = msg->size;
 
-	pr_debug("shndl=0x%llx refcnt=%d align=0x%llx size=0x%llx\n",
+	pr_no_debug("shndl=0x%llx refcnt=%d align=0x%llx size=0x%llx\n",
 		 (u64)param->sec_handle, param->refcount, (u64)param->alignment,
 		 (u64)param->size);
 
@@ -282,7 +282,7 @@ int tee_alloc(u32 alignment, u32 size, u32 *refcount, u32 *sec_handle,
 
 	*refcount = param.refcount;
 	*sec_handle = param.sec_handle;
-	pr_debug("ref cnt: 0x%x, sec_handle: 0x%llx\n", param.refcount,
+	pr_no_debug("ref cnt: 0x%x, sec_handle: 0x%llx\n", param.refcount,
 		 param.sec_handle);
 	return TMEM_OK;
 }
@@ -387,7 +387,7 @@ static int tee_invoke_command(struct trusted_driver_cmd_params *invoke_params,
 		return TMEM_COMMAND_NOT_SUPPORTED;
 	}
 
-	pr_debug("invoke cmd is %d (0x%llx, 0x%llx, 0x%llx, 0x%llx)\n",
+	pr_no_debug("invoke cmd is %d (0x%llx, 0x%llx, 0x%llx, 0x%llx)\n",
 		 invoke_params->cmd, invoke_params->param0,
 		 invoke_params->param1, invoke_params->param2,
 		 invoke_params->param3);

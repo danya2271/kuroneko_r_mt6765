@@ -541,7 +541,7 @@ int __init spm_logger_init(void)
 #ifdef CONFIG_PM
 	ret = register_pm_notifier(&spm_suspend_pm_notifier_func);
 	if (ret) {
-		pr_debug("[name:spm&][SPM] Failed to register PM notifier.\n");
+		pr_no_debug("[name:spm&][SPM] Failed to register PM notifier.\n");
 		return ret;
 	}
 #endif /* CONFIG_PM */

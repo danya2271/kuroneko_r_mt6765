@@ -61,7 +61,7 @@ static int ppm_thread_fn(void *data)
 			__pm_stay_awake(hps_ws);
 #endif
 
-		pr_debug_ratelimited("%s: ppm_cpus_req: %*pbl cpu_online_mask: %*pbl\n"
+		pr_no_debug("%s: ppm_cpus_req: %*pbl cpu_online_mask: %*pbl\n"
 			, __func__
 			, cpumask_pr_args(&ppm_cpus_req)
 			, cpumask_pr_args(cpu_online_mask));
@@ -74,13 +74,13 @@ static int ppm_thread_fn(void *data)
 			if (request_cpu_up && cpu_is_offline(i)) {
 				int retry = 0;
 
-				pr_debug_ratelimited("CPU%d: ppm-request=%d, offline->powerup\n",
+				pr_no_debug("CPU%d: ppm-request=%d, offline->powerup\n",
 					 i, request_cpu_up);
 Retry_ON:
 				rc = CPU_UP(i);
 				if (rc)	{
 					if (retry > HPS_RETRY) {
-						pr_debug_ratelimited(
+						pr_no_debug(
 							"fail to bringup cpu(%d) rc: %d\n"
 							, i, rc);
 						trigger_all_cpu_backtrace();
@@ -100,13 +100,13 @@ Retry_ON:
 			if (!request_cpu_up && cpu_online(i)) {
 				int retry = 0;
 
-				pr_debug_ratelimited("CPU%d: ppm-request=%d, online->powerdown\n",
+				pr_no_debug("CPU%d: ppm-request=%d, online->powerdown\n",
 					 i, request_cpu_up);
 Retry_OFF:
 				rc = CPU_DOWN(i);
 				if (rc) {
 					if (retry > HPS_RETRY) {
-						pr_debug_ratelimited(
+						pr_no_debug(
 							"fail to shutdown cpu(%d) rc: %d\n"
 							, i, rc);
 						trigger_all_cpu_backtrace();
@@ -171,5 +171,5 @@ void ppm_notifier(void)
 
 	hps_ws = wakeup_source_register(NULL, "hps");
 	if (!hps_ws)
-		pr_debug("hps wakelock register fail!\n");
+		pr_no_debug("hps wakelock register fail!\n");
 }

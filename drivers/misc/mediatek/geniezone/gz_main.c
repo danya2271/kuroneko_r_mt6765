@@ -82,7 +82,7 @@ uint64_t sdsp_elf_pa[2] = { 0, 0 };
 #include "mtee_ut/gz_sec_storage_ut.h"
 #endif
 
-#define KREE_DEBUG(fmt...) pr_debug("[KREE]" fmt)
+#define KREE_DEBUG(fmt...) pr_no_debug("[KREE]" fmt)
 #define KREE_INFO(fmt...) pr_info("[KREE]" fmt)
 #define KREE_ERR(fmt...) pr_info("[KREE][ERR]" fmt)
 
@@ -1446,7 +1446,7 @@ static long gz_compat_ioctl(struct file *filep, unsigned int cmd,
 #if IS_ENABLED(CONFIG_MTK_DEVAPC) && !IS_ENABLED(CONFIG_DEVAPC_LEGACY)
 static void gz_devapc_vio_dump(void)
 {
-	pr_debug("%s:%d GZ devapc is triggered!\n", __func__, __LINE__);
+	pr_no_debug("%s:%d GZ devapc is triggered!\n", __func__, __LINE__);
 
 	if (IS_ERR_OR_NULL(tz_system_dev)) {
 		KREE_ERR("GZ KREE is still not initialized!\n");

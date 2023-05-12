@@ -137,10 +137,10 @@ static int regmgr_try_on(struct region_mgr_desc *mgr_desc,
 	struct trusted_mem_device *mem_device =
 		get_trusted_mem_device(try_mem_type);
 
-	pr_debug("%s:%d\n", __func__, __LINE__);
+	pr_no_debug("%s:%d\n", __func__, __LINE__);
 
 	if (is_region_on(mgr_desc->state)) {
-		pr_debug("trusted mem is already onlined\n");
+		pr_no_debug("trusted mem is already onlined\n");
 		return TMEM_OK;
 	}
 
@@ -149,7 +149,7 @@ static int regmgr_try_on(struct region_mgr_desc *mgr_desc,
 		return TMEM_REGION_POWER_ON_FAILED;
 	}
 
-	pr_debug("set device:%d to busy\n", try_mem_type);
+	pr_no_debug("set device:%d to busy\n", try_mem_type);
 
 	mgr_desc->active_mem_type = try_mem_type;
 	mgr_desc->mem_device = mem_device;
@@ -163,10 +163,10 @@ static int regmgr_try_off(struct region_mgr_desc *mgr_desc)
 	struct trusted_mem_device *mem_device =
 		(struct trusted_mem_device *)mgr_desc->mem_device;
 
-	pr_debug("%s:%d\n", __func__, __LINE__);
+	pr_no_debug("%s:%d\n", __func__, __LINE__);
 
 	if (!is_region_on(mgr_desc->state)) {
-		pr_debug("trusted mem is already offlined\n");
+		pr_no_debug("trusted mem is already offlined\n");
 		return TMEM_OK;
 	}
 
@@ -175,7 +175,7 @@ static int regmgr_try_off(struct region_mgr_desc *mgr_desc)
 		return TMEM_REGION_POWER_OFF_FAILED;
 	}
 
-	pr_debug("set device:%d to idle\n", mem_device->mem_type);
+	pr_no_debug("set device:%d to idle\n", mem_device->mem_type);
 
 	mem_device->is_device_busy = false;
 	mgr_desc->active_mem_type = TRUSTED_MEM_INVALID;

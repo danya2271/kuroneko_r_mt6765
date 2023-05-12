@@ -87,7 +87,7 @@
 #define hps_warn(fmt, args...)              pr_notice("[HPS] " fmt, ##args)
 #define hps_notice(fmt, args...)            pr_notice("[HPS] " fmt, ##args)
 #define hps_info(fmt, args...)              pr_info("[HPS] " fmt, ##args)
-#define hps_debug(fmt, args...)             pr_debug("[HPS] " fmt, ##args)
+#define hps_debug(fmt, args...)             pr_no_debug("[HPS] " fmt, ##args)
 
 #if EN_ISR_LOG
 #define hps_isr_info(fmt, args...)          hps_notice(fmt, ##args)

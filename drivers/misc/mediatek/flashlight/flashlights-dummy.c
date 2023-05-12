@@ -207,7 +207,7 @@ static unsigned int dummy_timeout_ms;
 
 static void dummy_work_disable(struct work_struct *data)
 {
-	pr_debug("work queue callback\n");
+	pr_no_debug("work queue callback\n");
 	dummy_disable();
 }
 
@@ -234,19 +234,19 @@ static int dummy_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		dummy_timeout_ms = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		dummy_set_level(fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if (fl_arg->arg == 1) {
 			if (dummy_timeout_ms) {
@@ -264,34 +264,34 @@ static int dummy_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = DUMMY_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = DUMMY_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = dummy_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = dummy_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = DUMMY_HW_TIMEOUT;
 		break;
 
 	case FLASH_IOC_GET_HW_FAULT:
-		pr_debug("FLASH_IOC_GET_HW_FAULT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_FAULT(%d)\n", channel);
 		fl_arg->arg = dummy_get_hw_fault(1);
 		break;
 
 	case FLASH_IOC_GET_HW_FAULT2:
-		pr_debug("FLASH_IOC_GET_HW_FAULT2(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_FAULT2(%d)\n", channel);
 		fl_arg->arg = dummy_get_hw_fault(2);
 		break;
 
@@ -326,14 +326,14 @@ static int dummy_set_driver(int set)
 		if (!use_count)
 			ret = dummy_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = dummy_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&dummy_mutex);
 
@@ -436,7 +436,7 @@ static int dummy_i2c_probe(
 	struct dummy_chip_data *chip;
 	int err;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	/* check i2c */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
@@ -462,7 +462,7 @@ static int dummy_i2c_probe(
 	/* init chip hw */
 	dummy_chip_init(chip);
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 
@@ -474,14 +474,14 @@ static int dummy_i2c_remove(struct i2c_client *client)
 {
 	struct dummy_chip_data *chip = i2c_get_clientdata(client);
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	client->dev.platform_data = NULL;
 
 	/* free resource */
 	kfree(chip);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -522,10 +522,10 @@ static int dummy_probe(struct platform_device *pdev)
 	int err;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	if (i2c_add_driver(&dummy_i2c_driver)) {
-		pr_debug("Failed to add i2c driver.\n");
+		pr_no_debug("Failed to add i2c driver.\n");
 		return -1;
 	}
 
@@ -569,7 +569,7 @@ static int dummy_probe(struct platform_device *pdev)
 		}
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 err_free:
@@ -584,7 +584,7 @@ static int dummy_remove(struct platform_device *pdev)
 	struct dummy_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	i2c_del_driver(&dummy_i2c_driver);
 
@@ -601,7 +601,7 @@ static int dummy_remove(struct platform_device *pdev)
 	/* flush work queue */
 	flush_work(&dummy_work);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -640,7 +640,7 @@ static int __init flashlight_dummy_init(void)
 {
 	int ret;
 
-	pr_debug("Init start.\n");
+	pr_no_debug("Init start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&dummy_platform_device);
@@ -656,18 +656,18 @@ static int __init flashlight_dummy_init(void)
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_dummy_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&dummy_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 module_init(flashlight_dummy_init);

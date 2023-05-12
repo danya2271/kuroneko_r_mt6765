@@ -557,7 +557,7 @@ int disp_hal_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 		if (ret)
 			DISP_PR_ERR("m4u_alloc_mva returns fail: %d\n", ret);
 
-		pr_debug("[DISPHAL] FB MVA is 0x%lx PA is 0x%pa\n",
+		pr_no_debug("[DISPHAL] FB MVA is 0x%lx PA is 0x%pa\n",
 			 *mva, &pa_start);
 	} else {
 		*mva = pa_start & 0xffffffffULL;
@@ -567,7 +567,7 @@ int disp_hal_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 	*mva = iova & 0xffffffffULL;
 #endif
 
-	pr_debug("%s:%d, pa=(0x%pa,0x%pa), va=0x%lx\n",
+	pr_no_debug("%s:%d, pa=(0x%pa,0x%pa), va=0x%lx\n",
 		 __func__, __LINE__, &pa_start, &pa_end, *va);
 
 	return 0;

@@ -122,7 +122,7 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 					pr_info(
 					"regulator notifier request error\n");
 				}
-				pr_debug(
+				pr_no_debug(
 					"[regulator] %s idx=%d %s enable=%d oc enabled\n",
 					__func__,
 					sensor_idx,
@@ -283,7 +283,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			//atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(regVCAMAF)) {
-				/*pr_debug("[regulator]%d is enabled\n", pin);*/
+				/*pr_no_debug("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(regVCAMAF)) {
 					pr_err(
@@ -347,7 +347,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(pregulator)) {
-				/*pr_debug("[regulator]%d is enabled\n", pin);*/
+				/*pr_no_debug("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(pregulator)) {
 					pr_err(

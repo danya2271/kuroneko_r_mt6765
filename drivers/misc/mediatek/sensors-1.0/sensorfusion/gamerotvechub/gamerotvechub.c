@@ -146,7 +146,7 @@ static int __init gamerotvechub_init(void)
 
 static void __exit gamerotvechub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(gamerotvechub_init);

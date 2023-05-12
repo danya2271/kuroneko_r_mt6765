@@ -237,7 +237,7 @@ static unsigned int lm3642_timeout_ms;
 
 static void lm3642_work_disable(struct work_struct *data)
 {
-	pr_debug("work queue callback\n");
+	pr_no_debug("work queue callback\n");
 	lm3642_disable();
 }
 
@@ -264,19 +264,19 @@ static int lm3642_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3642_timeout_ms = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3642_set_level(fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if (fl_arg->arg == 1) {
 			if (lm3642_timeout_ms) {
@@ -294,29 +294,29 @@ static int lm3642_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = LM3642_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = LM3642_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = lm3642_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = lm3642_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = LM3642_HW_TIMEOUT;
 		break;
 
 	case FLASH_IOC_GET_HW_FAULT:
-		pr_debug("FLASH_IOC_GET_HW_FAULT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_FAULT(%d)\n", channel);
 		fl_arg->arg = lm3642_get_flag();
 		break;
 
@@ -351,14 +351,14 @@ static int lm3642_set_driver(int set)
 		if (!use_count)
 			ret = lm3642_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = lm3642_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&lm3642_mutex);
 
@@ -461,7 +461,7 @@ static int lm3642_i2c_probe(
 	struct lm3642_chip_data *chip;
 	int err;
 
-	pr_debug("i2c probe start.\n");
+	pr_no_debug("i2c probe start.\n");
 
 	/* check i2c */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
@@ -487,7 +487,7 @@ static int lm3642_i2c_probe(
 	/* init chip hw */
 	lm3642_chip_init(chip);
 
-	pr_debug("i2c probe done.\n");
+	pr_no_debug("i2c probe done.\n");
 
 	return 0;
 
@@ -499,14 +499,14 @@ static int lm3642_i2c_remove(struct i2c_client *client)
 {
 	struct lm3642_chip_data *chip = i2c_get_clientdata(client);
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	client->dev.platform_data = NULL;
 
 	/* free resource */
 	kfree(chip);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -547,10 +547,10 @@ static int lm3642_probe(struct platform_device *pdev)
 	int err;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	if (i2c_add_driver(&lm3642_i2c_driver)) {
-		pr_debug("Failed to add i2c driver.\n");
+		pr_no_debug("Failed to add i2c driver.\n");
 		return -1;
 	}
 
@@ -594,7 +594,7 @@ static int lm3642_probe(struct platform_device *pdev)
 		}
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 err_free:
@@ -609,7 +609,7 @@ static int lm3642_remove(struct platform_device *pdev)
 	struct lm3642_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	i2c_del_driver(&lm3642_i2c_driver);
 
@@ -626,7 +626,7 @@ static int lm3642_remove(struct platform_device *pdev)
 	/* flush work queue */
 	flush_work(&lm3642_work);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -665,7 +665,7 @@ static int __init flashlight_lm3642_init(void)
 {
 	int ret;
 
-	pr_debug("Init start.\n");
+	pr_no_debug("Init start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&lm3642_platform_device);
@@ -681,18 +681,18 @@ static int __init flashlight_lm3642_init(void)
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_lm3642_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&lm3642_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 module_init(flashlight_lm3642_init);

@@ -619,7 +619,7 @@ static int als_enable_nodata(int en)
 	int res = 0;
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
-	pr_debug("obj_ipi_data als enable value = %d\n", en);
+	pr_no_debug("obj_ipi_data als enable value = %d\n", en);
 
 	if (en == true)
 		WRITE_ONCE(obj->als_android_enable, true);
@@ -653,7 +653,7 @@ static int als_set_delay(u64 ns)
 		pr_err("%s fail!\n", __func__);
 		return err;
 	}
-	pr_debug("%s (%d)\n", __func__, delayms);
+	pr_no_debug("%s (%d)\n", __func__, delayms);
 	return 0;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -727,7 +727,7 @@ static int als_get_data(int *value, int *status)
 	}
 
 	if (atomic_read(&obj_ipi_data->trace) & CMC_TRC_PS_DATA)
-		pr_debug("value = %d\n", *value);
+		pr_no_debug("value = %d\n", *value);
 	return 0;
 }
 
@@ -741,7 +741,7 @@ static int ps_enable_nodata(int en)
 	int res = 0;
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
-	pr_debug("obj_ipi_data als enable value = %d\n", en);
+	pr_no_debug("obj_ipi_data als enable value = %d\n", en);
 	if (en == true)
 		WRITE_ONCE(obj->ps_android_enable, true);
 	else
@@ -778,7 +778,7 @@ static int ps_set_delay(u64 ns)
 		return err;
 	}
 
-	pr_debug("%s (%d)\n", __func__, delayms);
+	pr_no_debug("%s (%d)\n", __func__, delayms);
 	return 0;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -819,7 +819,7 @@ static int ps_get_data(int *value, int *status)
 	}
 
 	if (atomic_read(&obj_ipi_data->trace) & CMC_TRC_PS_DATA)
-		pr_debug("value = %d\n", *value);
+		pr_no_debug("value = %d\n", *value);
 
 	return err;
 }
@@ -869,7 +869,7 @@ static int alspshub_probe(struct platform_device *pdev)
 	struct ps_control_path ps_ctl = { 0 };
 	struct ps_data_path ps_data = { 0 };
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
 		err = -ENOMEM;
@@ -921,7 +921,7 @@ static int alspshub_probe(struct platform_device *pdev)
 		pr_err("alsps_factory_device_register register failed\n");
 		goto exit_kfree;
 	}
-	pr_debug("alspshub_misc_device misc_register OK!\n");
+	pr_no_debug("alspshub_misc_device misc_register OK!\n");
 	als_ctl.is_use_common_factory = false;
 	ps_ctl.is_use_common_factory = false;
 	err = alspshub_create_attr(&paddr->driver);
@@ -987,7 +987,7 @@ static int alspshub_probe(struct platform_device *pdev)
 	}
 
 	alspshub_init_flag = 0;
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	return 0;
 
 exit_create_attr_failed:
@@ -1021,13 +1021,13 @@ static int alspshub_remove(struct platform_device *pdev)
 
 static int alspshub_suspend(struct platform_device *pdev, pm_message_t msg)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	return 0;
 }
 
 static int alspshub_resume(struct platform_device *pdev)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	return 0;
 }
 static struct platform_device alspshub_device = {
@@ -1075,7 +1075,7 @@ static int __init alspshub_init(void)
 
 static void __exit alspshub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(alspshub_init);

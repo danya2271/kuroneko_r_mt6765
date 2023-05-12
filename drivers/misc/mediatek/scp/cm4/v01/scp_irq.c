@@ -23,7 +23,7 @@
  */
 static void scp_A_wdt_handler(void)
 {
-	pr_debug("[SCP] CM4 A WDT exception\n");
+	pr_no_debug("[SCP] CM4 A WDT exception\n");
 	scp_A_dump_regs();
 }
 
@@ -45,7 +45,7 @@ irqreturn_t scp_A_irq_handler(int irq, void *dev_id)
 
 		scp_A_wdt_handler();
 		if (scp_set_reset_status() == RESET_STATUS_STOP) {
-			pr_debug("[SCP] CM4 WDT handler start to reset scp...\n");
+			pr_no_debug("[SCP] CM4 WDT handler start to reset scp...\n");
 			scp_send_reset_wq(RESET_TYPE_WDT);
 		} else
 			pr_notice("scp_A_wdt_handler: scp resetting\n");
@@ -60,7 +60,7 @@ irqreturn_t scp_A_irq_handler(int irq, void *dev_id)
 			udelay(40);
 		}
 		if (retry == 0)
-			pr_debug("[SCP] SCP_A wakeup timeout\n");
+			pr_no_debug("[SCP] SCP_A wakeup timeout\n");
 		udelay(10);
 		writel(SCP_IRQ_WDT, SCP_A_TO_HOST_REG);
 	} else if (reg & SCP_IRQ_SCP2HOST) {

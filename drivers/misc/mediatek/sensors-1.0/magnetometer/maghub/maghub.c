@@ -47,7 +47,7 @@ static int maghub_m_setPowerMode(bool enable)
 {
 	int res = 0;
 
-	pr_debug("magnetic enable value = %d\n", enable);
+	pr_no_debug("magnetic enable value = %d\n", enable);
 	res = sensor_enable_to_hub(ID_MAGNETIC, enable);
 	if (res < 0)
 		pr_err("%s is failed!!\n", __func__);
@@ -85,7 +85,7 @@ static int maghub_GetMData(char *buf, int size)
 		mag_m[MAGHUB_AXIS_Y], mag_m[MAGHUB_AXIS_Z], status);
 
 	if (atomic_read(&obj->trace) & MAG_MDATA_DEBUG)
-		pr_debug("RAW DATA: %s!\n", buf);
+		pr_no_debug("RAW DATA: %s!\n", buf);
 
 
 	return 0;
@@ -162,7 +162,7 @@ static ssize_t orientation_show(struct device_driver *ddri, char *buf)
 	ssize_t _tLength = 0;
 	struct maghub_ipi_data *obj = mag_ipi_data;
 
-	pr_debug("[%s] default direction: %d\n", __func__, obj->direction);
+	pr_no_debug("[%s] default direction: %d\n", __func__, obj->direction);
 
 	_tLength = snprintf(buf, PAGE_SIZE, "default direction = %d\n",
 		obj->direction);
@@ -182,7 +182,7 @@ static ssize_t orientation_store(struct device_driver *ddri,
 	err = kstrtoint(buf, 10, &_nDirection);
 
 	if (err != 0) {
-		pr_debug("[%s] set direction: %d\n", __func__, _nDirection);
+		pr_no_debug("[%s] set direction: %d\n", __func__, _nDirection);
 		return tCount;
 	}
 
@@ -195,7 +195,7 @@ static ssize_t orientation_store(struct device_driver *ddri,
 		return 0;
 	}
 
-	pr_debug("[%s] set direction: %d\n", __func__, _nDirection);
+	pr_no_debug("[%s] set direction: %d\n", __func__, _nDirection);
 
 	return tCount;
 }
@@ -370,7 +370,7 @@ static int maghub_set_delay(u64 ns)
 		return err;
 	}
 
-	pr_debug("maghub_m_set_delay (%d)\n", delayms);
+	pr_no_debug("maghub_m_set_delay (%d)\n", delayms);
 	return err;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -491,7 +491,7 @@ static int maghub_factory_get_data(int32_t data[3], int *status)
 }
 static int maghub_factory_get_raw_data(int32_t data[3])
 {
-	pr_debug("%s do not support!\n", __func__);
+	pr_no_debug("%s do not support!\n", __func__);
 	return 0;
 }
 static int maghub_factory_enable_calibration(void)
@@ -552,7 +552,7 @@ static int maghub_probe(struct platform_device *pdev)
 	struct platform_driver *paddr =
 					maghub_init_info.platform_diver_addr;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	data = kzalloc(sizeof(struct maghub_ipi_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
@@ -613,7 +613,7 @@ static int maghub_probe(struct platform_device *pdev)
 		pr_err("register data control path err\n");
 		goto create_attr_failed;
 	}
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	maghub_init_flag = 1;
 	/*Mointor scp ready notify,
 	 *need monitor at the end of probe for two function:
@@ -712,7 +712,7 @@ static int __init maghub_init(void)
 
 static void __exit maghub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(maghub_init);

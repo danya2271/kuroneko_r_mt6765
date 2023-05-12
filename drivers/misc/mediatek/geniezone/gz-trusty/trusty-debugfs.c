@@ -64,7 +64,7 @@ static int stress_trusty_thread(void *data)
 			break;
 	}
 
-	pr_debug("[%s] End of test, succeed %lld, failed %lld\n",
+	pr_no_debug("[%s] End of test, succeed %lld, failed %lld\n",
 		 __func__, s_cnt[0], f_cnt[0]);
 
 	s_cnt[0] = f_cnt[0] = 0;

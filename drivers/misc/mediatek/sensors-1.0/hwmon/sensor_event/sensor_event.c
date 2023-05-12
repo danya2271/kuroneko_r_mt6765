@@ -106,7 +106,7 @@ ssize_t sensor_event_read(unsigned char handle, struct file *file,
 		if (client->head == client->tail)
 			return 0;
 		if (count == 0) {
-			pr_debug("%s count: %d\n", __func__, (int)count);
+			pr_no_debug("%s count: %d\n", __func__, (int)count);
 			break;
 		}
 

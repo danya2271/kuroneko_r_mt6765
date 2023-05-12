@@ -43,7 +43,7 @@ struct ut_params {
 			} \
 		} else { \
 			ut_increase_pass_cnt(); \
-			pr_debug("'%s' PASSED!\n", msg); \
+			pr_no_debug("'%s' PASSED!\n", msg); \
 		} \
 	} while (0)
 
@@ -63,7 +63,7 @@ struct ut_params {
 			} \
 		} else { \
 			ut_increase_pass_cnt(); \
-			pr_debug("'%s' PASSED!\n", msg); \
+			pr_no_debug("'%s' PASSED!\n", msg); \
 		} \
 	} while (0)
 

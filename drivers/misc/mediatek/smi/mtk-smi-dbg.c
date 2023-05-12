@@ -711,7 +711,7 @@ static s32 mtk_smi_dbg_probe(struct mtk_smi_dbg *smi)
 	s32			id, i = 0, j, ret;
 
 	while (strncmp(mtk_smi_dbg_comp[i], "", 1)) {
-		pr_debug("%s: comp[%d]:%s\n", __func__, i, mtk_smi_dbg_comp[i]);
+		pr_no_debug("%s: comp[%d]:%s\n", __func__, i, mtk_smi_dbg_comp[i]);
 		for_each_compatible_node(node, NULL, mtk_smi_dbg_comp[i]) {
 			if (!node)
 				break;

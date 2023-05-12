@@ -39,12 +39,12 @@
 #define mtkts_dctm_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtkts_dctm_debug_log) {                \
-		pr_debug("[Thermal/TZ/DCTM]" fmt, ##args); \
+		pr_no_debug("[Thermal/TZ/DCTM]" fmt, ##args); \
 	}                                   \
 } while (0)
 
 #define mtkts_dctm_printk(fmt, args...) \
-pr_debug("[Thermal/TZ/DCTM]" fmt, ##args)
+pr_no_debug("[Thermal/TZ/DCTM]" fmt, ##args)
 
 /*=============================================================
  *Function prototype

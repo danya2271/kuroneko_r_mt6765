@@ -34,7 +34,7 @@
 				__func__, __LINE__, ## args); \
 		} \
 		else {\
-			pr_debug("[MUSB]%s %d: " format, \
+			pr_no_debug("[MUSB]%s %d: " format, \
 				__func__, __LINE__, ## args); \
 		} \
 	} } while (0)

@@ -519,7 +519,7 @@ static int msg_evt_thread(void *pvData)
 		}
 	}
 
-	pr_debug("msg evt thread exists\n");
+	pr_no_debug("msg evt thread exists\n");
 	return 0;
 }
 
@@ -600,6 +600,6 @@ int msg_thread_deinit(struct msg_thread_ctx *ctx)
 
 	osal_memset(ctx, 0, sizeof(struct msg_thread_ctx));
 
-	pr_debug("[%s] DONE\n", __func__);
+	pr_no_debug("[%s] DONE\n", __func__);
 	return 0;
 }

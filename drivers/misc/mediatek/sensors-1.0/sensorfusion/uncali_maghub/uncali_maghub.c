@@ -145,7 +145,7 @@ static int __init uncali_maghub_init(void)
 
 static void __exit uncali_maghub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(uncali_maghub_init);

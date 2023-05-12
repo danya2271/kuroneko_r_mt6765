@@ -150,7 +150,7 @@ do {			\
 #define CMDQ_VERBOSE(string, args...) \
 do {			\
 	if (cmdq_core_should_print_msg()) { \
-		pr_debug("[CMDQ]"string, ##args); \
+		pr_no_debug("[CMDQ]"string, ##args); \
 }			\
 } while (0)
 
@@ -187,8 +187,8 @@ do {			\
 do {			\
 	char dispatchedTag[50]; \
 	snprintf(dispatchedTag, 50, "CRDISPATCH_KEY:%s", tag); \
-	pr_debug("[CMDQ][AEE] AEE not READY!!!"); \
-	pr_debug("[CMDQ][AEE]"string, ##args); \
+	pr_no_debug("[CMDQ][AEE] AEE not READY!!!"); \
+	pr_no_debug("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_save_first_dump("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_turnoff_first_dump(); \
 } while (0);	\

@@ -238,26 +238,26 @@ static int cm_mgr_idx = -1;
 #ifdef USE_DEBUG_LOG
 static void debug_stall(int cpu)
 {
-	pr_debug("%s: cpu number %d ################\n", __func__,
+	pr_no_debug("%s: cpu number %d ################\n", __func__,
 			cpu);
-	pr_debug("%s: clustor[%d] 0x%08x\n", __func__,
+	pr_no_debug("%s: clustor[%d] 0x%08x\n", __func__,
 			cpu / CM_MGR_CPU_LIMIT,
 			pstall_all->clustor[cpu / CM_MGR_CPU_LIMIT]);
-	pr_debug("%s: stall_val[%d] 0x%016llx\n", __func__,
+	pr_no_debug("%s: stall_val[%d] 0x%016llx\n", __func__,
 			cpu, pstall_all->stall_val[cpu]);
-	pr_debug("%s: stall_val_diff[%d] 0x%016llx\n", __func__,
+	pr_no_debug("%s: stall_val_diff[%d] 0x%016llx\n", __func__,
 			cpu, pstall_all->stall_val_diff[cpu]);
-	pr_debug("%s: time_ns[%d] 0x%016llx\n", __func__,
+	pr_no_debug("%s: time_ns[%d] 0x%016llx\n", __func__,
 			cpu, pstall_all->time_ns[cpu]);
-	pr_debug("%s: time_ns_diff[%d] 0x%016llx\n", __func__,
+	pr_no_debug("%s: time_ns_diff[%d] 0x%016llx\n", __func__,
 			cpu, pstall_all->time_ns_diff[cpu]);
-	pr_debug("%s: ratio[%d] 0x%016llx\n", __func__,
+	pr_no_debug("%s: ratio[%d] 0x%016llx\n", __func__,
 			cpu, pstall_all->ratio[cpu]);
-	pr_debug("%s: ratio_max[%d] 0x%08x\n", __func__,
+	pr_no_debug("%s: ratio_max[%d] 0x%08x\n", __func__,
 			cpu / CM_MGR_CPU_LIMIT,
 			pstall_all->ratio_max[cpu / CM_MGR_CPU_LIMIT]);
-	pr_debug("%s: cpu 0x%08x\n", __func__, pstall_all->cpu);
-	pr_debug("%s: cpu_count[%d] 0x%08x\n", __func__,
+	pr_no_debug("%s: cpu 0x%08x\n", __func__, pstall_all->cpu);
+	pr_no_debug("%s: cpu_count[%d] 0x%08x\n", __func__,
 			cpu / CM_MGR_CPU_LIMIT,
 			pstall_all->cpu_count[cpu / CM_MGR_CPU_LIMIT]);
 }
@@ -372,7 +372,7 @@ static int cm_mgr_check_stall_ratio(int mp0, int mp1)
 
 		if (stall_val_new == 0 || stall_val_new == 0xdeadbeef) {
 #ifdef USE_DEBUG_LOG
-			pr_debug("%s: WARN!!! stall_val_new is 0x%08x\n",
+			pr_no_debug("%s: WARN!!! stall_val_new is 0x%08x\n",
 					__func__, stall_val_new);
 			debug_stall(i);
 #endif /* USE_DEBUG_LOG */
@@ -392,7 +392,7 @@ static int cm_mgr_check_stall_ratio(int mp0, int mp1)
 
 		if (pstall_all->stall_val_diff[i] == 0) {
 #ifdef USE_DEBUG_LOG
-			pr_debug("%s: WARN!!! cpu:%d diff == 0\n", __func__, i);
+			pr_no_debug("%s: WARN!!! cpu:%d diff == 0\n", __func__, i);
 			debug_stall(i);
 #endif /* USE_DEBUG_LOG */
 			continue;
@@ -409,7 +409,7 @@ static int cm_mgr_check_stall_ratio(int mp0, int mp1)
 #endif /* CONFIG_ARM64 */
 		if (pstall_all->ratio[i] > 100) {
 #ifdef USE_DEBUG_LOG
-			pr_debug("%s: WARN!!! cpu:%d ratio > 100\n",
+			pr_no_debug("%s: WARN!!! cpu:%d ratio > 100\n",
 					__func__, i);
 			debug_stall(i);
 #endif /* USE_DEBUG_LOG */
@@ -675,7 +675,7 @@ static void update_v2f(int update, int debug)
 			if (update)
 				_v2f_all[i][j] = _v2f;
 			if (debug)
-				pr_debug("%d-i %.2d v %.8d f %.8d v2f %.8d\n",
+				pr_no_debug("%d-i %.2d v %.8d f %.8d v2f %.8d\n",
 						j, i, _v, _f, _v2f);
 		}
 	}

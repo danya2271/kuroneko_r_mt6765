@@ -79,7 +79,7 @@ static ssize_t low_battery_protect_ut_show(
 		struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
-	pr_debug("[%s] g_low_battery_level=%d\n", __func__,
+	pr_no_debug("[%s] g_low_battery_level=%d\n", __func__,
 		g_low_battery_level);
 	return sprintf(buf, "%u\n", g_low_battery_level);
 }
@@ -126,7 +126,7 @@ static ssize_t low_battery_protect_stop_show(
 		struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
-	pr_debug("[%s] g_low_battery_stop=%d\n", __func__, g_low_battery_stop);
+	pr_no_debug("[%s] g_low_battery_stop=%d\n", __func__, g_low_battery_stop);
 	return sprintf(buf, "%u\n", g_low_battery_stop);
 }
 
@@ -161,7 +161,7 @@ static DEVICE_ATTR_RW(low_battery_protect_stop);
 static ssize_t low_battery_protect_level_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
-	pr_debug("[%s] g_low_battery_level=%d\n",
+	pr_no_debug("[%s] g_low_battery_level=%d\n",
 		__func__, g_low_battery_level);
 	return sprintf(buf, "%u\n", g_low_battery_level);
 }
@@ -170,7 +170,7 @@ static ssize_t low_battery_protect_level_store(struct device *dev,
 		struct device_attribute *attr,
 		const char *buf, size_t size)
 {
-	pr_debug("[%s] g_low_battery_level = %d\n", __func__,
+	pr_no_debug("[%s] g_low_battery_level = %d\n", __func__,
 		g_low_battery_level);
 
 	return size;

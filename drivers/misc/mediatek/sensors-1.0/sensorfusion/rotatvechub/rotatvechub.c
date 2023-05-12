@@ -152,7 +152,7 @@ static int __init rotatvechub_init(void)
 
 static void __exit rotatvechub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(rotatvechub_init);

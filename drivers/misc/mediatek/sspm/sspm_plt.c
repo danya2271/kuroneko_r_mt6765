@@ -125,7 +125,7 @@ int __init sspm_plt_init(void)
 	last_ofs = plt_ctl->size;
 
 
-	pr_debug("SSPM: %s(): after plt, ofs=%u\n", __func__, last_ofs);
+	pr_no_debug("SSPM: %s(): after plt, ofs=%u\n", __func__, last_ofs);
 
 #if SSPM_LOGGER_SUPPORT
 	plt_ctl->logger_ofs = last_ofs;
@@ -137,7 +137,7 @@ int __init sspm_plt_init(void)
 	}
 
 	last_ofs += last_sz;
-	pr_debug("SSPM: %s(): after logger, ofs=%u\n", __func__, last_ofs);
+	pr_no_debug("SSPM: %s(): after logger, ofs=%u\n", __func__, last_ofs);
 #endif
 
 	ipi_data.cmd = PLT_INIT;

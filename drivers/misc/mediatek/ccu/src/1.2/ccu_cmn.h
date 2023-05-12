@@ -248,7 +248,7 @@ void ccu_clock_disable(void);
 #define CCU_TAG "[ccu]"
 
 #define LOG_DBG_MUST(format, args...) \
-	pr_debug(CCU_TAG "[%s] " format, __func__, ##args)
+	pr_no_debug(CCU_TAG "[%s] " format, __func__, ##args)
 
 #define LOG_INF_MUST(format, args...) \
 	pr_info(CCU_TAG "[%s] " format, __func__, ##args)
@@ -269,7 +269,7 @@ void ccu_clock_disable(void);
 		if (seq_file)\
 			seq_printf(seq_file, fmt, ##args);\
 		else\
-			pr_debug(fmt, ##args);\
+			pr_no_debug(fmt, ##args);\
 	} while (0)
 
 #define ccu_error(format, args...) \

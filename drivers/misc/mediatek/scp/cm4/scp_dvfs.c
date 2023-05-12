@@ -339,7 +339,7 @@ uint32_t scp_get_freq(void)
 			sum += sensor_type_table[i].freq;
 	}
 
-	/*pr_debug("[SCP] needed freq sum:%d\n",sum);*/
+	/*pr_no_debug("[SCP] needed freq sum:%d\n",sum);*/
 	for (i = 0; i < dvfs->scp_opp_num; i++) {
 		if (sum <= dvfs->opp[i].freq) {
 			return_freq = dvfs->opp[i].freq;
@@ -360,7 +360,7 @@ void scp_vcore_request(unsigned int clk_opp)
 {
 	int idx;
 
-	pr_debug("%s(%d)\n", __func__, clk_opp);
+	pr_no_debug("%s(%d)\n", __func__, clk_opp);
 
 	/* Set PMIC */
 	scp_set_pmic_vcore(clk_opp);
@@ -407,10 +407,10 @@ int scp_request_freq(void)
 	unsigned long spin_flags;
 	int is_increasing_freq = 0;
 
-	pr_debug("%s()\n", __func__);
+	pr_no_debug("%s()\n", __func__);
 
 	if (scp_dvfs_flag != 1) {
-		pr_debug("warning: SCP DVFS is OFF\n");
+		pr_no_debug("warning: SCP DVFS is OFF\n");
 		return 0;
 	}
 
@@ -444,7 +444,7 @@ int scp_request_freq(void)
 					0,
 					SCP_A_ID);
 			if (ret != SCP_IPI_DONE)
-				pr_debug("SCP send IPI fail - %d\n", ret);
+				pr_no_debug("SCP send IPI fail - %d\n", ret);
 
 			mdelay(2);
 			timeout -= 1; /*try 50 times, total about 100ms*/
@@ -483,7 +483,7 @@ int scp_request_freq(void)
 	}
 
 	__pm_relax(scp_suspend_lock);
-	pr_debug("[SCP] succeed to set freq, expect=%d, cur=%d\n",
+	pr_no_debug("[SCP] succeed to set freq, expect=%d, cur=%d\n",
 			scp_expected_freq, scp_current_freq);
 	return 0;
 }
@@ -508,7 +508,7 @@ int scp_pll_ctrl_set(unsigned int pll_ctrl_flag, unsigned int pll_sel)
 	int mux_idx = 0;
 	int ret = 0;
 
-	pr_debug("%s(%d, %d)\n", __func__, pll_ctrl_flag, pll_sel);
+	pr_no_debug("%s(%d, %d)\n", __func__, pll_ctrl_flag, pll_sel);
 
 	idx = scp_get_freq_idx(pll_sel);
 	if (idx < 0 && pll_sel != CLK_26M) {
@@ -535,7 +535,7 @@ int scp_pll_ctrl_set(unsigned int pll_ctrl_flag, unsigned int pll_sel)
 				WARN_ON(1);
 			}
 		} else {
-			pr_debug("no need to do clk_prepare_enable()\n");
+			pr_no_debug("no need to do clk_prepare_enable()\n");
 		}
 
 		if (pll_sel == CLK_26M)
@@ -563,9 +563,9 @@ int scp_pll_ctrl_set(unsigned int pll_ctrl_flag, unsigned int pll_sel)
 			   (pll_sel != MAINPLL_273M &&
 			    pll_sel != UNIVPLL_416M)) {
 		clk_disable_unprepare(mt_scp_pll->clk_mux);
-		/*pr_debug("clk_disable_unprepare()\n");*/
+		/*pr_no_debug("clk_disable_unprepare()\n");*/
 	} else {
-		/*pr_debug("no need to do clk_disable_unprepare\n");*/
+		/*pr_no_debug("no need to do clk_disable_unprepare\n");*/
 	}
 
 	return ret;
@@ -816,7 +816,7 @@ static ssize_t mt_scp_dvfs_ctrl_proc_write(
 						break;
 					}
 
-				pr_debug("request freq: %d + %d = %d (MHz)\n",
+				pr_no_debug("request freq: %d + %d = %d (MHz)\n",
 						sum,
 						added_freq,
 						sum + added_freq);
@@ -1468,7 +1468,7 @@ int __init scp_dvfs_init(void)
 {
 	int ret = 0;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 
 #ifdef CONFIG_PROC_FS
 	/* init proc */

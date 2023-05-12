@@ -86,7 +86,7 @@ static int barohub_get_pressure(char *buf, int bufsize)
 	pressure		= data.pressure_t.pressure;
 	sprintf(buf, "%08x", pressure);
 	if (atomic_read(&obj->trace) & BAR_TRC_IOCTL)
-		pr_debug("compensated pressure value: %s\n", buf);
+		pr_no_debug("compensated pressure value: %s\n", buf);
 
 	return err;
 }
@@ -237,7 +237,7 @@ static int barohub_factory_get_data(int32_t *data)
 	}
 	err = kstrtoint(strbuf, 16, data);
 	if (err != 0)
-		pr_debug("kstrtoint fail\n");
+		pr_no_debug("kstrtoint fail\n");
 
 	return 0;
 }
@@ -306,10 +306,10 @@ static int barohub_enable_nodata(int en)
 
 	res = barohub_set_powermode(power);
 	if (res < 0) {
-		pr_debug("barohub_set_powermode fail\n");
+		pr_no_debug("barohub_set_powermode fail\n");
 		return res;
 	}
-	pr_debug("barohub_set_powermode OK!\n");
+	pr_no_debug("barohub_set_powermode OK!\n");
 	return res;
 }
 
@@ -395,7 +395,7 @@ static int barohub_probe(struct platform_device *pdev)
 	struct platform_driver *paddr =
 				barohub_init_info.platform_diver_addr;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
@@ -460,7 +460,7 @@ static int barohub_probe(struct platform_device *pdev)
 	}
 
 	barohub_init_flag = 0;
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	return 0;
 
 exit_create_attr_failed:
@@ -517,7 +517,7 @@ static struct platform_driver barohub_driver = {
 
 static int barohub_local_remove(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	platform_driver_unregister(&barohub_driver);
 	return 0;
 }
@@ -535,7 +535,7 @@ static int barohub_local_init(void)
 
 static int __init barohub_init(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	if (platform_device_register(&barohub_device)) {
 		pr_err("baro platform device error\n");
 		return -1;
@@ -546,7 +546,7 @@ static int __init barohub_init(void)
 
 static void __exit barohub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	platform_driver_unregister(&barohub_driver);
 }
 

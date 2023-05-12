@@ -58,7 +58,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "[" DEV_NAME "]" fmt
 
-#define SMIDBG(string, args...) pr_debug(string, ##args)
+#define SMIDBG(string, args...) pr_no_debug(string, ##args)
 
 #if IS_ENABLED(CONFIG_MTK_CMDQ)
 #include <cmdq_helper_ext.h>

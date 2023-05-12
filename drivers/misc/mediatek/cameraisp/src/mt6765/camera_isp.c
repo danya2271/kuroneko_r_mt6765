@@ -6380,7 +6380,7 @@ static signed int ISP_MARK_IRQ(struct ISP_WAIT_IRQ_STRUCT *irqinfo)
 		spin_unlock_irqrestore(&(IspInfo.SpinLockIrq[irqinfo->Type]),
 					flags);
 
-		pr_debug("[MARK]  key/type/sts/idx (%d/%d/0x%x/%d), t(%d/%d)\n",
+		pr_no_debug("[MARK]  key/type/sts/idx (%d/%d/0x%x/%d), t(%d/%d)\n",
 		irqinfo->EventInfo.UserKey, irqinfo->Type,
 		irqinfo->EventInfo.Status, idx, (int)sec, (int)usec);
 
@@ -6493,7 +6493,7 @@ static signed int ISP_GET_MARKtoQEURY_TIME(struct ISP_WAIT_IRQ_STRUCT *irqinfo)
 		}
 		spin_unlock_irqrestore(
 			&(IspInfo.SpinLockIrq[irqinfo->Type]), flags);
-		pr_debug(
+		pr_no_debug(
 			"MKtoQT:u/t/i(%d/%d/%d) (%d/%d) (%d/%d) (%d/%d) sig(%d)\n",
 			irqinfo->EventInfo.UserKey, irqinfo->Type, idx,
 			IspInfo.IrqInfo.MarkedTime_sec
@@ -8114,7 +8114,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			ccu_get_timestamp(&hwTickCnt_ccu_direct[0],
 				&hwTickCnt_ccu_direct[1]);
 
-			pr_debug("hwTickCnt_ccu_direct[0]:%u,hwTickCnt_ccu_direct[1]:%u",
+			pr_no_debug("hwTickCnt_ccu_direct[0]:%u,hwTickCnt_ccu_direct[1]:%u",
 				hwTickCnt_ccu_direct[0],
 				hwTickCnt_ccu_direct[1]);
 
@@ -8122,7 +8122,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			(unsigned long long)hwTickCnt_ccu_direct[0] +
 			((unsigned long long)hwTickCnt_ccu_direct[1]<<32);
 
-			pr_debug("sum of hwTickCnt:%llu", sum);
+			pr_no_debug("sum of hwTickCnt:%llu", sum);
 
 			if (sum == 0) {
 				globaltime[0] = 0;
@@ -8182,14 +8182,14 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 					if (++camsys_qos == 1) {
 						mtk_pm_qos_add_request(
 						  &isp_qos, PM_QOS_CAM_FREQ, 0);
-						pr_debug(
+						pr_no_debug(
 						  "CAMSYS PMQoS turn on");
 					}
 				} else {
 					if (--camsys_qos == 0) {
 						mtk_pm_qos_remove_request(
 						  &isp_qos);
-						pr_debug(
+						pr_no_debug(
 							"CAMSYS PMQoS turn off");
 					}
 				}
@@ -8207,7 +8207,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			    sizeof(unsigned int)) == 0) {
 				mtk_pm_qos_update_request(&isp_qos, dfs_update);
 				target_clk = dfs_update;
-				pr_debug("Set clock level:%d", dfs_update);
+				pr_no_debug("Set clock level:%d", dfs_update);
 			} else {
 				pr_err("ISP_DFS_UPDATE copy_from_user failed");
 				Ret = -EFAULT;
@@ -8242,7 +8242,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			for (; lv < ispclks.clklevelcnt; lv++) {
 			/* Save clk from low to high */
 				ispclks.clklevel[lv] = freq_steps[lv];
-				pr_debug("DFS Clk level[%d]:%d",
+				pr_no_debug("DFS Clk level[%d]:%d",
 					lv, ispclks.clklevel[lv]);
 			}
 
@@ -8263,7 +8263,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 				(u32)mmdvfs_qos_get_freq(PM_QOS_CAM_FREQ);
 			getclk.targetClk = target_clk;
 
-			pr_debug("Get current clock level:%d, target clock:%d",
+			pr_no_debug("Get current clock level:%d, target clock:%d",
 				getclk.curClk, getclk.targetClk);
 
 			if (copy_to_user((void *)Param, &getclk,
@@ -10730,7 +10730,7 @@ int ISP_pm_suspend(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/*pr_debug("calling %s()\n", __func__);*/
+	/*pr_no_debug("calling %s()\n", __func__);*/
 
 	return ISP_suspend(pdev, PMSG_SUSPEND);
 }
@@ -10741,7 +10741,7 @@ int ISP_pm_resume(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/*pr_debug("calling %s()\n", __func__);*/
+	/*pr_no_debug("calling %s()\n", __func__);*/
 
 	return ISP_resume(pdev);
 }
@@ -10750,7 +10750,7 @@ int ISP_pm_resume(struct device *device)
 /* extern void mt_irq_set_polarity(unsigned int irq, unsigned int polarity); */
 int ISP_pm_restore_noirq(struct device *device)
 {
-	/*pr_debug("calling %s()\n", __func__);*/
+	/*pr_no_debug("calling %s()\n", __func__);*/
 #ifndef CONFIG_OF
 	mt_irq_set_sens(CAM0_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);
 	mt_irq_set_polarity(CAM0_IRQ_BIT_ID, MT_POLARITY_LOW);

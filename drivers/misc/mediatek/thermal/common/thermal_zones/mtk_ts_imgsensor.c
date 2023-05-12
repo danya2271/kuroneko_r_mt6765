@@ -766,12 +766,12 @@ struct thermal_cooling_device *cdev, unsigned long state)
 	g_clData[index].sysrst_state = state;
 
 	if (g_clData[index].sysrst_state == 1) {
-		pr_debug("%s: reset, reset, reset!!!\n",
+		pr_no_debug("%s: reset, reset, reset!!!\n",
 						g_clData[index].cl_name);
 
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		pr_debug("*****************************************\n");
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_debug("*****************************************\n");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.

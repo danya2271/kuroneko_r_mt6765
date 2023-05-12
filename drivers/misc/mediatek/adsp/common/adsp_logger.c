@@ -76,11 +76,11 @@ ssize_t adsp_A_log_read(char __user *data, size_t len)
 	if (to_user_buf) {
 		memcpy_fromio(to_user_buf, buf, len);
 		if (copy_to_user(data, to_user_buf, len))
-			pr_debug("[ADSP]copy to user buf failed..\n");
+			pr_no_debug("[ADSP]copy to user buf failed..\n");
 
 		vfree(to_user_buf);
 	} else {
-		pr_debug("[ADSP]create log buffer failed..\n");
+		pr_no_debug("[ADSP]create log buffer failed..\n");
 		goto error;
 	}
 
@@ -120,7 +120,7 @@ ssize_t adsp_A_log_if_read(struct file *file, char __user *data,
 
 int adsp_A_log_if_open(struct inode *inode, struct file *file)
 {
-	/* pr_debug("[ADSP A] adsp_A_log_if_open\n"); */
+	/* pr_no_debug("[ADSP A] adsp_A_log_if_open\n"); */
 	return nonseekable_open(inode, file);
 }
 
@@ -254,7 +254,7 @@ static ssize_t adsp_A_mobile_log_UT_show(struct device *kobj,
 	r_pos = ADSP_A_buf_info->r_pos;
 	w_pos = ADSP_A_buf_info->w_pos;
 
-	pr_debug("%s r_pos=%d, w_pos=%d\n", __func__, r_pos, w_pos);
+	pr_no_debug("%s r_pos=%d, w_pos=%d\n", __func__, r_pos, w_pos);
 
 	if (r_pos == w_pos)
 		goto error;
@@ -270,7 +270,7 @@ static ssize_t adsp_A_mobile_log_UT_show(struct device *kobj,
 	logger_buf = ((char *)ADSP_A_log_ctl) +
 		     ADSP_A_log_ctl->buff_ofs + r_pos;
 
-	pr_debug("%s buff_ofs=%d, logger_buf=%p\n", __func__,
+	pr_no_debug("%s buff_ofs=%d, logger_buf=%p\n", __func__,
 		ADSP_A_log_ctl->buff_ofs, logger_buf);
 
 	len = datalen;
@@ -379,7 +379,7 @@ static void adsp_A_trax_done_handler(int id, void *data, unsigned int len)
 	/* sync adsp trax length information*/
 	pADSP_A_trax_ctl->length = *((int *)data);
 	pADSP_A_trax_ctl->done = 1;
-	pr_debug("[ADSP] %s length=%d\n", __func__,
+	pr_no_debug("[ADSP] %s length=%d\n", __func__,
 		pADSP_A_trax_ctl->length);
 }
 #endif

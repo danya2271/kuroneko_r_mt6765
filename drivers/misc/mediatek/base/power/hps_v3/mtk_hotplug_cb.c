@@ -341,7 +341,7 @@ static __init int hotplug_cb_init(void)
 
 	ret = register_pm_notifier(&hps_pm_notifier_func);
 	if (ret) {
-		pr_debug("Failed to register HPS PM notifier.\n");
+		pr_no_debug("Failed to register HPS PM notifier.\n");
 		return ret;
 	}
 	pr_info("HPS PM Notification\n");

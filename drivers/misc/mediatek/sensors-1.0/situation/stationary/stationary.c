@@ -56,7 +56,7 @@ static int stat_open_report_data(int open)
 #else
 
 #endif
-	pr_debug("%s : type=%d, open=%d\n",
+	pr_no_debug("%s : type=%d, open=%d\n",
 		__func__, ID_STATIONARY_DETECT, open);
 	ret = sensor_enable_to_hub(ID_STATIONARY_DETECT, open);
 	return ret;
@@ -72,7 +72,7 @@ static int stat_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("stat do not support flush\n");
+		pr_no_debug("stat do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_STATIONARY_DETECT,
 			(int64_t)event->time_stamp);
@@ -130,7 +130,7 @@ static int __init stat_init(void)
 
 static void __exit stat_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(stat_init);

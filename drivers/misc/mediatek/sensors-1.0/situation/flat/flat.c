@@ -40,7 +40,7 @@ static int flat_get_data(int *probability, int *status)
 	}
 	time_stamp = data.time_stamp;
 	*probability = data.gesture_data_t.probability;
-	pr_debug("recv ipi: timestamp: %lld, probability: %d!\n", time_stamp,
+	pr_no_debug("recv ipi: timestamp: %lld, probability: %d!\n", time_stamp,
 		*probability);
 	return 0;
 }
@@ -49,7 +49,7 @@ static int flat_open_report_data(int open)
 {
 	int ret = 0;
 
-	pr_debug("%s : enable=%d\n", __func__, open);
+	pr_no_debug("%s : enable=%d\n", __func__, open);
 #if defined CONFIG_MTK_SCP_SENSORHUB_V1
 	if (open == 1)
 		ret = sensor_set_delay_to_hub(ID_FLAT, 120);
@@ -66,7 +66,7 @@ static int flat_open_report_data(int open)
 static int flat_batch(int flag, int64_t samplingPeriodNs,
 		int64_t maxBatchReportLatencyNs)
 {
-	pr_debug("%s : flag=%d\n", __func__, flag);
+	pr_no_debug("%s : flag=%d\n", __func__, flag);
 
 	return sensor_batch_to_hub(ID_FLAT, flag, samplingPeriodNs,
 			maxBatchReportLatencyNs);
@@ -133,7 +133,7 @@ static int __init flat_init(void)
 
 static void __exit flat_exit(void)
 {
-	pr_debug("flat exit\n");
+	pr_no_debug("flat exit\n");
 }
 
 module_init(flat_init);

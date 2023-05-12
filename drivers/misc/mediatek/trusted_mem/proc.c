@@ -209,7 +209,7 @@ static ssize_t tmem_write(struct file *file, const char __user *buffer,
 	if (kstrtol(desc, 10, &cmd) != 0)
 		return count;
 
-	pr_debug("receives user space cmd '%ld'\n", cmd);
+	pr_no_debug("receives user space cmd '%ld'\n", cmd);
 
 	if ((cmd >= TMEM_MANUAL_CMD_RESERVE_START)
 	    && (cmd <= TMEM_MANUAL_CMD_RESERVE_END)) {

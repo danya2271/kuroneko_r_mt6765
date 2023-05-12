@@ -60,7 +60,7 @@ static long mag_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 		if (mag_factory.fops != NULL &&
 		    mag_factory.fops->enable_sensor != NULL) {
-			pr_debug("MSENSOR_ENABLE,en: %d, sample_period:%dms\n",
+			pr_no_debug("MSENSOR_ENABLE,en: %d, sample_period:%dms\n",
 				flag, 5);
 			err = mag_factory.fops->enable_sensor(flag, 20);
 			if (err < 0) {
@@ -84,7 +84,7 @@ static long mag_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			}
 			sprintf(strbuf, "%x %x %x", data_buf[0], data_buf[1],
 				data_buf[2]);
-			pr_debug("MSENSOR_IOCTL_READ_SENSORDATA read:(%s)!\n",
+			pr_no_debug("MSENSOR_IOCTL_READ_SENSORDATA read:(%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
 				return -EFAULT;
@@ -108,7 +108,7 @@ static long mag_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		}
 		return 0;
 	default:
-		pr_debug("unknown IOCTL: 0x%08x\n", cmd);
+		pr_no_debug("unknown IOCTL: 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 	return 0;
@@ -129,7 +129,7 @@ static long compat_mag_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_MSENSOR_IOCTL_READ_SENSORDATA:
 	case COMPAT_MSENSOR_IOCTL_SENSOR_ENABLE:
 	case COMPAT_MSENSOR_IOCTL_SELF_TEST:
-		pr_debug("compat_ion_ioctl : MSENSOR_IOCTL_XXX is 0x%x\n",
+		pr_no_debug("compat_ion_ioctl : MSENSOR_IOCTL_XXX is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(
 			filp, cmd, (unsigned long)compat_ptr(arg));

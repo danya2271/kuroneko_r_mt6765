@@ -208,12 +208,12 @@ int md_id, unsigned int id, char *buf, unsigned int len)
 }
 
 #define mtk_cooler_mutt_dprintk_always(fmt, args...) \
-pr_debug("[Thermal/TC/mutt]" fmt, ##args)
+pr_no_debug("[Thermal/TC/mutt]" fmt, ##args)
 
 #define mtk_cooler_mutt_dprintk(fmt, args...) \
 do { \
 	if (cl_mutt_klog_on == 1) \
-		pr_debug("[Thermal/TC/mutt]" fmt, ##args); \
+		pr_no_debug("[Thermal/TC/mutt]" fmt, ##args); \
 } while (0)
 
 /* State of "MD off & noIMS" are not included. */

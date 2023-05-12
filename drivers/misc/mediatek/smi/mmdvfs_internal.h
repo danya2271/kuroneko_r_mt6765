@@ -20,10 +20,10 @@
 			MMDVFSMSG(x);            \
 	} while (0)
 
-#define MMDVFSMSG2(string, args...) pr_debug(string, ##args)
+#define MMDVFSMSG2(string, args...) pr_no_debug(string, ##args)
 
 #define MMDVFSTMP(string, args...) \
-	pr_debug("[pid=%d]"string, current->tgid, ##args)
+	pr_no_debug("[pid=%d]"string, current->tgid, ##args)
 
 #define MMDVFSERR(string, args...) \
 	do {\

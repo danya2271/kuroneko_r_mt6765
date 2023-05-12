@@ -632,7 +632,7 @@ int audio_ipi_dma_alloc_region(const uint8_t task,
 
 	for (i = 0; i < NUM_AUDIO_IPI_DMA_PATH; i++) {
 		if (size[i] == 0) {
-			pr_debug("task %d, size[%d]: %u", task, i, size[i]);
+			pr_no_debug("task %d, size[%d]: %u", task, i, size[i]);
 			continue;
 		}
 
@@ -1195,7 +1195,7 @@ int audio_ipi_dma_read_region(const uint8_t task,
 
 	/* check read index */
 	if (read_idx != region->read_idx) {
-		pr_debug("read_idx 0x%x != region->read_idx 0x%x!!",
+		pr_no_debug("read_idx 0x%x != region->read_idx 0x%x!!",
 			 read_idx, region->read_idx);
 		region->read_idx = read_idx;
 	}
@@ -1240,7 +1240,7 @@ int audio_ipi_dma_drop_region(const uint8_t task,
 
 	/* check read index */
 	if (read_idx != region->read_idx) {
-		pr_debug("read_idx 0x%x != region->read_idx 0x%x!!",
+		pr_no_debug("read_idx 0x%x != region->read_idx 0x%x!!",
 			 read_idx, region->read_idx);
 		region->read_idx = read_idx;
 	}

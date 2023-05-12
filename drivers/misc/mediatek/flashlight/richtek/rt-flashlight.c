@@ -136,7 +136,7 @@ static ssize_t torch_brightness_store(struct device *dev,
 		if (brightness > flashlight_dev->props.torch_max_brightness)
 			rc = -EINVAL;
 		else {
-			pr_debug("flashlight: set torch brightness to %ld\n",
+			pr_no_debug("flashlight: set torch brightness to %ld\n",
 				 brightness);
 			flashlight_dev->props.torch_brightness = brightness;
 			flashlight_dev->ops->set_torch_brightness(
@@ -177,7 +177,7 @@ static ssize_t strobe_brightness_store(struct device *dev,
 		if (brightness > flashlight_dev->props.strobe_max_brightness)
 			rc = -EINVAL;
 		else {
-			pr_debug("flashlight: set strobe brightness to %ld\n",
+			pr_no_debug("flashlight: set strobe brightness to %ld\n",
 				 brightness);
 			flashlight_dev->props.strobe_brightness = brightness;
 			flashlight_dev->ops->set_strobe_brightness(
@@ -285,7 +285,7 @@ struct flashlight_device *flashlight_device_register(const char *name,
 	struct flashlight_device *flashlight_dev;
 	int rc;
 
-	pr_debug("%s: name=%s\n", __func__, name);
+	pr_no_debug("%s: name=%s\n", __func__, name);
 	flashlight_dev = kzalloc(sizeof(*flashlight_dev), GFP_KERNEL);
 	if (!flashlight_dev)
 		return ERR_PTR(-ENOMEM);

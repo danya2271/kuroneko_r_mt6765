@@ -75,7 +75,7 @@ static UINT32 gDbgLevel = GPS_LOG_DBG;
 
 #define GPS_DBG_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_DBG)	\
-		pr_debug(PFX "[D]%s: "  fmt, __func__, ##arg);	\
+		pr_no_debug(PFX "[D]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS_INFO_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_INFO)	\
@@ -286,7 +286,7 @@ ssize_t GPS_read(struct file *filp, char __user *buf, size_t count, loff_t *f_po
 
 	down(&rd_mtx);
 
-    /* pr_debug("GPS_read(): count %d pos %lld\n", count, *f_pos); */
+    /* pr_no_debug("GPS_read(): count %d pos %lld\n", count, *f_pos); */
 	if (rstflag == 1) {
 		if (filp->f_flags & O_NONBLOCK) {
 			/* GPS_DBG_FUNC("Non-blocking read, whole chip reset occurs! rstflag=%d\n", rstflag); */
@@ -1122,7 +1122,7 @@ const struct file_operations GPS_fops = {
 
 void GPS_event_cb(void)
 {
-/*    pr_debug("GPS_event_cb()\n");*/
+/*    pr_no_debug("GPS_event_cb()\n");*/
 
 	flag = 1;
 	wake_up(&GPS_wq);

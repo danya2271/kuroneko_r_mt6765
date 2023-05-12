@@ -155,7 +155,7 @@ int consys_clk_get_from_dts(struct platform_device *pdev)
 		pr_err("[CCF]cannot get clk_scp_conn_main clock.\n");
 		return PTR_ERR(clk_scp_conn_main);
 	}
-	pr_debug("[CCF]clk_scp_conn_main=%p\n", clk_scp_conn_main);
+	pr_no_debug("[CCF]clk_scp_conn_main=%p\n", clk_scp_conn_main);
 
 	return 0;
 }

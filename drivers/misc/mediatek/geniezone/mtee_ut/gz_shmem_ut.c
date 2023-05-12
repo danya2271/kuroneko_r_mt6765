@@ -50,7 +50,7 @@
 #define mem_srv_name  "com.mediatek.geniezone.srv.mem"
 #define echo_srv_name  "com.mediatek.geniezone.srv.echo"
 
-#define KREE_DEBUG(fmt...) pr_debug("[SM_kUT]" fmt)
+#define KREE_DEBUG(fmt...) pr_no_debug("[SM_kUT]" fmt)
 #define KREE_INFO(fmt...) pr_info("[SM_kUT]" fmt)
 #define KREE_ERR(fmt...) pr_info("[SM_kUT][ERR]" fmt)
 

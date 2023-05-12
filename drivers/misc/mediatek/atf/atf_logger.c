@@ -334,7 +334,7 @@ static void show_data(unsigned long addr,
 				pr_notice(" %08x", data);
 			++p;
 		}
-		pr_debug("\n");
+		pr_no_debug("\n");
 	}
 }
 #endif

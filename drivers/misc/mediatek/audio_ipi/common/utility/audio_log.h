@@ -10,14 +10,14 @@
 
 #ifndef AUD_LOG_V
 #ifdef DEBUG_IPI
-#define AUD_LOG_V(x...) pr_debug(x)
+#define AUD_LOG_V(x...) pr_no_debug(x)
 #else
 #define AUD_LOG_V(x...)
 #endif
 #endif
 
 #ifndef AUD_LOG_D
-#define AUD_LOG_D pr_debug
+#define AUD_LOG_D pr_no_debug
 #endif
 
 #ifndef AUD_LOG_W

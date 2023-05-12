@@ -242,7 +242,7 @@ static int spm_module_init(void)
 
 	spm_wakelock = wakeup_source_register(NULL, "spm");
 	if (spm_wakelock == NULL) {
-		pr_debug("fail to request spm_wakelock\n");
+		pr_no_debug("fail to request spm_wakelock\n");
 		return ret;
 	}
 	spm_register_init(&spm_irq_0);
@@ -260,13 +260,13 @@ static int spm_module_init(void)
 
 	ret = platform_driver_register(&spm_dev_drv);
 	if (ret) {
-		pr_debug("fail to register platform driver\n");
+		pr_no_debug("fail to register platform driver\n");
 		return ret;
 	}
 
 	pspmdev = platform_device_register_simple("spm", -1, NULL, 0);
 	if (IS_ERR(pspmdev)) {
-		pr_debug("Failed to register platform device.\n");
+		pr_no_debug("Failed to register platform device.\n");
 		return -EINVAL;
 	}
 
@@ -286,7 +286,7 @@ static int spm_module_init(void)
 
 	ret = register_pm_notifier(&spm_pm_notifier_func);
 	if (ret) {
-		pr_debug("Failed to register PM notifier.\n");
+		pr_no_debug("Failed to register PM notifier.\n");
 		return ret;
 	}
 

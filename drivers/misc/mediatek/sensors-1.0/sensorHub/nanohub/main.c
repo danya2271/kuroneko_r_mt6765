@@ -719,7 +719,7 @@ static bool nanohub_os_log(char *buffer, int len)
 			mdata--;
 			break;
 		}
-		pr_debug("%snanohub: %s", mtype, mdata);
+		pr_no_debug("%snanohub: %s", mtype, mdata);
 		return true;
 	} else {
 		return false;

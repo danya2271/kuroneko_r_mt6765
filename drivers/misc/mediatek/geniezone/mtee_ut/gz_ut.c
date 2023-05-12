@@ -54,7 +54,7 @@ DEFINE_MUTEX(ut_mutex);
 #define mem_srv_name  "com.mediatek.geniezone.srv.mem"
 #define echo_srv_name  "com.mediatek.geniezone.srv.echo"
 
-#define KREE_DEBUG(fmt...) pr_debug("[KREE]" fmt)
+#define KREE_DEBUG(fmt...) pr_no_debug("[KREE]" fmt)
 #define KREE_INFO(fmt...) pr_info("[KREE]" fmt)
 #define KREE_ERR(fmt...) pr_info("[KREE][ERR]" fmt)
 

@@ -30,11 +30,11 @@
 #define mtktscharger_dprintk(fmt, args...) \
 do { \
 	if (mtktscharger_debug_log) \
-		pr_debug("[Thermal/tzcharger]" fmt, ##args); \
+		pr_no_debug("[Thermal/tzcharger]" fmt, ##args); \
 } while (0)
 
 #define mtktscharger_dprintk_always(fmt, args...) \
-	pr_debug("[Thermal/tzcharger]" fmt, ##args)
+	pr_no_debug("[Thermal/tzcharger]" fmt, ##args)
 
 #define mtktscharger_pr_notice(fmt, args...) \
 	pr_notice("[Thermal/tzcharger]" fmt, ##args)

@@ -47,7 +47,7 @@ static int mtkts_ta_debug_log;
 #define tsta_dprintk(fmt, args...)   \
 	do {                                    \
 		if (mtkts_ta_debug_log) {                \
-			pr_debug("[Thermal/TC/TA]" fmt, ##args); \
+			pr_no_debug("[Thermal/TC/TA]" fmt, ##args); \
 		}                                   \
 	} while (0)
 

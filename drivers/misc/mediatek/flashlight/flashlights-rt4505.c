@@ -199,7 +199,7 @@ static unsigned int rt4505_timeout_ms;
 
 static void rt4505_work_disable(struct work_struct *data)
 {
-	pr_debug("work queue callback\n");
+	pr_no_debug("work queue callback\n");
 	rt4505_disable();
 }
 
@@ -226,19 +226,19 @@ static int rt4505_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		rt4505_timeout_ms = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		rt4505_set_level(fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if (fl_arg->arg == 1) {
 			if (rt4505_timeout_ms) {
@@ -256,24 +256,24 @@ static int rt4505_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = RT4505_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = RT4505_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = rt4505_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = rt4505_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = RT4505_HW_TIMEOUT;
 		break;
 
@@ -308,14 +308,14 @@ static int rt4505_set_driver(int set)
 		if (!use_count)
 			ret = rt4505_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = rt4505_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&rt4505_mutex);
 
@@ -420,7 +420,7 @@ static int rt4505_i2c_probe(
 	int err;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	/* check i2c */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
@@ -486,7 +486,7 @@ static int rt4505_i2c_probe(
 		}
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 
@@ -503,7 +503,7 @@ static int rt4505_i2c_remove(struct i2c_client *client)
 	struct rt4505_chip_data *chip = i2c_get_clientdata(client);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	client->dev.platform_data = NULL;
 
@@ -521,7 +521,7 @@ static int rt4505_i2c_remove(struct i2c_client *client)
 	/* free resource */
 	kfree(chip);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }

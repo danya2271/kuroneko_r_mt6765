@@ -67,7 +67,7 @@ static UINT32 g2DbgLevel = GPS2_LOG_DBG;
 
 #define GPS2_DBG_FUNC(fmt, arg...)	\
 do { if (g2DbgLevel >= GPS2_LOG_DBG)	\
-		pr_debug(PFX2 "[D]%s: "  fmt, __func__, ##arg);	\
+		pr_no_debug(PFX2 "[D]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS2_INFO_FUNC(fmt, arg...)	\
 do { if (g2DbgLevel >= GPS2_LOG_INFO)	\
@@ -258,7 +258,7 @@ ssize_t GPS2_read(struct file *filp, char __user *buf, size_t count, loff_t *f_p
 
 	down(&rd_mtx2);
 
-    /* pr_debug("GPS2_read(): count %d pos %lld\n", count, *f_pos); */
+    /* pr_no_debug("GPS2_read(): count %d pos %lld\n", count, *f_pos); */
 	if (rstflag2 == 1) {
 		if (filp->f_flags & O_NONBLOCK) {
 			/* GPS2_DBG_FUNC("Non-blocking read, whole chip reset occurs! rstflag2=%d\n", rstflag2); */
@@ -844,7 +844,7 @@ const struct file_operations GPS2_fops = {
 
 void GPS2_event_cb(void)
 {
-/*    pr_debug("GPS2_event_cb()\n");*/
+/*    pr_no_debug("GPS2_event_cb()\n");*/
 
 	flag2 = 1;
 	wake_up(&GPS2_wq);

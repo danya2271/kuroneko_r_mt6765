@@ -332,7 +332,7 @@ static int is_valid_vds(struct tipc_virtio_dev *vds)
 	int i = 0;
 	int ret = 0;
 
-	pr_debug("%s: vds 0x%p\n", __func__, vds);
+	pr_no_debug("%s: vds 0x%p\n", __func__, vds);
 	if (unlikely(!virt_addr_valid(vds)))
 		return -EFAULT;
 
@@ -1246,7 +1246,7 @@ int port_lookup_tid(const char *port, enum tee_id_t *o_tid)
 		/* If hash table hit, set from tee_routing_config. */
 		if (strcmp(token, tr_obj->srv_name) == 0) {
 			*o_tid = tr_obj->tee_id;
-			pr_debug("[%s] find token %s, tid %d\n",
+			pr_no_debug("[%s] find token %s, tid %d\n",
 				 __func__, token, *o_tid);
 			break;
 		}
@@ -1859,7 +1859,7 @@ static void tee_routing_init(void)
 		char *srv_name = tee_routing_config[i].srv_name;
 		u32 hash_val =
 		    hashlen_hash(hashlen_string(HASH_SALT, srv_name));
-		pr_debug("[%s] name %s, hash_val 0x%x added\n", __func__,
+		pr_no_debug("[%s] name %s, hash_val 0x%x added\n", __func__,
 			 srv_name, hash_val);
 		hash_add(tee_routing_htable, &tee_routing_config[i].node,
 			 hash_val);

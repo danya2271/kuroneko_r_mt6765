@@ -1091,21 +1091,21 @@ static _osal_inline_ VOID stp_dbg_dump_data(PUINT8 pBuf, PINT8 title, INT32 len)
 	PUINT8 p_str;
 
 	p_str = &str[0];
-	pr_debug(" %s-len:%d\n", title, len);
+	pr_no_debug(" %s-len:%d\n", title, len);
 	for (idx = 0; idx < len; idx++, pBuf++) {
 		sprintf(p_str, "%02x ", *pBuf);
 		p_str += 3;
 		if (15 == (idx % 16)) {
 			sprintf(p_str, "--end\n");
 			*(p_str + 6) = '\0';
-			pr_debug("%s", str);
+			pr_no_debug("%s", str);
 			p_str = 0;
 		}
 	}
 	if (len % 16) {
 		sprintf(p_str, "--end\n");
 		*(p_str + 6) = '\0';
-		pr_debug("%s", str);
+		pr_no_debug("%s", str);
 	}
 }
 #endif

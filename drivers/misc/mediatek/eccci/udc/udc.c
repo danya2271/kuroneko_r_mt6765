@@ -393,7 +393,7 @@ int udc_init(struct z_stream_s *zcpr, struct udc_private_data *my_param)
 	ret = udc_QueryPara_cb(NULL, UDC_QUERY_WORKSPACE_SIZE, &my_param->size);
 	my_param->mem = vmalloc(my_param->size);
 
-	pr_debug("%s:alloc memory:%p\n",  __func__, my_param->mem);
+	pr_no_debug("%s:alloc memory:%p\n",  __func__, my_param->mem);
 
 	(*zcpr).zalloc = &my_malloc;
 	(*zcpr).zfree = &my_free;
@@ -407,6 +407,6 @@ void udc_deinit(struct z_stream_s *zcpr)
 	struct udc_private_data *p =
 		(struct udc_private_data *)((*zcpr).opaque);
 
-	pr_debug("%s:free memory:%p\n",  __func__, p->mem);
+	pr_no_debug("%s:free memory:%p\n",  __func__, p->mem);
 	vfree(p->mem);
 }

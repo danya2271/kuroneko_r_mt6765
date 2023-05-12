@@ -474,7 +474,7 @@ static void ppm_main_calc_new_limit(void)
 			ppm_main_info.client_info[PPM_CLIENT_DVFS].limit_cb) {
 		if (ppm_main_info.is_doe_enabled == 1) {
 			for_each_ppm_clusters(i) {
-				pr_debug_ratelimited(
+				pr_no_debug(
 					"[DoE] cl: %d max: %d min: %d\n",
 					i,
 					ppm_main_info.cluster_info[i].doe_max,

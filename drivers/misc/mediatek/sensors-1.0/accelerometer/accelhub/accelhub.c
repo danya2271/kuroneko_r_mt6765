@@ -140,7 +140,7 @@ static int accelhub_WriteCalibration(int dat[ACCELHUB_AXES_NUM])
 		return err;
 	}
 
-	pr_debug("OLDOFF: (%+3d %+3d %+3d), cali: (%+3d %+3d %+3d)\n",
+	pr_no_debug("OLDOFF: (%+3d %+3d %+3d), cali: (%+3d %+3d %+3d)\n",
 		raw[ACCELHUB_AXIS_X], raw[ACCELHUB_AXIS_Y],
 		raw[ACCELHUB_AXIS_Z], obj->static_cali[ACCELHUB_AXIS_X],
 		obj->static_cali[ACCELHUB_AXIS_Y],
@@ -156,7 +156,7 @@ static int accelhub_WriteCalibration(int dat[ACCELHUB_AXES_NUM])
 	cali[ACCELHUB_AXIS_Y] += dat[ACCELHUB_AXIS_Y];
 	cali[ACCELHUB_AXIS_Z] += dat[ACCELHUB_AXIS_Z];
 
-	pr_debug("UPDATE: (%+3d %+3d %+3d)\n", dat[ACCELHUB_AXIS_X],
+	pr_no_debug("UPDATE: (%+3d %+3d %+3d)\n", dat[ACCELHUB_AXIS_X],
 		dat[ACCELHUB_AXIS_Y], dat[ACCELHUB_AXIS_Z]);
 
 	obj->static_cali[ACCELHUB_AXIS_X] = cali[ACCELHUB_AXIS_X];
@@ -222,7 +222,7 @@ static int accelhub_ReadSensorData(char *buf, int bufsize)
 	sprintf(buf, "%04x %04x %04x %04x", acc[ACCELHUB_AXIS_X],
 		acc[ACCELHUB_AXIS_Y], acc[ACCELHUB_AXIS_Z], status);
 	if (atomic_read(&obj->trace) & ACCELHUB_TRC_IOCTL)
-		pr_debug("gsensor data: %s!\n", buf);
+		pr_no_debug("gsensor data: %s!\n", buf);
 
 	return 0;
 }
@@ -311,7 +311,7 @@ static ssize_t chip_orientation_store(struct device_driver *ddri,
 		return 0;
 	ret = kstrtoint(buf, 10, &_nDirection);
 	if (ret != 0) {
-		pr_debug("kstrtoint fail\n");
+		pr_no_debug("kstrtoint fail\n");
 		return 0;
 	}
 	obj->direction = _nDirection;
@@ -324,7 +324,7 @@ static ssize_t chip_orientation_store(struct device_driver *ddri,
 		return 0;
 	}
 
-	pr_debug("[%s] set direction: %d\n", __func__, _nDirection);
+	pr_no_debug("[%s] set direction: %d\n", __func__, _nDirection);
 
 	return tCount;
 }
@@ -337,7 +337,7 @@ static ssize_t test_cali_store(struct device_driver *ddri, const char *buf,
 
 	ret = kstrtoint(buf, 10, &enable);
 	if (ret != 0) {
-		pr_debug("kstrtoint fail\n");
+		pr_no_debug("kstrtoint fail\n");
 		return 0;
 	}
 	if (enable == 1)
@@ -403,7 +403,7 @@ static void scp_init_work_done(struct work_struct *work)
 #endif
 
 	if (atomic_read(&obj->scp_init_done) == 0) {
-		pr_debug("scp is not ready to send cmd\n");
+		pr_no_debug("scp is not ready to send cmd\n");
 		return;
 	}
 	if (atomic_xchg(&obj->first_ready_after_boot, 1) == 0)
@@ -515,7 +515,7 @@ static int gsensor_factory_get_data(int32_t data[3], int *status)
 }
 static int gsensor_factory_get_raw_data(int32_t data[3])
 {
-	pr_debug("%s don't support!\n", __func__);
+	pr_no_debug("%s don't support!\n", __func__);
 	return 0;
 }
 static int gsensor_factory_enable_calibration(void)
@@ -576,7 +576,7 @@ static int gsensor_factory_get_cali(int32_t data[3])
 	status = obj->static_cali_status;
 	spin_unlock(&calibration_lock);
 	if (status != 0) {
-		pr_debug("gsensor static cali detect shake!\n");
+		pr_no_debug("gsensor static cali detect shake!\n");
 		return -2;
 	}
 #endif
@@ -639,7 +639,7 @@ static int gsensor_enable_nodata(int en)
 		}
 	}
 
-	pr_debug("scp_gsensor_enable_nodata OK!!!\n");
+	pr_no_debug("scp_gsensor_enable_nodata OK!!!\n");
 	return 0;
 }
 
@@ -656,7 +656,7 @@ static int gsensor_set_delay(u64 ns)
 		pr_err("%s fail!\n", __func__);
 		return err;
 	}
-	pr_debug("%s (%d)\n", __func__, delayms);
+	pr_no_debug("%s (%d)\n", __func__, delayms);
 	return 0;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -716,7 +716,7 @@ static int gsensor_get_data(int *x, int *y, int *z, int *status)
 	}
 
 	if (atomic_read(&obj->trace) & ACCELHUB_TRC_RAWDATA)
-		pr_debug("x = %d, y = %d, z = %d\n", *x, *y, *z);
+		pr_no_debug("x = %d, y = %d, z = %d\n", *x, *y, *z);
 
 	return 0;
 }
@@ -749,7 +749,7 @@ static int accelhub_probe(struct platform_device *pdev)
 	struct acc_data_path data = {0};
 	int err = 0;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
 		err = -ENOMEM;
@@ -820,7 +820,7 @@ static int accelhub_probe(struct platform_device *pdev)
 		goto exit_create_attr_failed;
 	}
 	gsensor_init_flag = 0;
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	return 0;
 
 exit_create_attr_failed:
@@ -875,7 +875,7 @@ static struct platform_driver accelhub_driver = {
 
 static int gsensor_local_init(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 
 	if (platform_driver_register(&accelhub_driver)) {
 		pr_err("add driver error\n");
@@ -888,7 +888,7 @@ static int gsensor_local_init(void)
 
 static int gsensor_local_remove(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	platform_driver_unregister(&accelhub_driver);
 	return 0;
 }
@@ -912,7 +912,7 @@ static int __init accelhub_init(void)
 
 static void __exit accelhub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 module_init(accelhub_init);
 module_exit(accelhub_exit);

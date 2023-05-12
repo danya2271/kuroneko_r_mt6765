@@ -99,7 +99,7 @@ void adsp_A_register_notify(struct notifier_block *nb)
 	mutex_lock(&adsp_A_notify_mutex);
 	blocking_notifier_chain_register(&adsp_A_notifier_list, nb);
 
-	pr_debug("[ADSP] register adsp A notify callback..\n");
+	pr_no_debug("[ADSP] register adsp A notify callback..\n");
 
 	if (is_adsp_ready(ADSP_A_ID) == 1)
 		nb->notifier_call(nb, ADSP_EVENT_READY, NULL);
@@ -286,7 +286,7 @@ static void adsp_timeout_ws(struct work_struct *ws)
 	if (adsp_timeout_times < 5) {
 		adsp_timeout_times++;
 		__pm_relax(adsp_reset_lock);
-		pr_debug("%s(): cnt (%d)\n", __func__, adsp_timeout_times);
+		pr_no_debug("%s(): cnt (%d)\n", __func__, adsp_timeout_times);
 		adsp_send_reset_wq(ADSP_RESET_TYPE_AWAKE, ADSP_A_ID);
 	} else
 		WARN_ON(1); /* reboot */
@@ -364,7 +364,7 @@ uint32_t adsp_power_on(uint32_t enable)
 		adsp_set_clock_freq(CLK_DEFAULT_26M_CK);
 		adsp_disable_clock();
 	}
-	pr_debug("-%s (%x)\n", __func__, enable);
+	pr_no_debug("-%s (%x)\n", __func__, enable);
 	return 1;
 }
 
@@ -604,10 +604,10 @@ void adsp_update_memory_protect_info(void)
 void adsp_enable_dsp_clk(bool enable)
 {
 	if (enable) {
-		pr_debug("enable dsp clk\n");
+		pr_no_debug("enable dsp clk\n");
 		adsp_enable_clock();
 	} else {
-		pr_debug("disable dsp clk\n");
+		pr_no_debug("disable dsp clk\n");
 		adsp_disable_clock();
 	}
 }
@@ -885,7 +885,7 @@ static int __init adsp_module_init(void)
 	queue_delayed_work(adsp_workqueue, &adsp_timeout_work,
 			jiffies + ADSP_READY_TIMEOUT);
 #endif
-	pr_debug("[ADSP] driver_init_done\n");
+	pr_no_debug("[ADSP] driver_init_done\n");
 	return ret;
 
 ERROR:

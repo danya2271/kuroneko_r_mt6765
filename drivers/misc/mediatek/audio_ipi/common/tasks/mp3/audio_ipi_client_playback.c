@@ -167,13 +167,13 @@ void playback_close_dump_file(void)
 
 	b_enable_dump = false;
 
-	pr_debug("pass: %d\n", dump_data_routine_cnt_pass);
+	pr_no_debug("pass: %d\n", dump_data_routine_cnt_pass);
 
 	if (playback_dump_task) {
 		kthread_stop(playback_dump_task);
 		playback_dump_task = NULL;
 	}
-	pr_debug("dump_queue = %p\n", dump_queue);
+	pr_no_debug("dump_queue = %p\n", dump_queue);
 	kfree(dump_queue);
 	dump_queue = NULL;
 
@@ -243,7 +243,7 @@ static int dump_kthread(void *data)
 	sched_setscheduler(current, SCHED_RR, &param);
 
 
-	pr_debug("dump_queue = %p\n", dump_queue);
+	pr_no_debug("dump_queue = %p\n", dump_queue);
 
 	while (b_enable_dump && !kthread_should_stop()) {
 		spin_lock_irqsave(&dump_queue_lock, flags);
@@ -268,7 +268,7 @@ static int dump_kthread(void *data)
 			dump_queue->idx_r++;
 		}
 
-		pr_debug("current_idx = %d\n", current_idx);
+		pr_no_debug("current_idx = %d\n", current_idx);
 
 		dump_package = &dump_queue->dump_package[current_idx];
 
@@ -283,13 +283,13 @@ static int dump_kthread(void *data)
 						  dump_package->data_size,
 						  dump_package->rw_idx);
 			pcm_dump = (struct pcm_dump_t *)data_buf;
-			pr_debug("pcm_dump = %p size = %d\n", pcm_dump, size);
+			pr_no_debug("pcm_dump = %p size = %d\n", pcm_dump, size);
 			if (pcm_dump == NULL)
 				break;
 			while (size > 0) {
 				if (size < FRAME_BUF_SIZE)
 					writedata = size;
-				pr_debug("pcm_dump = %p writedata = %d\n",
+				pr_no_debug("pcm_dump = %p writedata = %d\n",
 					 pcm_dump, writedata);
 				if (!IS_ERR(file_decode_pcm)) {
 					ret = file_decode_pcm->f_op->write(
@@ -314,7 +314,7 @@ static int dump_kthread(void *data)
 		}
 	}
 
-	pr_debug("%s(), exit\n", __func__);
+	pr_no_debug("%s(), exit\n", __func__);
 	return 0;
 }
 

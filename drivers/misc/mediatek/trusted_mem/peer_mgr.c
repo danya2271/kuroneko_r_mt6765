@@ -188,7 +188,7 @@ peer_mgr_session_open_locked(struct trusted_driver_operations *drv_ops,
 		return TMEM_MGR_OPEN_SESSION_FAILED;
 	}
 
-	pr_debug("peer data is created:%p\n", sess_data->peer_data);
+	pr_no_debug("peer data is created:%p\n", sess_data->peer_data);
 
 	set_session_ready(sess_data, true);
 
@@ -208,7 +208,7 @@ static int peer_mgr_session_close_locked(
 	}
 
 	if (keep_alive) {
-		pr_debug("peer session won't close!\n");
+		pr_no_debug("peer session won't close!\n");
 		return TMEM_OK;
 	}
 

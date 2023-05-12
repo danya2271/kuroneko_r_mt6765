@@ -63,7 +63,7 @@ static int iReadRegI2C(u8 *a_pSendData, u16 a_sizeSendData,
 				EEPROM_I2C_MSG_SIZE_READ);
 
 	if (i4RetValue != EEPROM_I2C_MSG_SIZE_READ) {
-		pr_debug("I2C read failed!!\n");
+		pr_no_debug("I2C read failed!!\n");
 		return -1;
 	}
 	return 0;
@@ -83,7 +83,7 @@ static int custom_read_region(u32 addr, u8 *data, u16 i2c_id, u32 size)
 
 		if (iReadRegI2C(&offset, 1, (u8 *)Buff, 1,
 			i2c_id + (page << 1)) < 0) {
-			pr_debug("fail addr=0x%x 0x%x, P=%d, offset=0x%x",
+			pr_no_debug("fail addr=0x%x 0x%x, P=%d, offset=0x%x",
 				addr, *Buff, page, offset);
 			break;
 		}
@@ -92,7 +92,7 @@ static int custom_read_region(u32 addr, u8 *data, u16 i2c_id, u32 size)
 		size_to_read--;
 		ret++;
 	}
-	pr_debug("addr =%x size %d data read = %d\n", addr, size, ret);
+	pr_no_debug("addr =%x size %d data read = %d\n", addr, size, ret);
 	return ret;
 }
 

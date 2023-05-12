@@ -351,7 +351,7 @@ static ssize_t proc_generate_oops_read(struct file *file,
 
 	len = snprintf(buffer, BUFSIZE, "Oops Generated!\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len))
 		pr_notice("%s fail to output info.\n", __func__);
 
@@ -493,7 +493,7 @@ static ssize_t proc_generate_ee_read(struct file *file, char __user *buf,
 
 	len = snprintf(buffer, BUFSIZE, "Modem EE Generated\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
 		pr_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
@@ -529,7 +529,7 @@ static ssize_t proc_generate_combo_read(struct file *file, char __user *buf,
 
 	len = snprintf(buffer, BUFSIZE, "Combo EE Generated\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
 		pr_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
@@ -634,7 +634,7 @@ static ssize_t proc_generate_kernel_notify_read(struct file *file,
 	int len = snprintf(buffer, BUFSIZE,
 			   "Usage: write message with format \"R|W|E:Tag:You Message\" into this file to generate kernel warning\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (*ppos)
 		return 0;
 	if (copy_to_user(buf, buffer, len)) {

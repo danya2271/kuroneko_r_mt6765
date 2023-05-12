@@ -564,13 +564,13 @@ static int aw3644_uninit(void)
  *****************************************************************************/
 static void aw3644_work_disable_ch1(struct work_struct *data)
 {
-	pr_debug("ht work queue callback\n");
+	pr_no_debug("ht work queue callback\n");
 	aw3644_disable();
 }
 
 static void aw3644_work_disable_ch2(struct work_struct *data)
 {
-	pr_debug("lt work queue callback\n");
+	pr_no_debug("lt work queue callback\n");
 	aw3644_disable();
 }
 
@@ -703,23 +703,23 @@ static int aw3644_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_timeout_ms[channel] = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_set_level(channel, fl_arg->arg);
 		break;
 	case FLASH_IOC_SET_SCENARIO:
-		pr_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_set_scenario(fl_arg->arg);
 		break;
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_operate(channel, fl_arg->arg);
 		break;
@@ -762,14 +762,14 @@ static int aw3644_set_driver(int set)
 		if (!use_count)
 			ret = aw3644_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = aw3644_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&aw3644_mutex);
 
@@ -933,12 +933,12 @@ static int aw3644_probe(struct platform_device *dev)
 	pr_info("aw3644_platform_probe start.\n");
 	/* init pinctrl */
 	if (aw3644_pinctrl_init(dev)) {
-		pr_debug("Failed to init pinctrl.\n");
+		pr_no_debug("Failed to init pinctrl.\n");
 		return -1;
 	}
 
 	if (i2c_add_driver(&aw3644_i2c_driver)) {
-		pr_debug("Failed to add i2c driver.\n");
+		pr_no_debug("Failed to add i2c driver.\n");
 		return -1;
 	}
 
@@ -949,11 +949,11 @@ static int aw3644_probe(struct platform_device *dev)
 
 static int aw3644_remove(struct platform_device *dev)
 {
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	i2c_del_driver(&aw3644_i2c_driver);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -1007,18 +1007,18 @@ static int __init flashlight_aw3644_init(void)
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_aw3644_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&aw3644_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 late_initcall(flashlight_aw3644_init);

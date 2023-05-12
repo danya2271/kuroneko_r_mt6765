@@ -172,7 +172,7 @@ static int mt6370_enable(void)
 			|| (mt6370_en_ch2 == MT6370_ENABLE_FLASH))
 		mode = FLASHLIGHT_MODE_FLASH;
 
-	pr_debug("enable(%d,%d), mode:%d.\n",
+	pr_no_debug("enable(%d,%d), mode:%d.\n",
 		mt6370_en_ch1, mt6370_en_ch2, mode);
 
 	/* enable channel 1 and channel 2 */
@@ -212,7 +212,7 @@ static int mt6370_disable_ch1(void)
 {
 	int ret = 0;
 
-	pr_debug("disable_ch1.\n");
+	pr_no_debug("disable_ch1.\n");
 
 	if (!flashlight_dev_ch1) {
 		pr_info("Failed to disable since no flashlight device.\n");
@@ -231,7 +231,7 @@ static int mt6370_disable_ch2(void)
 {
 	int ret = 0;
 
-	pr_debug("disable_ch2.\n");
+	pr_no_debug("disable_ch2.\n");
 
 	if (!flashlight_dev_ch2) {
 		pr_info("Failed to disable since no flashlight device.\n");
@@ -250,7 +250,7 @@ static int mt6370_disable_all(void)
 {
 	int ret = 0;
 
-	pr_debug("disable_ch1.\n");
+	pr_no_debug("disable_ch1.\n");
 
 	if (!flashlight_dev_ch1) {
 		pr_info("Failed to disable since no flashlight device.\n");
@@ -412,13 +412,13 @@ static int mt6370_uninit(void)
  *****************************************************************************/
 static void mt6370_work_disable_ch1(struct work_struct *data)
 {
-	pr_debug("ht work queue callback\n");
+	pr_no_debug("ht work queue callback\n");
 	mt6370_disable(MT6370_CHANNEL_CH1);
 }
 
 static void mt6370_work_disable_ch2(struct work_struct *data)
 {
-	pr_debug("lt work queue callback\n");
+	pr_no_debug("lt work queue callback\n");
 	mt6370_disable(MT6370_CHANNEL_CH2);
 }
 
@@ -498,7 +498,7 @@ static int mt6370_operate(int channel, int enable)
 		}
 	}
 
-	pr_debug("en_ch(%d,%d), decouple:%d\n",
+	pr_no_debug("en_ch(%d,%d), decouple:%d\n",
 		mt6370_en_ch1, mt6370_en_ch2, mt6370_decouple_mode);
 
 	/* operate flashlight and setup timer */
@@ -567,53 +567,53 @@ static int mt6370_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6370_timeout_ms[channel] = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6370_set_level(channel, fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_SCENARIO:
-		pr_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6370_set_scenario(fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6370_operate(channel, fl_arg->arg);
 		break;
 
 	case FLASH_IOC_IS_CHARGER_READY:
-		pr_debug("FLASH_IOC_IS_CHARGER_READY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_IS_CHARGER_READY(%d)\n", channel);
 		fl_arg->arg = mt6370_is_charger_ready();
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = MT6370_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = MT6370_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = mt6370_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = mt6370_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = MT6370_HW_TIMEOUT;
 		break;
 
@@ -631,7 +631,7 @@ static int mt6370_open(void)
 	/* Move to set driver for saving power */
 	mutex_lock(&mt6370_mutex);
 	fd_use_count++;
-	pr_debug("open driver: %d\n", fd_use_count);
+	pr_no_debug("open driver: %d\n", fd_use_count);
 	mutex_unlock(&mt6370_mutex);
 	return 0;
 }
@@ -641,7 +641,7 @@ static int mt6370_release(void)
 	/* Move to set driver for saving power */
 	mutex_lock(&mt6370_mutex);
 	fd_use_count--;
-	pr_debug("close driver: %d\n", fd_use_count);
+	pr_no_debug("close driver: %d\n", fd_use_count);
 	/* If camera NE, we need to enable pe by ourselves*/
 	if (fd_use_count == 0 && is_decrease_voltage) {
 		pr_info("Increase voltage level.\n");
@@ -662,14 +662,14 @@ static int mt6370_set_driver(int set)
 		if (!use_count)
 			ret = mt6370_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = mt6370_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&mt6370_mutex);
 
@@ -784,7 +784,7 @@ static int mt6370_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	/* parse dt */
 	if (!pdata) {
@@ -843,7 +843,7 @@ static int mt6370_probe(struct platform_device *pdev)
 			return -EFAULT;
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 }
@@ -853,7 +853,7 @@ static int mt6370_remove(struct platform_device *pdev)
 	struct mt6370_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	pdev->dev.platform_data = NULL;
 
@@ -873,7 +873,7 @@ static int mt6370_remove(struct platform_device *pdev)
 	flashlight_dev_ch1 = NULL;
 	flashlight_dev_ch2 = NULL;
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -912,7 +912,7 @@ static int __init flashlight_mt6370_init(void)
 {
 	int ret;
 
-	pr_debug("Init start.\n");
+	pr_no_debug("Init start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&mt6370_platform_device);
@@ -928,18 +928,18 @@ static int __init flashlight_mt6370_init(void)
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_mt6370_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&mt6370_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 /* replace module_init() since conflict in kernel init process */

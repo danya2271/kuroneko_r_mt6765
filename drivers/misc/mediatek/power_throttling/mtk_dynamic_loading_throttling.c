@@ -172,7 +172,7 @@ static void exec_dlpt_callback(int dlpt_val)
 		if (dlptcb_tb[i].dlptcb)
 			dlptcb_tb[i].dlptcb(dlpt_val);
 	}
-	pr_debug("[%s] dlpt imix_val=%d\n", __func__, dlpt_val);
+	pr_no_debug("[%s] dlpt imix_val=%d\n", __func__, dlpt_val);
 }
 
 static int dlpt_get_rgs_chrdet(void)
@@ -295,7 +295,7 @@ static int get_dlpt_imix_charging(void)
 		return 0;
 	}
 	imix = (zcv_val - vsys_min_1_val) * 1000 / dlpt.imix_r * 9 / 10;
-	pr_debug("[%s] %d %d %d %d\n", __func__,
+	pr_no_debug("[%s] %d %d %d %d\n", __func__,
 		 imix, zcv_val, vsys_min_1_val, dlpt.imix_r);
 
 	return imix;

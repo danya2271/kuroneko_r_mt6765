@@ -26,7 +26,7 @@ int get_accel_dts_func(struct device_node *node, struct acc_hw *hw)
 	u32 firlen[] = {0};
 	u32 is_batch_supported[] = {0};
 
-	pr_debug("Device Tree get accel info!\n");
+	pr_no_debug("Device Tree get accel info!\n");
 	if (node) {
 		ret = of_property_read_u32_array(node, "i2c_num", i2c_num,
 						 ARRAY_SIZE(i2c_num));
@@ -94,7 +94,7 @@ int get_alsps_dts_func(struct device_node *node, struct alsps_hw *hw)
 	u32 is_batch_supported_ps[] = {0};
 	u32 is_batch_supported_als[] = {0};
 
-	pr_debug("Device Tree get alsps info!\n");
+	pr_no_debug("Device Tree get alsps info!\n");
 	if (node) {
 		ret = of_property_read_u32_array(node, "i2c_num", i2c_num,
 						 ARRAY_SIZE(i2c_num));
@@ -189,7 +189,7 @@ int get_mag_dts_func(struct device_node *node, struct mag_hw *hw)
 	u32 power_vol[] = {0};
 	u32 is_batch_supported[] = {0};
 
-	pr_debug("Device Tree get mag info!\n");
+	pr_no_debug("Device Tree get mag info!\n");
 	if (node) {
 		ret = of_property_read_u32_array(node, "i2c_num", i2c_num,
 						 ARRAY_SIZE(i2c_num));
@@ -246,7 +246,7 @@ int get_gyro_dts_func(struct device_node *node, struct gyro_hw *hw)
 	u32 firlen[] = {0};
 	u32 is_batch_supported[] = {0};
 
-	pr_debug("Device Tree get gyro info!\n");
+	pr_no_debug("Device Tree get gyro info!\n");
 	if (node) {
 		ret = of_property_read_u32_array(node, "i2c_num", i2c_num,
 						 ARRAY_SIZE(i2c_num));
@@ -308,7 +308,7 @@ int get_baro_dts_func(struct device_node *node, struct baro_hw *hw)
 	u32 firlen[] = {0};
 	u32 is_batch_supported[] = {0};
 
-	pr_debug("Device Tree get gyro info!\n");
+	pr_no_debug("Device Tree get gyro info!\n");
 
 	if (node) {
 		ret = of_property_read_u32_array(node, "i2c_num", i2c_num,
@@ -370,7 +370,7 @@ int get_accelgyro_dts_func(struct device_node *node, struct accelgyro_hw *hw)
 	u32 accel_is_batch_supported[] = {0};
 	u32 gyro_is_batch_supported[] = {0};
 
-	pr_debug("Device Tree get accel info!\n");
+	pr_no_debug("Device Tree get accel info!\n");
 	if (node) {
 		ret = of_property_read_u32_array(node, "direction", direction,
 						 ARRAY_SIZE(direction));

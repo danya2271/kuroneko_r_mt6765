@@ -533,7 +533,7 @@ static int mt6397_pmic_probe(struct platform_device *dev)
 	int irq_thr_l, irq_thr_h;
 	struct mt6397_chip *mt6397_chip = dev_get_drvdata(dev->dev.parent);
 
-	pr_debug("[Power/PMIC] ******** MT6397 pmic driver probe!! ********\n");
+	pr_no_debug("[Power/PMIC] ******** MT6397 pmic driver probe!! ********\n");
 
 	pwrap_regmap = mt6397_chip->regmap;
 
@@ -543,14 +543,14 @@ static int mt6397_pmic_probe(struct platform_device *dev)
 
 	/* pmic initial setting */
 	PMIC_INIT_SETTING_V1();
-	pr_debug("[Power/PMIC][PMIC_INIT_SETTING_V1] Done\n");
+	pr_no_debug("[Power/PMIC][PMIC_INIT_SETTING_V1] Done\n");
 
 	PMIC_CUSTOM_SETTING_V1();
-	pr_debug("[Power/PMIC][PMIC_CUSTOM_SETTING_V1] Done\n");
+	pr_no_debug("[Power/PMIC][PMIC_CUSTOM_SETTING_V1] Done\n");
 
 	/* pmic low power setting */
 	pmic_low_power_setting();
-	pr_debug("[Power/PMIC][pmic_low_power_setting] Done\n");
+	pr_no_debug("[Power/PMIC][pmic_low_power_setting] Done\n");
 
 	res = platform_get_resource(dev, IORESOURCE_IRQ, 0);
 	if (!res) {

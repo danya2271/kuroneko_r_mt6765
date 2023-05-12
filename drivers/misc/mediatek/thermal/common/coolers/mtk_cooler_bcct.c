@@ -106,7 +106,7 @@ mtk_chr_get_tchr(int *min_temp, int *max_temp)
 #define mtk_cooler_bcct_dprintk(fmt, args...) \
 	do { \
 		if (cl_bcct_klog_on == 1) \
-			pr_debug("[Thermal/TC/bcct]" fmt, ##args); \
+			pr_no_debug("[Thermal/TC/bcct]" fmt, ##args); \
 	} while (0)
 
 #define MAX_NUM_INSTANCE_MTK_COOLER_BCCT  3

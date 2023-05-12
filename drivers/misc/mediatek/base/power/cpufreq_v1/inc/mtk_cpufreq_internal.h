@@ -87,7 +87,7 @@ extern unsigned int func_lv_mask;
 #define TAG	"[Power/cpufreq] "
 #define tag_pr_notice(fmt, args...)	pr_notice(TAG fmt, ##args)
 #define tag_pr_info(fmt, args...)	pr_info(TAG fmt, ##args)
-#define tag_pr_debug(fmt, args...)	pr_debug(TAG fmt, ##args)
+#define tag_pr_no_debug(fmt, args...)	pr_no_debug(TAG fmt, ##args)
 
 #define cpufreq_ver(fmt, args...)		\
 do {						\
@@ -115,10 +115,10 @@ do {						\
 #ifdef CONFIG_CPU_DVFS_SHOWLOG
 #define FUNC_ENTER(lv) \
 	do { if ((lv) & func_lv_mask) \
-	tag_pr_debug(">> %s()\n", __func__); } while (0)
+	tag_pr_no_debug(">> %s()\n", __func__); } while (0)
 #define FUNC_EXIT(lv) \
 	do { if ((lv) & func_lv_mask) \
-	tag_pr_debug("<< %s():%d\n", __func__, __LINE__); } while (0)
+	tag_pr_no_debug("<< %s():%d\n", __func__, __LINE__); } while (0)
 #else
 #define FUNC_ENTER(lv)
 #define FUNC_EXIT(lv)

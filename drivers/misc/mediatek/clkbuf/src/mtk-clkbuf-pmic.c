@@ -215,7 +215,7 @@ static int _pmic_clk_buf_bblpm_hw_en(bool on)
 	pmic_clkbuf_update(PMIC_HW_BBLPM_SEL, 0, on);
 	pmic_clkbuf_read(PMIC_HW_BBLPM_SEL, 0, &val);
 
-	pr_debug("%s(%u): bblpm_hw=0x%x\n",
+	pr_no_debug("%s(%u): bblpm_hw=0x%x\n",
 			__func__, (on ? 1 : 0), val);
 	return 0;
 }

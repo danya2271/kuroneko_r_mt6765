@@ -101,7 +101,7 @@ static ssize_t cpufreq_power_mode_proc_write(struct file *file,
 
 	if (!kstrtouint(buf, 10, &mode) && mode < NUM_PPB_POWER_MODE) {
 		dvfs_power_mode = mode;
-		tag_pr_debug("%s start\n", power_mode_str[mode]);
+		tag_pr_no_debug("%s start\n", power_mode_str[mode]);
 	} else {
 		tag_pr_info
 		("echo 0/1/2/3 > /proc/cpufreq/cpufreq_power_mode\n");

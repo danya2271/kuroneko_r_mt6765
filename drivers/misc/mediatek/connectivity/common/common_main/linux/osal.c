@@ -213,7 +213,7 @@ INT32 osal_dbg_print(const PINT8 str, ...)
 	va_end(args);
 
 	if (ret > 0)
-		pr_debug("%s", tempString);
+		pr_no_debug("%s", tempString);
 
 	return ret;
 }

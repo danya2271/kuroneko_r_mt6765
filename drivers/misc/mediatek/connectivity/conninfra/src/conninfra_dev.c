@@ -337,7 +337,7 @@ int conninfra_dev_fb_notifier_callback(struct notifier_block *self,
 	struct fb_event *evdata = data;
 	int blank;
 
-	pr_debug("conninfra_dev_fb_notifier_callback event=[%u]\n", event);
+	pr_no_debug("conninfra_dev_fb_notifier_callback event=[%u]\n", event);
 
 	/* If we aren't interested in this event, skip it immediately ... */
 	if (event != FB_EARLY_EVENT_BLANK)
@@ -364,7 +364,7 @@ int conninfra_dev_fb_notifier_callback(struct notifier_block *self,
 
 static void conninfra_dev_pwr_on_off_handler(struct work_struct *work)
 {
-	pr_debug("conninfra_dev_pwr_on_off_handler start to run\n");
+	pr_no_debug("conninfra_dev_pwr_on_off_handler start to run\n");
 
 	/* Update blank on status after wmt power on */
 	if (conninfra_dev_get_blank_state() == 1) {

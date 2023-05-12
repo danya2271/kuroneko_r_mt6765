@@ -293,7 +293,7 @@ static int ipi_txrx_bufs(struct ipi_transfer *t)
 	} while (status == SCP_IPI_BUSY);
 
 	if (retry >= 100)
-		pr_debug("retry time:%d\n", retry);
+		pr_no_debug("retry time:%d\n", retry);
 
 	timeout = wait_for_completion_timeout(&hw->done, msecs_to_jiffies(500));
 	spin_lock_irqsave(&txrx_cmd_lock, flags);
@@ -550,7 +550,7 @@ static void SCP_sensorHub_xcmd_putdata(union SCP_SENSOR_HUB_DATA *rsp,
 
 	if (req->req.sensorType != rsp->rsp.sensorType ||
 		req->req.action != rsp->rsp.action) {
-		pr_debug("req type %d != rsp %d req action %d != rsq %d\n",
+		pr_no_debug("req type %d != rsp %d req action %d != rsq %d\n",
 			req->req.sensorType, rsp->rsp.sensorType,
 			req->req.action, rsp->rsp.action);
 	} else {
@@ -1258,7 +1258,7 @@ static int sensor_send_timestamp_wake_locked(void)
 	req.set_config_req.action = SENSOR_HUB_SET_TIMESTAMP;
 	req.set_config_req.ap_timestamp = now_time;
 	req.set_config_req.arch_counter = arch_counter;
-	pr_debug("sync ap boottime=%lld\n", now_time);
+	pr_no_debug("sync ap boottime=%lld\n", now_time);
 	len = sizeof(req.set_config_req);
 	err = scp_sensorHub_req_send(&req, &len, 1);
 	if (err < 0)
@@ -2144,7 +2144,7 @@ static void restoring_enable_sensorHub_sensor(int handle)
 	if (mSensorState[sensor_type].sensorType &&
 		mSensorState[sensor_type].enable) {
 		init_sensor_config_cmd(&cmd, sensor_type);
-		pr_debug("restoring: handle=%d,enable=%d,rate=%d,latency=%lld\n",
+		pr_no_debug("restoring: handle=%d,enable=%d,rate=%d,latency=%lld\n",
 			handle, mSensorState[sensor_type].enable,
 			mSensorState[sensor_type].rate,
 			mSensorState[sensor_type].latency);
@@ -2196,7 +2196,7 @@ void sensorHub_power_up_loop(void *data)
 		((long)scp_get_reserve_mem_size(SENS_MEM_ID) -
 		offsetof(struct sensorFIFO, data)) /
 		SENSOR_DATA_SIZE * SENSOR_DATA_SIZE);
-	pr_debug("obj->SCP_sensorFIFO =%p, wp =%d, rp =%d, size =%d\n",
+	pr_no_debug("obj->SCP_sensorFIFO =%p, wp =%d, rp =%d, size =%d\n",
 		READ_ONCE(obj->SCP_sensorFIFO),
 		READ_ONCE(obj->SCP_sensorFIFO->wp),
 		READ_ONCE(obj->SCP_sensorFIFO->rp),
@@ -2262,7 +2262,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 	struct task_struct *task_power_reset = NULL;
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO - 1 };
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	SCP_sensorHub_init_sensor_state();
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
@@ -2339,7 +2339,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 	}
 
 	SCP_sensorHub_init_flag = 0;
-	pr_debug("init done, data_unit_t size: %d,SCP_SENSOR_HUB_DATA size:%d\n",
+	pr_no_debug("init done, data_unit_t size: %d,SCP_SENSOR_HUB_DATA size:%d\n",
 		(int)sizeof(struct data_unit_t),
 		(int)sizeof(union SCP_SENSOR_HUB_DATA));
 	BUG_ON(sizeof(struct data_unit_t) != SENSOR_DATA_SIZE
@@ -2429,20 +2429,20 @@ static ssize_t nanohub_trace_store(struct device_driver *ddri,
 	unsigned int handle;
 	int res = 0;
 
-	pr_debug("%s buf:%s\n", __func__, buf);
+	pr_no_debug("%s buf:%s\n", __func__, buf);
 	if (sscanf(buf, "%d,%d", &handle, &trace) != 2) {
 		pr_err("invalid content: '%s', length = %zu\n", buf, count);
 		goto err_out;
 	}
 
 	if (handle < 0 || handle > ID_SENSOR_MAX_HANDLE) {
-		pr_debug("invalid handle value:%d,should be '0<=handle<=%d'\n",
+		pr_no_debug("invalid handle value:%d,should be '0<=handle<=%d'\n",
 			trace, ID_SENSOR_MAX_HANDLE);
 		goto err_out;
 	}
 
 	if (trace != 0 && trace != 1) {
-		pr_debug("invalid trace value:%d,trace should be '0' or '1'",
+		pr_no_debug("invalid trace value:%d,trace should be '0' or '1'",
 			trace);
 		goto err_out;
 	}
@@ -2520,12 +2520,12 @@ static int sensorHub_pm_event(struct notifier_block *notifier,
 {
 	switch (pm_event) {
 	case PM_POST_SUSPEND:
-		pr_debug("resume ap boottime=%lld\n", ktime_get_boot_ns());
+		pr_no_debug("resume ap boottime=%lld\n", ktime_get_boot_ns());
 		WRITE_ONCE(rtc_compensation_suspend, false);
 		sensor_send_timestamp_to_hub();
 		return NOTIFY_DONE;
 	case PM_SUSPEND_PREPARE:
-		pr_debug("suspend ap boottime=%lld\n", ktime_get_boot_ns());
+		pr_no_debug("suspend ap boottime=%lld\n", ktime_get_boot_ns());
 		WRITE_ONCE(rtc_compensation_suspend, true);
 		return NOTIFY_DONE;
 	default:
@@ -2543,7 +2543,7 @@ static struct notifier_block sensorHub_pm_notifier_func = {
 static int __init SCP_sensorHub_init(void)
 {
 	SCP_sensorHub_ipi_master_init();
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	if (platform_device_register(&sensorHub_device)) {
 		pr_err("SCP_sensorHub platform device error\n");
 		return -1;
@@ -2567,7 +2567,7 @@ static int __init SCP_sensorHub_init(void)
 
 static void __exit SCP_sensorHub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(SCP_sensorHub_init);

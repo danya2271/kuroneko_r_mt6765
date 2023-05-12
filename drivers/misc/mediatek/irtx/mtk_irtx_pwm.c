@@ -333,7 +333,7 @@ static long compat_dev_char_ioctl(struct file *file, unsigned int cmd,
 	case COMPAT_IRTX_IOC_SET_IRTX_LED_EN:
 	case COMPAT_IRTX_IOC_SET_DUTY_CYCLE:
 	case COMPAT_IRTX_IOC_SET_CARRIER_FREQ:
-		pr_debug("irtx compat_ioctl : command: 0x%x\n", cmd);
+		pr_no_debug("irtx compat_ioctl : command: 0x%x\n", cmd);
 		return file->f_op->unlocked_ioctl(
 			file, cmd, (unsigned long)compat_ptr(arg));
 		break;

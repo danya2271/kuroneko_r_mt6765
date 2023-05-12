@@ -28,7 +28,7 @@ static void mt8173_init_setting(struct mtk_smi_data *smidev,
 
 	/* save default larb regs */
 	if (!(*default_saved)) {
-		pr_debug("Save default config:\n");
+		pr_no_debug("Save default config:\n");
 		default_smi_val[0] = M4U_ReadReg32(SMI_COMMON_EXT_BASE,
 							 REG_OFFSET_SMI_L1ARB0);
 		default_smi_val[1] = M4U_ReadReg32(SMI_COMMON_EXT_BASE,
@@ -41,9 +41,9 @@ static void mt8173_init_setting(struct mtk_smi_data *smidev,
 							 REG_OFFSET_SMI_L1ARB4);
 		default_smi_val[5] = M4U_ReadReg32(SMI_COMMON_EXT_BASE,
 							 REG_OFFSET_SMI_L1ARB5);
-		pr_debug("l1arb[0-2]= 0x%x,  0x%x, 0x%x\n", default_smi_val[0],
+		pr_no_debug("l1arb[0-2]= 0x%x,  0x%x, 0x%x\n", default_smi_val[0],
 		       default_smi_val[1], default_smi_val[2]);
-		pr_debug("l1arb[3-4]= 0x%x,  0x%x 0x%x\n", default_smi_val[3],
+		pr_no_debug("l1arb[3-4]= 0x%x,  0x%x 0x%x\n", default_smi_val[3],
 		       default_smi_val[4], default_smi_val[5]);
 
 		*default_saved = true;
