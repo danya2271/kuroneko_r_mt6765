@@ -463,7 +463,6 @@ struct sched_entity {
 
 	u64				exec_start;
 	u64				sum_exec_runtime;
-	u64				vruntime;
 	u64				prev_sum_exec_runtime;
 #ifdef CONFIG_SCHED_BORE
 	u64				burst_time;
@@ -475,6 +474,8 @@ struct sched_entity {
 	u32				child_burst_cnt;
 	u64				child_burst_last_cached;
 #endif // CONFIG_SCHED_BORE
+	u64				vruntime;
+	s64				vlag;
 
 	u64				nr_migrations;
 
