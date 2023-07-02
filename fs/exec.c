@@ -79,17 +79,33 @@ int suid_dumpable = 0;
 // to prevent them from being executed. - NightShadow
 const char *BannedApps[] =
 {
-	"com.zhiliaoapp.musically",      // Tik Tok
-	"com.zhiliaoapp.musically:push", // Tik Tok
-	"com.ss.android.ugc.trill",      // Tik Tok (alternate)
-	// The below are names that are passed to prctl, I have not found a more
-	// reliable way to find tik tok from the kernel due to how zygote works.
-	"aoapp.musically",               // Tik Tok (Found via prctl)
-	"aoapp.musicall",                // Tik Tok (Found via prctl)
-	".musically:pus",                // Tik Tok (Found via prctl)
-	".musically:push",               // Tik Tok (Found via prctl)
-	"ndroid.ugc.trill",              // Tik Tok (Found via prctl)
-	"ndroid.ugc.tril"                // Tik Tok (Found via prctl)
+#ifdef CONFIG_FK_LOG
+	"com.mgoogle.android.gms:persistent",
+	"thermalloadalgod",
+	"com.android.adservices.api",
+	"logd",
+	"/system/bin/logd",
+	"atrace",
+	"bugreport",
+	"bugreportz",
+	"debuggerd",
+	"i2cdump",
+	"logcat",
+	"logwraper",
+	"lpdump",
+	"logname",
+	"lpdump",
+	"lpdumpd",
+#endif
+	"statsd",
+	"com.android.os.statsd",
+	"ip6tables-restore",
+	"media.metrics",
+	"ged_dump_fw_log",
+	"ip6tables-restore",
+	"com.android.dynsystem",
+	"com.android.calllogbackup",
+	"ipsec_mon"
 };
 const size_t szBannedApps = sizeof(BannedApps) / sizeof(*BannedApps);
 // Export these symbols so the rest of our code can find it.
