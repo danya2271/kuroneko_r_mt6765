@@ -19,6 +19,7 @@
 
 #include <linux/ktime.h>
 #include <linux/device.h>
+#include <linux/version.h>
 
 /* A wake_lock prevents the system from entering suspend or other low power
  * states when active. If the type is set to WAKE_LOCK_SUSPEND, the wake_lock
@@ -37,6 +38,7 @@ struct wake_lock {
 static inline void wake_lock_init(struct wake_lock *lock, int type,
 				  const char *name)
 {
+	wakeup_source_add(&lock->ws);
 }
 
 static inline void wake_lock_destroy(struct wake_lock *lock)
