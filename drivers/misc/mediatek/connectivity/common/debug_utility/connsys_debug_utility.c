@@ -267,14 +267,14 @@ static void connlog_ring_emi_to_cache(int conn_type)
 
 	if (RING_FULL(ring_cache)) {
 		if (__ratelimit(&_rs))
-			pr_warn("%s cache is full.\n", type_to_title[conn_type]);
+			pr_no_info("%s cache is full.\n", type_to_title[conn_type]);
 		return;
 	}
 
 	cache_max_size = RING_WRITE_REMAIN_SIZE(ring_cache);
 	if (RING_EMI_EMPTY(ring_emi) || !ring_emi_read_prepare(cache_max_size, &ring_emi_seg, ring_emi)) {
 		if (__ratelimit(&_rs))
-			pr_err("%s no data, possibly taken by concurrent reader.\n", type_to_title[conn_type]);
+			pr_no_info("%s no data, possibly taken by concurrent reader.\n", type_to_title[conn_type]);
 		return;
 	}
 
@@ -282,7 +282,7 @@ static void connlog_ring_emi_to_cache(int conn_type)
 	if (EMI_READ32(ring_emi->read) > emi_offset_table[conn_type].emi_size ||
 		EMI_READ32(ring_emi->write) > emi_offset_table[conn_type].emi_size) {
 		if (__ratelimit(&_rs))
-			pr_err("%s read/write pointer out-of-bounds.\n", type_to_title[conn_type]);
+			pr_no_info("%s read/write pointer out-of-bounds.\n", type_to_title[conn_type]);
 		connlog_emi_status_dump();
 		/* Trigger Connsys Assert */
 		mtk_wcn_wmt_assert(WMTDRV_TYPE_WMT, 46);
@@ -304,7 +304,7 @@ static void connlog_ring_emi_to_cache(int conn_type)
 			ring_dump_segment(__func__, &ring_cache_seg);
 #endif
 			if (__ratelimit(&_rs2))
-				pr_info("%s: ring_emi_seg.sz=%d, ring_cache_pt=%p, ring_cache_seg.sz=%d\n",
+				pr_no_info("%s: ring_emi_seg.sz=%d, ring_cache_pt=%p, ring_cache_seg.sz=%d\n",
 					type_to_title[conn_type], ring_emi_seg.sz, ring_cache_seg.ring_pt,
 					ring_cache_seg.sz);
 			memcpy_fromio(ring_cache_seg.ring_pt, ring_emi_seg.ring_emi_pt + ring_cache_seg.data_pos,
@@ -350,7 +350,7 @@ static void connlog_dump_buf(const char *title, const char *buf, ssize_t sz)
 				memset(line+i*3, ' ', (BYETES_PER_LINE-i)*3);
 				memset(line+3*BYETES_PER_LINE+i, '.', BYETES_PER_LINE-i);
 			}
-			pr_info("%s: %s\n", title, line);
+			pr_no_info("%s: %s\n", title, line);
 			i = 0;
 		}
 	}
@@ -380,7 +380,7 @@ static void connlog_fw_log_parser(int conn_type, const char *buf, ssize_t sz)
 				print_len = buf_len >= LOG_MAX_LEN ? LOG_MAX_LEN - 1 : buf_len;
 				memcpy(log_line, buf + LOG_HEAD_LENG, print_len);
 				log_line[print_len] = 0;
-				pr_info("%s: %s\n", type_to_title[conn_type], log_line);
+				pr_no_info("%s: %s\n", type_to_title[conn_type], log_line);
 				sz -= (LOG_HEAD_LENG + buf_len);
 				buf += (LOG_HEAD_LENG + buf_len);
 				continue;
@@ -389,7 +389,7 @@ static void connlog_fw_log_parser(int conn_type, const char *buf, ssize_t sz)
 				memcpy(&systime, buf + 28, sizeof(systime));
 				memcpy(&utc_s, buf + 32, sizeof(utc_s));
 				memcpy(&utc_us, buf + 36, sizeof(utc_us));
-				pr_info("%s: timesync :  (%u) %u.%06u\n",
+				pr_no_info("%s: timesync :  (%u) %u.%06u\n",
 					type_to_title[conn_type], systime, utc_s, utc_us);
 				sz -= TIMESYNC_LENG;
 				buf += TIMESYNC_LENG;
@@ -422,7 +422,7 @@ static void connlog_ring_print(int conn_type)
 
 	ring_emi = &connlog_buffer_table[conn_type].ring_emi;
 	if (RING_EMI_EMPTY(ring_emi) || !ring_emi_read_all_prepare(&ring_emi_seg, ring_emi)) {
-		pr_err("type(%s) no data, possibly taken by concurrent reader.\n", type_to_title[conn_type]);
+		pr_no_info("type(%s) no data, possibly taken by concurrent reader.\n", type_to_title[conn_type]);
 		return;
 	}
 	buf_size = ring_emi_seg.remain;
@@ -431,7 +431,7 @@ static void connlog_ring_print(int conn_type)
 	/* Check ring_emi buffer memory. Dump EMI data if it's corruption. */
 	if (EMI_READ32(ring_emi->read) > emi_offset_table[conn_type].emi_size ||
 	    EMI_READ32(ring_emi->write) > emi_offset_table[conn_type].emi_size) {
-		pr_err("%s read/write pointer out-of-bounds.\n", type_to_title[conn_type]);
+		pr_no_info("%s read/write pointer out-of-bounds.\n", type_to_title[conn_type]);
 		connlog_emi_status_dump();
 		/* Trigger Connsys Assert */
 		mtk_wcn_wmt_assert(WMTDRV_TYPE_WMT, 46);
@@ -557,7 +557,7 @@ static int connlog_set_alarm_timer(void)
 	kt = ktime_set(gDev.log_alarm.alarm_sec, 0);
 	alarm_start_relative(&gDev.log_alarm.alarm_timer, kt);
 
-	pr_info("[connsys_log_alarm] alarm timer enabled timeout=[%d]", gDev.log_alarm.alarm_sec);
+	pr_no_info("[connsys_log_alarm] alarm timer enabled timeout=[%d]", gDev.log_alarm.alarm_sec);
 	return 0;
 }
 
@@ -573,7 +573,7 @@ static int connlog_set_alarm_timer(void)
 *****************************************************************************/
 static int connlog_cancel_alarm_timer(void)
 {
-	pr_info("[connsys_log_alarm] alarm timer cancel");
+	pr_no_info("[connsys_log_alarm] alarm timer cancel");
 	return alarm_cancel(&gDev.log_alarm.alarm_timer);
 }
 
@@ -597,7 +597,7 @@ int connsys_log_alarm_enable(unsigned int sec)
 	gDev.log_alarm.alarm_sec = sec;
 	if (!connlog_is_alarm_enable()) {
 		gDev.log_alarm.alarm_state = CONNLOG_ALARM_STATE_ENABLE;
-		pr_info("[connsys_log_alarm] alarm timer enabled timeout=[%d]", sec);
+		pr_no_info("[connsys_log_alarm] alarm timer enabled timeout=[%d]", sec);
 	}
 	if (gDev.log_alarm.blank_state == 0)
 		connlog_set_alarm_timer();
@@ -628,7 +628,7 @@ int connsys_log_alarm_disable(void)
 	if (connlog_is_alarm_enable()) {
 		ret = connlog_cancel_alarm_timer();
 		gDev.log_alarm.alarm_state = CONNLOG_ALARM_STATE_DISABLE;
-		pr_info("[connsys_log_alarm] alarm timer disable");
+		pr_no_info("[connsys_log_alarm] alarm timer disable");
 	}
 
 	spin_unlock_irqrestore(&gDev.log_alarm.alarm_lock, gDev.log_alarm.flags);
@@ -686,7 +686,7 @@ static enum alarmtimer_restart alarm_timer_handler(struct alarm *alarm,
 
 	connsys_dedicated_log_get_utc_time(&tsec, &tusec);
 	rtc_time_to_tm(tsec, &tm);
-	pr_info("[connsys_log_alarm] alarm_timer triggered [%d-%02d-%02d %02d:%02d:%02d.%09u]"
+	pr_no_info("[connsys_log_alarm] alarm_timer triggered [%d-%02d-%02d %02d:%02d:%02d.%09u]"
 			, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday
 			, tm.tm_hour, tm.tm_min, tm.tm_sec, tusec);
 
@@ -733,13 +733,13 @@ static void connlog_log_data_handler(struct work_struct *work)
 				/* ret++; */
 			} else {
 				if (__ratelimit(&_rs))
-					pr_info("[connlog] %s emi ring is empty!!\n", type_to_title[i]);
+					pr_no_info("[connlog] %s emi ring is empty!!\n", type_to_title[i]);
 			}
 		}
 	} while (ret);
 
 	if (__ratelimit(&_rs2))
-		pr_info("[connlog] irq counter=%d module=0x%04x\n",
+		pr_no_info("[connlog] irq counter=%d module=0x%04x\n",
 			EMI_READ32(gDev.virAddrEmiLogBase + CONNLOG_IRQ_COUNTER_BASE), module);
 	spin_lock_irqsave(&gDev.irq_lock, gDev.flags);
 	if (gDev.eirqOn)
@@ -785,28 +785,28 @@ static int connlog_eirq_init(const struct connlog_irq_config *irq_config)
 	int iret = 0;
 
 	if (irq_config == NULL) {
-		pr_info("irq_config is NULL\n");
+		pr_no_info("irq_config is NULL\n");
 		return -1;
 	}
 
 	if (gDev.conn2ApIrqId == 0)
 		gDev.conn2ApIrqId = irq_config->irq_num;
 	else {
-		pr_warn("IRQ has been initialized\n");
+		pr_no_info("IRQ has been initialized\n");
 		return -1;
 	}
 
 	gDev.irq_callback = irq_config->irq_callback;
 
-	pr_info("EINT CONN_LOG_IRQ(%d, %d)\n", irq_config->irq_num, irq_config->irq_flag);
+	pr_no_info("EINT CONN_LOG_IRQ(%d, %d)\n", irq_config->irq_num, irq_config->irq_flag);
 
 	iret = request_irq(gDev.conn2ApIrqId, connlog_eirq_isr, irq_config->irq_flag, "CONN_LOG_IRQ", NULL);
 	if (iret) {
-		pr_err("EINT IRQ(%d) NOT AVAILABLE!!\n", gDev.conn2ApIrqId);
+		pr_no_info("EINT IRQ(%d) NOT AVAILABLE!!\n", gDev.conn2ApIrqId);
 	} else {
 		iret = enable_irq_wake(gDev.conn2ApIrqId);
 		if (iret)
-			pr_err("enable irq wake fail,irq_no(%d),iret(%d)\n", gDev.conn2ApIrqId, iret);
+			pr_no_info("enable irq wake fail,irq_no(%d),iret(%d)\n", gDev.conn2ApIrqId, iret);
 		iret = 0;
 	}
 
@@ -870,12 +870,12 @@ static int connlog_emi_init(phys_addr_t emi_base, const struct connlog_emi_confi
 	unsigned int mcu_base, wifi_base, bt_base, gps_base;
 
 	if (emi_config == 0) {
-		pr_err("consys emi memory address gPhyAddrEmiBase invalid\n");
+		pr_no_info("consys emi memory address gPhyAddrEmiBase invalid\n");
 		return -1;
 	}
 
 	if (gDev.phyAddrEmiBase) {
-		pr_warn("emi base address has been initialized\n");
+		pr_no_info("emi base address has been initialized\n");
 		return -2;
 	}
 
@@ -883,12 +883,12 @@ static int connlog_emi_init(phys_addr_t emi_base, const struct connlog_emi_confi
 	gDev.virAddrEmiLogBase = ioremap_nocache(gDev.phyAddrEmiBase +
 		emi_config->emi_offset, emi_config->emi_size_total);
 	if (gDev.virAddrEmiLogBase) {
-		pr_info("EMI mapping OK virtual(0x%p) physical(0x%x)\n",
+		pr_no_info("EMI mapping OK virtual(0x%p) physical(0x%x)\n",
 				gDev.virAddrEmiLogBase,
 				(unsigned int)(gDev.phyAddrEmiBase + emi_config->emi_offset));
 		memset_io(gDev.virAddrEmiLogBase, 0, emi_config->emi_size_total);
 	} else
-		pr_err("EMI mapping fail\n");
+		pr_no_info("EMI mapping fail\n");
 
 	memcpy(&gDev.emi_config, emi_config, sizeof(struct connlog_emi_config));
 
@@ -962,7 +962,7 @@ static void connlog_emi_deinit(void)
 static int connlog_ring_buffer_init(void)
 {
 	if (!gDev.virAddrEmiLogBase) {
-		pr_err("consys emi memory address phyAddrEmiBase invalid\n");
+		pr_no_info("consys emi memory address phyAddrEmiBase invalid\n");
 		return -1;
 	}
 
@@ -1032,12 +1032,12 @@ int connsys_dedicated_log_path_apsoc_init(
 	memset(&gDev.emi_config, 0, sizeof(struct connlog_emi_config));
 
 	if (connlog_emi_init(emi_base, emi_config)) {
-		pr_err("EMI init failed\n");
+		pr_no_info("EMI init failed\n");
 		return -1;
 	}
 
 	if (connlog_ring_buffer_init()) {
-		pr_err("Ring buffer init failed\n");
+		pr_no_info("Ring buffer init failed\n");
 		return -2;
 	}
 
@@ -1050,7 +1050,7 @@ int connsys_dedicated_log_path_apsoc_init(
 	spin_lock_init(&gDev.irq_lock);
 	INIT_WORK(&gDev.logDataWorker, connlog_log_data_handler);
 	if (connlog_eirq_init(irq_config)) {
-		pr_err("EIRQ init failed\n");
+		pr_no_info("EIRQ init failed\n");
 		return -3;
 	}
 
@@ -1182,7 +1182,7 @@ ssize_t connsys_log_read(int conn_type, char *buf, size_t count)
 
 	size = count < RING_SIZE(ring) ? count : RING_SIZE(ring);
 	if (RING_EMPTY(ring) || !ring_read_prepare(size, &ring_seg, ring)) {
-		pr_err("type(%d) no data, possibly taken by concurrent reader.\n", conn_type);
+		pr_no_info("type(%d) no data, possibly taken by concurrent reader.\n", conn_type);
 		goto done;
 	}
 	cache_buf_size = ring_seg.remain;
@@ -1229,7 +1229,7 @@ ssize_t connsys_log_read_to_user(int conn_type, char __user *buf, size_t count)
 
 	size = count < RING_SIZE(ring) ? count : RING_SIZE(ring);
 	if (RING_EMPTY(ring) || !ring_read_prepare(size, &ring_seg, ring)) {
-		pr_err("type(%d) no data, possibly taken by concurrent reader.\n", conn_type);
+		pr_no_info("type(%d) no data, possibly taken by concurrent reader.\n", conn_type);
 		goto done;
 	}
 	cache_buf_size = ring_seg.remain;
@@ -1238,7 +1238,7 @@ ssize_t connsys_log_read_to_user(int conn_type, char __user *buf, size_t count)
 		retval = copy_to_user(buf + written, ring_seg.ring_pt, ring_seg.sz);
 		if (retval) {
 			if (__ratelimit(&_rs))
-				pr_err("copy to user buffer failed, ret:%d\n", retval);
+				pr_no_info("copy to user buffer failed, ret:%d\n", retval);
 			goto done;
 		}
 		cache_buf_size -= ring_seg.sz;

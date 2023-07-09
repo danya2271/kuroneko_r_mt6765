@@ -27,7 +27,7 @@ struct connlog_emi_config g_connsyslog_config[CONN_DEBUG_TYPE_END] = {
 struct connlog_emi_config* get_connsyslog_platform_config(int conn_type)
 {
 	if (conn_type < 0 || conn_type >= CONN_DEBUG_TYPE_END) {
-		pr_err("Incorrect type: %d\n", conn_type);
+		pr_no_info("Incorrect type: %d\n", conn_type);
 		return NULL;
 	}
 	return &g_connsyslog_config[conn_type];

@@ -24,8 +24,8 @@
 #endif
 
 #define PFX1                         "[BWG] "
-#define MSG(fmt, arg ...) pr_debug(PFX1 "[D]%s: "  fmt, __func__, ##arg)
-#define ERR(fmt, arg ...) pr_debug(PFX1 "[D]%s: "  fmt, __func__, ##arg)
+#define MSG(fmt, arg ...) pr_no_info(PFX1 "[D]%s: "  fmt, __func__, ##arg)
+#define ERR(fmt, arg ...) pr_no_info(PFX1 "[D]%s: "  fmt, __func__, ##arg)
 
 #ifdef NETLINK_TEST
 #undef NETLINK_TEST

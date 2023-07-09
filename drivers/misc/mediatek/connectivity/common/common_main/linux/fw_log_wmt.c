@@ -32,13 +32,13 @@ static wait_queue_head_t wq;
 
 static int fw_log_wmt_open(struct inode *inode, struct file *file)
 {
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	return 0;
 }
 
 static int fw_log_wmt_close(struct inode *inode, struct file *file)
 {
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	return 0;
 }
 
@@ -47,7 +47,7 @@ static ssize_t fw_log_wmt_read(struct file *filp, char __user *buf,
 {
 	ssize_t size = 0;
 
-	pr_debug("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	size = connsys_log_read_to_user(CONNLOG_TYPE_MCU, buf, count);
 	return size;
 }
@@ -55,13 +55,13 @@ static ssize_t fw_log_wmt_read(struct file *filp, char __user *buf,
 static ssize_t fw_log_wmt_write(struct file *filp, const char __user *buf,
 	size_t count, loff_t *f_pos)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	return 0;
 }
 
 static unsigned int fw_log_wmt_poll(struct file *filp, poll_table *wait)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 
 	poll_wait(filp, &wq, wait);
 	if (connsys_log_get_buf_size(CONNLOG_TYPE_MCU) > 0)
@@ -77,12 +77,12 @@ static long fw_log_wmt_unlocked_ioctl(struct file *filp, unsigned int cmd,
 
 	switch (cmd) {
 	case WMT_FW_LOG_IOCTL_ON_OFF:
-		pr_debug("ioctl: WMT_FW_LOG_IOCTL_ON_OFF(%lu)", arg);
+		pr_no_info("ioctl: WMT_FW_LOG_IOCTL_ON_OFF(%lu)", arg);
 		if (arg == 0 || arg == 1)
 			wmt_lib_fw_log_ctrl(WMT_FWLOG_MCU, (unsigned char)arg, 0xFF);
 		break;
 	case WMT_FW_LOG_IOCTL_SET_LEVEL:
-		pr_debug("ioctl: WMT_FW_LOG_IOCTL_SET_LEVEL(%lu)", arg);
+		pr_no_info("ioctl: WMT_FW_LOG_IOCTL_SET_LEVEL(%lu)", arg);
 		if (arg <= 4)
 			wmt_lib_fw_log_ctrl(WMT_FWLOG_MCU, 0xFF, (unsigned char)arg);
 		break;
@@ -125,39 +125,39 @@ int fw_log_wmt_init(void)
 
 	ret = alloc_chrdev_region(&gDevId, 0, 1, DRIVER_NAME);
 	if (ret)
-		pr_err("fail to alloc_chrdev_region\n");
+		pr_no_info("fail to alloc_chrdev_region\n");
 
 	cdev_init(&gLogCdev, &gLogFops);
 	gLogCdev.owner = THIS_MODULE;
 
 	cdevErr = cdev_add(&gLogCdev, gDevId, 1);
 	if (cdevErr) {
-		pr_err("cdev_add() fails (%d)\n", cdevErr);
+		pr_no_info("cdev_add() fails (%d)\n", cdevErr);
 		goto error;
 	}
 
 	fw_log_wmt_class = class_create(THIS_MODULE, DRIVER_NAME);
 	if (IS_ERR(fw_log_wmt_class)) {
-		pr_err("class_create fail\n");
+		pr_no_info("class_create fail\n");
 		goto error;
 	}
 
 	fw_log_wmt_dev = device_create(fw_log_wmt_class, NULL, gDevId, NULL,
 		DRIVER_NAME);
 	if (IS_ERR(fw_log_wmt_dev)) {
-		pr_err("device_create fail\n");
+		pr_no_info("device_create fail\n");
 		goto error;
 	}
 
 	init_waitqueue_head(&wq);
 	ret = connsys_log_init(CONNLOG_TYPE_MCU);
 	if (ret)
-		pr_err("fail to connsys_log_init\n");
+		pr_no_info("fail to connsys_log_init\n");
 
 	ret = connsys_log_register_event_cb(CONNLOG_TYPE_MCU,
 		fw_log_wmt_event_cb);
 	if (ret)
-		pr_err("fail to connsys_log_register_event_cb\n");
+		pr_no_info("fail to connsys_log_register_event_cb\n");
 
 	return 0;
 
@@ -173,7 +173,7 @@ error:
 		cdev_del(&gLogCdev);
 	if (ret == 0)
 		unregister_chrdev_region(gDevId, 1);
-	pr_err("fw_log_wmt_init fail\n");
+	pr_no_info("fw_log_wmt_init fail\n");
 	return -1;
 }
 EXPORT_SYMBOL(fw_log_wmt_init);
@@ -193,7 +193,7 @@ void fw_log_wmt_deinit(void)
 
 	cdev_del(&gLogCdev);
 	unregister_chrdev_region(gDevId, 1);
-	pr_warn("fw_log_wmt_driver_deinit done\n");
+	pr_no_info("fw_log_wmt_driver_deinit done\n");
 }
 EXPORT_SYMBOL(fw_log_wmt_deinit);
 #endif

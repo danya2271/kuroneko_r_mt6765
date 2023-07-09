@@ -188,7 +188,7 @@ enum MTK_WCN_HIF_SDIO_ERR {
  *
  */
 #if HIF_SDIO_DEBUG
-#define DPRINTK(fmt, args...) pr_debug("%s: " fmt, __func__, ## args)
+#define DPRINTK(fmt, args...) pr_no_info("%s: " fmt, __func__, ## args)
 #else
 #define DPRINTK(fmt, args...)
 #endif

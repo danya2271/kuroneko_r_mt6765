@@ -45,7 +45,7 @@ int mmc_send_io_op_cond(struct mmc_host *host, u32 ocr, u32 *rocr)
 
 		/* if we're just probing, do a single pass */
 		if (ocr == 0) {
-			pr_warn("PROBE ONLY! RESP[0] = 0x%08x\n", cmd.resp[0]);
+			pr_no_info("PROBE ONLY! RESP[0] = 0x%08x\n", cmd.resp[0]);
 			break;
 		}
 

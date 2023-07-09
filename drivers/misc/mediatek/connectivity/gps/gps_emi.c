@@ -115,10 +115,10 @@
  * Debug configuration
 ******************************************************************************/
 #define GPS_DBG_NONE(fmt, arg...)    do {} while (0)
-#define GPS_DBG pr_err
+#define GPS_DBG pr_no_info
 #define GPS_TRC GPS_DBG_NONE
-#define GPS_VER pr_err
-#define GPS_ERR pr_err
+#define GPS_VER pr_no_info
+#define GPS_ERR pr_no_info
 /*******************************************************************************
 * structure & enumeration
 *******************************************************************************/
@@ -373,7 +373,7 @@ static ssize_t gps_emi_read(struct file *file, char __user *buf, size_t count, l
 		count = GPS_ADC_CAPTURE_BUFF_SIZE;
 	if (pGpsEmibaseaddr != NULL) {
 		if (copy_to_user(buf, (char *)pGpsEmibaseaddr, count))
-			pr_err("Copy to user failed\n");
+			pr_no_info("Copy to user failed\n");
 	}
 	GPS_DBG("gps_emi_read finish\n");
 	return ret;

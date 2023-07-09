@@ -1645,7 +1645,7 @@ static _osal_inline_ INT32 hif_sdio_find_probed_list_index_by_id_func(UINT16 ven
 
 	if (i == CFG_CLIENT_COUNT) {
 		/*
-		 * pr_warn(DRV_NAME "Cannot find vendor:0x%x, device:0x%x, func_num:0x%x, i=%d\n",
+		 * pr_no_info(DRV_NAME "Cannot find vendor:0x%x, device:0x%x, func_num:0x%x, i=%d\n",
 		 * vendor, device, func_num, i);
 		 */
 		/* client func has not been probed */
@@ -2399,9 +2399,9 @@ stp_off_exist:
 	ret = sdio_release_irq(func);
 	sdio_release_host(func);
 	if (ret)
-		pr_warn(DRV_NAME "sdio_release_irq for stp fail(%d)\n", ret);
+		pr_no_info(DRV_NAME "sdio_release_irq for stp fail(%d)\n", ret);
 	else
-		pr_warn(DRV_NAME "sdio_release_irq for stp ok\n");
+		pr_no_info(DRV_NAME "sdio_release_irq for stp ok\n");
 #endif
 	clt_index = g_hif_sdio_probed_func_list[probe_index].clt_idx;
 	if (clt_index >= 0) {	/* the function has been registered */
@@ -2663,9 +2663,9 @@ wifi_off_exist:
 	ret = sdio_release_irq(func);
 	sdio_release_host(func);
 	if (ret)
-		pr_warn(DRV_NAME "sdio_release_irq for wifi fail(%d)\n", ret);
+		pr_no_info(DRV_NAME "sdio_release_irq for wifi fail(%d)\n", ret);
 	else
-		pr_warn(DRV_NAME "sdio_release_irq for wifi ok\n");
+		pr_no_info(DRV_NAME "sdio_release_irq for wifi ok\n");
 
 #endif
 	clt_index = g_hif_sdio_probed_func_list[probe_index].clt_idx;

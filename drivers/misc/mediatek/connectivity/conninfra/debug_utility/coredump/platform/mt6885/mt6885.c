@@ -58,7 +58,7 @@ struct coredump_hw_config g_coredump_config[CONN_DEBUG_TYPE_END] = {
 struct coredump_hw_config* get_coredump_platform_config(int conn_type)
 {
 	if (conn_type < 0 || conn_type >= CONN_DEBUG_TYPE_END) {
-		pr_err("Incorrect type: %d\n", conn_type);
+		pr_no_info("Incorrect type: %d\n", conn_type);
 		return NULL;
 	}
 	return &g_coredump_config[conn_type];
@@ -72,12 +72,12 @@ unsigned int get_coredump_platform_chipid(void)
 char* get_task_string(int conn_type, unsigned int task_id)
 {
 	if (conn_type < 0 || conn_type >= CONN_DEBUG_TYPE_END) {
-		pr_err("Incorrect type: %d\n", conn_type);
+		pr_no_info("Incorrect type: %d\n", conn_type);
 		return NULL;
 	}
 
 	if (task_id > g_coredump_config[conn_type].task_table_size) {
-		pr_err("[%s] Incorrect task: %d\n",
+		pr_no_info("[%s] Incorrect task: %d\n",
 			g_coredump_config[conn_type].name, task_id);
 		return NULL;
 	}
@@ -88,7 +88,7 @@ char* get_task_string(int conn_type, unsigned int task_id)
 char* get_sys_name(int conn_type)
 {
 	if (conn_type < 0 || conn_type >= CONN_DEBUG_TYPE_END) {
-		pr_err("Incorrect type: %d\n", conn_type);
+		pr_no_info("Incorrect type: %d\n", conn_type);
 		return NULL;
 	}
 	return g_coredump_config[conn_type].name;

@@ -25,7 +25,7 @@ struct consys_reg_mng_ops* g_consys_reg_ops = NULL;
 
 struct consys_reg_mng_ops* __weak get_consys_reg_mng_ops(void)
 {
-	pr_warn("No specify project\n");
+	pr_no_info("No specify project\n");
 	return NULL;
 }
 
@@ -34,7 +34,7 @@ int consys_reg_mng_reg_readable(void)
 	if (g_consys_reg_ops &&
 		g_consys_reg_ops->consys_reg_mng_check_reable)
 		return g_consys_reg_ops->consys_reg_mng_check_reable();
-	pr_err("%s not implement", __func__);
+	pr_no_info("%s not implement", __func__);
 	return -1;
 }
 
@@ -109,13 +109,13 @@ int consys_reg_mng_reg_read(unsigned long addr, unsigned int *value, unsigned in
 
 	vir_addr = ioremap_nocache(addr, 0x100);
 	if (!vir_addr) {
-		pr_err("ioremap fail");
+		pr_no_info("ioremap fail");
 		return -1;
 	}
 
 	*value = (unsigned int)CONSYS_REG_READ(vir_addr) & mask;
 
-	pr_info("[%x] mask=[%x]", *value, mask);
+	pr_no_info("[%x] mask=[%x]", *value, mask);
 
 	iounmap(vir_addr);
 	return 0;
@@ -127,7 +127,7 @@ int consys_reg_mng_reg_write(unsigned long addr, unsigned int value, unsigned in
 
 	vir_addr = ioremap_nocache(addr, 0x100);
 	if (!vir_addr) {
-		pr_err("ioremap fail");
+		pr_no_info("ioremap fail");
 		return -1;
 	}
 

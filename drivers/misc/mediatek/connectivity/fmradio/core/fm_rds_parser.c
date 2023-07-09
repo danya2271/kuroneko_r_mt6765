@@ -1439,11 +1439,11 @@ static signed int rds_ecc_get(unsigned short blk, unsigned char *ecc, bool *dirt
 	signed int ret = 0;
 
 	if (ecc == NULL) {
-		pr_err("%s,invalid pointer\n", __func__);
+		pr_no_info("%s,invalid pointer\n", __func__);
 		return -FM_EPARA;
 	}
 	if (dirty == NULL) {
-		pr_err("%s,invalid pointer\n", __func__);
+		pr_no_info("%s,invalid pointer\n", __func__);
 		return -FM_EPARA;
 	}
 

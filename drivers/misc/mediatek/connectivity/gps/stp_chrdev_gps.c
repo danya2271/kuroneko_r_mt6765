@@ -75,23 +75,23 @@ static UINT32 gDbgLevel = GPS_LOG_DBG;
 
 #define GPS_DBG_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_DBG)	\
-		pr_debug(PFX "[D]%s: "  fmt, __func__, ##arg);	\
+		pr_no_info(PFX "[D]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS_INFO_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_INFO)	\
-		pr_info(PFX "[I]%s: "  fmt, __func__, ##arg);	\
+		pr_no_info(PFX "[I]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS_WARN_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_WARN)	\
-		pr_warn(PFX "[W]%s: "  fmt, __func__, ##arg);	\
+		pr_no_info(PFX "[W]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS_ERR_FUNC(fmt, arg...)	\
 do { if (gDbgLevel >= GPS_LOG_ERR)	\
-		pr_err(PFX "[E]%s: "  fmt, __func__, ##arg);	\
+		pr_no_info(PFX "[E]%s: "  fmt, __func__, ##arg);	\
 } while (0)
 #define GPS_TRC_FUNC(f)	\
 do { if (gDbgLevel >= GPS_LOG_DBG)	\
-		pr_info(PFX "<%s> <%d>\n", __func__, __LINE__);	\
+		pr_no_info(PFX "<%s> <%d>\n", __func__, __LINE__);	\
 } while (0)
 
 #ifdef CONFIG_MTK_CONNSYS_DEDICATED_LOG_PATH
@@ -229,7 +229,7 @@ ssize_t GPS_write(struct file *filp, const char __user *buf, size_t count, loff_
 
 	/* GPS_TRC_FUNC(); */
 
-	/*pr_warn("%s: count %d pos %lld\n", __func__, count, *f_pos); */
+	/*pr_no_info("%s: count %d pos %lld\n", __func__, count, *f_pos); */
 	if (count > 0) {
 		int copy_size = (count < STP_GPS_BUFFER_SIZE) ? count : STP_GPS_BUFFER_SIZE;
 
@@ -237,7 +237,7 @@ ssize_t GPS_write(struct file *filp, const char __user *buf, size_t count, loff_
 			retval = -EFAULT;
 			goto out;
 		}
-		/* pr_warn("%02x ", val); */
+		/* pr_no_info("%02x ", val); */
 #if GPS_DEBUG_TRACE_GPIO
 		mtk_wcn_stp_debug_gpio_assert(IDX_GPS_TX, DBG_TIE_LOW);
 #endif
@@ -251,13 +251,13 @@ ssize_t GPS_write(struct file *filp, const char __user *buf, size_t count, loff_
 			unsigned char *buf_ptr = &o_buf[0];
 			int k = 0;
 
-			pr_warn("--[GPS-WRITE]--");
+			pr_no_info("--[GPS-WRITE]--");
 			for (k = 0; k < 10; k++) {
 				if (k % 16 == 0)
-					pr_warn("\n");
-				pr_warn("0x%02x ", o_buf[k]);
+					pr_no_info("\n");
+				pr_no_info("0x%02x ", o_buf[k]);
 			}
-			pr_warn("\n");
+			pr_no_info("\n");
 		}
 #endif
 		if (written == 0) {
@@ -286,7 +286,7 @@ ssize_t GPS_read(struct file *filp, char __user *buf, size_t count, loff_t *f_po
 
 	down(&rd_mtx);
 
-    /* pr_debug("GPS_read(): count %d pos %lld\n", count, *f_pos); */
+    /* pr_no_info("GPS_read(): count %d pos %lld\n", count, *f_pos); */
 	if (rstflag == 1) {
 		if (filp->f_flags & O_NONBLOCK) {
 			/* GPS_DBG_FUNC("Non-blocking read, whole chip reset occurs! rstflag=%d\n", rstflag); */
@@ -343,13 +343,13 @@ ssize_t GPS_read(struct file *filp, char __user *buf, size_t count, loff_t *f_po
 		unsigned char *buf_ptr = &i_buf[0];
 		int k = 0;
 
-		pr_warn("--[GPS-READ]--");
+		pr_no_info("--[GPS-READ]--");
 		for (k = 0; k < 10; k++) {
 			if (k % 16 == 0)
-				pr_warn("\n");
-			pr_warn("0x%02x ", i_buf[k]);
+				pr_no_info("\n");
+			pr_no_info("0x%02x ", i_buf[k]);
 		}
-		pr_warn("--\n");
+		pr_no_info("--\n");
 	}
 #endif
 
@@ -368,7 +368,7 @@ ssize_t GPS_read(struct file *filp, char __user *buf, size_t count, loff_t *f_po
 
 OUT:
 	up(&rd_mtx);
-/*    pr_warn("GPS_read(): retval = %d\n", retval);*/
+/*    pr_no_info("GPS_read(): retval = %d\n", retval);*/
 	return retval;
 }
 
@@ -402,26 +402,26 @@ long GPS_fwctl(struct gps_fwctl_data *user_ptr)
 	int retval = 0;
 
 	if (copy_from_user(&ctl_data, user_ptr, sizeof(struct gps_fwctl_data))) {
-		pr_err("GPS_fwctl: copy_from_user error - ctl_data");
+		pr_no_info("GPS_fwctl: copy_from_user error - ctl_data");
 		return -EFAULT;
 	}
 
 	if (ctl_data.size < sizeof(struct gps_fwctl_data)) {
 		/* user space data size not enough, risk to use it */
-		pr_err("GPS_fwctl: struct size(%u) is too short than(%u)",
+		pr_no_info("GPS_fwctl: struct size(%u) is too short than(%u)",
 			ctl_data.size, (UINT32)sizeof(struct gps_fwctl_data));
 		return -EFAULT;
 	}
 
 	if ((ctl_data.tx_len > GPS_FWCTL_BUF_MAX) || (ctl_data.tx_len == 0)) {
 		/* check tx data len */
-		pr_err("GPS_fwctl: tx_len=%u too long (> %u) or too short",
+		pr_no_info("GPS_fwctl: tx_len=%u too long (> %u) or too short",
 			ctl_data.tx_len, GPS_FWCTL_BUF_MAX);
 		return -EFAULT;
 	}
 
 	if (copy_from_user(&tx_buf[0], (PUINT8)ctl_data.p_tx_buf, ctl_data.tx_len)) {
-		pr_err("GPS_fwctl: copy_from_user error - tx_buf");
+		pr_no_info("GPS_fwctl: copy_from_user error - tx_buf");
 		return -EFAULT;
 	}
 
@@ -442,7 +442,7 @@ long GPS_fwctl(struct gps_fwctl_data *user_ptr)
 	if (fwctl_ready && (status == 0) && (rx_len <= GPS_FWCTL_BUF_MAX) && (rx_len >= 2)) {
 		rx0 = rx_buf[0];
 		rx1 = rx_buf[1];
-		pr_info("GPS_fwctl: st=%d, tx_len=%u ([0]=%u), rx_len=%u ([0]=%u, [1]=%u), us=%u",
+		pr_no_info("GPS_fwctl: st=%d, tx_len=%u ([0]=%u), rx_len=%u ([0]=%u, [1]=%u), us=%u",
 			status, ctl_data.tx_len, tx0, rx_len, rx0, rx1, (UINT32)delta_time);
 
 		if (ctl_data.rx_max < rx_len)
@@ -451,18 +451,18 @@ long GPS_fwctl(struct gps_fwctl_data *user_ptr)
 			rx_to_user_len = rx_len;
 
 		if (copy_to_user((PUINT8)ctl_data.p_rx_buf, &rx_buf[0], rx_to_user_len)) {
-			pr_err("GPS_fwctl: copy_to_user error - rx_buf");
+			pr_no_info("GPS_fwctl: copy_to_user error - rx_buf");
 			retval = -EFAULT;
 		}
 
 		if (copy_to_user((PUINT32)ctl_data.p_rx_len, &rx_len, sizeof(UINT32))) {
-			pr_err("GPS_fwctl: copy_to_user error - rx_len");
+			pr_no_info("GPS_fwctl: copy_to_user error - rx_len");
 			retval = -EFAULT;
 		}
 		return retval;
 	}
 
-	pr_info("GPS_fwctl: st=%d, tx_len=%u ([0]=%u), rx_len=%u, us=%u, ready=%u",
+	pr_no_info("GPS_fwctl: st=%d, tx_len=%u ([0]=%u), rx_len=%u, us=%u, ready=%u",
 		status, ctl_data.tx_len, tx0, rx_len, (UINT32)delta_time, (UINT32)fwctl_ready);
 	return -EFAULT;
 }
@@ -540,7 +540,7 @@ void GPS_fwlog_ctrl_inner(bool on)
 		}
 	}
 
-	pr_info("GPS_fwlog: st=%d, rx_len=%u ([0]=%u, [1]=%u), ms0=%u, ms1=%u, fw_tick=%u",
+	pr_no_info("GPS_fwlog: st=%d, rx_len=%u ([0]=%u, [1]=%u), ms0=%u, ms1=%u, fw_tick=%u",
 		status, rx_len, rx0, rx1, local_ms0, local_ms1, fw_tick);
 }
 
@@ -718,7 +718,7 @@ long GPS_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	UINT32 fw_version = 0;
 	UINT32 gps_lna_pin = 0;
 
-	pr_warn("GPS_ioctl(): cmd (%d)\n", cmd);
+	pr_no_info("GPS_ioctl(): cmd (%d)\n", cmd);
 
 	switch (cmd) {
 	case 0:		/* enable/disable STP */
@@ -889,9 +889,9 @@ long GPS_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	long ret;
 
-	pr_warn("%s: cmd (%d)\n", __func__, cmd);
+	pr_no_info("%s: cmd (%d)\n", __func__, cmd);
 	ret = GPS_unlocked_ioctl(filp, cmd, arg);
-	pr_warn("%s: cmd (%d)\n", __func__, cmd);
+	pr_no_info("%s: cmd (%d)\n", __func__, cmd);
 	return ret;
 }
 
@@ -1002,7 +1002,7 @@ static void GPS_handle_desense(bool on)
 
 static int GPS_open(struct inode *inode, struct file *file)
 {
-	pr_warn("%s: major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_no_info("%s: major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	if (current->pid == 1)
 		return 0;
 	if (rstflag == 1) {
@@ -1066,7 +1066,7 @@ static int GPS_open(struct inode *inode, struct file *file)
 static int GPS_close(struct inode *inode, struct file *file)
 {
 	int ret = 0;
-	pr_warn("%s: major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_no_info("%s: major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	if (current->pid == 1)
 		return 0;
 
@@ -1122,7 +1122,7 @@ const struct file_operations GPS_fops = {
 
 void GPS_event_cb(void)
 {
-/*    pr_debug("GPS_event_cb()\n");*/
+/*    pr_no_info("GPS_event_cb()\n");*/
 
 	flag = 1;
 	wake_up(&GPS_wq);
@@ -1155,7 +1155,7 @@ static int GPS_init(void)
 	/*static allocate chrdev */
 	alloc_ret = register_chrdev_region(dev, 1, GPS_DRIVER_NAME);
 	if (alloc_ret) {
-		pr_warn("fail to register chrdev\n");
+		pr_no_info("fail to register chrdev\n");
 		return alloc_ret;
 	}
 
@@ -1179,7 +1179,7 @@ static int GPS_init(void)
 	/*static allocate chrdev */
 	alloc_ret = register_chrdev_region(dev2, 1, GPS2_DRIVER_NAME);
 	if (alloc_ret) {
-		pr_info("fail to register chrdev\n");
+		pr_no_info("fail to register chrdev\n");
 		return alloc_ret;
 	}
 
@@ -1199,14 +1199,14 @@ static int GPS_init(void)
 		goto error;
 #endif
 #endif
-	pr_warn("%s driver(major %d) installed.\n", GPS_DRIVER_NAME, GPS_major);
+	pr_no_info("%s driver(major %d) installed.\n", GPS_DRIVER_NAME, GPS_major);
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 14, 149)
 	gps_wake_lock_ptr = wakeup_source_register(NULL, gps_wake_lock_name);
 #else
 	gps_wake_lock_ptr = wakeup_source_register(gps_wake_lock_name);
 #endif
 	if (!gps_wake_lock_ptr) {
-		pr_info("%s %d: init wakeup source fail!", __func__, __LINE__);
+		pr_no_info("%s %d: init wakeup source fail!", __func__, __LINE__);
 		goto error;
 	}
 
@@ -1284,12 +1284,12 @@ static void GPS_exit(void)
 
 	cdev_del(&GPS_cdev);
 	unregister_chrdev_region(dev, GPS_devs);
-	pr_warn("%s driver removed.\n", GPS_DRIVER_NAME);
+	pr_no_info("%s driver removed.\n", GPS_DRIVER_NAME);
 
 #ifdef CONFIG_GPSL5_SUPPORT
 	cdev_del(&GPS2_cdev);
 	unregister_chrdev_region(dev2, GPS2_devs);
-	pr_info("%s driver removed.\n", GPS2_DRIVER_NAME);
+	pr_no_info("%s driver removed.\n", GPS2_DRIVER_NAME);
 
 #endif
 #ifdef CONFIG_GPS_CTRL_LNA_SUPPORT

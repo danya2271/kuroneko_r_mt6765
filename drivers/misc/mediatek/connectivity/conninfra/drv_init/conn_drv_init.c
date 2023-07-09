@@ -26,22 +26,22 @@ int do_connectivity_driver_init(int chip_id)
 	tmp_ret = do_bluetooth_drv_init(chip_id);
 	i_ret += tmp_ret;
 	if (tmp_ret)
-		pr_err("Do BT driver init failed, ret:%d\n", tmp_ret);
+		pr_no_info("Do BT driver init failed, ret:%d\n", tmp_ret);
 
 	tmp_ret = do_gps_drv_init(chip_id);
 	i_ret += tmp_ret;
 	if (tmp_ret)
-		pr_err("Do GPS driver init failed, ret:%d\n", tmp_ret);
+		pr_no_info("Do GPS driver init failed, ret:%d\n", tmp_ret);
 
 	tmp_ret = do_fm_drv_init(chip_id);
 	i_ret += tmp_ret;
 	if (tmp_ret)
-		pr_err("Do FM module init failed, ret:%d\n", tmp_ret);
+		pr_no_info("Do FM module init failed, ret:%d\n", tmp_ret);
 
 	tmp_ret = do_wlan_drv_init(chip_id);
 	i_ret += tmp_ret;
 	if (tmp_ret)
-		pr_err("Do wlan module init failed, ret:%d\n", tmp_ret);
+		pr_no_info("Do wlan module init failed, ret:%d\n", tmp_ret);
 
 	return i_ret;
 }

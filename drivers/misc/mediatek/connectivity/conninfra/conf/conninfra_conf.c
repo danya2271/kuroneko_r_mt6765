@@ -175,11 +175,11 @@ static int conf_parse_char(const struct parse_data *data, const char *pos)
 	if ((osal_strlen(pos) > 2) && ((*pos) == '0') && (*(pos + 1) == 'x')) {
 		osal_strtol(pos + 2, 16, &res);
 		*dst = (char)res;
-		pr_debug("cfg==> %s=0x%x\n", data->name, *dst);
+		pr_no_info("cfg==> %s=0x%x\n", data->name, *dst);
 	} else {
 		osal_strtol(pos, 10, &res);
 		*dst = (char)res;
-		pr_debug("cfg==> %s=%d\n", data->name, *dst);
+		pr_no_info("cfg==> %s=%d\n", data->name, *dst);
 	}
 	return 0;
 }
@@ -214,11 +214,11 @@ static int conf_parse_short(const struct parse_data *data, const char *pos)
 	if ((osal_strlen(pos) > 2) && ((*pos) == '0') && (*(pos + 1) == 'x')) {
 		osal_strtol(pos + 2, 16, &res);
 		*dst = (unsigned short)res;
-		pr_debug("cfg==> %s=0x%x\n", data->name, *dst);
+		pr_no_info("cfg==> %s=0x%x\n", data->name, *dst);
 	} else {
 		osal_strtol(pos, 10, &res);
 		*dst = (unsigned short)res;
-		pr_debug("cfg==> %s=%d\n", data->name, *dst);
+		pr_no_info("cfg==> %s=%d\n", data->name, *dst);
 	}
 
 	return 0;
@@ -255,11 +255,11 @@ static int conf_parse_int(const struct parse_data *data, const char *pos)
 	if ((osal_strlen(pos) > 2) && ((*pos) == '0') && (*(pos + 1) == 'x')) {
 		osal_strtol(pos + 2, 16, &res);
 		*dst = (unsigned int)res;
-		pr_debug("cfg==> %s=0x%x\n", data->name, *dst);
+		pr_no_info("cfg==> %s=0x%x\n", data->name, *dst);
 	} else {
 		osal_strtol(pos, 10, &res);
 		*dst = (unsigned int)res;
-		pr_debug("cfg==> %s=%d\n", data->name, *dst);
+		pr_no_info("cfg==> %s=%d\n", data->name, *dst);
 	}
 
 	return 0;
@@ -297,24 +297,24 @@ static int conf_parse_byte_array(const struct parse_data *data,
 	long value;
 
 	if (size <= 1) {
-		pr_err("cfg==> %s has no value assigned\n",
+		pr_no_info("cfg==> %s has no value assigned\n",
 			data->name);
 		return -1;
 	} else if (size & 0x1) {
-		pr_debug("cfg==> %s, length should be even\n", data->name);
+		pr_no_info("cfg==> %s, length should be even\n", data->name);
 		return -1;
 	}
 
 	ba = (struct conf_byte_ary *)osal_malloc(sizeof(struct conf_byte_ary));
 	if (ba == NULL) {
-		pr_err("cfg==> %s malloc fail\n", data->name);
+		pr_no_info("cfg==> %s malloc fail\n", data->name);
 		return -1;
 	}
 
 	buffer = osal_malloc(size);
 	if (buffer == NULL) {
 		osal_free(ba);
-		pr_err("cfg==> %s malloc fail, size %d\n", data->name, size);
+		pr_no_info("cfg==> %s malloc fail, size %d\n", data->name, size);
 		return -1;
 	}
 
@@ -322,7 +322,7 @@ static int conf_parse_byte_array(const struct parse_data *data,
 	for (i = 0; i < size; i++) {
 		osal_memcpy(temp, &pos[i * 2], 2);
 		if (osal_strtol(temp, 16, &value) < 0) {
-			pr_err("cfg==> %s should be hexadecimal format\n",
+			pr_no_info("cfg==> %s should be hexadecimal format\n",
 						data->name);
 			osal_free(ba);
 			osal_free(buffer);
@@ -394,13 +394,13 @@ static int conf_parse_pair(const char *pKey, const char *pVal)
 		if (osal_strcmp(pKey, field->name) != 0)
 			continue;
 		if (field->parser(field, pVal)) {
-			pr_err("failed to parse %s '%s'.\n", pKey, pVal);
+			pr_no_info("failed to parse %s '%s'.\n", pKey, pVal);
 			ret = -1;
 		}
 		break;
 	}
 	if (i == NUM_CFG_FIELDS) {
-		pr_err("unknown field '%s'.\n", pKey);
+		pr_no_info("unknown field '%s'.\n", pKey);
 		ret = -1;
 	}
 
@@ -440,7 +440,7 @@ static int conf_parse(const char *pInBuf, unsigned int size)
 
 		pVal = osal_strchr(pLine, '=');
 		if (!pVal) {
-			pr_warn("mal-format cfg string(%s)\n", pLine);
+			pr_no_info("mal-format cfg string(%s)\n", pLine);
 			continue;
 		}
 
@@ -495,9 +495,9 @@ static int conf_parse(const char *pInBuf, unsigned int size)
 		(*pPos) = '\0';
 
 		ret = conf_parse_pair(pKey, pVal);
-		pr_debug("parse (%s, %s, %d)\n", pKey, pVal, ret);
+		pr_no_info("parse (%s, %s, %d)\n", pKey, pVal, ret);
 		if (ret)
-			pr_debug("parse fail (%s, %s, %d)\n", pKey, pVal, ret);
+			pr_no_info("parse fail (%s, %s, %d)\n", pKey, pVal, ret);
 	}
 
 	for (i = 0; i < NUM_CFG_FIELDS; i++) {
@@ -505,10 +505,10 @@ static int conf_parse(const char *pInBuf, unsigned int size)
 
 		pa = field->writer(field);
 		if (pa) {
-			pr_debug("#%d(%s)=>%s\n", i, field->name, pa);
+			pr_no_info("#%d(%s)=>%s\n", i, field->name, pa);
 			osal_free(pa);
 		} else
-			pr_err("failed to parse '%s'.\n", field->name);
+			pr_no_info("failed to parse '%s'.\n", field->name);
 	}
 	osal_free(pBuf);
 	return 0;
@@ -520,7 +520,7 @@ static int platform_request_firmware(char *patch_name, osal_firmware **ppPatch)
 	osal_firmware *fw = NULL;
 
 	if (!ppPatch) {
-		pr_err("invalid ppBufptr!\n");
+		pr_no_info("invalid ppBufptr!\n");
 		return -1;
 	}
 
@@ -529,17 +529,17 @@ static int platform_request_firmware(char *patch_name, osal_firmware **ppPatch)
 		ret = request_firmware((const struct firmware **)&fw,
 							patch_name, NULL);
 		if (ret == -EAGAIN) {
-			pr_err("failed to open or read!(%s), retry again!\n",
+			pr_no_info("failed to open or read!(%s), retry again!\n",
 						patch_name);
 			osal_sleep_ms(100);
 		}
 	} while (ret == -EAGAIN);
 	if (ret != 0) {
-		pr_err("failed to open or read!(%s)\n", patch_name);
+		pr_no_info("failed to open or read!(%s)\n", patch_name);
 		release_firmware(fw);
 		return -1;
 	}
-	pr_debug("loader firmware %s  ok!!\n", patch_name);
+	pr_no_info("loader firmware %s  ok!!\n", patch_name);
 	ret = 0;
 	*ppPatch = fw;
 
@@ -563,12 +563,12 @@ int conninfra_conf_init(void)
 	osal_memset(&g_conninfra_conf, 0, osal_sizeof(struct conninfra_conf));
 	osal_strcpy(&(g_conninfra_conf.conf_name[0]), "conninfra.cfg");
 
-	pr_debug("config file:%s\n", &(g_conninfra_conf.conf_name[0]));
+	pr_no_info("config file:%s\n", &(g_conninfra_conf.conf_name[0]));
 	if (0 ==
 	    platform_request_firmware(&g_conninfra_conf.conf_name[0],
 					(osal_firmware **) &conf_inst)) {
 		/*get full name patch success */
-		pr_debug("get full file name(%s) buf(0x%p) size(%zu)\n",
+		pr_no_info("get full file name(%s) buf(0x%p) size(%zu)\n",
 			      &g_conninfra_conf.conf_name[0], conf_inst->data,
 			      conf_inst->size);
 		if (0 ==
@@ -578,13 +578,13 @@ int conninfra_conf_init(void)
 			g_conninfra_conf.cfg_exist = 1;
 			ret = 0;
 		} else {
-			pr_err("conf parsing fail\n");
+			pr_no_info("conf parsing fail\n");
 			ret = -1;
 		}
 		platform_release_firmware((osal_firmware **) &conf_inst);
 		return ret;
 	}
-	pr_err("read %s file fails\n", &(g_conninfra_conf.conf_name[0]));
+	pr_no_info("read %s file fails\n", &(g_conninfra_conf.conf_name[0]));
 	g_conninfra_conf.cfg_exist = 0;
 	return ret;
 }
@@ -592,11 +592,11 @@ int conninfra_conf_init(void)
 int conninfra_conf_set_cfg_file(const char *name)
 {
 	if (name == NULL) {
-		pr_err("name is NULL\n");
+		pr_no_info("name is NULL\n");
 		return -1;
 	}
 	if (osal_strlen(name) >= osal_sizeof(g_conninfra_conf.conf_name)) {
-		pr_err("name is too long, length=%d, expect to < %zu\n",
+		pr_no_info("name is too long, length=%d, expect to < %zu\n",
 				osal_strlen(name),
 				osal_sizeof(g_conninfra_conf.conf_name));
 		return -2;
@@ -604,7 +604,7 @@ int conninfra_conf_set_cfg_file(const char *name)
 	osal_memset(&g_conninfra_conf.conf_name[0], 0,
 				osal_sizeof(g_conninfra_conf.conf_name));
 	osal_strcpy(&(g_conninfra_conf.conf_name[0]), name);
-	pr_err("WMT config file is set to (%s)\n",
+	pr_no_info("WMT config file is set to (%s)\n",
 				&(g_conninfra_conf.conf_name[0]));
 
 	return 0;

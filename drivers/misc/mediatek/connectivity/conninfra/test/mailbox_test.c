@@ -85,9 +85,9 @@ static void message_from_remote(struct mbox_client *cl, void *msg)
 {
 	struct demo_client *dc = container_of(cl, struct demo_client, cl);
 	if (dc->async) {
-		pr_info("AAAAsync");
+		pr_no_info("AAAAsync");
 	} else {
-		pr_info("SSSSSSSync");
+		pr_no_info("SSSSSSSync");
 	}
 }
 
@@ -114,7 +114,7 @@ int mailbox_test(void)
 	dc_sync->mbox = mbox_request_channel(&dc_sync->cl, 0);
 
 	if (IS_ERR(dc_sync->mbox)) {
-		pr_err("request channel fail [%d]", dc_sync->mbox);
+		pr_no_info("request channel fail [%d]", dc_sync->mbox);
 		return -1;
 	}
 	mbox_send_message(dc_sync->mbox, 0);

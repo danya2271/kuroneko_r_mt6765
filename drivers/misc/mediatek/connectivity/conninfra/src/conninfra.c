@@ -78,7 +78,7 @@
 DEFINE_RATELIMIT_STATE(g_rs, HZ, 1);
 
 #define DUMP_LOG() if (__ratelimit(&g_rs)) \
-			pr_info("rst is ongoing")
+			pr_no_info("rst is ongoing")
 
 #else
 #define DUMP_LOG()
@@ -127,7 +127,7 @@ void conninfra_get_emi_phy_addr(enum connsys_emi_type type, phys_addr_t* base, u
 				*size = addr_info->md_emi_size;
 			break;
 		default:
-			pr_err("Wrong EMI type: %d\n", type);
+			pr_no_info("Wrong EMI type: %d\n", type);
 			if (base)
 				*base = 0x0;
 			if (size)
@@ -138,7 +138,7 @@ EXPORT_SYMBOL(conninfra_get_emi_phy_addr);
 
 int conninfra_pwr_on(enum consys_drv_type drv_type)
 {
-	pr_info("[%s] drv=[%d]", __func__, drv_type);
+	pr_no_info("[%s] drv=[%d]", __func__, drv_type);
 	if (conninfra_core_is_rst_locking()) {
 		DUMP_LOG();
 		return CONNINFRA_ERR_RST_ONGOING;
@@ -200,10 +200,10 @@ int conninfra_trigger_whole_chip_rst(enum consys_drv_type who, char *reason)
 	r = conninfra_core_lock_rst();
 	if (r >= CHIP_RST_START) {
 		/* reset is ongoing */
-		pr_warn("[%s] r=[%d] chip rst is ongoing\n", __func__, r);
+		pr_no_info("[%s] r=[%d] chip rst is ongoing\n", __func__, r);
 		return 1;
 	}
-	pr_info("[%s] rst lock [%d] [%d] reason=%s", __func__, r, who, reason);
+	pr_no_info("[%s] rst lock [%d] [%d] reason=%s", __func__, r, who, reason);
 
 	conninfra_core_trg_chip_rst(who, reason);
 
@@ -216,10 +216,10 @@ int conninfra_sub_drv_ops_register(enum consys_drv_type type,
 {
 	/* type validation */
 	if (type < 0 || type >= CONNDRV_TYPE_MAX) {
-		pr_err("[%s] incorrect drv type [%d]", __func__, type);
+		pr_no_info("[%s] incorrect drv type [%d]", __func__, type);
 		return -EINVAL;
 	}
-	pr_info("[%s] ----", __func__);
+	pr_no_info("[%s] ----", __func__);
 	conninfra_core_subsys_ops_reg(type, cb);
 	return 0;
 }
@@ -229,10 +229,10 @@ int conninfra_sub_drv_ops_unregister(enum consys_drv_type type)
 {
 	/* type validation */
 	if (type < 0 || type >= CONNDRV_TYPE_MAX) {
-		pr_err("[%s] incorrect drv type [%d]", __func__, type);
+		pr_no_info("[%s] incorrect drv type [%d]", __func__, type);
 		return -EINVAL;
 	}
-	pr_info("[%s] ----", __func__);
+	pr_no_info("[%s] ----", __func__);
 	conninfra_core_subsys_ops_unreg(type);
 	return 0;
 }
@@ -246,7 +246,7 @@ int conninfra_spi_read(enum sys_spi_subsystem subsystem, unsigned int addr, unsi
 		return CONNINFRA_ERR_RST_ONGOING;
 	}
 	if (subsystem >= SYS_SPI_MAX) {
-		pr_err("[%s] wrong subsys %d", __func__, subsystem);
+		pr_no_info("[%s] wrong subsys %d", __func__, subsystem);
 		return -EINVAL;
 	}
 	conninfra_core_spi_read(subsystem, addr, data);
@@ -262,7 +262,7 @@ int conninfra_spi_write(enum sys_spi_subsystem subsystem, unsigned int addr, uns
 	}
 
 	if (subsystem >= SYS_SPI_MAX) {
-		pr_err("[%s] wrong subsys %d", __func__, subsystem);
+		pr_no_info("[%s] wrong subsys %d", __func__, subsystem);
 		return -EINVAL;
 	}
 	conninfra_core_spi_write(subsystem, addr, data);

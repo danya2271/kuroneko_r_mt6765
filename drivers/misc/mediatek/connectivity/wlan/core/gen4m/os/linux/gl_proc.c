@@ -219,7 +219,7 @@ static ssize_t procDbgLevelRead(struct file *filp, char __user *buf,
 	if (u4CopySize > count)
 		u4CopySize = count;
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -340,14 +340,14 @@ static ssize_t procCfgRead(struct file *filp, char __user *buf, size_t count,
 	prGlueInfo = *((struct GLUE_INFO **)netdev_priv(gPrDev));
 
 	if (!prGlueInfo) {
-		pr_err("procCfgRead prGlueInfo is  NULL????\n");
+		pr_no_info("procCfgRead prGlueInfo is  NULL????\n");
 		return 0;
 	}
 
 	prAdapter = prGlueInfo->prAdapter;
 
 	if (!prAdapter) {
-		pr_err("procCfgRead prAdapter is  NULL????\n");
+		pr_no_info("procCfgRead prAdapter is  NULL????\n");
 		return 0;
 	}
 
@@ -434,7 +434,7 @@ procCfgReadLabel:
 	if (u4CopySize > count)
 		u4CopySize = count;
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -462,7 +462,7 @@ static ssize_t procCfgWrite(struct file *file, const char __user *buffer,
 	SNPRINTF(pucTmp, g_aucProcBuf, ("%s ", "set_cfg"));
 
 	if (copy_from_user(pucTmp, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize + 8] = '\0';
@@ -509,13 +509,13 @@ static ssize_t procDriverCmdRead(struct file *filp, char __user *buf,
 		u4CopySize = g_i4NextDriverReadLen;
 
 	if (u4CopySize > count) {
-		pr_err("count is too small: u4CopySize=%u, count=%u\n",
+		pr_no_info("count is too small: u4CopySize=%u, count=%u\n",
 		       u4CopySize, (uint32_t)count);
 		return -EFAULT;
 	}
 
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 	g_i4NextDriverReadLen = 0;
@@ -540,7 +540,7 @@ static ssize_t procDriverCmdWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -573,7 +573,7 @@ static ssize_t procDbgLevelWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -581,7 +581,7 @@ static ssize_t procDbgLevelWrite(struct file *file, const char __user *buffer,
 	while (temp) {
 		if (sscanf(temp,
 			"0x%x:0x%x", &u4NewDbgModule, &u4NewDbgLevel) != 2) {
-			pr_info("debug module and debug level should be one byte in length\n");
+			pr_no_info("debug module and debug level should be one byte in length\n");
 			break;
 		}
 		if (u4NewDbgModule == 0xFF) {
@@ -590,7 +590,7 @@ static ssize_t procDbgLevelWrite(struct file *file, const char __user *buffer,
 			break;
 		}
 		if (u4NewDbgModule >= DBG_MODULE_NUM) {
-			pr_info("debug module index should less than %d\n",
+			pr_no_info("debug module index should less than %d\n",
 				DBG_MODULE_NUM);
 			break;
 		}
@@ -682,7 +682,7 @@ static ssize_t procMCRRead(struct file *filp, char __user *buf,
 
 	u4Count = kalStrLen(g_aucProcBuf);
 	if (copy_to_user(buf, g_aucProcBuf, u4Count)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -792,7 +792,7 @@ static ssize_t procSetCamCfgWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -802,7 +802,7 @@ static ssize_t procSetCamCfgWrite(struct file *file, const char __user *buffer,
 
 		/* pick up a string and teminated after meet : */
 		if (sscanf(temp, "%4s %d", aucModule, &u4Enabled) != 2) {
-			pr_info("read param fail, aucModule=%s\n", aucModule);
+			pr_no_info("read param fail, aucModule=%s\n", aucModule);
 			fgParamValue = FALSE;
 			break;
 		}
@@ -901,7 +901,7 @@ static ssize_t procPktDelayDbgCfgRead(struct file *filp, char __user *buf,
 	if (u4CopySize > count)
 		u4CopySize = count;
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -932,7 +932,7 @@ static ssize_t procPktDelayDbgCfgWrite(struct file *file, const char *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -944,7 +944,7 @@ static ssize_t procPktDelayDbgCfgWrite(struct file *file, const char *buffer,
 		if (sscanf
 		    (temp, "%6s %x %d %d", aucModule, &u4IpProto, &u4PortNum,
 		     &u4DelayThreshold) != 4) {
-			pr_info("read param fail, aucModule=%s\n", aucModule);
+			pr_no_info("read param fail, aucModule=%s\n", aucModule);
 			break;
 		}
 
@@ -958,7 +958,7 @@ static ssize_t procPktDelayDbgCfgWrite(struct file *file, const char *buffer,
 			(aucModule, aucRxArray, MODULE_NAME_LENGTH) == 0) {
 			ucTxOrRx = MODULE_RX;
 		} else {
-			pr_info("input module error!\n");
+			pr_no_info("input module error!\n");
 			break;
 		}
 
@@ -1005,7 +1005,7 @@ static ssize_t procRoamRead(struct file *filp, char __user *buf,
 
 	u4CopySize = kalStrLen(g_aucProcBuf);
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 	*f_pos += u4CopySize;
@@ -1024,7 +1024,7 @@ static ssize_t procRoamWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -1076,7 +1076,7 @@ static ssize_t procCountryRead(struct file *filp, char __user *buf,
 
 	u4CopySize = kalStrLen(g_aucProcBuf);
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 	*f_pos += u4CopySize;
@@ -1095,7 +1095,7 @@ static ssize_t procCountryWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 	g_aucProcBuf[u4CopySize] = '\0';
@@ -1226,7 +1226,7 @@ static ssize_t procTwtSmartRead(struct file *filp, char __user *buf,
 
 	u4CopySize = kalStrLen(g_aucProcBuf);
 	if (copy_to_user(buf, g_aucProcBuf, u4CopySize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 	*f_pos += u4CopySize;
@@ -1341,7 +1341,7 @@ static ssize_t procCalResultRead(struct file *filp, char __user *buf,
 	}
 
 	if (copy_to_user(buf, prCalResult, u4CalSize)) {
-		pr_err("copy to user failed\n");
+		pr_no_info("copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -1359,7 +1359,7 @@ static ssize_t procCalResultWrite(struct file *file, const char __user *buffer,
 	u4CopySize = (count < u4CopySize) ? count : (u4CopySize - 1);
 
 	if (copy_from_user(g_aucProcBuf, buffer, u4CopySize)) {
-		pr_err("error of copy from user\n");
+		pr_no_info("error of copy from user\n");
 		return -EFAULT;
 	}
 
@@ -1382,7 +1382,7 @@ int32_t procInitFs(void)
 	g_i4NextDriverReadLen = 0;
 
 	if (init_net.proc_net == (struct proc_dir_entry *)NULL) {
-		pr_err("init proc fs fail: proc_net == NULL\n");
+		pr_no_info("init proc fs fail: proc_net == NULL\n");
 		return -ENOENT;
 	}
 
@@ -1392,7 +1392,7 @@ int32_t procInitFs(void)
 
 	gprProcRoot = proc_mkdir(PROC_ROOT_NAME, init_net.proc_net);
 	if (!gprProcRoot) {
-		pr_err("gprProcRoot == NULL\n");
+		pr_no_info("gprProcRoot == NULL\n");
 		return -ENOENT;
 	}
 	proc_set_user(gprProcRoot, KUIDT_INIT(PROC_UID_SHELL),
@@ -1401,7 +1401,7 @@ int32_t procInitFs(void)
 	prEntry =
 	    proc_create(PROC_DBG_LEVEL_NAME, 0664, gprProcRoot, &dbglevel_ops);
 	if (prEntry == NULL) {
-		pr_err("Unable to create /proc entry dbgLevel\n\r");
+		pr_no_info("Unable to create /proc entry dbgLevel\n\r");
 		return -1;
 	}
 	proc_set_user(prEntry, KUIDT_INIT(PROC_UID_SHELL),
@@ -1586,20 +1586,20 @@ int32_t procCreateFsEntry(struct GLUE_INFO *prGlueInfo)
 	prEntry =
 		proc_create(PROC_DRIVER_CMD, 0664, gprProcRoot, &drivercmd_ops);
 	if (prEntry == NULL) {
-		pr_err("Unable to create /proc entry for driver command\n\r");
+		pr_no_info("Unable to create /proc entry for driver command\n\r");
 		return -1;
 	}
 
 	prEntry = proc_create(PROC_CFG, 0664, gprProcRoot, &cfg_ops);
 	if (prEntry == NULL) {
-		pr_err("Unable to create /proc entry for driver cfg\n\r");
+		pr_no_info("Unable to create /proc entry for driver cfg\n\r");
 		return -1;
 	}
 
 	prEntry =
 		proc_create(PROC_EFUSE_DUMP, 0664, gprProcRoot, &efusedump_ops);
 	if (prEntry == NULL) {
-		pr_err("Unable to create /proc entry efuse\n\r");
+		pr_no_info("Unable to create /proc entry efuse\n\r");
 		return -1;
 	}
 #endif

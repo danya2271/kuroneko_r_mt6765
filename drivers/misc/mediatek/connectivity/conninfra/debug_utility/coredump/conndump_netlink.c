@@ -226,7 +226,7 @@ static int conndump_nl_bind_internal(struct dump_netlink_ctx* ctx, struct sk_buf
 	if (port_na) {
 		port = (unsigned int)nla_get_u32(port_na);
 	} else {
-		pr_err("%s:-> no port_na found\n");
+		pr_no_info("%s:-> no port_na found\n");
 		return -1;
 	}
 
@@ -234,12 +234,12 @@ static int conndump_nl_bind_internal(struct dump_netlink_ctx* ctx, struct sk_buf
 		if (ctx->bind_pid[i] == 0) {
 			ctx->bind_pid[i] = port;
 			ctx->num_bind_process++;
-			pr_info("%s():-> pid  = %d\n", __func__, port);
+			pr_no_info("%s():-> pid  = %d\n", __func__, port);
 			break;
 		}
 	}
 	if (i == MAX_BIND_PROCESS) {
-		pr_err("%s(): exceeding binding limit %d\n", __func__, MAX_BIND_PROCESS);
+		pr_no_info("%s(): exceeding binding limit %d\n", __func__, MAX_BIND_PROCESS);
 	}
 	mutex_unlock(&ctx->nl_lock);
 
@@ -250,7 +250,7 @@ out:
 static int conndump_nl_dump_end_internal(struct dump_netlink_ctx* ctx, struct sk_buff *skb, struct genl_info *info)
 {
 	if (ctx && ctx->cb.coredump_end) {
-		pr_info("Get coredump end command, type=%d", ctx->conn_type);
+		pr_no_info("Get coredump end command, type=%d", ctx->conn_type);
 		ctx->cb.coredump_end(ctx->coredump_ctx);
 	}
 	return 0;
@@ -266,7 +266,7 @@ static int conndump_nl_bind_wifi(struct sk_buff *skb, struct genl_info *info)
 
 static int conndump_nl_dump_wifi(struct sk_buff *skb, struct genl_info *info)
 {
-	pr_err("%s(): should not be invoked\n", __func__);
+	pr_no_info("%s(): should not be invoked\n", __func__);
 
 	return 0;
 }
@@ -282,7 +282,7 @@ static int conndump_nl_dump_end_wifi(struct sk_buff *skb, struct genl_info *info
 
 static int conndump_nl_reset_wifi(struct sk_buff *skb, struct genl_info *info)
 {
-	pr_err("%s(): should not be invoked\n", __func__);
+	pr_no_info("%s(): should not be invoked\n", __func__);
 
 	return 0;
 }
@@ -297,7 +297,7 @@ static int conndump_nl_bind_bt(struct sk_buff *skb, struct genl_info *info)
 
 static int conndump_nl_dump_bt(struct sk_buff *skb, struct genl_info *info)
 {
-	pr_err("%s(): should not be invoked\n", __func__);
+	pr_no_info("%s(): should not be invoked\n", __func__);
 
 	return 0;
 }
@@ -314,7 +314,7 @@ static int conndump_nl_dump_end_bt(struct sk_buff *skb, struct genl_info *info)
 
 static int conndump_nl_reset_bt(struct sk_buff *skb, struct genl_info *info)
 {
-	pr_err("%s(): should not be invoked\n", __func__);
+	pr_no_info("%s(): should not be invoked\n", __func__);
 
 	return 0;
 }
@@ -335,7 +335,7 @@ int conndump_netlink_init(int conn_type, void* dump_ctx, struct netlink_event_cb
 	struct dump_netlink_ctx* ctx;
 
 	if (conn_type < CONN_DEBUG_TYPE_WIFI || conn_type > CONN_DEBUG_TYPE_BT) {
-		pr_err("Incorrect type (%d)\n", conn_type);
+		pr_no_info("Incorrect type (%d)\n", conn_type);
 		return -1;
 	}
 
@@ -343,7 +343,7 @@ int conndump_netlink_init(int conn_type, void* dump_ctx, struct netlink_event_cb
 	mutex_init(&ctx->nl_lock);
 	ret = genl_register_family(&ctx->gnl_family);
 	if (ret != 0) {
-		pr_err("%s(): GE_NELINK family registration fail (ret=%d)\n", __func__, ret);
+		pr_no_info("%s(): GE_NELINK family registration fail (ret=%d)\n", __func__, ret);
 		return -2;
 	}
 	ctx->status = LINK_STATUS_INIT_DONE;
@@ -367,14 +367,14 @@ int conndump_netlink_msg_send(struct dump_netlink_ctx* ctx, char* tag, char* buf
 		/* Create message header */
 		msg_head = genlmsg_put(skb, 0, seq, &ctx->gnl_family, 0, CONNDUMP_COMMAND_DUMP);
 		if (msg_head == NULL) {
-			pr_err("%s(): genlmsg_put fail(conn_type=%d).\n", __func__, conn_type);
+			pr_no_info("%s(): genlmsg_put fail(conn_type=%d).\n", __func__, conn_type);
 			nlmsg_free(skb);
 			return -EMSGSIZE;
 		}
 		/* Add message attribute and content */
 		ret = nla_put_string(skb, CONNDUMP_ATTR_HEADER, tag);
 		if (ret != 0) {
-			pr_err("%s(): nla_put_string header fail(conn_type=%d): %d\n", __func__, conn_type, ret);
+			pr_no_info("%s(): nla_put_string header fail(conn_type=%d): %d\n", __func__, conn_type, ret);
 			genlmsg_cancel(skb, msg_head);
 			nlmsg_free(skb);
 			return ret;
@@ -382,14 +382,14 @@ int conndump_netlink_msg_send(struct dump_netlink_ctx* ctx, char* tag, char* buf
 		if (length) {
 			ret = nla_put(skb, CONNDUMP_ATTR_MSG, length, buf);
 			if (ret != 0) {
-				pr_err("%s(): nla_put fail(conn_type=%d): %d\n", __func__, conn_type, ret);
+				pr_no_info("%s(): nla_put fail(conn_type=%d): %d\n", __func__, conn_type, ret);
 				genlmsg_cancel(skb, msg_head);
 				nlmsg_free(skb);
 				return ret;
 			}
 			ret = nla_put_u32(skb, CONNDUMP_ATTR_MSG_SIZE, length);
 			if (ret != 0) {
-				pr_err("%s(): nal_put_u32 fail(conn_type=%d): %d\n", __func__, conn_type, ret);
+				pr_no_info("%s(): nal_put_u32 fail(conn_type=%d): %d\n", __func__, conn_type, ret);
 				genlmsg_cancel(skb, msg_head);
 				nlmsg_free(skb);
 				return ret;
@@ -401,7 +401,7 @@ int conndump_netlink_msg_send(struct dump_netlink_ctx* ctx, char* tag, char* buf
 		/* sending message */
 		ret = genlmsg_unicast(&init_net, skb, pid);
 	} else {
-		pr_err("Allocate message error\n");
+		pr_no_info("Allocate message error\n");
 		ret = -ENOMEM;
 	}
 
@@ -431,7 +431,7 @@ int conndump_netlink_send_to_native_internal(struct dump_netlink_ctx* ctx, char*
 	for (i = 0; i < ctx->num_bind_process; i++) {
 		ret =conndump_netlink_msg_send(ctx, tag, buf, length, ctx->bind_pid[i], ctx->seqnum);
 		if (ret != 0) {
-			pr_err("%s(): genlmsg_unicast fail (ret=%d): pid = %d seq=%d tag=%s\n",
+			pr_no_info("%s(): genlmsg_unicast fail (ret=%d): pid = %d seq=%d tag=%s\n",
 				__func__, ret, ctx->bind_pid[i], ctx->seqnum, tag);
 			if (ret == -EAGAIN) {
 				retry = 0;
@@ -439,11 +439,11 @@ int conndump_netlink_send_to_native_internal(struct dump_netlink_ctx* ctx, char*
 					msleep(10);
 					ret =conndump_netlink_msg_send(ctx, tag, buf, length, ctx->bind_pid[i], ctx->seqnum);
 					retry ++;
-					pr_err("%s(): genlmsg_unicast retry (%d)...: ret = %d pid = %d seq=%d tag=%s\n",
+					pr_no_info("%s(): genlmsg_unicast retry (%d)...: ret = %d pid = %d seq=%d tag=%s\n",
 							__func__, retry, ret, ctx->bind_pid[i], ctx->seqnum, tag);
 				}
 				if (ret) {
-					pr_err("%s(): genlmsg_unicast fail (ret=%d) after retry %d times: pid = %d seq=%d tag=%s\n",
+					pr_no_info("%s(): genlmsg_unicast fail (ret=%d) after retry %d times: pid = %d seq=%d tag=%s\n",
 							__func__, ret, retry, ctx->bind_pid[i], ctx->seqnum, tag);
 				}
 			}
@@ -502,21 +502,21 @@ int conndump_netlink_send_to_native(int conn_type, char* tag, char* buf, unsigne
 	unsigned int remain_len = length;
 	int ret;
 
-	pr_info("[%s] conn_type=%d tag=%s buf=0x%x length=%d\n",
+	pr_no_info("[%s] conn_type=%d tag=%s buf=0x%x length=%d\n",
 		__func__, conn_type, tag, buf, length);
 	if ((conn_type < CONN_DEBUG_TYPE_WIFI || conn_type > CONN_DEBUG_TYPE_BT) || tag == NULL) {
-		pr_err("Incorrect type (%d), tag = %s\n", conn_type, tag);
+		pr_no_info("Incorrect type (%d), tag = %s\n", conn_type, tag);
 		return -1;
 	}
 
 	ctx = &g_netlink_ctx[conn_type];
 	if (ctx->status != LINK_STATUS_INIT_DONE) {
-		pr_err("%s(): netlink should be init (type=%d).\n", __func__, conn_type);
+		pr_no_info("%s(): netlink should be init (type=%d).\n", __func__, conn_type);
 		return -2;
 	}
 
 	if (ctx->num_bind_process == 0) {
-		pr_err("No bind service\n");
+		pr_no_info("No bind service\n");
 		return -3;
 	}
 
@@ -524,7 +524,7 @@ int conndump_netlink_send_to_native(int conn_type, char* tag, char* buf, unsigne
 		send_len = (remain_len > CONNSYS_DUMP_PKT_SIZE? CONNSYS_DUMP_PKT_SIZE : remain_len);
 		ret = conndump_netlink_send_to_native_internal(ctx, tag, &buf[idx], send_len);
 		if (ret) {
-			pr_err("[%s] from %d with len=%d fail, ret=%d\n", __func__, idx, send_len, ret);
+			pr_no_info("[%s] from %d with len=%d fail, ret=%d\n", __func__, idx, send_len, ret);
 			break;
 		}
 		remain_len -= send_len;

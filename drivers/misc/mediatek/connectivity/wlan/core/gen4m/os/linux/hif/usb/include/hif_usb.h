@@ -97,7 +97,7 @@
  *
  */
 #if HIF_USB_DEBUG
-#define DPRINTK(fmt, args...) pr_debug("%s: " fmt, __func__, ## args)
+#define DPRINTK(fmt, args...) pr_no_info("%s: " fmt, __func__, ## args)
 #else
 #define DPRINTK(fmt, args...)
 #endif
@@ -110,7 +110,7 @@
 #define ASSERT(expr) \
 	do { \
 		if (!(expr)) { \
-			pr_err("assertion failed! %s[%d]: %s\n", \
+			pr_no_info("assertion failed! %s[%d]: %s\n", \
 			       __func__, __LINE__, #expr); \
 			WARN_ON(!(expr)); \
 		} \

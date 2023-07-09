@@ -80,19 +80,19 @@ long fw_log_gps_unlocked_ioctl(struct file *filp, unsigned int cmd, unsigned lon
 
 	switch (cmd) {
 	case GPS_FW_LOG_IOCTL_ON_OFF:
-		pr_info("gps PS_FW_LOG_IOCTL_ON_OFF(%lu)\n", arg);
+		pr_no_info("gps PS_FW_LOG_IOCTL_ON_OFF(%lu)\n", arg);
 		GPS_fwlog_ctrl((bool)arg);
 		break;
 
 	case GPS_FW_LOG_IOCTL_SET_LEVEL:
-		pr_info("gps GPS_FW_LOG_IOCTL_SET_LEVEL\n");
+		pr_no_info("gps GPS_FW_LOG_IOCTL_SET_LEVEL\n");
 		break;
 	case GPS_FW_LOG_IOCTL_GET_LEVEL:
-		pr_info("gps GPS_FW_LOG_IOCTL_GET_LEVEL\n");
+		pr_no_info("gps GPS_FW_LOG_IOCTL_GET_LEVEL\n");
 		break;
 
 	default:
-		pr_warn("gps unknown cmd (%d)\n", cmd);
+		pr_no_info("gps unknown cmd (%d)\n", cmd);
 		break;
 	}
 	return retval;
@@ -107,7 +107,7 @@ long fw_log_gps_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long 
 /*****************************************************************************/
 static int fw_log_open(struct inode *inode, struct file *file)
 {
-	pr_info("%s: gps major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_no_info("%s: gps major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
 
@@ -117,7 +117,7 @@ static int fw_log_open(struct inode *inode, struct file *file)
 /*****************************************************************************/
 static int fw_log_close(struct inode *inode, struct file *file)
 {
-	pr_info("%s: gps major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
+	pr_no_info("%s: gps major %d minor %d (pid %d)\n", __func__, imajor(inode), iminor(inode), current->pid);
 	return 0;
 }
 
@@ -127,7 +127,7 @@ static ssize_t fw_log_read(struct file *file, char __user *buf, size_t count, lo
 	int retval;
 
 	#if 0
-	pr_info("GPS fw_log_read,len=%d\n", count);
+	pr_no_info("GPS fw_log_read,len=%d\n", count);
 	#endif
 
 	retval = connsys_log_read_to_user(CONNLOG_TYPE_GPS, buf, count);
@@ -174,25 +174,25 @@ static int __init gps_fw_log_init(void)
 		goto err_out;
 	}
 
-	pr_info("Registering chardev\n");
+	pr_no_info("Registering chardev\n");
 	ret = alloc_chrdev_region(&logdevobj->devno, 0, 1, GPSFWLOG_DEVNAME);
 	if (ret) {
-		pr_err("alloc_chrdev_region fail: %d\n", ret);
+		pr_no_info("alloc_chrdev_region fail: %d\n", ret);
 		err = -ENOMEM;
 		goto err_out;
 	} else {
-		pr_info("major: %d, minor: %d\n", MAJOR(logdevobj->devno), MINOR(logdevobj->devno));
+		pr_no_info("major: %d, minor: %d\n", MAJOR(logdevobj->devno), MINOR(logdevobj->devno));
 	}
 	cdev_init(&logdevobj->chdev, &gps_fw_log_fops);
 	logdevobj->chdev.owner = THIS_MODULE;
 	err = cdev_add(&logdevobj->chdev, logdevobj->devno, 1);
 	if (err) {
-		pr_err("cdev_add fail: %d\n", err);
+		pr_no_info("cdev_add fail: %d\n", err);
 		goto err_out;
 	}
 	logdevobj->cls = class_create(THIS_MODULE, "gpsfwlog");
 	if (IS_ERR(logdevobj->cls)) {
-		pr_err("Unable to create class, err = %d\n", (int)PTR_ERR(logdevobj->cls));
+		pr_no_info("Unable to create class, err = %d\n", (int)PTR_ERR(logdevobj->cls));
 	goto err_out;
 	}
 	logdevobj->dev = device_create(logdevobj->cls, NULL, logdevobj->devno, logdevobj, "fw_log_gps");
@@ -201,7 +201,7 @@ static int __init gps_fw_log_init(void)
 	init_waitqueue_head(&GPS_log_wq);
 	connsys_log_register_event_cb(CONNLOG_TYPE_GPS, log_event_cb);
 
-	pr_info("GPS FW LOG device init Done\n");
+	pr_no_info("GPS FW LOG device init Done\n");
 	return 0;
 
 err_out:
@@ -220,11 +220,11 @@ err_out:
 static void __exit gps_fw_log_exit(void)
 {
 	if (!logdevobj) {
-		pr_err("null pointer: %p\n", logdevobj);
+		pr_no_info("null pointer: %p\n", logdevobj);
 		return;
 	}
 
-	pr_info("Unregistering chardev\n");
+	pr_no_info("Unregistering chardev\n");
 	connsys_log_deinit(CONNLOG_TYPE_GPS);
 	cdev_del(&logdevobj->chdev);
 	unregister_chrdev_region(logdevobj->devno, 1);
@@ -232,18 +232,18 @@ static void __exit gps_fw_log_exit(void)
 	class_destroy(logdevobj->cls);
 	kfree(logdevobj);
 	logdevobj = NULL;
-	pr_info("Done\n");
+	pr_no_info("Done\n");
 }
 
 int mtk_gps_fw_log_init(void)
 {
-	pr_info("gps fw log init begin");
+	pr_no_info("gps fw log init begin");
 	return gps_fw_log_init();
 }
 
 void mtk_gps_fw_log_exit(void)
 {
-	pr_info("gps fw log exit begin");
+	pr_no_info("gps fw log exit begin");
 	return gps_fw_log_exit();
 }
 

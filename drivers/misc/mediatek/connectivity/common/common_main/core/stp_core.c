@@ -227,7 +227,7 @@ static INT32 stp_ctx_lock_deinit(mtkstp_context_struct *pctx)
 static INT32 stp_ctx_lock(mtkstp_context_struct *pctx)
 {
 	/* dump_stack(); */
-	/* pr_debug("stp_lock\n\r"); */
+	/* pr_no_info("stp_lock\n\r"); */
 #if CFG_STP_CORE_CTX_SPIN_LOCK
 	return osal_lock_unsleepable_lock(&((pctx)->stp_mutex));
 #else
@@ -238,7 +238,7 @@ static INT32 stp_ctx_lock(mtkstp_context_struct *pctx)
 static INT32 stp_ctx_unlock(mtkstp_context_struct *pctx)
 {
 	/* dump_stack(); */
-	/* pr_debug("stp_unlock\n\r"); */
+	/* pr_no_info("stp_unlock\n\r"); */
 
 #if CFG_STP_CORE_CTX_SPIN_LOCK
 	return osal_unlock_unsleepable_lock(&((pctx)->stp_mutex));
@@ -348,7 +348,7 @@ static LONG stp_parser_dmp_num(PUINT8 str)
 
 
 	if (!str) {
-		STP_DBG_PR_ERR("NULL string source\n");
+		STP_DBG_pr_no_info("NULL string source\n");
 		return -1;
 	}
 
@@ -360,7 +360,7 @@ static LONG stp_parser_dmp_num(PUINT8 str)
 		while (*pTemp >= '0' && *pTemp <= '9')
 			pTemp++;
 	} else {
-		STP_DBG_PR_WARN("parser string 'Dump=' is not found\n");
+		STP_DBG_pr_no_info("parser string 'Dump=' is not found\n");
 		return -2;
 	}
 	len = pTemp - pDtr;
@@ -368,7 +368,7 @@ static LONG stp_parser_dmp_num(PUINT8 str)
 	tempBuf[len] = '\0';
 	ret = osal_strtol(tempBuf, 10, &res);
 	if (ret) {
-		STP_DBG_PR_ERR(" get 'Dump=' from firmware  failed (%d)", ret);
+		STP_DBG_pr_no_info(" get 'Dump=' from firmware  failed (%d)", ret);
 		return -4;
 	}
 

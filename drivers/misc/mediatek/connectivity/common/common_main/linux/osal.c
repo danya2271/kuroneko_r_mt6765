@@ -181,7 +181,7 @@ INT32 osal_snprintf(PINT8 buf, UINT32 len, const PINT8 fmt, ...)
 	va_end(args);
 
 	if (iRet < 0)
-		pr_info("vsnprintf error:%d\n", iRet);
+		pr_no_info("vsnprintf error:%d\n", iRet);
 
 	return iRet;
 }
@@ -197,7 +197,7 @@ INT32 osal_err_print(const PINT8 str, ...)
 	va_end(args);
 
 	if (ret > 0)
-		pr_err("%s", tempString);
+		pr_no_info("%s", tempString);
 
 	return ret;
 }
@@ -213,7 +213,7 @@ INT32 osal_dbg_print(const PINT8 str, ...)
 	va_end(args);
 
 	if (ret > 0)
-		pr_debug("%s", tempString);
+		pr_no_info("%s", tempString);
 
 	return ret;
 }
@@ -229,7 +229,7 @@ INT32 osal_warn_print(const PINT8 str, ...)
 	va_end(args);
 
 	if (ret > 0)
-		pr_warn("%s", tempString);
+		pr_no_info("%s", tempString);
 
 	return ret;
 }
@@ -237,12 +237,12 @@ INT32 osal_warn_print(const PINT8 str, ...)
 INT32 osal_dbg_assert(INT32 expr, const PINT8 file, INT32 line)
 {
 	if (!expr) {
-		pr_warn("%s (%d)\n", file, line);
+		pr_no_info("%s (%d)\n", file, line);
 		/*BUG_ON(!expr); */
 #ifdef CFG_COMMON_GPIO_DBG_PIN
 /* package this part */
 		gpio_direction_output(GPIO_ASSERT, 0);
-		pr_warn("toggle GPIO_ASSERT = %d\n", GPIO_ASSERT);
+		pr_no_info("toggle GPIO_ASSERT = %d\n", GPIO_ASSERT);
 		udelay(10);
 		gpio_set_value(GPIO_ASSERT, 1);
 #endif
@@ -750,7 +750,7 @@ INT32 osal_bit_op_unlock(P_OSAL_UNSLEEPABLE_LOCK pLock)
 INT32 osal_clear_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 {
 	if (bitOffset >= BITS_PER_LONG) {
-		pr_info("bitOffset(%d) is out of range.\n", bitOffset);
+		pr_no_info("bitOffset(%d) is out of range.\n", bitOffset);
 		return -1;
 	}
 	osal_bit_op_lock(&(pData->opLock));
@@ -762,7 +762,7 @@ INT32 osal_clear_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 INT32 osal_set_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 {
 	if (bitOffset >= BITS_PER_LONG) {
-		pr_info("bitOffset(%d) is out of range.\n", bitOffset);
+		pr_no_info("bitOffset(%d) is out of range.\n", bitOffset);
 		return -1;
 	}
 	osal_bit_op_lock(&(pData->opLock));
@@ -776,7 +776,7 @@ INT32 osal_test_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 	UINT32 iRet = 0;
 
 	if (bitOffset >= BITS_PER_LONG) {
-		pr_info("bitOffset(%d) is out of range.\n", bitOffset);
+		pr_no_info("bitOffset(%d) is out of range.\n", bitOffset);
 		return -1;
 	}
 	osal_bit_op_lock(&(pData->opLock));
@@ -790,7 +790,7 @@ INT32 osal_test_and_clear_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 	UINT32 iRet = 0;
 
 	if (bitOffset >= BITS_PER_LONG) {
-		pr_info("bitOffset(%d) is out of range.\n", bitOffset);
+		pr_no_info("bitOffset(%d) is out of range.\n", bitOffset);
 		return -1;
 	}
 	osal_bit_op_lock(&(pData->opLock));
@@ -805,7 +805,7 @@ INT32 osal_test_and_set_bit(UINT32 bitOffset, P_OSAL_BIT_OP_VAR pData)
 	UINT32 iRet = 0;
 
 	if (bitOffset >= BITS_PER_LONG) {
-		pr_info("bitOffset(%d) is out of range.\n", bitOffset);
+		pr_no_info("bitOffset(%d) is out of range.\n", bitOffset);
 		return -1;
 	}
 	osal_bit_op_lock(&(pData->opLock));
@@ -877,12 +877,12 @@ INT32 _osal_fifo_init(OSAL_FIFO *pFifo, PUINT8 buf, UINT32 size)
 	INT32 ret = -1;
 
 	if (!pFifo) {
-		pr_err("pFifo must be !NULL\n");
+		pr_no_info("pFifo must be !NULL\n");
 		return -1;
 	}
 	if (pFifo->pFifoBody) {
-		pr_err("pFifo->pFifoBody must be NULL\n");
-		pr_err("pFifo(0x%p), pFifo->pFifoBody(0x%p)\n", pFifo, pFifo->pFifoBody);
+		pr_no_info("pFifo->pFifoBody must be NULL\n");
+		pr_no_info("pFifo(0x%p), pFifo->pFifoBody(0x%p)\n", pFifo, pFifo->pFifoBody);
 		return -1;
 	}
 	fifo = kzalloc(sizeof(struct kfifo), GFP_ATOMIC);
@@ -909,7 +909,7 @@ INT32 _osal_fifo_deinit(OSAL_FIFO *pFifo)
 	struct kfifo *fifo = NULL;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -927,7 +927,7 @@ INT32 _osal_fifo_size(OSAL_FIFO *pFifo)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -946,7 +946,7 @@ INT32 _osal_fifo_avail_size(OSAL_FIFO *pFifo)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -965,7 +965,7 @@ INT32 _osal_fifo_len(OSAL_FIFO *pFifo)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -983,7 +983,7 @@ INT32 _osal_fifo_is_empty(OSAL_FIFO *pFifo)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1001,7 +1001,7 @@ INT32 _osal_fifo_is_full(OSAL_FIFO *pFifo)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1019,7 +1019,7 @@ INT32 _osal_fifo_data_in(OSAL_FIFO *pFifo, const PVOID buf, UINT32 len)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1028,7 +1028,7 @@ INT32 _osal_fifo_data_in(OSAL_FIFO *pFifo, const PVOID buf, UINT32 len)
 	if (fifo && buf && (len <= _osal_fifo_avail_size(pFifo))) {
 		ret = kfifo_in(fifo, buf, len);
 	} else {
-		pr_err("%s: kfifo_in, error, len = %d, _osal_fifo_avail_size = %d, buf=%p\n",
+		pr_no_info("%s: kfifo_in, error, len = %d, _osal_fifo_avail_size = %d, buf=%p\n",
 		       __func__, len, _osal_fifo_avail_size(pFifo), buf);
 
 		ret = 0;
@@ -1043,7 +1043,7 @@ INT32 _osal_fifo_data_out(OSAL_FIFO *pFifo, PVOID buf, UINT32 len)
 	INT32 ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1052,7 +1052,7 @@ INT32 _osal_fifo_data_out(OSAL_FIFO *pFifo, PVOID buf, UINT32 len)
 	if (fifo && buf && (len <= _osal_fifo_len(pFifo))) {
 		ret = kfifo_out(fifo, buf, len);
 	} else {
-		pr_err("%s: kfifo_out, error, len = %d, osal_fifo_len = %d, buf=%p\n",
+		pr_no_info("%s: kfifo_out, error, len = %d, osal_fifo_len = %d, buf=%p\n",
 		       __func__, len, _osal_fifo_len(pFifo), buf);
 
 		ret = 0;
@@ -1066,7 +1066,7 @@ INT32 _osal_fifo_reset(OSAL_FIFO *pFifo)
 	struct kfifo *fifo = NULL;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1081,7 +1081,7 @@ INT32 _osal_fifo_reset(OSAL_FIFO *pFifo)
 INT32 osal_fifo_init(P_OSAL_FIFO pFifo, UINT8 *buffer, UINT32 size)
 {
 	if (!pFifo) {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1097,7 +1097,7 @@ INT32 osal_fifo_init(P_OSAL_FIFO pFifo, UINT8 *buffer, UINT32 size)
 	pFifo->FifoReset = _osal_fifo_reset;
 
 	if (pFifo->pFifoBody != NULL) {
-		pr_err("%s:Because pFifo room is avialable, we clear the room and allocate them again.\n", __func__);
+		pr_no_info("%s:Because pFifo room is avialable, we clear the room and allocate them again.\n", __func__);
 		pFifo->FifoDeInit(pFifo);
 		pFifo->pFifoBody = NULL;
 	}
@@ -1112,7 +1112,7 @@ VOID osal_fifo_deinit(P_OSAL_FIFO pFifo)
 	if (pFifo)
 		pFifo->FifoDeInit(pFifo);
 	else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		return;
 	}
 	kfree(pFifo->pFifoBody);
@@ -1126,7 +1126,7 @@ INT32 osal_fifo_reset(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoReset(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = -1;
 	}
 	return ret;
@@ -1139,7 +1139,7 @@ UINT32 osal_fifo_in(P_OSAL_FIFO pFifo, PUINT8 buffer, UINT32 size)
 	if (pFifo) {
 		ret = pFifo->FifoDataIn(pFifo, buffer, size);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1153,7 +1153,7 @@ UINT32 osal_fifo_out(P_OSAL_FIFO pFifo, PUINT8 buffer, UINT32 size)
 	if (pFifo) {
 		ret = pFifo->FifoDataOut(pFifo, buffer, size);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1167,7 +1167,7 @@ UINT32 osal_fifo_len(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoLen(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1181,7 +1181,7 @@ UINT32 osal_fifo_sz(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoSz(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1195,7 +1195,7 @@ UINT32 osal_fifo_avail(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoAvailSz(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1209,7 +1209,7 @@ UINT32 osal_fifo_is_empty(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoIsEmpty(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1223,7 +1223,7 @@ UINT32 osal_fifo_is_full(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoIsFull(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 	return ret;
@@ -1255,7 +1255,7 @@ INT32 osal_wake_lock_deinit(P_OSAL_WAKE_LOCK pLock)
 		wakeup_source_unregister(pLock->wake_lock);
 		pLock->init_flag = 0;
 	} else
-		pr_info("%s: wake_lock is not initialized!\n", __func__);
+		pr_no_info("%s: wake_lock is not initialized!\n", __func__);
 
 	return 0;
 }
@@ -1268,7 +1268,7 @@ INT32 osal_wake_lock(P_OSAL_WAKE_LOCK pLock)
 	if (pLock->init_flag == 1)
 		__pm_stay_awake(pLock->wake_lock);
 	else
-		pr_info("%s: wake_lock is not initialized!\n", __func__);
+		pr_no_info("%s: wake_lock is not initialized!\n", __func__);
 
 	return 0;
 }
@@ -1281,7 +1281,7 @@ INT32 osal_wake_unlock(P_OSAL_WAKE_LOCK pLock)
 	if (pLock->init_flag == 1)
 		__pm_relax(pLock->wake_lock);
 	else
-		pr_info("%s: wake_lock is not initialized!\n", __func__);
+		pr_no_info("%s: wake_lock is not initialized!\n", __func__);
 
 	return 0;
 
@@ -1297,7 +1297,7 @@ INT32 osal_wake_lock_count(P_OSAL_WAKE_LOCK pLock)
 	if (pLock->init_flag == 1)
 		count = pLock->wake_lock->active;
 	else
-		pr_info("%s: wake_lock is not initialized!\n", __func__);
+		pr_no_info("%s: wake_lock is not initialized!\n", __func__);
 
 	return count;
 }
@@ -1446,7 +1446,7 @@ VOID osal_get_local_time(PUINT64 sec, PULONG nsec)
 		*sec = local_clock();
 		*nsec = do_div(*sec, 1000000000)/1000;
 	} else
-		pr_err("The input parameters error when get local time\n");
+		pr_no_info("The input parameters error when get local time\n");
 }
 
 UINT64 osal_elapsed_us(UINT64 ts, ULONG usec)
@@ -1466,7 +1466,7 @@ VOID osal_buffer_dump(const PUINT8 buf, const PUINT8 title, const UINT32 len, co
 	INT32 strlen = 0;
 	char *p = NULL;
 
-	pr_info("[%s] len=%d, limit=%d, start dump\n", title, len, limit);
+	pr_no_info("[%s] len=%d, limit=%d, start dump\n", title, len, limit);
 
 	dump_len = ((limit != 0) && (len > limit)) ? limit : len;
 	p = str;
@@ -1476,14 +1476,14 @@ VOID osal_buffer_dump(const PUINT8 buf, const PUINT8 title, const UINT32 len, co
 			p += strlen;
 		} else {
 			strlen = osal_sprintf(p, "%02x\n",  buf[k]);
-			pr_info("%s", str);
+			pr_no_info("%s", str);
 			p = str;
 		}
 	}
 	if (k % 16 != 0)
-		pr_info("%s\n", str);
+		pr_no_info("%s\n", str);
 
-	pr_info("end of dump\n");
+	pr_no_info("end of dump\n");
 }
 
 VOID osal_buffer_dump_data(const PUINT32 buf, const PUINT8 title, const UINT32 len, const UINT32 limit,
@@ -1508,7 +1508,7 @@ VOID osal_buffer_dump_data(const PUINT32 buf, const PUINT8 title, const UINT32 l
 			if (flag)
 				osal_ftrace_print("%s%s", title, str);
 			else
-				pr_info("%s%s", title, str);
+				pr_no_info("%s%s", title, str);
 			p = str;
 		}
 	}
@@ -1516,7 +1516,7 @@ VOID osal_buffer_dump_data(const PUINT32 buf, const PUINT8 title, const UINT32 l
 		if (flag)
 			osal_ftrace_print("%s%s\n", title, str);
 		else
-			pr_info("%s%s\n", title, str);
+			pr_no_info("%s%s\n", title, str);
 	}
 }
 
@@ -1604,7 +1604,7 @@ static VOID _osal_opq_dump(const char *qName, P_OSAL_OP_Q pOpQ)
 	rd = pOpQ->read;
 	wt = pOpQ->write;
 
-	pr_info("%s(%p), sz:%u/%u, rd:%u, wt:%u\n", qName, pOpQ, RB_COUNT(pOpQ), RB_SIZE(pOpQ), rd, wt);
+	pr_no_info("%s(%p), sz:%u/%u, rd:%u, wt:%u\n", qName, pOpQ, RB_COUNT(pOpQ), RB_SIZE(pOpQ), rd, wt);
 	while (rd != wt && idx < RB_SIZE(pOpQ)) {
 		idxInBuf = idx % OPQ_DUMP_OP_PER_LINE;
 		op = pOpQ->queue[rd & RB_MASK(pOpQ)];
@@ -1640,7 +1640,7 @@ static VOID _osal_opq_dump(const char *qName, P_OSAL_OP_Q pOpQ)
 
 		if (idxInBuf == OPQ_DUMP_OP_PER_LINE - 1  || rd == wt - 1) {
 			buf[printed - 1] = 0;
-			pr_info("%s\n", buf);
+			pr_no_info("%s\n", buf);
 		}
 		rd++;
 		idx++;
@@ -1653,7 +1653,7 @@ VOID osal_opq_dump(const char *qName, P_OSAL_OP_Q pOpQ)
 
 	err = osal_lock_sleepable_lock(&pOpQ->sLock);
 	if (err) {
-		pr_info("Failed to lock queue (%d)\n", err);
+		pr_no_info("Failed to lock queue (%d)\n", err);
 		return;
 	}
 
@@ -1695,14 +1695,14 @@ static VOID osal_op_history_print_work(struct work_struct *work)
 	INT32 index = 0;
 
 	if (queue == NULL) {
-		pr_info("queue shouldn't be NULL, %s", log_history->name);
+		pr_no_info("queue shouldn't be NULL, %s", log_history->name);
 		return;
 	}
 
 	RING_READ_FOR_EACH_ITEM(RING_SIZE(ring_buffer), seg, ring_buffer) {
 		index = seg.ring_pt - ring_buffer->base;
 		entry = &queue[index];
-		pr_info("(%llu.%06lu) %s: pOp(%p):%u(%d)-%x-%zx,%zx,%zx,%zx\n",
+		pr_no_info("(%llu.%06lu) %s: pOp(%p):%u(%d)-%x-%zx,%zx,%zx,%zx\n",
 			entry->ts,
 			entry->usec,
 			log_history->name,
@@ -1750,7 +1750,7 @@ VOID osal_op_history_print(struct osal_op_history *log_history, PINT8 name)
 	spinlock_t *lock = &(log_history->lock);
 
 	if (log_history->queue == NULL) {
-		pr_info("Queue is NULL, name: %s\n", name);
+		pr_no_info("Queue is NULL, name: %s\n", name);
 		return;
 	}
 
@@ -1770,7 +1770,7 @@ VOID osal_op_history_print(struct osal_op_history *log_history, PINT8 name)
 	if (dump_ring_buffer->base != NULL) {
 		spin_unlock_irqrestore(lock, flags);
 		kfree(queue);
-		pr_info("print is ongoing: %s\n", name);
+		pr_no_info("print is ongoing: %s\n", name);
 		return;
 	}
 
@@ -1804,7 +1804,7 @@ VOID osal_op_history_save(struct osal_op_history *log_history, P_OSAL_OP pOp)
 	}
 
 	if (entry == NULL) {
-		pr_info("Entry is null, size %d\n", RING_SIZE(&log_history->ring_buffer));
+		pr_no_info("Entry is null, size %d\n", RING_SIZE(&log_history->ring_buffer));
 		spin_unlock_irqrestore(&(log_history->lock), flags);
 		return;
 	}

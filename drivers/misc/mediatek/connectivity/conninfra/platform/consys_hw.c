@@ -102,7 +102,7 @@ struct conninfra_dev_cb *g_conninfra_dev_cb;
 */
 struct consys_hw_ops_struct* __weak get_consys_platform_ops(void)
 {
-	pr_err("Miss platform ops !!\n");
+	pr_no_info("Miss platform ops !!\n");
 	return NULL;
 }
 
@@ -117,7 +117,7 @@ int consys_hw_get_clock_schematic(void)
 	if (consys_hw_ops->consys_plt_co_clock_type)
 		return consys_hw_ops->consys_plt_co_clock_type();
 	else
-		pr_err("consys_hw_ops->consys_co_clock_type not supported\n");
+		pr_no_info("consys_hw_ops->consys_co_clock_type not supported\n");
 
 	return -1;
 }
@@ -127,7 +127,7 @@ unsigned int consys_hw_chipid_get(void)
 	if (consys_hw_ops->consys_plt_soc_chipid_get)
 		return consys_hw_ops->consys_plt_soc_chipid_get();
 	else
-		pr_err("consys_plt_soc_chipid_get not supported\n");
+		pr_no_info("consys_plt_soc_chipid_get not supported\n");
 
 	return 0;
 }
@@ -171,19 +171,19 @@ int consys_hw_pwr_off(unsigned int curr_status, unsigned int off_radio)
 	int ret = 0;
 
 	if (next_status == 0) {
-		pr_info("Last pwoer off: %d\n", off_radio);
-		pr_info("Power off CONNSYS PART 1\n");
+		pr_no_info("Last pwoer off: %d\n", off_radio);
+		pr_no_info("Power off CONNSYS PART 1\n");
 		if (consys_hw_ops->consys_plt_conninfra_on_power_ctrl)
 			consys_hw_ops->consys_plt_conninfra_on_power_ctrl(0);
-		pr_info("Power off CONNSYS PART 2\n");
+		pr_no_info("Power off CONNSYS PART 2\n");
 		if (consys_hw_ops->consys_plt_set_if_pinmux)
 			consys_hw_ops->consys_plt_set_if_pinmux(0);
 		if (consys_hw_ops->consys_plt_clock_buffer_ctrl)
 			consys_hw_ops->consys_plt_clock_buffer_ctrl(0);
 		ret = pmic_mng_common_power_ctrl(0);
-		pr_info("Power off a-die power, ret=%d\n", ret);
+		pr_no_info("Power off a-die power, ret=%d\n", ret);
 	} else {
-		pr_info("[%s] Part 0: only subsys (%d) off (curr_status=0x%x, next_status = 0x%x)\n",
+		pr_no_info("[%s] Part 0: only subsys (%d) off (curr_status=0x%x, next_status = 0x%x)\n",
 			__func__, off_radio, curr_status, next_status);
 		ret = _consys_hw_conninfra_wakeup();
 		if (consys_hw_ops->consys_plt_subsys_status_update)
@@ -359,7 +359,7 @@ static int _consys_hw_conninfra_wakeup(void)
 		if (g_conninfra_wakeup_ref_cnt == 0)  {
 			ret = consys_hw_ops->consys_plt_conninfra_wakeup();
 			if (ret) {
-				pr_err("wakeup fail!! ret=[%d]", ret);
+				pr_no_info("wakeup fail!! ret=[%d]", ret);
 				return ret;
 			}
 			wakeup = true;
@@ -367,7 +367,7 @@ static int _consys_hw_conninfra_wakeup(void)
 		g_conninfra_wakeup_ref_cnt++;
 	}
 
-	pr_info("conninfra_wakeup refcnt=[%d]->[%d] %s",
+	pr_no_info("conninfra_wakeup refcnt=[%d]->[%d] %s",
 			ref, g_conninfra_wakeup_ref_cnt, (wakeup ? "wakeup!!" : ""));
 	return 0;
 }
@@ -382,7 +382,7 @@ static void _consys_hw_conninfra_sleep(void)
 		sleep = true;
 		consys_hw_ops->consys_plt_conninfra_sleep();
 	}
-	pr_info("conninfra_sleep refcnt=[%d]->[%d] %s",
+	pr_no_info("conninfra_sleep refcnt=[%d]->[%d] %s",
 			ref, g_conninfra_wakeup_ref_cnt, (sleep ? "sleep!!" : ""));
 }
 
@@ -431,27 +431,27 @@ int mtk_conninfra_probe(struct platform_device *pdev)
 
 	/* Read device node */
 	if (consys_reg_mng_init(pdev) != 0) {
-		pr_err("consys_plt_read_reg_from_dts fail");
+		pr_no_info("consys_plt_read_reg_from_dts fail");
 		return -1;
 	}
 
 	if (consys_hw_ops->consys_plt_clk_get_from_dts)
 		consys_hw_ops->consys_plt_clk_get_from_dts(pdev);
 	else {
-		pr_err("consys_plt_clk_get_from_dtsfail");
+		pr_no_info("consys_plt_clk_get_from_dtsfail");
 		return -2;
 	}
 
 	/* emi mng init */
 	ret = emi_mng_init();
 	if (ret) {
-		pr_err("emi_mng init fail, %d\n", ret);
+		pr_no_info("emi_mng init fail, %d\n", ret);
 		return -3;
 	}
 
 	ret = pmic_mng_init(pdev, g_conninfra_dev_cb);
 	if (ret) {
-		pr_err("pmic_mng init fail, %d\n", ret);
+		pr_no_info("pmic_mng init fail, %d\n", ret);
 		return -4;
 	}
 
@@ -460,7 +460,7 @@ int mtk_conninfra_probe(struct platform_device *pdev)
 	if (emi_info) {
 		connsys_dedicated_log_path_apsoc_init((phys_addr_t)emi_info->emi_ap_phy_addr);
 	} else {
-		pr_err("Connsys log didn't init because EMI is invalid\n");
+		pr_no_info("Connsys log didn't init because EMI is invalid\n");
 	}
 
 	if (pdev)
@@ -509,10 +509,10 @@ int consys_hw_init(struct conninfra_dev_cb *dev_cb)
 
 	iRet = platform_driver_register(&mtk_conninfra_dev_drv);
 	if (iRet)
-		pr_err("Conninfra platform driver registered failed(%d)\n", iRet);
+		pr_no_info("Conninfra platform driver registered failed(%d)\n", iRet);
 
 	INIT_WORK(&ap_resume_work, consys_hw_ap_resume_handler);
-	pr_info("[consys_hw_init] result [%d]\n", iRet);
+	pr_no_info("[consys_hw_init] result [%d]\n", iRet);
 
 	return iRet;
 }

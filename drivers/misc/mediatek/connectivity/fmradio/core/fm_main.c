@@ -662,7 +662,7 @@ signed int fm_tx_scan(struct fm *fm, struct fm_tx_scan_parm *parm)
 	unsigned short space = parm->space;
 
 	if (fm_low_ops.bi.tx_scan == NULL) {
-		pr_err("%s,invalid pointer\n", __func__);
+		pr_no_info("%s,invalid pointer\n", __func__);
 		return -FM_EPARA;
 	}
 	if (FM_LOCK(fm_ops_lock))
@@ -1144,7 +1144,7 @@ signed int fm_pmic_read(struct fm *fm, unsigned char addr, unsigned int *val)
 	signed int ret = 0;
 
 	if (fm_low_ops.bi.pmic_read == NULL) {
-		pr_err("%s,invalid pointer\n", __func__);
+		pr_no_info("%s,invalid pointer\n", __func__);
 		return -FM_EPARA;
 	}
 	if (FM_LOCK(fm_ops_lock))
@@ -1161,7 +1161,7 @@ signed int fm_pmic_write(struct fm *fm, unsigned char addr, unsigned int val)
 	signed int ret = 0;
 
 	if (fm_low_ops.bi.pmic_write == NULL) {
-		pr_err("%s,invalid pointer\n", __func__);
+		pr_no_info("%s,invalid pointer\n", __func__);
 		return -FM_EPARA;
 	}
 	if (FM_LOCK(fm_ops_lock))

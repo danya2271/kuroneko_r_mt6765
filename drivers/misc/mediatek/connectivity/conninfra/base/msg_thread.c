@@ -84,7 +84,7 @@ do { \
 		++((prb)->write); \
 	} \
 	else { \
-		pr_warn("Message queue is full."); \
+		pr_no_info("Message queue is full."); \
 	} \
 } while (0)
 
@@ -99,7 +99,7 @@ do { \
 	} \
 	else { \
 		value = NULL; \
-		pr_warn("Message queue is empty."); \
+		pr_no_info("Message queue is empty."); \
 	} \
 } while (0)
 
@@ -133,19 +133,19 @@ static int msg_evt_put_op_to_q(struct msg_op_q *op_q, struct msg_op *op)
 	int ret;
 
 	if (!op_q || !op) {
-		pr_err("invalid input param: pOpQ(0x%p), pLxOp(0x%p)\n", op_q, op);
+		pr_no_info("invalid input param: pOpQ(0x%p), pLxOp(0x%p)\n", op_q, op);
 		return -1;
 	}
 
 	ret = osal_lock_sleepable_lock(&op_q->lock);
 	if (ret) {
-		pr_warn("osal_lock_sleepable_lock iRet(%d)\n", ret);
+		pr_no_info("osal_lock_sleepable_lock iRet(%d)\n", ret);
 		return -2;
 	}
 
 #if defined(CONFIG_MTK_ENG_BUILD) || defined(CONFIG_MT_ENG_BUILD)
 	if (msg_evt_opq_has_op(op_q, op)) {
-		pr_err("Op(%p) already exists in queue(%p)\n", op, op_q);
+		pr_no_info("Op(%p) already exists in queue(%p)\n", op, op_q);
 		ret = -3;
 	}
 #endif
@@ -154,7 +154,7 @@ static int msg_evt_put_op_to_q(struct msg_op_q *op_q, struct msg_op *op)
 	if (!MSG_OP_FULL(op_q))
 		MSG_OP_PUT(op_q, op);
 	else {
-		pr_warn("MSG_OP_FULL(%p -> %p)\n", op, op_q);
+		pr_no_info("MSG_OP_FULL(%p -> %p)\n", op, op_q);
 		ret = -4;
 	}
 
@@ -178,13 +178,13 @@ static struct msg_op *msg_evt_get_op_from_q(struct msg_op_q *op_q)
 	int ret;
 
 	if (op_q == NULL) {
-		pr_err("pOpQ = NULL\n");
+		pr_no_info("pOpQ = NULL\n");
 		return NULL;
 	}
 
 	ret = osal_lock_sleepable_lock(&op_q->lock);
 	if (ret) {
-		pr_err("osal_lock_sleepable_lock iRet(%d)\n", ret);
+		pr_no_info("osal_lock_sleepable_lock iRet(%d)\n", ret);
 		return NULL;
 	}
 
@@ -193,7 +193,7 @@ static struct msg_op *msg_evt_get_op_from_q(struct msg_op_q *op_q)
 	osal_unlock_sleepable_lock(&op_q->lock);
 
 	if (op == NULL) {
-		pr_warn("MSG_OP_GET(%p) return NULL\n", op_q);
+		pr_no_info("MSG_OP_GET(%p) return NULL\n", op_q);
 	//osal_opq_dump("FreeOpQ", &g_conninfra_ctx.rFreeOpQ);
 		//osal_opq_dump("ActiveOpQ", &g_conninfra_ctx.rActiveOpQ);
 	}
@@ -218,7 +218,7 @@ struct msg_op *msg_evt_get_free_op(struct msg_thread_ctx *ctx)
 	struct msg_op *op = NULL;
 
 	if (ctx == NULL) {
-		pr_warn("ctx is null.");
+		pr_no_info("ctx is null.");
 		return op;
 	}
 	op = msg_evt_get_op_from_q(&ctx->free_op_q);
@@ -235,7 +235,7 @@ int msg_evt_put_op_to_active(struct msg_thread_ctx *ctx, struct msg_op *op)
 
 	do {
 		if (!ctx || !op) {
-			pr_err("msg_thread_ctx(0x%p), op(0x%p)\n", ctx, op);
+			pr_no_info("msg_thread_ctx(0x%p), op(0x%p)\n", ctx, op);
 			break;
 		}
 
@@ -258,7 +258,7 @@ int msg_evt_put_op_to_active(struct msg_thread_ctx *ctx, struct msg_op *op)
 		/* put to active Q */
 		ret = msg_evt_put_op_to_q(&ctx->active_op_q, op);
 		if (ret) {
-			pr_warn("put to active queue fail\n");
+			pr_no_info("put to active queue fail\n");
 			atomic_dec(&op->ref_count);
 			break;
 		}
@@ -269,19 +269,19 @@ int msg_evt_put_op_to_active(struct msg_thread_ctx *ctx, struct msg_op *op)
 		if (signal->timeoutValue == 0) {
 			//ret = -1;
 			/* Not set timeout, don't wait */
-			/* pr_info("[%s] timeout is zero", __func__);*/
+			/* pr_no_info("[%s] timeout is zero", __func__);*/
 			break;
 		}
 
 		/* check result */
 		wait_ret = osal_wait_for_signal_timeout(signal, &ctx->thread);
-		/*pr_info("osal_wait_for_signal_timeout:%d result=[%d]\n",
+		/*pr_no_info("osal_wait_for_signal_timeout:%d result=[%d]\n",
 							wait_ret, op->result);*/
 
 		if (wait_ret == 0)
-			pr_warn("opId(%d) completion timeout\n", op->op.op_id);
+			pr_no_info("opId(%d) completion timeout\n", op->op.op_id);
 		else if (op->result)
-			pr_info("opId(%d) result:%d\n",
+			pr_no_info("opId(%d) result:%d\n",
 					op->op.op_id, op->result);
 
 		/* op completes, check result */
@@ -318,7 +318,7 @@ int msg_thread_send_2(struct msg_thread_ctx *ctx, int opid,
 
 	op = msg_evt_get_free_op(ctx);
 	if (!op) {
-		pr_err("[%s] can't get free op\n", __func__);
+		pr_no_info("[%s] can't get free op\n", __func__);
 		return -1;
 	}
 	op->op.op_id = opid;
@@ -367,7 +367,7 @@ int msg_thread_send_wait_3(struct msg_thread_ctx *ctx,
 
 	op = msg_evt_get_free_op(ctx);
 	if (!op) {
-		pr_err("[%s] can't get free op\n", __func__);
+		pr_no_info("[%s] can't get free op\n", __func__);
 		return -1;
 	}
 	op->op.op_id = opid;
@@ -403,7 +403,7 @@ void msg_op_history_save(struct osal_op_history *log_history, struct msg_op *op)
 	}
 
 	if (entry == NULL) {
-		pr_info("Entry is null, size %d\n",
+		pr_no_info("Entry is null, size %d\n",
 				RING_SIZE(&log_history->ring_buffer));
 		spin_unlock_irqrestore(&(log_history->lock), flags);
 		return;
@@ -445,23 +445,23 @@ int msg_evt_opid_handler(struct msg_thread_ctx *ctx, struct msg_op_data *op)
 
 	/*sanity check */
 	if (op == NULL) {
-		pr_warn("null op\n");
+		pr_no_info("null op\n");
 		return -1;
 	}
 	if (ctx == NULL) {
-		pr_warn("null evt thread ctx\n");
+		pr_no_info("null evt thread ctx\n");
 		return -2;
 	}
 
 	opid = op->op_id;
 
 	if (opid >= ctx->op_func_size) {
-		pr_err("msg_evt_thread invalid OPID(%d)\n", opid);
+		pr_no_info("msg_evt_thread invalid OPID(%d)\n", opid);
 		return -3;
 	}
 
 	if (ctx->op_func[opid] == NULL) {
-		pr_err("null handler (%d)\n", opid);
+		pr_no_info("null handler (%d)\n", opid);
 		return -4;
 	}
 	ret = (*(ctx->op_func[opid])) (op);
@@ -476,7 +476,7 @@ static int msg_evt_thread(void *pvData)
 	int ret;
 
 	if (ctx == NULL) {
-		pr_err("msg_evt_thread (NULL)\n");
+		pr_no_info("msg_evt_thread (NULL)\n");
 		return -1;
 	}
 
@@ -489,14 +489,14 @@ static int msg_evt_thread(void *pvData)
 		osal_thread_wait_for_event(&ctx->thread, evt, msg_evt_wait_event_checker);
 
 		if (osal_thread_should_stop(&ctx->thread)) {
-			pr_info("msg_evt_thread thread should stop now...\n");
+			pr_no_info("msg_evt_thread thread should stop now...\n");
 			/* TODO: clean up active opQ */
 			break;
 		}
 		/* get Op from activeQ */
 		op = msg_evt_get_op_from_q(&ctx->active_op_q);
 		if (!op) {
-			pr_warn("get op from activeQ fail\n");
+			pr_no_info("get op from activeQ fail\n");
 			continue;
 		}
 
@@ -507,7 +507,7 @@ static int msg_evt_thread(void *pvData)
 		msg_evt_set_current_op(ctx, NULL);
 
 		if (ret)
-			pr_warn("opid (0x%x) failed, ret(%d)\n",
+			pr_no_info("opid (0x%x) failed, ret(%d)\n",
 							op->op.op_id, ret);
 
 		if (atomic_dec_and_test(&op->ref_count)) {
@@ -519,7 +519,7 @@ static int msg_evt_thread(void *pvData)
 		}
 	}
 
-	pr_debug("msg evt thread exists\n");
+	pr_no_info("msg evt thread exists\n");
 	return 0;
 }
 
@@ -546,7 +546,7 @@ int msg_thread_init(struct msg_thread_ctx *ctx,
 	r = osal_thread_create(p_thread);
 
 	if (r) {
-		pr_err("osal_thread_create(0x%p) fail(%d)\n", p_thread, r);
+		pr_no_info("osal_thread_create(0x%p) fail(%d)\n", p_thread, r);
 		return -1;
 	}
 
@@ -568,7 +568,7 @@ int msg_thread_init(struct msg_thread_ctx *ctx,
 
 	r = osal_thread_run(p_thread);
 	if (r) {
-		pr_err("osal_thread_run(evt_thread 0x%p) fail(%d)\n",
+		pr_no_info("osal_thread_run(evt_thread 0x%p) fail(%d)\n",
 				p_thread, r);
 		return -2;
 	}
@@ -582,7 +582,7 @@ int msg_thread_deinit(struct msg_thread_ctx *ctx)
 
 	r = osal_thread_stop(p_thraed);
 	if (r) {
-		pr_err("osal_thread_stop(0x%p) fail(%d)\n", p_thraed, r);
+		pr_no_info("osal_thread_stop(0x%p) fail(%d)\n", p_thraed, r);
 		return -1;
 	}
 
@@ -594,12 +594,12 @@ int msg_thread_deinit(struct msg_thread_ctx *ctx)
 
 	r = osal_thread_destroy(p_thraed);
 	if (r) {
-		pr_err("osal_thread_stop(0x%p) fail(%d)\n", p_thraed, r);
+		pr_no_info("osal_thread_stop(0x%p) fail(%d)\n", p_thraed, r);
 		return -2;
 	}
 
 	osal_memset(ctx, 0, sizeof(struct msg_thread_ctx));
 
-	pr_debug("[%s] DONE\n", __func__);
+	pr_no_info("[%s] DONE\n", __func__);
 	return 0;
 }

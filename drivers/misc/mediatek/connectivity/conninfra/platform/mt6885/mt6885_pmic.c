@@ -142,7 +142,7 @@ static int consys_plt_pmic_event_notifier(unsigned int id, unsigned int event)
 	static int oc_counter = 0;
 
 	oc_counter++;
-	pr_info("[%s] VCN13 OC times: %d\n", __func__, oc_counter);
+	pr_no_info("[%s] VCN13 OC times: %d\n", __func__, oc_counter);
 
 	consys_plt_pmic_ctrl_dump("VCN13 OC");
 	return NOTIFY_OK;
@@ -167,7 +167,7 @@ int consys_plt_pmic_ctrl_dump(const char* tag)
 	consys_hw_is_bus_hang();
 	ret = consys_hw_force_conninfra_wakeup();
 	if (ret) {
-		pr_info("[%s] force conninfra wakeup fail\n", __func__);
+		pr_no_info("[%s] force conninfra wakeup fail\n", __func__);
 		return 0;
 	}
 
@@ -176,10 +176,10 @@ int consys_plt_pmic_ctrl_dump(const char* tag)
 	if (consys_sema_acquire_timeout(CONN_SEMA_CONN_INFRA_COMMON_SYSRAM_INDEX, CONN_SEMA_TIMEOUT) == CONN_SEMA_GET_SUCCESS) {
 		value3 = CONSYS_REG_READ(CONN_INFRA_SYSRAM_BASE_ADDR + CONN_INFRA_SYSRAM_SW_CR_A_DIE_TOP_CK_EN_CTRL);
 		consys_sema_release(CONN_SEMA_CONN_INFRA_COMMON_SYSRAM_INDEX);
-		pr_info("[%s] D-die: 0x1800_1900:0x%08x 0x1800_50A8:0x%08x 0x1805_2830:0x%08x\n",
+		pr_no_info("[%s] D-die: 0x1800_1900:0x%08x 0x1800_50A8:0x%08x 0x1805_2830:0x%08x\n",
 			(tag == NULL?__func__:tag), value1, value2, value3);
 	} else {
-		pr_info("[%s] D-die: 0x1800_1900:0x%08x 0x1800_50A8:0x%08x\n",
+		pr_no_info("[%s] D-die: 0x1800_1900:0x%08x 0x1800_50A8:0x%08x\n",
 			(tag == NULL?__func__:tag), value1, value2);
 	}
 
@@ -188,7 +188,7 @@ int consys_plt_pmic_ctrl_dump(const char* tag)
 		if (snprintf(tmp, LOG_TMP_BUF_SZ, " [0x%04x: 0x%08x]", adie_cr_list[index], adie_value) >= 0)
 			strncat(tmp_buf, tmp, strlen(tmp));
 	}
-	pr_info("[%s] ATOP:%s\n", (tag == NULL?__func__:tag), tmp_buf);
+	pr_no_info("[%s] ATOP:%s\n", (tag == NULL?__func__:tag), tmp_buf);
 	consys_hw_force_conninfra_sleep();
 
 	return 0;
@@ -202,28 +202,28 @@ int consys_plt_pmic_get_from_dts(struct platform_device *pdev, struct conninfra_
 //#if CONSYS_PMIC_CTRL_ENABLE
 	reg_VCN13 = devm_regulator_get_optional(&pdev->dev, "vcn13");
 	if (!reg_VCN13)
-		pr_err("Regulator_get VCN_13 fail\n");
+		pr_no_info("Regulator_get VCN_13 fail\n");
 	else {
 		vcn13_nb.notifier_call = consys_vcn13_oc_notify;
 		ret = devm_regulator_register_notifier(reg_VCN13, &vcn13_nb);
 		if (ret) {
-			pr_info("VCN13 regulator notifier request failed\n");
+			pr_no_info("VCN13 regulator notifier request failed\n");
 		}
 		/* Set VS2 to 1.4625V */
 		KERNEL_pmic_set_register_value(PMIC_RG_BUCK_VS2_VOSEL, 0x35);
 	}
 	reg_VCN18 = regulator_get(&pdev->dev, "vcn18");
 	if (!reg_VCN18)
-		pr_err("Regulator_get VCN_18 fail\n");
+		pr_no_info("Regulator_get VCN_18 fail\n");
 	reg_VCN33_1_BT = regulator_get(&pdev->dev, "vcn33_1_bt");
 	if (!reg_VCN33_1_BT)
-		pr_err("Regulator_get VCN33_1_BT fail\n");
+		pr_no_info("Regulator_get VCN33_1_BT fail\n");
 	reg_VCN33_1_WIFI = regulator_get(&pdev->dev, "vcn33_1_wifi");
 	if (!reg_VCN33_1_WIFI)
-		pr_err("Regulator_get VCN33_1_WIFI fail\n");
+		pr_no_info("Regulator_get VCN33_1_WIFI fail\n");
 	reg_VCN33_2_WIFI = regulator_get(&pdev->dev, "vcn33_2_wifi");
 	if (!reg_VCN33_2_WIFI)
-		pr_err("Regulator_get VCN33_WIFI fail\n");
+		pr_no_info("Regulator_get VCN33_WIFI fail\n");
 //#endif
 	return 0;
 }
@@ -253,7 +253,7 @@ int consys_pmic_vcn33_1_power_ctl(bool enable, struct regulator *reg_VCN33_1)
 			/* SW_EN=1 */
 			ret = regulator_enable(reg_VCN33_1);
 			if (ret)
-				pr_err("Enable VCN33_1 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN33_1 fail. ret=%d\n", ret);
 		}
 	} else {
 		if (consys_is_rc_mode_enable()) {
@@ -290,7 +290,7 @@ int consys_pmic_vcn33_2_power_ctl(bool enable)
 			/* SW_EN=1 */
 			ret = regulator_enable(reg_VCN33_2_WIFI);
 			if (ret)
-				pr_err("Enable VCN33_2 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN33_2 fail. ret=%d\n", ret);
 		}
 	} else {
 		if (consys_is_rc_mode_enable()) {
@@ -320,7 +320,7 @@ int consys_plt_pmic_common_power_ctrl(unsigned int enable)
 			regulator_set_voltage(reg_VCN18, 1800000, 1800000);
 			ret = regulator_enable(reg_VCN18);
 			if (ret)
-				pr_err("Enable VCN18 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN18 fail. ret=%d\n", ret);
 
 			/* VCN13 */
 			/*  PMRC_EN[7][6][5][4] HW_OP_EN = 1, HW_OP_CFG = 0 */
@@ -333,7 +333,7 @@ int consys_plt_pmic_common_power_ctrl(unsigned int enable)
 			regulator_set_voltage(reg_VCN13, 1300000, 1300000);
 			ret = regulator_enable(reg_VCN13);
 			if (ret)
-				pr_err("Enable VCN13 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN13 fail. ret=%d\n", ret);
 
 			g_first_power_on = 1;
 		} else {
@@ -346,7 +346,7 @@ int consys_plt_pmic_common_power_ctrl(unsigned int enable)
 			/* SW_EN=1 */
 			ret = regulator_enable(reg_VCN18);
 			if (ret)
-				pr_err("Enable VCN18 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN18 fail. ret=%d\n", ret);
 
 			/* HW_OP_EN = 1, HW_OP_CFG = 1 */
 			KERNEL_pmic_ldo_vcn13_lp(SRCLKEN0, 1, 1, HW_LP);
@@ -356,7 +356,7 @@ int consys_plt_pmic_common_power_ctrl(unsigned int enable)
 			/* SW_EN=1 */
 			ret = regulator_enable(reg_VCN13);
 			if (ret)
-				pr_err("Enable VCN13 fail. ret=%d\n", ret);
+				pr_no_info("Enable VCN13 fail. ret=%d\n", ret);
 		}
 	} else {
 		regulator_disable(reg_VCN13);
@@ -374,10 +374,10 @@ int consys_plt_pmic_wifi_power_ctrl(unsigned int enable)
 
 	ret = consys_pmic_vcn33_1_power_ctl(enable, reg_VCN33_1_WIFI);
 	if (ret)
-		pr_err("%s VCN33_1 fail\n", (enable? "Enable" : "Disable"));
+		pr_no_info("%s VCN33_1 fail\n", (enable? "Enable" : "Disable"));
 	ret = consys_pmic_vcn33_2_power_ctl(enable);
 	if (ret)
-		pr_err("%s VCN33_2 fail\n", (enable? "Enable" : "Disable"));
+		pr_no_info("%s VCN33_2 fail\n", (enable? "Enable" : "Disable"));
 	return ret;
 }
 

@@ -137,7 +137,7 @@ static _osal_inline_ VOID stp_dbg_dmaregs_deinit(P_STP_DBG_DMAREGS_T pDmaRegs);
 
 INT32 __weak mtk_btif_rxd_be_blocked_flag_get(VOID)
 {
-	STP_DBG_PR_INFO("mtk_btif_rxd_be_blocked_flag_get is not define!!!\n");
+	STP_DBG_pr_no_info("mtk_btif_rxd_be_blocked_flag_get is not define!!!\n");
 	return 0;
 }
 
@@ -184,7 +184,7 @@ static VOID stp_dbg_core_dump_timeout_handler(timer_handler_arg arg)
 {
 	stp_dbg_set_coredump_timer_state(CORE_DUMP_TIMEOUT);
 	stp_btm_notify_coredump_timeout_wq(g_stp_dbg->btm);
-	STP_DBG_PR_WARN(" coredump timer timeout, coredump maybe not finished successfully\n");
+	STP_DBG_pr_no_info(" coredump timer timeout, coredump maybe not finished successfully\n");
 }
 
 /* stp_dbg_dump_emi_timeout_handler - handler of emi dump timeout
@@ -194,7 +194,7 @@ static VOID stp_dbg_core_dump_timeout_handler(timer_handler_arg arg)
  */
 static VOID stp_dbg_dump_emi_timeout_handler(timer_handler_arg arg)
 {
-	STP_DBG_PR_ERR("dump emi timeout!\n");
+	STP_DBG_pr_no_info("dump emi timeout!\n");
 	mtk_stp_notify_emi_dump_end();
 }
 
@@ -210,7 +210,7 @@ static _osal_inline_ P_WCN_CORE_DUMP_T stp_dbg_core_dump_init(UINT32 timeout)
 
 	core_dmp = (P_WCN_CORE_DUMP_T) osal_malloc(sizeof(WCN_CORE_DUMP_T));
 	if (!core_dmp) {
-		STP_DBG_PR_ERR("alloc mem failed!\n");
+		STP_DBG_pr_no_info("alloc mem failed!\n");
 		return NULL;
 	}
 
@@ -227,7 +227,7 @@ static _osal_inline_ P_WCN_CORE_DUMP_T stp_dbg_core_dump_init(UINT32 timeout)
 	osal_sleepable_lock_init(&core_dmp->dmp_lock);
 
 	core_dmp->sm = CORE_DUMP_INIT;
-	STP_DBG_PR_INFO("create coredump object OK!\n");
+	STP_DBG_pr_no_info("create coredump object OK!\n");
 
 	return core_dmp;
 }
@@ -275,7 +275,7 @@ static UINT32 stp_dbg_core_dump_header_init(P_WCN_CORE_DUMP_T dmp)
 	if (dmp->p_head == NULL) {
 		dmp->p_head = osal_malloc(MAX_DUMP_HEAD_LEN);
 		if (dmp->p_head == NULL) {
-			STP_DBG_PR_ERR("alloc memory for head information failed\n");
+			STP_DBG_pr_no_info("alloc memory for head information failed\n");
 			return -1;
 		}
 	}
@@ -312,13 +312,13 @@ static _osal_inline_ INT32 stp_dbg_core_dump_in(P_WCN_CORE_DUMP_T dmp, PUINT8 bu
 	INT32 ret = 0;
 
 	if ((!dmp) || (!buf)) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
 	ret = osal_lock_sleepable_lock(&dmp->dmp_lock);
 	if (ret) {
-		STP_DBG_PR_ERR("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
+		STP_DBG_pr_no_info("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
 		return ret;
 	}
 
@@ -331,7 +331,7 @@ static _osal_inline_ INT32 stp_dbg_core_dump_in(P_WCN_CORE_DUMP_T dmp, PUINT8 bu
 		/* parsing data, and check end srting */
 		ret = stp_dbg_core_dump_check_end(buf, len);
 		if (ret == 1) {
-			STP_DBG_PR_INFO("core dump end!\n");
+			STP_DBG_pr_no_info("core dump end!\n");
 			dmp->sm = CORE_DUMP_DONE;
 			stp_dbg_compressor_in(dmp->compressor, buf, len, 0, 0);
 		} else {
@@ -344,7 +344,7 @@ static _osal_inline_ INT32 stp_dbg_core_dump_in(P_WCN_CORE_DUMP_T dmp, PUINT8 bu
 		/* parsing data, and check end srting */
 		ret = stp_dbg_core_dump_check_end(buf, len);
 		if (ret == 1) {
-			STP_DBG_PR_INFO("core dump end!\n");
+			STP_DBG_pr_no_info("core dump end!\n");
 			dmp->sm = CORE_DUMP_DONE;
 			stp_dbg_compressor_in(dmp->compressor, buf, len, 0, 0);
 		} else {
@@ -390,11 +390,11 @@ static _osal_inline_ INT32 stp_dbg_core_dump_post_handle(P_WCN_CORE_DUMP_T dmp)
 			issue_type = STP_HOST_TRIGGER_FW_ASSERT;
 		else
 			issue_type = STP_FW_ASSERT_ISSUE;
-		STP_DBG_PR_INFO("dmp->head_len = %d\n", dmp->head_len);
+		STP_DBG_pr_no_info("dmp->head_len = %d\n", dmp->head_len);
 		/*parse f/w assert additional informationi for f/w's analysis */
 		ret = stp_dbg_set_fw_info(dmp->p_head, dmp->head_len, issue_type);
 		if (ret) {
-			STP_DBG_PR_ERR("set fw issue infor fail(%d),maybe fw warm reset...\n",
+			STP_DBG_pr_no_info("set fw issue infor fail(%d),maybe fw warm reset...\n",
 					 ret);
 			stp_dbg_set_fw_info("Fw Warm reset", osal_strlen("Fw Warm reset"),
 					    STP_FW_WARM_RST_ISSUE);
@@ -427,11 +427,11 @@ static _osal_inline_ INT32 stp_dbg_core_dump_post_handle(P_WCN_CORE_DUMP_T dmp)
 			    osal_strlen("Fw ABT Exception..."));
 		dmp->info[osal_strlen(INFO_HEAD) + osal_strlen("Fw ABT Exception...") + 1] = '\0';
 	} else {
-		STP_DBG_PR_INFO(" <ASSERT> string not found, dmp->head_len:%d\n", dmp->head_len);
+		STP_DBG_pr_no_info(" <ASSERT> string not found, dmp->head_len:%d\n", dmp->head_len);
 		if (dmp->p_head == NULL)
-			STP_DBG_PR_INFO(" dmp->p_head is NULL\n");
+			STP_DBG_pr_no_info(" dmp->p_head is NULL\n");
 		else
-			STP_DBG_PR_INFO(" dmp->p_head:%s\n", dmp->p_head);
+			STP_DBG_pr_no_info(" dmp->p_head:%s\n", dmp->p_head);
 
 		/* first package, copy to info buffer */
 		osal_strcpy(&dmp->info[0], INFO_HEAD);
@@ -462,13 +462,13 @@ static _osal_inline_ INT32 stp_dbg_core_dump_out(P_WCN_CORE_DUMP_T dmp, PPUINT8 
 	INT32 ret = 0;
 
 	if ((!dmp) || (!pbuf) || (!plen)) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
 	ret = osal_lock_sleepable_lock(&dmp->dmp_lock);
 	if (ret) {
-		STP_DBG_PR_ERR("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
+		STP_DBG_pr_no_info("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
 		return ret;
 	}
 
@@ -488,7 +488,7 @@ static _osal_inline_ INT32 stp_dbg_core_dump_out(P_WCN_CORE_DUMP_T dmp, PPUINT8 
 static _osal_inline_ INT32 stp_dbg_core_dump_reset(P_WCN_CORE_DUMP_T dmp, UINT32 timeout)
 {
 	if (!dmp) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
@@ -515,7 +515,7 @@ INT32 stp_dbg_core_dump_flush(INT32 rst, MTK_WCN_BOOL coredump_is_timeout)
 	INT32 len = 0;
 
 	if (!g_core_dump) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
@@ -523,7 +523,7 @@ INT32 stp_dbg_core_dump_flush(INT32 rst, MTK_WCN_BOOL coredump_is_timeout)
 	stp_dbg_core_dump_post_handle(g_core_dump);
 	osal_unlock_sleepable_lock(&g_core_dump->dmp_lock);
 	stp_dbg_core_dump_out(g_core_dump, &pbuf, &len);
-	STP_DBG_PR_INFO("buf 0x%zx, len %d\n", (SIZE_T) pbuf, len);
+	STP_DBG_pr_no_info("buf 0x%zx, len %d\n", (SIZE_T) pbuf, len);
 
 #if IS_ENABLED(CONFIG_MTK_AEE_AED)
 	/* show coredump end info on UI */
@@ -551,25 +551,25 @@ static _osal_inline_ INT32 stp_dbg_core_dump_nl(P_WCN_CORE_DUMP_T dmp, PUINT8 bu
 	INT32 ret = 0;
 
 	if ((!dmp) || (!buf)) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
 	ret = osal_lock_sleepable_lock(&dmp->dmp_lock);
 	if (ret) {
-		STP_DBG_PR_ERR("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
+		STP_DBG_pr_no_info("--->lock dmp->dmp_lock failed, ret=%d\n", ret);
 		return ret;
 	}
 
 	switch (dmp->sm) {
 	case CORE_DUMP_INIT:
-		STP_DBG_PR_WARN("CONSYS coredump start, please wait up to %d minutes.\n",
+		STP_DBG_pr_no_info("CONSYS coredump start, please wait up to %d minutes.\n",
 				STP_CORE_DUMP_TIMEOUT/60000);
 		stp_dbg_core_dump_header_init(dmp);
 		/* check end srting */
 		ret = stp_dbg_core_dump_check_end(buf, len);
 		if (ret == 1) {
-			STP_DBG_PR_INFO("core dump end!\n");
+			STP_DBG_pr_no_info("core dump end!\n");
 			osal_timer_stop(&dmp->dmp_timer);
 			dmp->sm = CORE_DUMP_INIT;
 		} else {
@@ -581,7 +581,7 @@ static _osal_inline_ INT32 stp_dbg_core_dump_nl(P_WCN_CORE_DUMP_T dmp, PUINT8 bu
 		/* check end srting */
 		ret = stp_dbg_core_dump_check_end(buf, len);
 		if (ret == 1) {
-			STP_DBG_PR_INFO("core dump end!\n");
+			STP_DBG_pr_no_info("core dump end!\n");
 			osal_timer_stop(&dmp->dmp_timer);
 			dmp->sm = CORE_DUMP_INIT;
 		} else {
@@ -622,7 +622,7 @@ INT32 stp_dbg_core_dump(INT32 dump_sink)
 		ret = stp_dbg_soc_core_dump(dump_sink);
 		break;
 	default:
-		STP_DBG_PR_ERR("error chip type(%d)\n", chip_type);
+		STP_DBG_pr_no_info("error chip type(%d)\n", chip_type);
 	}
 
 	return ret;
@@ -642,7 +642,7 @@ static _osal_inline_ UINT32 stp_dbg_get_chip_id(VOID)
 		chip_id = wmt_plat_get_soc_chipid();
 		break;
 	default:
-		STP_DBG_PR_ERR("error chip type(%d)\n", chip_type);
+		STP_DBG_pr_no_info("error chip type(%d)\n", chip_type);
 	}
 
 	return chip_id;
@@ -655,12 +655,12 @@ static _osal_inline_ UINT32 stp_dbg_get_chip_id(VOID)
 INT32 stp_dbg_trigger_collect_ftrace(PUINT8 pbuf, INT32 len)
 {
 	if (!pbuf) {
-		STP_DBG_PR_ERR("Parameter error\n");
+		STP_DBG_pr_no_info("Parameter error\n");
 		return -1;
 	}
 
 	if (mtk_wcn_stp_coredump_start_get()) {
-		STP_DBG_PR_ERR("assert has been triggered\n");
+		STP_DBG_pr_no_info("assert has been triggered\n");
 		return -1;
 	}
 
@@ -675,7 +675,7 @@ INT32 stp_dbg_trigger_collect_ftrace(PUINT8 pbuf, INT32 len)
 		aed_combo_exception(NULL, 0, (const PINT32)pbuf, len, (const PINT8)g_core_dump->info);
 #endif
 	} else {
-		STP_DBG_PR_INFO("g_core_dump is not initialized\n");
+		STP_DBG_pr_no_info("g_core_dump is not initialized\n");
 #if IS_ENABLED(CONFIG_MTK_AEE_AED)
 		aed_combo_exception(NULL, 0, (const PINT32)pbuf, len, (const PINT8)pbuf);
 #endif
@@ -707,7 +707,7 @@ static _osal_inline_ INT32 stp_dbg_gzip_compressor(PVOID worker, PUINT8 in_buf, 
 
 	stream = (z_stream *) worker;
 	if (!stream) {
-		STP_DBG_PR_ERR("invalid workspace!\n");
+		STP_DBG_pr_no_info("invalid workspace!\n");
 		return -1;
 	}
 
@@ -715,7 +715,7 @@ static _osal_inline_ INT32 stp_dbg_gzip_compressor(PVOID worker, PUINT8 in_buf, 
 #if 0
 		ret = zlib_deflateReset(stream);
 		if (ret != Z_OK) {
-			STP_DBG_PR_ERR("reset failed!\n");
+			STP_DBG_pr_no_info("reset failed!\n");
 			return -2;
 		}
 #endif
@@ -734,7 +734,7 @@ static _osal_inline_ INT32 stp_dbg_gzip_compressor(PVOID worker, PUINT8 in_buf, 
 					continue;
 				else if (val == Z_STREAM_END)
 					break;
-				STP_DBG_PR_ERR("finish operation failed %d\n", val);
+				STP_DBG_pr_no_info("finish operation failed %d\n", val);
 				return -3;
 			}
 		}
@@ -763,7 +763,7 @@ static _osal_inline_ P_WCN_COMPRESSOR_T stp_dbg_compressor_init(PUINT8 name, INT
 
 	compress = (P_WCN_COMPRESSOR_T) osal_malloc(sizeof(WCN_COMPRESSOR_T));
 	if (!compress) {
-		STP_DBG_PR_ERR("alloc compressor failed!\n");
+		STP_DBG_pr_no_info("alloc compressor failed!\n");
 		goto fail;
 	}
 
@@ -776,20 +776,20 @@ static _osal_inline_ P_WCN_COMPRESSOR_T stp_dbg_compressor_init(PUINT8 name, INT
 	if (compress->compress_type == GZIP) {
 		compress->worker = osal_malloc(sizeof(z_stream));
 		if (!compress->worker) {
-			STP_DBG_PR_ERR("alloc stream failed!\n");
+			STP_DBG_pr_no_info("alloc stream failed!\n");
 			goto fail;
 		}
 		pstream = (z_stream *) compress->worker;
 
 		pstream->workspace = osal_malloc(zlib_deflate_workspacesize(MAX_WBITS, MAX_MEM_LEVEL));
 		if (!pstream->workspace) {
-			STP_DBG_PR_ERR("alloc workspace failed!\n");
+			STP_DBG_pr_no_info("alloc workspace failed!\n");
 			goto fail;
 		}
 		ret = zlib_deflateInit2(pstream, Z_DEFAULT_COMPRESSION, Z_DEFLATED, -MAX_WBITS,
 				  DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY);
 		if (ret != Z_OK) {
-			STP_DBG_PR_INFO("[%s::%d] zlib_deflateInit2 failed!\n", __func__, __LINE__);
+			STP_DBG_pr_no_info("[%s::%d] zlib_deflateInit2 failed!\n", __func__, __LINE__);
 			goto fail;
 		}
 	}
@@ -804,17 +804,17 @@ static _osal_inline_ P_WCN_COMPRESSOR_T stp_dbg_compressor_init(PUINT8 name, INT
 
 	compress->L1_buf = osal_malloc(compress->L1_buf_sz);
 	if (!compress->L1_buf) {
-		STP_DBG_PR_ERR("alloc %d bytes for L1 buf failed!\n", compress->L1_buf_sz);
+		STP_DBG_pr_no_info("alloc %d bytes for L1 buf failed!\n", compress->L1_buf_sz);
 		goto fail;
 	}
 
 	compress->L2_buf = osal_malloc(compress->L2_buf_sz);
 	if (!compress->L2_buf) {
-		STP_DBG_PR_ERR("alloc %d bytes for L2 buf failed!\n", compress->L2_buf_sz);
+		STP_DBG_pr_no_info("alloc %d bytes for L2 buf failed!\n", compress->L2_buf_sz);
 		goto fail;
 	}
 
-	STP_DBG_PR_INFO("create compressor OK! L1 %d bytes, L2 %d bytes\n", L1_buf_sz, L2_buf_sz);
+	STP_DBG_pr_no_info("create compressor OK! L1 %d bytes, L2 %d bytes\n", L1_buf_sz, L2_buf_sz);
 	return compress;
 
 fail:
@@ -848,7 +848,7 @@ fail:
 		compress = NULL;
 	}
 
-	STP_DBG_PR_ERR("init failed!\n");
+	STP_DBG_pr_no_info("init failed!\n");
 
 	return NULL;
 }
@@ -888,7 +888,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_deinit(P_WCN_COMPRESSOR_T cprs)
 		osal_free(cprs);
 	}
 
-	STP_DBG_PR_INFO("destroy OK\n");
+	STP_DBG_pr_no_info("destroy OK\n");
 
 	return 0;
 }
@@ -909,7 +909,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_in(P_WCN_COMPRESSOR_T cprs, PUINT8
 	INT32 ret = 0;
 
 	if (!cprs) {
-		STP_DBG_PR_ERR("invalid para!\n");
+		STP_DBG_pr_no_info("invalid para!\n");
 		return -1;
 	}
 
@@ -930,7 +930,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_in(P_WCN_COMPRESSOR_T cprs, PUINT8
 				cprs->crc32 = (crc32(cprs->crc32, cprs->L1_buf, cprs->L1_pos));
 				cprs->L2_pos += tmp_len;
 				if (cprs->L2_pos >= cprs->L2_buf_sz)
-					STP_DBG_PR_ERR("coredump size too large(%d), L2 buf overflow\n",
+					STP_DBG_pr_no_info("coredump size too large(%d), L2 buf overflow\n",
 					cprs->L2_pos);
 
 				if (finish) {
@@ -946,11 +946,11 @@ static _osal_inline_ INT32 stp_dbg_compressor_in(P_WCN_COMPRESSOR_T cprs, PUINT8
 				}
 				STP_DBG_PR_DBG("compress OK!\n");
 			} else
-				STP_DBG_PR_ERR("compress error!\n");
+				STP_DBG_pr_no_info("compress error!\n");
 		} else {
 			/* no need compress */
 			/* Flush L1 buffer to L2 buffer */
-			STP_DBG_PR_INFO("No need do compress, Put to L2 buf\n");
+			STP_DBG_pr_no_info("No need do compress, Put to L2 buf\n");
 
 			tmp_len = cprs->L2_buf_sz - cprs->L2_pos;
 			tmp_len = (cprs->L1_pos > tmp_len) ? tmp_len : cprs->L1_pos;
@@ -963,7 +963,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_in(P_WCN_COMPRESSOR_T cprs, PUINT8
 
 		/* put curren data to L1 buf */
 		if (len > cprs->L1_buf_sz) {
-			STP_DBG_PR_ERR("len=%d, too long err!\n", len);
+			STP_DBG_pr_no_info("len=%d, too long err!\n", len);
 		} else {
 			STP_DBG_PR_DBG("L1 Flushed, and Put %d bytes to L1 buf\n", len);
 			if (is_iobuf)
@@ -998,7 +998,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_out(P_WCN_COMPRESSOR_T cprs, PPUIN
 	INT32 tmp_len = 0;
 
 	if ((!cprs) || (!pbuf) || (!plen)) {
-		STP_DBG_PR_ERR("invalid para!\n");
+		STP_DBG_pr_no_info("invalid para!\n");
 		return -1;
 	}
 	/* check if there's L1 data need flush to L2 buffer */
@@ -1024,9 +1024,9 @@ static _osal_inline_ INT32 stp_dbg_compressor_out(P_WCN_COMPRESSOR_T cprs, PPUIN
 				*(uint32_t *) (&cprs->L2_buf[cprs->L2_pos + 4]) = cprs->uncomp_size;
 				cprs->L2_pos += 8;
 
-				STP_DBG_PR_INFO("compress OK!\n");
+				STP_DBG_pr_no_info("compress OK!\n");
 			} else {
-				STP_DBG_PR_ERR("compress error!\n");
+				STP_DBG_pr_no_info("compress error!\n");
 			}
 		} else {
 			/* no need compress */
@@ -1041,12 +1041,12 @@ static _osal_inline_ INT32 stp_dbg_compressor_out(P_WCN_COMPRESSOR_T cprs, PPUIN
 	*pbuf = cprs->L2_buf;
 	*plen = cprs->L2_pos;
 
-	STP_DBG_PR_INFO("0x%zx, len %d, l2_buf_remain %d\n", (SIZE_T)*pbuf, *plen, cprs->L2_buf_sz - cprs->L2_pos);
+	STP_DBG_pr_no_info("0x%zx, len %d, l2_buf_remain %d\n", (SIZE_T)*pbuf, *plen, cprs->L2_buf_sz - cprs->L2_pos);
 
 #if 1
 	ret = zlib_deflateReset((z_stream *) cprs->worker);
 	if (ret != Z_OK) {
-		STP_DBG_PR_ERR("reset failed!\n");
+		STP_DBG_pr_no_info("reset failed!\n");
 		return -2;
 	}
 #endif
@@ -1064,7 +1064,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_reset(P_WCN_COMPRESSOR_T cprs, UIN
 		WCN_COMPRESS_ALG_T type)
 {
 	if (!cprs) {
-		STP_DBG_PR_ERR("invalid para!\n");
+		STP_DBG_pr_no_info("invalid para!\n");
 		return -1;
 	}
 
@@ -1078,7 +1078,7 @@ static _osal_inline_ INT32 stp_dbg_compressor_reset(P_WCN_COMPRESSOR_T cprs, UIN
 
 	/* zlib_deflateEnd((z_stream*)cprs->worker); */
 
-	STP_DBG_PR_INFO("OK! compress algorithm %d\n", type);
+	STP_DBG_pr_no_info("OK! compress algorithm %d\n", type);
 
 	return 0;
 }
@@ -1091,21 +1091,21 @@ static _osal_inline_ VOID stp_dbg_dump_data(PUINT8 pBuf, PINT8 title, INT32 len)
 	PUINT8 p_str;
 
 	p_str = &str[0];
-	pr_debug(" %s-len:%d\n", title, len);
+	pr_no_info(" %s-len:%d\n", title, len);
 	for (idx = 0; idx < len; idx++, pBuf++) {
 		sprintf(p_str, "%02x ", *pBuf);
 		p_str += 3;
 		if (15 == (idx % 16)) {
 			sprintf(p_str, "--end\n");
 			*(p_str + 6) = '\0';
-			pr_debug("%s", str);
+			pr_no_info("%s", str);
 			p_str = 0;
 		}
 	}
 	if (len % 16) {
 		sprintf(p_str, "--end\n");
 		*(p_str + 6) = '\0';
-		pr_debug("%s", str);
+		pr_no_info("%s", str);
 	}
 }
 #endif
@@ -1115,19 +1115,19 @@ static VOID stp_dbg_dump_data(PUINT8 pBuf, PINT8 title, INT32 len)
 	char str[240] = {""};
 	char buf_str[32] = {""};
 
-	pr_warn(" %s-len:%d\n", title, len);
-	/* pr_warn("    ", title, len); */
+	pr_no_info(" %s-len:%d\n", title, len);
+	/* pr_no_info("    ", title, len); */
 	for (k = 0; k < len; k++) {
 		if (strlen(str) < 200) {
 			if (snprintf(buf_str, sizeof(buf_str), "0x%02x ", pBuf[k]) > 0)
 				strncat(str, buf_str, strlen(buf_str));
 		} else {
-			pr_warn("More than 200 of the data is too much\n");
+			pr_no_info("More than 200 of the data is too much\n");
 			break;
 		}
 	}
 	strncat(str, "--end\n", strlen("--end\n"));
-	pr_warn("%s", str);
+	pr_no_info("%s", str);
 }
 
 
@@ -1196,7 +1196,7 @@ static _osal_inline_ INT32 stp_dbg_dmp_in(MTKSTP_DBG_T *stp_dbg, PINT8 buf, INT3
 		pBuf = (PINT8)&(stp_dbg->logsys->queue[stp_dbg->logsys->in].buffer[0]) +
 			sizeof(STP_DBG_HDR_T);
 		length = stp_dbg->logsys->queue[stp_dbg->logsys->in].len - sizeof(STP_DBG_HDR_T);
-		pr_info("STP-DBG:%d.%ds, %s:pT%sn(%d)l(%d)s(%d)a(%d)\n",
+		pr_no_info("STP-DBG:%d.%ds, %s:pT%sn(%d)l(%d)s(%d)a(%d)\n",
 			pHdr->sec,
 			pHdr->usec,
 			pHdr->dir == PKT_DIR_TX ? "Tx" : "Rx",
@@ -1249,7 +1249,7 @@ static VOID stp_dbg_dmp_print_work(struct work_struct *work)
 		pBuf = &(queue[i].buffer[0]) + sizeof(STP_DBG_HDR_T);
 		len = queue[i].len - sizeof(STP_DBG_HDR_T);
 		len = len > STP_PKT_SZ ? STP_PKT_SZ : len;
-		pr_info("STP-DBG:%d.%ds, %s:pT%sn(%d)l(%d)s(%d)a(%d), time[%llu.%06lu]\n",
+		pr_no_info("STP-DBG:%d.%ds, %s:pT%sn(%d)l(%d)s(%d)a(%d), time[%llu.%06lu]\n",
 			pHdr->sec,
 			pHdr->usec,
 			pHdr->dir == PKT_DIR_TX ? "Tx" : "Rx",
@@ -1288,14 +1288,14 @@ INT32 stp_dbg_dmp_print(MTKSTP_DBG_T *stp_dbg)
 	dump_queue = vmalloc(sizeof(MTKSTP_LOG_ENTRY_T) * MAX_DMP_NUM);
 	if (dump_queue == NULL) {
 		stp_dbg->logsys->dump_queue = NULL;
-		pr_info("fail to allocate memory");
+		pr_no_info("fail to allocate memory");
 		return -1;
 	}
 
 	if (spin_trylock_irqsave(&(stp_dbg->logsys->lock), flags) == 0) {
 		stp_dbg->logsys->dump_queue = NULL;
 		vfree(dump_queue);
-		pr_info("fail to get lock");
+		pr_no_info("fail to get lock");
 		return -1;
 	}
 	/* Not to dequeue from loging system */
@@ -1337,7 +1337,7 @@ INT32 stp_dbg_dmp_print(MTKSTP_DBG_T *stp_dbg)
 	}
 
 	spin_unlock_irqrestore(&(stp_dbg->logsys->lock), flags);
-	STP_DBG_PR_INFO("loged packet size = %d, in(%d), out(%d)\n", dumpSize, inIndex, outIndex);
+	STP_DBG_pr_no_info("loged packet size = %d, in(%d), out(%d)\n", dumpSize, inIndex, outIndex);
 	schedule_work(&(stp_dbg->logsys->dump_work));
 	return 0;
 }
@@ -1391,7 +1391,7 @@ INT32 stp_dbg_dmp_append(MTKSTP_DBG_T *stp_dbg, PUINT8 pBuf, INT32 max_len)
 	const PINT8 *pType = NULL;
 
 	if (!pBuf || max_len < 8) { /* 8: length of "<!---->\n" */
-		STP_DBG_PR_WARN("invalid param, pBuf:%p, max_len:%d\n", pBuf, max_len);
+		STP_DBG_pr_no_info("invalid param, pBuf:%p, max_len:%d\n", pBuf, max_len);
 		return 0;
 	}
 
@@ -1464,7 +1464,7 @@ static _osal_inline_ INT32 stp_dbg_fill_hdr(STP_DBG_HDR_T *hdr, INT32 type, INT3
 	ULONG nsec;
 
 	if (!hdr) {
-		STP_DBG_PR_ERR("function invalid\n");
+		STP_DBG_pr_no_info("function invalid\n");
 		return -EINVAL;
 	}
 
@@ -1509,10 +1509,10 @@ static _osal_inline_ INT32 stp_dbg_add_pkt(MTKSTP_DBG_T *stp_dbg, STP_DBG_HDR_T 
 	if (hdr->dbg_type == STP_DBG_FW_DMP) {
 		if (hdr->last_dbg_type != STP_DBG_FW_DMP) {
 
-			STP_DBG_PR_INFO
+			STP_DBG_pr_no_info
 			    ("reset stp_dbg logsys when queue fw coredump package(%d)\n",
 			     hdr->last_dbg_type);
-			STP_DBG_PR_INFO("dump 1st fw coredump package len(%d) for confirming\n",
+			STP_DBG_pr_no_info("dump 1st fw coredump package len(%d) for confirming\n",
 					  hdr->len);
 			spin_lock_irqsave(&(stp_dbg->logsys->lock), flags);
 			stp_dbg->logsys->in = 0;
@@ -1523,7 +1523,7 @@ static _osal_inline_ INT32 stp_dbg_add_pkt(MTKSTP_DBG_T *stp_dbg, STP_DBG_HDR_T 
 			avl_num = stp_dbg_get_avl_entry_num(stp_dbg);
 
 			if (!avl_num)
-				STP_DBG_PR_ERR("there is no avl entry stp_dbg logsys!!!\n");
+				STP_DBG_pr_no_info("there is no avl entry stp_dbg logsys!!!\n");
 		}
 	}
 	stp_dbg_dmp_in(stp_dbg, (PINT8) &stp_pkt, hdr_sz + body_sz);
@@ -1566,10 +1566,10 @@ INT32 stp_dbg_log_ctrl(UINT32 on)
 {
 	if (on != 0) {
 		gStpDbgLogOut = 1;
-		pr_warn("STP-DBG: enable pkt log dump out.\n");
+		pr_no_info("STP-DBG: enable pkt log dump out.\n");
 	} else {
 		gStpDbgLogOut = 0;
-		pr_warn("STP-DBG: disable pkt log dump out.\n");
+		pr_no_info("STP-DBG: disable pkt log dump out.\n");
 	}
 
 	return 0;
@@ -1579,19 +1579,19 @@ VOID stp_dbg_nl_init(VOID)
 {
 #if 0
 	if (genl_register_family(&stp_dbg_gnl_family) != 0) {
-		STP_DBG_PR_ERR("%s(): GE_NELINK family registration fail\n", __func__);
+		STP_DBG_pr_no_info("%s(): GE_NELINK family registration fail\n", __func__);
 	} else {
 		if (genl_register_ops(&stp_dbg_gnl_family, &stp_dbg_gnl_ops_bind) != 0)
-			STP_DBG_PR_ERR("%s(): BIND operation registration fail\n", __func__);
+			STP_DBG_pr_no_info("%s(): BIND operation registration fail\n", __func__);
 
 		if (genl_register_ops(&stp_dbg_gnl_family, &stp_dbg_gnl_ops_reset) != 0)
-			STP_DBG_PR_ERR("%s(): RESET operation registration fail\n", __func__);
+			STP_DBG_pr_no_info("%s(): RESET operation registration fail\n", __func__);
 
 	}
 #endif
 	osal_sleepable_lock_init(&g_dbg_nl_lock);
 	if (genl_register_family(&stp_dbg_gnl_family) != 0)
-		STP_DBG_PR_ERR("%s(): GE_NELINK family registration fail\n", __func__);
+		STP_DBG_pr_no_info("%s(): GE_NELINK family registration fail\n", __func__);
 }
 
 VOID stp_dbg_nl_deinit(VOID)
@@ -1614,7 +1614,7 @@ static INT32 stp_dbg_nl_bind(struct sk_buff *skb, struct genl_info *info)
 	if (info == NULL)
 		goto out;
 
-	STP_DBG_PR_INFO("%s():->\n", __func__);
+	STP_DBG_pr_no_info("%s():->\n", __func__);
 
 	na = info->attrs[STP_DBG_ATTR_MSG];
 
@@ -1628,13 +1628,13 @@ static INT32 stp_dbg_nl_bind(struct sk_buff *skb, struct genl_info *info)
 		if (bind_pid[i] == 0) {
 			bind_pid[i] = info->snd_portid;
 			num_bind_process++;
-			STP_DBG_PR_INFO("%s():-> pid  = %d\n", __func__, info->snd_portid);
+			STP_DBG_pr_no_info("%s():-> pid  = %d\n", __func__, info->snd_portid);
 			break;
 		}
 	}
 
 	if (i == MAX_BIND_PROCESS) {
-		STP_DBG_PR_ERR("%s(): exceeding binding limit %d\n", __func__, MAX_BIND_PROCESS);
+		STP_DBG_pr_no_info("%s(): exceeding binding limit %d\n", __func__, MAX_BIND_PROCESS);
 		bind_pid[0] = info->snd_portid;
 	}
 
@@ -1646,7 +1646,7 @@ out:
 
 static INT32 stp_dbg_nl_reset(struct sk_buff *skb, struct genl_info *info)
 {
-	STP_DBG_PR_ERR("%s(): should not be invoked\n", __func__);
+	STP_DBG_pr_no_info("%s(): should not be invoked\n", __func__);
 
 	return 0;
 }
@@ -1662,7 +1662,7 @@ INT32 stp_dbg_nl_send(PINT8 aucMsg, UINT8 cmd, INT32 len)
 
 	if (num_bind_process == 0) {
 		/* no listening process */
-		STP_DBG_PR_ERR("%s(): the process is not invoked\n", __func__);
+		STP_DBG_pr_no_info("%s(): the process is not invoked\n", __func__);
 		return 0;
 	}
 
@@ -1684,14 +1684,14 @@ INT32 stp_dbg_nl_send(PINT8 aucMsg, UINT8 cmd, INT32 len)
 			msg_head = genlmsg_put(skb, 0, stp_dbg_seqnum++, &stp_dbg_gnl_family, 0, cmd);
 			if (msg_head == NULL) {
 				nlmsg_free(skb);
-				STP_DBG_PR_ERR("%s(): genlmsg_put fail...\n", __func__);
+				STP_DBG_pr_no_info("%s(): genlmsg_put fail...\n", __func__);
 				return -1;
 			}
 
 			rc = nla_put(skb, STP_DBG_ATTR_MSG, len, aucMsg);
 			if (rc != 0) {
 				nlmsg_free(skb);
-				STP_DBG_PR_ERR("%s(): nla_put_string fail...: %d\n", __func__, rc);
+				STP_DBG_pr_no_info("%s(): nla_put_string fail...: %d\n", __func__, rc);
 				return rc;
 			}
 
@@ -1701,7 +1701,7 @@ INT32 stp_dbg_nl_send(PINT8 aucMsg, UINT8 cmd, INT32 len)
 			/* sending message */
 			rc = genlmsg_unicast(&init_net, skb, bind_pid[i]);
 			if (rc != 0) {
-				STP_DBG_PR_INFO("%s(): genlmsg_unicast fail...: %d pid: %d\n",
+				STP_DBG_pr_no_info("%s(): genlmsg_unicast fail...: %d pid: %d\n",
 					__func__, rc, bind_pid[i]);
 				if (rc == -ECONNREFUSED) {
 					bind_pid[i] = 0;
@@ -1712,7 +1712,7 @@ INT32 stp_dbg_nl_send(PINT8 aucMsg, UINT8 cmd, INT32 len)
 				ret = 0;
 			}
 		} else {
-			STP_DBG_PR_ERR("%s(): genlmsg_new fail...\n", __func__);
+			STP_DBG_pr_no_info("%s(): genlmsg_new fail...\n", __func__);
 		}
 	}
 
@@ -1751,16 +1751,16 @@ INT32 stp_dbg_dump_send_retry_handler(PINT8 tmp, INT32 len)
 	while (ret) {
 		nl_retry++;
 		if (ret == 32) {
-			STP_DBG_PR_ERR("**dump send timeout : %d**\n", ret);
+			STP_DBG_pr_no_info("**dump send timeout : %d**\n", ret);
 			ret = 1;
 			break;
 		}
 		if (nl_retry > 1000) {
-			STP_DBG_PR_ERR("**dump send fails, and retry more than 1000: %d.**\n", ret);
+			STP_DBG_pr_no_info("**dump send fails, and retry more than 1000: %d.**\n", ret);
 			ret = 2;
 			break;
 		}
-		STP_DBG_PR_WARN("**dump send fails, and retry again.**\n");
+		STP_DBG_pr_no_info("**dump send fails, and retry again.**\n");
 		osal_sleep_ms(3);
 		ret = stp_dbg_nl_send(tmp, 2, len+5);
 		if (!ret)
@@ -1788,7 +1788,7 @@ INT32 stp_dbg_aee_send(PUINT8 aucMsg, INT32 len, INT32 cmd)
 								   PKT_MULTIPLIER*g_core_dump->dmp_num*KBYTES);
 		g_core_dump->count++;
 		if (!g_core_dump->compressor) {
-			STP_DBG_PR_ERR("create compressor failed!\n");
+			STP_DBG_pr_no_info("create compressor failed!\n");
 			stp_dbg_compressor_deinit(g_core_dump->compressor);
 			return -1;
 		}
@@ -1829,12 +1829,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 	};
 
 	if (!str) {
-		STP_DBG_PR_ERR("NULL string source\n");
+		STP_DBG_pr_no_info("NULL string source\n");
 		return -1;
 	}
 
 	if (!g_stp_dbg_cpupcr) {
-		STP_DBG_PR_ERR("NULL pointer\n");
+		STP_DBG_pr_no_info("NULL pointer\n");
 		return -2;
 	}
 
@@ -1849,12 +1849,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			pDtr += osal_strlen(parser_sub_string[type]);
 			pTemp = osal_strchr(pDtr, ' ');
 		} else {
-			STP_DBG_PR_ERR("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
+			STP_DBG_pr_no_info("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
 			return -3;
 		}
 
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("delimiter( ) is not found,substring(%s)\n",
+			STP_DBG_pr_no_info("delimiter( ) is not found,substring(%s)\n",
 					 parser_sub_string[type]);
 			return -4;
 		}
@@ -1866,14 +1866,14 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 
 		pTemp = osal_strchr(pDtr, '#');
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("parser '#' is not find\n");
+			STP_DBG_pr_no_info("parser '#' is not find\n");
 			return -5;
 		}
 		pTemp += 1;
 
 		pTemp2 = osal_strchr(pTemp, ' ');
 		if (pTemp2 == NULL) {
-			STP_DBG_PR_ERR("parser ' ' is not find\n");
+			STP_DBG_pr_no_info("parser ' ' is not find\n");
 			pTemp2 = pTemp + 1;
 		}
 		remain_array_len = osal_array_size(g_stp_dbg_cpupcr->assert_info) - (osal_strlen("assert@") + len + 1);
@@ -1886,7 +1886,7 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 					remain_array_len - 1);
 			g_stp_dbg_cpupcr->assert_info[STP_ASSERT_INFO_SIZE - 1] = '\0';
 		}
-		STP_DBG_PR_INFO("assert info:%s\n", &g_stp_dbg_cpupcr->assert_info[0]);
+		STP_DBG_pr_no_info("assert info:%s\n", &g_stp_dbg_cpupcr->assert_info[0]);
 		break;
 	case STP_DBG_FW_TASK_ID:
 		pDtr = osal_strstr(pStr, parser_sub_string[type]);
@@ -1894,12 +1894,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			pDtr += osal_strlen(parser_sub_string[type]);
 			pTemp = osal_strchr(pDtr, ' ');
 		} else {
-			STP_DBG_PR_ERR("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
+			STP_DBG_pr_no_info("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
 			return -3;
 		}
 
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("delimiter( ) is not found,substring(%s)\n",
+			STP_DBG_pr_no_info("delimiter( ) is not found,substring(%s)\n",
 					 parser_sub_string[type]);
 			return -4;
 		}
@@ -1910,12 +1910,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 		tempBuf[len] = '\0';
 		ret = osal_strtol(tempBuf, 16, &res);
 		if (ret) {
-			STP_DBG_PR_ERR("get fw task id fail(%d)\n", ret);
+			STP_DBG_pr_no_info("get fw task id fail(%d)\n", ret);
 			return -4;
 		}
 		g_stp_dbg_cpupcr->fwTaskId = (UINT32)res;
 
-		STP_DBG_PR_INFO("fw task id :%x\n", (UINT32)res);
+		STP_DBG_pr_no_info("fw task id :%x\n", (UINT32)res);
 		break;
 	case STP_DBG_FW_ISR:
 		pDtr = osal_strstr(pStr, parser_sub_string[type]);
@@ -1924,13 +1924,13 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			pDtr += osal_strlen(parser_sub_string[type]);
 			pTemp = osal_strchr(pDtr, ',');
 		} else {
-			STP_DBG_PR_ERR("parser str is NULL,substring(%s)\n",
+			STP_DBG_pr_no_info("parser str is NULL,substring(%s)\n",
 					parser_sub_string[type]);
 			return -3;
 		}
 
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("delimiter(,) is not found,substring(%s)\n",
+			STP_DBG_pr_no_info("delimiter(,) is not found,substring(%s)\n",
 					 parser_sub_string[type]);
 			return -4;
 		}
@@ -1941,12 +1941,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 		tempBuf[len] = '\0';
 		ret = osal_strtol(tempBuf, 16, &res);
 		if (ret) {
-			STP_DBG_PR_ERR("get fw isr id fail(%d)\n", ret);
+			STP_DBG_pr_no_info("get fw isr id fail(%d)\n", ret);
 			return -4;
 		}
 		g_stp_dbg_cpupcr->fwIsr = (UINT32)res;
 
-		STP_DBG_PR_INFO("fw isr str:%x\n", (UINT32)res);
+		STP_DBG_pr_no_info("fw isr str:%x\n", (UINT32)res);
 		break;
 	case STP_DBG_FW_IRQ:
 		pDtr = osal_strstr(pStr, parser_sub_string[type]);
@@ -1954,12 +1954,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			pDtr += osal_strlen(parser_sub_string[type]);
 			pTemp = osal_strchr(pDtr, ',');
 		} else {
-			STP_DBG_PR_ERR("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
+			STP_DBG_pr_no_info("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
 			return -3;
 		}
 
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("delimiter(,) is not found,substring(%s)\n",
+			STP_DBG_pr_no_info("delimiter(,) is not found,substring(%s)\n",
 					 parser_sub_string[type]);
 			return -4;
 		}
@@ -1970,12 +1970,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 		tempBuf[len] = '\0';
 		ret = osal_strtol(tempBuf, 16, &res);
 		if (ret) {
-			STP_DBG_PR_ERR("get fw irq id fail(%d)\n", ret);
+			STP_DBG_pr_no_info("get fw irq id fail(%d)\n", ret);
 			return -4;
 		}
 		g_stp_dbg_cpupcr->fwRrq = (UINT32)res;
 
-		STP_DBG_PR_INFO("fw irq value:%x\n", (UINT32)res);
+		STP_DBG_pr_no_info("fw irq value:%x\n", (UINT32)res);
 		break;
 	case STP_DBG_ASSERT_TYPE:
 		pDtr = osal_strstr(pStr, parser_sub_string[type]);
@@ -1983,12 +1983,12 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			pDtr += osal_strlen(parser_sub_string[type]);
 			pTemp = osal_strchr(pDtr, ',');
 		} else {
-			STP_DBG_PR_ERR("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
+			STP_DBG_pr_no_info("parser str is NULL,substring(%s)\n", parser_sub_string[type]);
 			return -3;
 		}
 
 		if (pTemp == NULL) {
-			STP_DBG_PR_ERR("delimiter(,) is not found,substring(%s)\n",
+			STP_DBG_pr_no_info("delimiter(,) is not found,substring(%s)\n",
 					 parser_sub_string[type]);
 			return -4;
 		}
@@ -2011,7 +2011,7 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 				pDtr += osal_strlen("RB_FULL(");
 				pTemp = osal_strchr(pDtr, ')');
 			} else {
-				STP_DBG_PR_ERR("parser str is NULL,substring(RB_FULL()\n");
+				STP_DBG_pr_no_info("parser str is NULL,substring(RB_FULL()\n");
 				return -5;
 			}
 			len = pTemp - pDtr;
@@ -2020,18 +2020,18 @@ static _osal_inline_ INT32 stp_dbg_parser_assert_str(PINT8 str, ENUM_ASSERT_INFO
 			tempBuf[len] = '\0';
 			ret = osal_strtol(tempBuf, 16, &res);
 			if (ret) {
-				STP_DBG_PR_ERR("get fw task id fail(%d)\n", ret);
+				STP_DBG_pr_no_info("get fw task id fail(%d)\n", ret);
 				return -5;
 			}
 			g_stp_dbg_cpupcr->fwTaskId = (UINT32)res;
 
-			STP_DBG_PR_INFO("update fw task id :%x\n", (UINT32)res);
+			STP_DBG_pr_no_info("update fw task id :%x\n", (UINT32)res);
 		}
 
-		STP_DBG_PR_INFO("fw asert type:%s\n", g_stp_dbg_cpupcr->assert_type);
+		STP_DBG_pr_no_info("fw asert type:%s\n", g_stp_dbg_cpupcr->assert_type);
 		break;
 	default:
-		STP_DBG_PR_ERR("unknown parser type\n");
+		STP_DBG_pr_no_info("unknown parser type\n");
 		break;
 	}
 
@@ -2044,7 +2044,7 @@ static _osal_inline_ P_STP_DBG_CPUPCR_T stp_dbg_cpupcr_init(VOID)
 
 	pSdCpupcr = (P_STP_DBG_CPUPCR_T) osal_malloc(osal_sizeof(STP_DBG_CPUPCR_T));
 	if (!pSdCpupcr) {
-		STP_DBG_PR_ERR("stp dbg cpupcr allocate memory fail!\n");
+		STP_DBG_pr_no_info("stp dbg cpupcr allocate memory fail!\n");
 		return NULL;
 	}
 
@@ -2070,7 +2070,7 @@ static _osal_inline_ P_STP_DBG_DMAREGS_T stp_dbg_dmaregs_init(VOID)
 
 	pDmaRegs = (P_STP_DBG_DMAREGS_T) osal_malloc(osal_sizeof(STP_DBG_DMAREGS_T));
 	if (!pDmaRegs) {
-		STP_DBG_PR_ERR("stp dbg dmareg allocate memory fail!\n");
+		STP_DBG_pr_no_info("stp dbg dmareg allocate memory fail!\n");
 		return NULL;
 	}
 
@@ -2117,7 +2117,7 @@ INT32 stp_dbg_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 	INT32 count = 0;
 
 	if (!g_stp_dbg_cpupcr) {
-		STP_DBG_PR_ERR("NULL reference pointer\n");
+		STP_DBG_pr_no_info("NULL reference pointer\n");
 		return -1;
 	}
 
@@ -2160,7 +2160,7 @@ INT32 stp_dbg_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 		}
 		break;
 	default:
-		STP_DBG_PR_INFO("error chip type(%d)\n", chip_type);
+		STP_DBG_pr_no_info("error chip type(%d)\n", chip_type);
 	}
 
 	if (cmd) {
@@ -2185,16 +2185,16 @@ INT32 stp_dbg_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 						       g_stp_dbg_cpupcr->sec_buffer[i],
 						       g_stp_dbg_cpupcr->nsec_buffer[i],
 						       g_stp_dbg_cpupcr->buffer[i]);
-				STP_DBG_PR_INFO("TIME/CPUPCR: %s\n", str);
+				STP_DBG_pr_no_info("TIME/CPUPCR: %s\n", str);
 				p = str;
 			}
 		}
 		if (count % 4 != 0)
-			STP_DBG_PR_INFO("TIME/CPUPCR: %s\n", str);
+			STP_DBG_pr_no_info("TIME/CPUPCR: %s\n", str);
 
 		if (wmt_lib_power_lock_trylock()) {
 			if (chip_type == WMT_CHIP_TYPE_SOC && wmt_lib_reg_readable()) {
-				STP_DBG_PR_INFO("CONNSYS cpu:0x%x/bus:0x%x/dbg_cr1:0x%x/dbg_cr2:0x%x/EMIaddr:0x%x\n",
+				STP_DBG_pr_no_info("CONNSYS cpu:0x%x/bus:0x%x/dbg_cr1:0x%x/dbg_cr2:0x%x/EMIaddr:0x%x\n",
 					  stp_dbg_soc_read_debug_crs(CONNSYS_CPU_CLK),
 					  stp_dbg_soc_read_debug_crs(CONNSYS_BUS_CLK),
 					  stp_dbg_soc_read_debug_crs(CONNSYS_DEBUG_CR1),
@@ -2210,10 +2210,10 @@ INT32 stp_dbg_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 				i_ret = mtk_wcn_hif_sdio_f0_readb(g_stp_sdio_host_info.sdio_cltctx,
 						CCCR_F8 + i, &cccr_value);
 				if (i_ret)
-					STP_DBG_PR_ERR("read CCCR fail(%d), address(0x%x)\n",
+					STP_DBG_pr_no_info("read CCCR fail(%d), address(0x%x)\n",
 							i_ret, CCCR_F8 + i);
 				else
-					STP_DBG_PR_INFO("read CCCR value(0x%x), address(0x%x)\n",
+					STP_DBG_pr_no_info("read CCCR value(0x%x), address(0x%x)\n",
 							cccr_value, CCCR_F8 + i);
 				cccr_value = 0x0;
 			}
@@ -2222,7 +2222,7 @@ INT32 stp_dbg_poll_cpupcr(UINT32 times, UINT32 sleep, UINT32 cmd)
 		mtk_wcn_consys_hang_debug();
 	}
 	if (chip_type == WMT_CHIP_TYPE_COMBO) {
-		STP_DBG_PR_INFO("dump sdio register for debug\n");
+		STP_DBG_pr_no_info("dump sdio register for debug\n");
 		mtk_stp_dump_sdio_register();
 	}
 	return 0;
@@ -2284,7 +2284,7 @@ INT32 stp_dbg_poll_dmaregs(UINT32 times, UINT32 sleep)
 	INT32 i = 0;
 
 	if (!g_stp_dbg_dmaregs) {
-		STP_DBG_PR_ERR("NULL reference pointer\n");
+		STP_DBG_pr_no_info("NULL reference pointer\n");
 		return -1;
 	}
 
@@ -2292,15 +2292,15 @@ INT32 stp_dbg_poll_dmaregs(UINT32 times, UINT32 sleep)
 
 	if (g_stp_dbg_dmaregs->count + times > STP_DBG_DMAREGS_NUM) {
 		if (g_stp_dbg_dmaregs->count > STP_DBG_DMAREGS_NUM) {
-			STP_DBG_PR_ERR("g_stp_dbg_dmaregs->count:%d must less than STP_DBG_DMAREGS_NUM:%d\n",
+			STP_DBG_pr_no_info("g_stp_dbg_dmaregs->count:%d must less than STP_DBG_DMAREGS_NUM:%d\n",
 				g_stp_dbg_dmaregs->count, STP_DBG_DMAREGS_NUM);
 			g_stp_dbg_dmaregs->count = 0;
-			STP_DBG_PR_ERR("g_stp_dbg_dmaregs->count be set default value 0\n");
+			STP_DBG_pr_no_info("g_stp_dbg_dmaregs->count be set default value 0\n");
 		}
 		times = STP_DBG_DMAREGS_NUM - g_stp_dbg_dmaregs->count;
 	}
 	if (times > STP_DBG_DMAREGS_NUM) {
-		STP_DBG_PR_ERR("times overflow, set default value:0\n");
+		STP_DBG_pr_no_info("times overflow, set default value:0\n");
 		times = 0;
 	}
 
@@ -2308,7 +2308,7 @@ INT32 stp_dbg_poll_dmaregs(UINT32 times, UINT32 sleep)
 		INT32 k = 0;
 
 		for (; k < DMA_REGS_MAX; k++) {
-			STP_DBG_PR_INFO("times:%d,i:%d reg: %s, regs:%08x\n", times, i, dmaRegsStr[k],
+			STP_DBG_pr_no_info("times:%d,i:%d reg: %s, regs:%08x\n", times, i, dmaRegsStr[k],
 					  wmt_plat_read_dmaregs(k));
 			/* g_stp_dbg_dmaregs->dmaIssue[k][g_stp_dbg_dmaregs->count + i] =
 			 * wmt_plat_read_dmaregs(k);
@@ -2327,7 +2327,7 @@ INT32 stp_dbg_poll_dmaregs(UINT32 times, UINT32 sleep)
 
 INT32 stp_dbg_poll_cpupcr_ctrl(UINT32 en)
 {
-	STP_DBG_PR_INFO("%s polling cpupcr\n", en == 0 ? "start" : "stop");
+	STP_DBG_pr_no_info("%s polling cpupcr\n", en == 0 ? "start" : "stop");
 
 	osal_lock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 	g_stp_dbg_cpupcr->stop_flag = en;
@@ -2351,7 +2351,7 @@ INT32 stp_dbg_set_version_info(UINT32 chipid, PUINT8 pRomVer, PUINT8 pPatchVer, 
 
 		osal_unlock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 	} else {
-		STP_DBG_PR_ERR("NULL pointer\n");
+		STP_DBG_pr_no_info("NULL pointer\n");
 		return -1;
 	}
 
@@ -2367,7 +2367,7 @@ INT32 stp_dbg_set_version_info(UINT32 chipid, PUINT8 pRomVer, PUINT8 pPatchVer, 
 INT32 stp_dbg_set_wifiver(UINT32 wifiver)
 {
 	if (!g_stp_dbg_cpupcr) {
-		STP_DBG_PR_ERR("NULL pointer\n");
+		STP_DBG_pr_no_info("NULL pointer\n");
 		return -1;
 	}
 
@@ -2375,7 +2375,7 @@ INT32 stp_dbg_set_wifiver(UINT32 wifiver)
 	g_stp_dbg_cpupcr->wifiVer = wifiver;
 	osal_unlock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 
-	STP_DBG_PR_INFO("wifiver(%x)\n", g_stp_dbg_cpupcr->wifiVer);
+	STP_DBG_pr_no_info("wifiver(%x)\n", g_stp_dbg_cpupcr->wifiVer);
 
 	return 0;
 }
@@ -2398,9 +2398,9 @@ VOID stp_dbg_set_keyword(PINT8 keyword)
 	osal_lock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 	if (keyword != NULL) {
 		if (osal_strlen(keyword) >= STP_DBG_KEYWORD_SIZE)
-			STP_DBG_PR_INFO("Keyword over max size(%d)\n", STP_DBG_KEYWORD_SIZE);
+			STP_DBG_pr_no_info("Keyword over max size(%d)\n", STP_DBG_KEYWORD_SIZE);
 		else if (osal_strchr(keyword, '<') != NULL || osal_strchr(keyword, '>') != NULL)
-			STP_DBG_PR_INFO("Keyword has < or >, keywrod: %s\n", keyword);
+			STP_DBG_pr_no_info("Keyword has < or >, keywrod: %s\n", keyword);
 		else
 			osal_strncat(&g_stp_dbg_cpupcr->keyword[0], keyword, osal_strlen(keyword));
 	} else {
@@ -2435,23 +2435,23 @@ INT32 stp_dbg_set_fw_info(PUINT8 issue_info, UINT32 len, ENUM_STP_FW_ISSUE_TYPE 
 	INT32 iRet = 0;
 
 	if (issue_info == NULL) {
-		STP_DBG_PR_ERR("null issue infor\n");
+		STP_DBG_pr_no_info("null issue infor\n");
 		return -1;
 	}
 
 	if (g_stp_dbg_cpupcr->issue_type &&
 	    g_stp_dbg_cpupcr->issue_type != STP_HOST_TRIGGER_COLLECT_FTRACE) {
-		STP_DBG_PR_ERR("assert information has been set up\n");
+		STP_DBG_pr_no_info("assert information has been set up\n");
 		return -1;
 	}
 
-	STP_DBG_PR_INFO("issue type(%d)\n", issue_type);
+	STP_DBG_pr_no_info("issue type(%d)\n", issue_type);
 	g_stp_dbg_cpupcr->issue_type = issue_type;
 	osal_memset(&g_stp_dbg_cpupcr->assert_info[0], 0, STP_ASSERT_INFO_SIZE);
 
 	/*print patch version when assert happened */
-	STP_DBG_PR_INFO("[consys patch]patch version:%s\n", g_stp_dbg_cpupcr->patchVer);
-	STP_DBG_PR_INFO("[consys patch]ALPS branch:%s\n", g_stp_dbg_cpupcr->branchVer);
+	STP_DBG_pr_no_info("[consys patch]patch version:%s\n", g_stp_dbg_cpupcr->patchVer);
+	STP_DBG_pr_no_info("[consys patch]ALPS branch:%s\n", g_stp_dbg_cpupcr->branchVer);
 
 	if ((issue_type == STP_FW_ASSERT_ISSUE) ||
 	    (issue_type == STP_HOST_TRIGGER_FW_ASSERT) ||
@@ -2481,7 +2481,7 @@ INT32 stp_dbg_set_fw_info(PUINT8 issue_info, UINT32 len, ENUM_STP_FW_ISSUE_TYPE 
 					type_index++) {
 				iRet = stp_dbg_parser_assert_str(&tempbuf[0], type_index);
 				if (iRet)
-					STP_DBG_PR_INFO("fail to parse assert str %s, type = %d, ret = %d\n",
+					STP_DBG_pr_no_info("fail to parse assert str %s, type = %d, ret = %d\n",
 						&tempbuf[0], type_index, iRet);
 			}
 
@@ -2495,7 +2495,7 @@ INT32 stp_dbg_set_fw_info(PUINT8 issue_info, UINT32 len, ENUM_STP_FW_ISSUE_TYPE 
 			osal_lock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 			switch (g_stp_dbg_cpupcr->host_assert_info.drv_type) {
 			case WMTDRV_TYPE_BT:
-				STP_DBG_PR_INFO("BT trigger assert\n");
+				STP_DBG_pr_no_info("BT trigger assert\n");
 				if (g_stp_dbg_cpupcr->host_assert_info.reason != 31)
 					g_stp_dbg_cpupcr->fwTaskId = STP_DBG_TASK_BT; /*BT firmware trigger assert */
 				else {
@@ -2504,23 +2504,23 @@ INT32 stp_dbg_set_fw_info(PUINT8 issue_info, UINT32 len, ENUM_STP_FW_ISSUE_TYPE 
 				}
 				break;
 			case WMTDRV_TYPE_FM:
-				STP_DBG_PR_INFO("FM trigger assert\n");
+				STP_DBG_pr_no_info("FM trigger assert\n");
 				g_stp_dbg_cpupcr->fwTaskId = STP_DBG_TASK_FM;
 				break;
 			case WMTDRV_TYPE_GPS:
-				STP_DBG_PR_INFO("GPS trigger assert\n");
+				STP_DBG_pr_no_info("GPS trigger assert\n");
 				g_stp_dbg_cpupcr->fwTaskId = STP_DBG_TASK_DRVGPS;
 				break;
 			case WMTDRV_TYPE_GPSL5:
-				STP_DBG_PR_INFO("GPSL5 trigger assert\n");
+				STP_DBG_pr_no_info("GPSL5 trigger assert\n");
 				g_stp_dbg_cpupcr->fwTaskId = STP_DBG_TASK_DRVGPS;
 				break;
 			case WMTDRV_TYPE_WIFI:
-				STP_DBG_PR_INFO("WIFI trigger assert\n");
+				STP_DBG_pr_no_info("WIFI trigger assert\n");
 				g_stp_dbg_cpupcr->fwTaskId = STP_DBG_TASK_DRVWIFI;
 				break;
 			case WMTDRV_TYPE_WMT:
-				STP_DBG_PR_INFO("WMT trigger assert\n");
+				STP_DBG_pr_no_info("WMT trigger assert\n");
 				if (issue_type == STP_HOST_TRIGGER_ASSERT_TIMEOUT)
 					osal_memcpy(&g_stp_dbg_cpupcr->assert_info[0], issue_info, len);
 				/* 30: adb trigger assert */
@@ -2574,7 +2574,7 @@ INT32 stp_dbg_set_fw_info(PUINT8 issue_info, UINT32 len, ENUM_STP_FW_ISSUE_TYPE 
 		g_stp_dbg_cpupcr->fwIsr = 0;
 		osal_unlock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 	} else {
-		STP_DBG_PR_ERR("invalid issue type(%d)\n", issue_type);
+		STP_DBG_pr_no_info("invalid issue type(%d)\n", issue_type);
 		return -3;
 	}
 
@@ -2588,7 +2588,7 @@ INT32 stp_dbg_cpupcr_infor_format(PUINT8 buf, UINT32 max_len)
 
 	/* never retrun negative value */
 	if (!g_stp_dbg_cpupcr || !buf) {
-		STP_DBG_PR_ERR("NULL pointer, g_stp_dbg_cpupcr:%p, buf:%p\n",
+		STP_DBG_pr_no_info("NULL pointer, g_stp_dbg_cpupcr:%p, buf:%p\n",
 				 g_stp_dbg_cpupcr, buf);
 		return 0;
 	}
@@ -2696,7 +2696,7 @@ INT32 stp_dbg_cpupcr_infor_format(PUINT8 buf, UINT32 max_len)
 	}
 
 	len += osal_sprintf(buf + len, "<pctrace>");
-	STP_DBG_PR_INFO("stp-dbg:sub len1 for debug(%d)\n", len);
+	STP_DBG_pr_no_info("stp-dbg:sub len1 for debug(%d)\n", len);
 
 	if (!g_stp_dbg_cpupcr->count)
 		len += osal_sprintf(buf + len, "NULL");
@@ -2704,13 +2704,13 @@ INT32 stp_dbg_cpupcr_infor_format(PUINT8 buf, UINT32 max_len)
 		for (i = 0; i < g_stp_dbg_cpupcr->count; i++)
 			len += osal_sprintf(buf + len, "%08x,", g_stp_dbg_cpupcr->buffer[i]);
 	}
-	STP_DBG_PR_INFO("stp-dbg:sub len2 for debug(%d)\n", len);
+	STP_DBG_pr_no_info("stp-dbg:sub len2 for debug(%d)\n", len);
 	len += osal_sprintf(buf + len, "</pctrace>\n\t\t\t");
 	len += osal_sprintf(buf + len,
 			"<extension>NULL</extension>\n\t\t</client>\n\t</hint>\n</main>\n");
 
-	STP_DBG_PR_INFO("buffer len[%d]\n", len);
-	/* STP_DBG_PR_INFO("Format infor:\n%s\n",buf); */
+	STP_DBG_pr_no_info("buffer len[%d]\n", len);
+	/* STP_DBG_pr_no_info("Format infor:\n%s\n",buf); */
 
 	osal_lock_sleepable_lock(&g_stp_dbg_cpupcr->lock);
 	osal_memset(&g_stp_dbg_cpupcr->buffer[0], 0, STP_DBG_CPUPCR_NUM);
@@ -2740,7 +2740,7 @@ PUINT8 stp_dbg_id_to_task(UINT32 id)
 		task_id = stp_dbg_soc_id_to_task(id);
 		break;
 	default:
-		STP_DBG_PR_ERR("error chip type(%d)\n", chip_type);
+		STP_DBG_pr_no_info("error chip type(%d)\n", chip_type);
 	}
 
 	return task_id;
@@ -2768,7 +2768,7 @@ MTKSTP_DBG_T *stp_dbg_init(PVOID btm_half)
 	if (stp_dbg == NULL)
 		goto ERR_EXIT1;
 	if (IS_ERR(stp_dbg)) {
-		STP_DBG_PR_ERR("-ENOMEM\n");
+		STP_DBG_pr_no_info("-ENOMEM\n");
 		goto ERR_EXIT1;
 	}
 
@@ -2776,7 +2776,7 @@ MTKSTP_DBG_T *stp_dbg_init(PVOID btm_half)
 	if (stp_dbg->logsys == NULL)
 		goto ERR_EXIT2;
 	if (IS_ERR(stp_dbg->logsys)) {
-		STP_DBG_PR_ERR("-ENOMEM stp_gdb->logsys\n");
+		STP_DBG_pr_no_info("-ENOMEM stp_gdb->logsys\n");
 		goto ERR_EXIT2;
 	}
 	memset(stp_dbg->logsys, 0, sizeof(MTKSTP_LOG_SYS_T));
@@ -2793,17 +2793,17 @@ MTKSTP_DBG_T *stp_dbg_init(PVOID btm_half)
 
 	g_core_dump = stp_dbg_core_dump_init(STP_CORE_DUMP_TIMEOUT);
 	if (!g_core_dump) {
-		STP_DBG_PR_ERR("-ENOMEM wcn_coer_dump_init fail!");
+		STP_DBG_pr_no_info("-ENOMEM wcn_coer_dump_init fail!");
 		goto ERR_EXIT2;
 	}
 	g_stp_dbg_cpupcr = stp_dbg_cpupcr_init();
 	if (!g_stp_dbg_cpupcr) {
-		STP_DBG_PR_ERR("-ENOMEM stp_dbg_cpupcr_init fail!");
+		STP_DBG_pr_no_info("-ENOMEM stp_dbg_cpupcr_init fail!");
 		goto ERR_EXIT2;
 	}
 	g_stp_dbg_dmaregs = stp_dbg_dmaregs_init();
 	if (!g_stp_dbg_dmaregs) {
-		STP_DBG_PR_ERR("-ENOMEM stp_dbg_dmaregs_init fail!");
+		STP_DBG_pr_no_info("-ENOMEM stp_dbg_dmaregs_init fail!");
 		goto ERR_EXIT2;
 	}
 	return stp_dbg;
@@ -2837,7 +2837,7 @@ INT32 stp_dbg_deinit(MTKSTP_DBG_T *stp_dbg)
 INT32 stp_dbg_start_coredump_timer(VOID)
 {
 	if (!g_core_dump) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
@@ -2849,7 +2849,7 @@ INT32 stp_dbg_start_emi_dump(VOID)
 	INT32 ret = 0;
 
 	if (!g_core_dump) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
@@ -2869,12 +2869,12 @@ INT32 stp_dbg_start_emi_dump(VOID)
 INT32 stp_dbg_stop_emi_dump(VOID)
 {
 	if (!g_core_dump) {
-		STP_DBG_PR_ERR("invalid pointer!\n");
+		STP_DBG_pr_no_info("invalid pointer!\n");
 		return -1;
 	}
 
 	if (mtk_wcn_stp_emi_dump_flag_get() == 1) {
-		STP_DBG_PR_ERR("stopping emi dump!\n");
+		STP_DBG_pr_no_info("stopping emi dump!\n");
 		return -2;
 	}
 

@@ -109,7 +109,7 @@ struct consys_emi_addr_info* emi_mng_get_phy_addr(void)
 
 struct consys_platform_emi_ops* __weak get_consys_platform_emi_ops(void)
 {
-	pr_warn("No specify project\n");
+	pr_no_info("No specify project\n");
 	return NULL;
 }
 
@@ -118,14 +118,14 @@ int emi_mng_init(void)
 	if (consys_platform_emi_ops == NULL)
 		consys_platform_emi_ops = get_consys_platform_emi_ops();
 
-	pr_info("[emi_mng_init] gConEmiPhyBase = [0x%llx] size = [%llx] ops=[%p]",
+	pr_no_info("[emi_mng_init] gConEmiPhyBase = [0x%llx] size = [%llx] ops=[%p]",
 			gConEmiPhyBase, gConEmiSize, consys_platform_emi_ops);
 
 	if (gConEmiPhyBase) {
 		connsys_emi_addr_info.emi_ap_phy_addr = gConEmiPhyBase;
 		connsys_emi_addr_info.emi_size = gConEmiSize;
 	} else {
-		pr_err("consys emi memory address gConEmiPhyBase invalid\n");
+		pr_no_info("consys emi memory address gConEmiPhyBase invalid\n");
 	}
 
 	if (consys_platform_emi_ops &&

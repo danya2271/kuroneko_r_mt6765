@@ -253,40 +253,16 @@ INT32 gStpSdioDbgLvl = STPSDIO_LOG_INFO;
 ********************************************************************************
 */
 #define STPSDIO_PR_LOUD(fmt, arg...) \
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_LOUD) \
-		pr_info(DFT_TAG "[L]%s:"  fmt, __func__, ##arg); \
-} while (0)
+do {} while (0)
 
 #define STPSDIO_PR_DBG(fmt, arg...) \
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_DBG) \
-		pr_info(DFT_TAG "[D]%s:"  fmt, __func__, ##arg); \
-} while (0)
+do {} while (0)
 
 #define STPSDIO_PR_HINT(fmt, arg...) \
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_HINT) \
-		pr_info(DFT_TAG "[I]%s:"	fmt, __func__, ##arg); \
-} while (0)
+do {} while (0)
 
-#define STPSDIO_PR_INFO(fmt, arg...) \
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_INFO) \
-		pr_info(DFT_TAG "[I]%s:"  fmt, __func__, ##arg); \
-} while (0)
-
-#define STPSDIO_PR_WARN(fmt, arg...)	\
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_WARN) \
-		pr_warn(DFT_TAG "[W]%s:"  fmt, __func__, ##arg); \
-} while (0)
-
-#define STPSDIO_PR_ERR(fmt, arg...)	\
-do { \
-	if (gStpSdioDbgLvl >= STPSDIO_LOG_ERR) \
-		pr_err(DFT_TAG "[E]%s(%d):"  fmt, __func__, __LINE__, ##arg); \
-} while (0)
+#define STPSDIO_pr_no_info(fmt, arg...) \
+do {} while (0)
 
 /*******************************************************************************
 *                              F U N C T I O N S
@@ -319,7 +295,7 @@ static _osal_inline_ INT32 stp_sdio_host_info_op(INT32 opId)
 	if (p_tx_buffer == NULL) {
 		p_tx_buffer = kmalloc(STP_SDIO_TX_BUF_CNT * STP_SDIO_TX_ENTRY_SIZE, GFP_ATOMIC);
 		if (p_tx_buffer == NULL) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 			    ("memory allocate for g_stp_sdio_host_info.pkt_buf.tx_buf fail!\n");
 			iRet = -1;
 		} else {
@@ -335,7 +311,7 @@ static _osal_inline_ INT32 stp_sdio_host_info_op(INT32 opId)
 	if (p_rx_buffer == NULL) {
 		p_rx_buffer = kmalloc(STP_SDIO_RX_BUF_SIZE, GFP_ATOMIC);
 		if (p_rx_buffer == NULL) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 			    ("memory allocate for g_stp_sdio_host_info.pkt_buf.rx_buf fail!\n");
 			iRet = -1;
 		} else {
@@ -355,7 +331,7 @@ static _osal_inline_ INT32 stp_sdio_host_info_op(INT32 opId)
 	else if (iRet == 0)
 		iRet = stp_sdio_host_info_init(&p_tx_buffer, &p_rx_buffer);
 	else
-		STPSDIO_PR_ERR("iRet (%d)!\n", iRet);
+		STPSDIO_pr_no_info("iRet (%d)!\n", iRet);
 
 	return iRet;
 }
@@ -427,7 +403,7 @@ INT32 stp_sdio_issue_fake_coredump(UINT8 *str)
 	mtk_wcn_stp_parser_data(&AssertStr[0], 4 + length + 2 + 2);
 	osal_unlock_sleepable_lock(&fake_coredump_lock);
 
-	STPSDIO_PR_ERR("trigger fake coredump with str:[%s] finished\n", str);
+	STPSDIO_pr_no_info("trigger fake coredump with str:[%s] finished\n", str);
 
 	return 0;
 }
@@ -452,7 +428,7 @@ static _osal_inline_ SDIO_PS_OP stp_sdio_get_own_state(VOID)
 			0);
 	if (i_ret) {
 		ret = OWN_SET;
-		STPSDIO_PR_ERR("read CHLPCR fail(%d), return\n", ret);
+		STPSDIO_pr_no_info("read CHLPCR fail(%d), return\n", ret);
 		return ret;
 	}
 	if ((chlcpr_value & C_FW_COM_DRV_OWN) == C_FW_COM_DRV_OWN)
@@ -481,12 +457,12 @@ static _osal_inline_ INT32 stp_sdio_do_own_set(MTK_WCN_STP_SDIO_HIF_INFO *p_info
 			0);
 #endif /* COHEC_00006052 */
 	if (iRet) {
-		STPSDIO_PR_ERR("write CHLPCR, set firmware own! (sleeping) fail\n");
+		STPSDIO_pr_no_info("write CHLPCR, set firmware own! (sleeping) fail\n");
 	} else {
 		iRet = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, p_info->sdio_cltctx, CHLPCR,
 				&value, 0);
 		if (iRet)
-			STPSDIO_PR_ERR("get firmware own! (sleeping) fail iRet:%d\n", iRet);
+			STPSDIO_pr_no_info("get firmware own! (sleeping) fail iRet:%d\n", iRet);
 		else {
 			if (!(value & C_FW_COM_DRV_OWN)) {
 				STPSDIO_PR_DBG("set firmware own! (sleeping) ok\n");
@@ -497,7 +473,7 @@ static _osal_inline_ INT32 stp_sdio_do_own_set(MTK_WCN_STP_SDIO_HIF_INFO *p_info
 				osal_raise_signal(&p_info->isr_check_complete);
 				osal_ftrace_print("set F own okay and raise signal done");
 			} else {
-				STPSDIO_PR_WARN("set firmware own fail!, set CLR BACK\n");
+				STPSDIO_pr_no_info("set firmware own fail!, set CLR BACK\n");
 				osal_ftrace_print("set F own fail, set CLR BACK\n");
 				/* if set firmware own not successful(possibly pending interrupts),
 				 * indicate an own clear event
@@ -566,7 +542,7 @@ static _osal_inline_ INT32 stp_sdio_do_own_clr(INT32 wait)
 				&write_value, 0);
 #endif /* COHEC_00006052 */
 		if (ret) {
-			STPSDIO_PR_ERR("request firmware own back fail(%d)\n", ret);
+			STPSDIO_pr_no_info("request firmware own back fail(%d)\n", ret);
 			osal_dbg_assert_aee("<HIF_SDIO> sdio_write ERROR",
 					"write CHLPCR by SDIO report error");
 			if (retry == 0)
@@ -580,7 +556,7 @@ static _osal_inline_ INT32 stp_sdio_do_own_clr(INT32 wait)
 				&chlcpr_value, 0);
 		if (ret) {
 			/* 4 <1.1> get CHISR Rx error handling */
-			STPSDIO_PR_ERR("get CHLPCR information rx error!(%d)\n", ret);
+			STPSDIO_pr_no_info("get CHLPCR information rx error!(%d)\n", ret);
 			goto out;
 		}
 
@@ -594,7 +570,7 @@ static _osal_inline_ INT32 stp_sdio_do_own_clr(INT32 wait)
 		STPSDIO_PR_DBG("firmware ownback is no polled, wait for (%d us) and retry\n", delay_us);
 		osal_usleep_range(delay_us, 2*delay_us);
 		if (0 == (retry - 1)%40)
-			STPSDIO_PR_ERR("own back failed in %d us, something might goes wrong\n",
+			STPSDIO_pr_no_info("own back failed in %d us, something might goes wrong\n",
 					40*delay_us);
 
 		if (0 == (retry - 1)%200) {
@@ -608,8 +584,8 @@ static _osal_inline_ INT32 stp_sdio_do_own_clr(INT32 wait)
 					&write_value, 0);
 #endif /* COHEC_00006052 */
 			if (ret)
-				STPSDIO_PR_ERR("request firmware own back fail(%d)\n", ret);
-			STPSDIO_PR_ERR("own back failed in %d us, write again\n", 200*delay_us);
+				STPSDIO_pr_no_info("request firmware own back fail(%d)\n", ret);
+			STPSDIO_pr_no_info("own back failed in %d us, write again\n", 200*delay_us);
 			stp_dbg_poll_cpupcr(5, 1, 1);
 		}
 	} while (retry-- > 0);
@@ -619,10 +595,10 @@ static _osal_inline_ INT32 stp_sdio_do_own_clr(INT32 wait)
 					      is_wait_ownback == 0, (1000 / (1000 / HZ)));
 
 		if (time_out != 0) {
-			STPSDIO_PR_INFO("Do FW-Own back!(Wakeup) succeed\n");
+			STPSDIO_pr_no_info("Do FW-Own back!(Wakeup) succeed\n");
 			ret = 0;
 		} else {
-			STPSDIO_PR_ERR("Do FW-Own back!(Wakeup) fail\n");
+			STPSDIO_pr_no_info("Do FW-Own back!(Wakeup) fail\n");
 			ret = -1;
 		}
 	} else
@@ -648,7 +624,7 @@ INT32 stp_sdio_own_ctrl(SDIO_PS_OP op)
 	P_OSAL_SIGNAL pOsalSignal = NULL;
 
 	if (g_stp_sdio_host_count == 0) {
-		STPSDIO_PR_WARN("g_stp_sdio_host_count is 0, do nothing!\n");
+		STPSDIO_pr_no_info("g_stp_sdio_host_count is 0, do nothing!\n");
 		return 0;
 	}
 	pOsalSignal = &gp_info->isr_check_complete;
@@ -662,7 +638,7 @@ INT32 stp_sdio_own_ctrl(SDIO_PS_OP op)
 				gp_info->wakeup_flag, gp_info->sleep_flag);
 		ret = osal_wait_for_signal_timeout(pOsalSignal, NULL);
 		if (!ret)
-			STPSDIO_PR_ERR("OWN_SET fail, done(%d), sleep(%d), wakeup(%d)\n",
+			STPSDIO_pr_no_info("OWN_SET fail, done(%d), sleep(%d), wakeup(%d)\n",
 				pOsalSignal->comp.done, gp_info->sleep_flag, gp_info->wakeup_flag);
 		STPSDIO_PR_LOUD("after op(%d)\n", op);
 		ret = 0;
@@ -678,18 +654,18 @@ INT32 stp_sdio_own_ctrl(SDIO_PS_OP op)
 		STPSDIO_PR_LOUD("before op(%d)\n", op);
 		ret = osal_wait_for_signal_timeout(pOsalSignal, NULL);
 		if (!ret)
-			STPSDIO_PR_ERR("OWN_CLER fail, done(%d), sleep(%d), wakeup(%d)\n",
+			STPSDIO_pr_no_info("OWN_CLER fail, done(%d), sleep(%d), wakeup(%d)\n",
 				pOsalSignal->comp.done, gp_info->sleep_flag, gp_info->wakeup_flag);
 		STPSDIO_PR_LOUD("after op(%d)\n", op);
 		ret = 0;
 		break;
 	case OWN_STATE:
 		/* ret = stp_sdio_get_own_state(); */
-		STPSDIO_PR_INFO("omit op(%d)\n", op);
+		STPSDIO_pr_no_info("omit op(%d)\n", op);
 		ret = 0;
 		break;
 	default:
-		STPSDIO_PR_WARN("omit op(%d)\n", op);
+		STPSDIO_pr_no_info("omit op(%d)\n", op);
 		ret = -1;
 		break;
 	}
@@ -749,9 +725,9 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 	UINT32 delay_us = 10000;
 	UINT32 chisr_error_count = 3;
 
-	STPSDIO_PR_INFO("stp_tx_rx_thread start running...\n");
+	STPSDIO_pr_no_info("stp_tx_rx_thread start running...\n");
 	if (pInfo == NULL) {
-		STPSDIO_PR_WARN("sanity check fail, (pInfo == NULL)\n");
+		STPSDIO_pr_no_info("sanity check fail, (pInfo == NULL)\n");
 		return;
 	}
 	clt_ctx = pInfo->sdio_cltctx;
@@ -773,11 +749,11 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				if ((pInfo->sleep_flag != 0) || (pInfo->wakeup_flag != 0)) {
 					pInfo->wakeup_flag = 0;
 					pInfo->sleep_flag = 0;
-					STPSDIO_PR_WARN("clr fw own fail,signal for sleep/wakeup to return\n");
+					STPSDIO_pr_no_info("clr fw own fail,signal for sleep/wakeup to return\n");
 					osal_raise_signal(&pInfo->isr_check_complete);
 				}
 				if ((own_fail_counter % 50) == 0) {
-					STPSDIO_PR_ERR("set OWN to driver side error!\n");
+					STPSDIO_pr_no_info("set OWN to driver side error!\n");
 					/*trigger whole chip reset by send fake coredump content */
 					if (own_fail_counter == 0)
 						stp_sdio_issue_fake_coredump
@@ -807,7 +783,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 			if (iRet) {
 				/* 4       <1.1> get CHISR Rx error handling */
 				/* TODO: error handling! */
-				STPSDIO_PR_ERR("get CHISR information rx error, ret:%d\n", iRet);
+				STPSDIO_pr_no_info("get CHISR information rx error, ret:%d\n", iRet);
 				if (-5 == iRet) {
 					iRet = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_MAX_RETRY_NUM,
 							clt_ctx, CSR, &chisr, 0);
@@ -819,40 +795,40 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 			}
 
 			if (pInfo->dump_flag != 0)
-				STPSDIO_PR_ERR("CHISR(0x%08x)\n", chisr);
+				STPSDIO_pr_no_info("CHISR(0x%08x)\n", chisr);
 			else
 				STPSDIO_PR_DBG("CHISR(0x%08x)\n", chisr);
 
 
 			if (chisr == 0x0) {
-				STPSDIO_PR_ERR("******CHISR == 0*****\n");
+				STPSDIO_pr_no_info("******CHISR == 0*****\n");
 				while (chisr_error_count) {
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CCIR, &val, 0);
-					STPSDIO_PR_ERR("******CCIR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CCIR == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CHLPCR, &val, 0);
-					STPSDIO_PR_ERR("******CHLPCR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CHLPCR == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CSDIOCSR, &val, 0);
-					STPSDIO_PR_ERR("******CSDIOCSR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CSDIOCSR == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CHCR, &val, 0);
-					STPSDIO_PR_ERR("******CHCR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CHCR == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CHISR, &chisr, 0);
-					STPSDIO_PR_ERR("******CHISR == 0x%x*****\n", chisr);
+					STPSDIO_pr_no_info("******CHISR == 0x%x*****\n", chisr);
 					if (chisr)
 						break;
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CHIER, &val, 0);
-					STPSDIO_PR_ERR("******CHIER == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CHIER == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CTFSR, &val, 0);
-					STPSDIO_PR_ERR("******CTFSR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CTFSR == 0x%x*****\n", val);
 					stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							  clt_ctx, CRPLR, &val, 0);
-					STPSDIO_PR_ERR("******CRPLR == 0x%x*****\n", val);
+					STPSDIO_pr_no_info("******CRPLR == 0x%x*****\n", val);
 					chisr_error_count--;
 					osal_usleep_range(delay_us, 2 * delay_us);
 				}
@@ -871,7 +847,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				tx_comp =
 				    atomic_add_return(tx_comp, &pInfo->firmware_info.tx_comp_num);
 				if (tx_comp > STP_SDIO_TX_PKT_MAX_CNT)
-					STPSDIO_PR_ERR
+					STPSDIO_pr_no_info
 					    ("Abnormal accumulated comp count(%d) chisr(0x%x)\n",
 					     tx_comp, chisr);
 				if (chisr & TX_RETRY)
@@ -881,9 +857,9 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				stp_sdio_tx_wkr(&pInfo->tx_work);
 
 			if (chisr & RX_DONE) {
-				/* STPSDIO_PR_INFO("RX_DONE_INT\n"); */
+				/* STPSDIO_pr_no_info("RX_DONE_INT\n"); */
 				if (pInfo->rx_pkt_len)
-					STPSDIO_PR_ERR("rx worker is not finished yet!\n");
+					STPSDIO_pr_no_info("rx worker is not finished yet!\n");
 
 				/* get Rx packet length */
 				pInfo->rx_pkt_len = (chisr & RX_PKT_LEN) >> 16;
@@ -891,7 +867,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				/* sanity check */
 				if ((pInfo->rx_pkt_len == 0) ||
 						(pInfo->rx_pkt_len > STP_SDIO_RX_FIFO_SIZE)) {
-					STPSDIO_PR_ERR
+					STPSDIO_pr_no_info
 					    ("abnormal rx_pkt_len(%d) in CHISR(0x%08x) skip rx_worker\n",
 					     pInfo->rx_pkt_len, chisr);
 					pInfo->rx_pkt_len = 0;
@@ -901,7 +877,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 					 * get data back and handle it.
 					 */
 					if (pInfo->rx_pkt_len & 0x3)
-						STPSDIO_PR_WARN("rx len not 4 bytes, CHISR(0x%08x), rx len (%d).\n",
+						STPSDIO_pr_no_info("rx len not 4 bytes, CHISR(0x%08x), rx len (%d).\n",
 								chisr, pInfo->rx_pkt_len);
 				}
 				/*Rx job */
@@ -934,14 +910,14 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				&write_value, 0);
 #endif /* COHEC_00006052 */
 		if (iRet) {
-			STPSDIO_PR_ERR("enable IRQ fail. iRet:%d\n", iRet);
+			STPSDIO_pr_no_info("enable IRQ fail. iRet:%d\n", iRet);
 			osal_ftrace_print("enable COM IRQ fail, iRet:%d\n", iRet);
 		} else {
 			STPSDIO_PR_HINT("enable COM IRQ\n");
 			iRet = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHLPCR,
 					&chlcpr_value, 0);
 			if (iRet) {
-				STPSDIO_PR_ERR("read CHLPCR fail. iRet:%d\n", iRet);
+				STPSDIO_pr_no_info("read CHLPCR fail. iRet:%d\n", iRet);
 			} else {
 				if (chlcpr_value & C_FW_INT_EN_SET) {
 					STPSDIO_PR_HINT("enable COM IRQ okay (0x%x)\n",
@@ -956,7 +932,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 
 					iRet = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT,
 							clt_ctx, CHISR, &chisr, 0);
-					STPSDIO_PR_INFO("Query CHISR(0x%08x)\n", chisr);
+					STPSDIO_pr_no_info("Query CHISR(0x%08x)\n", chisr);
 
 					write_value = 0x00000000;
 					iRet = stp_sdio_rw_retry(HIF_TYPE_WRITEL, STP_SDIO_RETRY_LIMIT,
@@ -976,7 +952,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 			) {
 			if (pInfo->firmware_info.tx_packet_num == 0) {
 				/* pInfo->awake_flag = 0; */
-				/* STPSDIO_PR_INFO("set firmware own! (sleeping)\n"); */
+				/* STPSDIO_pr_no_info("set firmware own! (sleeping)\n"); */
 				while_loop_counter = 0;
 				osal_ftrace_print("|S|set F own\n");
 				stp_sdio_do_own_set(pInfo);
@@ -995,7 +971,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 					osal_ftrace_print("CHISR(0x%x)\n", val);
 					iRet = wmt_core_trigger_stp_assert();
 					if (!iRet)
-						STPSDIO_PR_INFO("trigger assert fail\n");
+						STPSDIO_pr_no_info("trigger assert fail\n");
 				}
 #endif
 				/*Avoid competition for SDIO operations with ksdioirqd/mmc2 thread*/
@@ -1005,7 +981,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 		if (while_loop_counter > 1000) {
 			while_loop_counter = 0;
 			pInfo->dump_flag = 1;
-			STPSDIO_PR_ERR("stp_sdio_tx_rx thread while_loop_counter over1000\n");
+			STPSDIO_pr_no_info("stp_sdio_tx_rx thread while_loop_counter over1000\n");
 			stp_sdio_dump_info(pInfo);
 			osal_ftrace_print("stp(%d)irq(%d)tx_pkt_num(%d)rx_pkt_len(%d)",
 					mtk_wcn_stp_is_ready(), pInfo->irq_pending,
@@ -1021,7 +997,7 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				pInfo->sleep_flag = 0;
 				osal_raise_signal(&pInfo->isr_check_complete);
 				if (pInfo->firmware_info.tx_packet_num == STP_SDIO_TX_PKT_MAX_CNT) {
-					STPSDIO_PR_ERR("STP-SDIO can't handle tx request. tx_packet_num:%d\n",
+					STPSDIO_pr_no_info("STP-SDIO can't handle tx request. tx_packet_num:%d\n",
 							pInfo->firmware_info.tx_packet_num);
 					osal_sleep_ms(200);
 				}
@@ -1039,10 +1015,10 @@ static VOID stp_sdio_tx_rx_handling(PVOID pData)
 				pInfo->sleep_flag, pInfo->wakeup_flag, pInfo->awake_flag);
 		pInfo->wakeup_flag = 0;
 		pInfo->sleep_flag = 0;
-		STPSDIO_PR_WARN("someone is wait for sleep/wakeup event, signal it to return\n");
+		STPSDIO_pr_no_info("someone is wait for sleep/wakeup event, signal it to return\n");
 		osal_raise_signal(&pInfo->isr_check_complete);
 	}
-	STPSDIO_PR_INFO("stp_tx_rx_thread exit\n");
+	STPSDIO_pr_no_info("stp_tx_rx_thread exit\n");
 }
 #endif /* STP_SDIO_OWN_THREAD */
 
@@ -1169,7 +1145,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 	/* Case 3: buffer is full (w-r >= s), (try aggregation) */
 	else {
 		if (!((atomic_read(&pb->wr_cnt) - atomic_read(&pb->rd_cnt)) >= STP_SDIO_TX_BUF_CNT)) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 			    ("abnormal condition and flow, wr_cnt(0x%x), rd_cnt(0x%x)\n",
 			     atomic_read(&pb->wr_cnt), atomic_read(&pb->rd_cnt));
 		}
@@ -1183,7 +1159,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 		/* Case 3.1 Aggregation */
 		if ((size + prev_size) <= STP_SDIO_TX_FIFO_SIZE) {
 			if (prev_size != 0)
-				STPSDIO_PR_ERR("abnormal, wr_cnt(0x%x), rd_cnt(0x%x), prev(%d), prev_size(%d)\n",
+				STPSDIO_pr_no_info("abnormal, wr_cnt(0x%x), rd_cnt(0x%x), prev(%d), prev_size(%d)\n",
 						atomic_read(&pb->wr_cnt), atomic_read(&pb->rd_cnt),
 						prev_wr_idx, prev_size);
 #if KMALLOC_UPDATE
@@ -1207,7 +1183,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 		/* Case 3.2 Buffer is full */
 		else {
 			spin_unlock_irqrestore(&pb->rd_cnt_lock, pb->rd_irq_flag);
-			STPSDIO_PR_WARN("Local Tx buffer is full !\n");
+			STPSDIO_pr_no_info("Local Tx buffer is full !\n");
 
 			/* Wait for tx ring buffer is not full */
 			/* TODO:[FixMe][George] This wait() call IS a problem if caller runs
@@ -1218,7 +1194,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 			 */
 			wait_event_interruptible(pb->fullwait_q,
 						 (pb->full_flag == MTK_WCN_BOOL_FALSE));
-			STPSDIO_PR_INFO("wait event return\n");
+			STPSDIO_pr_no_info("wait event return\n");
 
 			spin_lock_irqsave(&pb->rd_cnt_lock, pb->rd_irq_flag);
 			/* Check if the local buf is free enough */
@@ -1462,7 +1438,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 		else {
 			spin_unlock_irqrestore(&gp_info->pkt_buf.rd_idx_lock,
 					       gp_info->pkt_buf.rd_irq_flag);
-			STPSDIO_PR_WARN("Local Tx buffer is full !!!!!\n");
+			STPSDIO_pr_no_info("Local Tx buffer is full !!!!!\n");
 
 			/* Wait for tx ring buffer is not full
 			 * TODO:[FixMe][George] This wait() call IS a problem
@@ -1472,7 +1448,7 @@ INT32 stp_sdio_tx(const PUINT8 data, const UINT32 size, PUINT32 written_size)
 			 */
 			wait_event_interruptible(gp_info->pkt_buf.fullwait_q,
 						 (!gp_info->pkt_buf.full_flag));
-			STPSDIO_PR_INFO("wait event return\n");
+			STPSDIO_pr_no_info("wait event return\n");
 
 			spin_lock_irqsave(&gp_info->pkt_buf.rd_idx_lock,
 					  gp_info->pkt_buf.rd_irq_flag);
@@ -1553,7 +1529,7 @@ static _osal_inline_ VOID stp_sdio_check_tx_sanity(const MTK_WCN_STP_SDIO_HIF_IN
 #if STP_SDIO_DBG_SUPPORT && STP_SDIO_TXDBG
 	if ((p_info) && (p_info->firmware_info.tx_packet_num == 0)) {
 		if (!(p_info->tx_pkt_list.pkt_rd_cnt == p_info->tx_pkt_list.pkt_wr_cnt)) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 				("abnormal fifo_size(%d) pkt_num(%d) pkt_rd(0x%x, %ld) pkt_wr(0x%x, %ld)!(%d)\n",
 				 p_info->firmware_info.tx_fifo_size,
 				 p_info->firmware_info.tx_packet_num, p_info->tx_pkt_list.pkt_rd_cnt,
@@ -1563,7 +1539,7 @@ static _osal_inline_ VOID stp_sdio_check_tx_sanity(const MTK_WCN_STP_SDIO_HIF_IN
 			/* stp_sdio_dump_txdbg(); */
 		}
 		if (p_info->firmware_info.tx_fifo_size != STP_SDIO_TX_FIFO_SIZE) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 				("abnormal fifo_size(%d) pkt_num(%d) pkt_rd(0x%x, %ld) pkt_wr(0x%x, %ld)!(%d)\n",
 				 p_info->firmware_info.tx_fifo_size,
 				 p_info->firmware_info.tx_packet_num, p_info->tx_pkt_list.pkt_rd_cnt,
@@ -1574,7 +1550,7 @@ static _osal_inline_ VOID stp_sdio_check_tx_sanity(const MTK_WCN_STP_SDIO_HIF_IN
 		}
 	} else {
 		if ((p_info) && (p_info->tx_pkt_list.pkt_rd_cnt == p_info->tx_pkt_list.pkt_wr_cnt)) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 				("abnormal fifo_size(%d) pkt_num(%d) pkt_rd(0x%x, %ld) pkt_wr(0x%x, %ld)!(%d)\n",
 				 p_info->firmware_info.tx_fifo_size,
 				 p_info->firmware_info.tx_packet_num, p_info->tx_pkt_list.pkt_rd_cnt,
@@ -1624,19 +1600,19 @@ static VOID stp_sdio_tx_wkr_comp(MTK_WCN_STP_SDIO_HIF_INFO * const p_info)
 				 p_info->tx_retry_flag);
 		p_info->firmware_info.tx_packet_num -= comp_count;
 	} else {
-		STPSDIO_PR_INFO("abnormal complete count(%d), tx_packet_num(%d), retry flag(%d)!\n",
+		STPSDIO_pr_no_info("abnormal complete count(%d), tx_packet_num(%d), retry flag(%d)!\n",
 				 comp_count, p_info->firmware_info.tx_packet_num, p_info->tx_retry_flag);
 		/* TODO: [FixMe][George] Add error handling or bug report!! */
-		STPSDIO_PR_INFO("tx_fifo_size(%d), tx_packet_num(%d)\n",
+		STPSDIO_pr_no_info("tx_fifo_size(%d), tx_packet_num(%d)\n",
 				p_info->firmware_info.tx_fifo_size,
 				p_info->firmware_info.tx_packet_num);
 	}
 
 	while (comp_count > 0) {
 		if (p_info->tx_pkt_list.pkt_rd_cnt == p_info->tx_pkt_list.pkt_wr_cnt) {
-			STPSDIO_PR_ERR("tx complete count(%d) but tx_pkt_list empty\n",
+			STPSDIO_pr_no_info("tx complete count(%d) but tx_pkt_list empty\n",
 					comp_count);
-			STPSDIO_PR_ERR("rd_cnt(%u, idx:%lx), wr_cnt(%u, idx:%lx)!\n",
+			STPSDIO_pr_no_info("rd_cnt(%u, idx:%lx), wr_cnt(%u, idx:%lx)!\n",
 					p_info->tx_pkt_list.pkt_rd_cnt,
 					p_info->tx_pkt_list.pkt_rd_cnt & STP_SDIO_TX_PKT_LIST_SIZE_MASK,
 					p_info->tx_pkt_list.pkt_wr_cnt,
@@ -1661,18 +1637,18 @@ static VOID stp_sdio_tx_wkr_comp(MTK_WCN_STP_SDIO_HIF_INFO * const p_info)
 			if (!(value & 1)) {
 				stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, p_info->sdio_cltctx,
 						CTMDPCR0, &value, 0);
-				STPSDIO_PR_ERR("tx retry: firmware rx buffer is disable CTMDPCR0 value(%x)!\n",
+				STPSDIO_pr_no_info("tx retry: firmware rx buffer is disable CTMDPCR0 value(%x)!\n",
 						value);
 				stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, p_info->sdio_cltctx,
 						CTMDPCR1, &value, 0);
-				STPSDIO_PR_ERR("tx retry: firmware rx buffer is disable CTMDPCR1 value(%x)!\n",
+				STPSDIO_pr_no_info("tx retry: firmware rx buffer is disable CTMDPCR1 value(%x)!\n",
 						value);
 				stp_sdio_issue_fake_coredump
 					("ABT: <HIF_SDIO> tx retry ERROR: firmware rx buffer is disable");
 			}
 			idx = p_info->tx_pkt_list.pkt_rd_cnt & STP_SDIO_TX_PKT_LIST_SIZE_MASK;
 			max = p_info->firmware_info.tx_packet_num;
-			STPSDIO_PR_ERR("tx retry idx(%d) tx retry max(%d)\n", idx, max);
+			STPSDIO_pr_no_info("tx retry idx(%d) tx retry max(%d)\n", idx, max);
 			for (i = 0; i < max; i++) {
 				/* sdio crc error tx retry */
 				ret = stp_sdio_rw_retry(HIF_TYPE_WRITE_BUF, STP_SDIO_RETRY_LIMIT,
@@ -1680,17 +1656,17 @@ static VOID stp_sdio_tx_wkr_comp(MTK_WCN_STP_SDIO_HIF_INFO * const p_info)
 						(PUINT32)(p_info->pkt_buf.tx_buf + idx * STP_SDIO_TX_ENTRY_SIZE + 0),
 						p_info->tx_pkt_list.pkt_size_list[idx]);
 				if (ret) {
-					STPSDIO_PR_ERR("sdio tx retry get CTDR information Tx error(%d)!\n",
+					STPSDIO_pr_no_info("sdio tx retry get CTDR information Tx error(%d)!\n",
 							ret);
 					/* TODO: error handling! */
 					p_info->tx_retry_count++;
 					if (p_info->tx_retry_count > STP_SDIO_RETRY_LIMIT) {
-						STPSDIO_PR_INFO("sdio tx retry fail complete count(%d)\n",
+						STPSDIO_pr_no_info("sdio tx retry fail complete count(%d)\n",
 								comp_count);
-						STPSDIO_PR_INFO("tx_packet_num(%d), tx_fifo_size(%d)\n",
+						STPSDIO_pr_no_info("tx_packet_num(%d), tx_fifo_size(%d)\n",
 								p_info->firmware_info.tx_packet_num,
 								p_info->firmware_info.tx_fifo_size);
-						STPSDIO_PR_INFO("retry flag(%d)!\n", p_info->tx_retry_flag);
+						STPSDIO_pr_no_info("retry flag(%d)!\n", p_info->tx_retry_flag);
 						/* TODO: error handling! */
 #if STP_SDIO_DBG_SUPPORT && STP_SDIO_TXDBG
 						stp_sdio_txdbg_dump();
@@ -1810,7 +1786,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 
 		/* Sanity check: 4-byte aligned length shall not exceed HW FIFO Size */
 		if (four_byte_align_len > STP_SDIO_TX_FIFO_SIZE) {
-			STPSDIO_PR_ERR("abnormal four_byte_align_len(%d) > TX_FIFO_SIZE(%ld)!!\n",
+			STPSDIO_pr_no_info("abnormal four_byte_align_len(%d) > TX_FIFO_SIZE(%ld)!!\n",
 					 four_byte_align_len, STP_SDIO_TX_FIFO_SIZE);
 		}
 
@@ -1826,7 +1802,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 
 			/* Sanity check: bus_txlen shall not exceed SW entry size */
 			if (bus_txlen > STP_SDIO_TX_ENTRY_SIZE) {
-				STPSDIO_PR_ERR
+				STPSDIO_pr_no_info
 				    ("abnormal bus_txlen(%d) > STP_SDIO_TX_ENTRY_SIZE(%ld)!!\n",
 				     bus_txlen, STP_SDIO_TX_ENTRY_SIZE);
 			}
@@ -1871,12 +1847,12 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 				} else {
 					memcpy(&stp_sdio_txdbg_buffer[idx].tx_pkt_buf[0], buf_tx,
 					       STP_SDIO_TX_ENTRY_SIZE);
-					STPSDIO_PR_ERR("abnormal bus_txlen (%d)!\n", bus_txlen);
+					STPSDIO_pr_no_info("abnormal bus_txlen (%d)!\n", bus_txlen);
 				}
 			} while (0);
 #endif
 			if (ret) {
-				STPSDIO_PR_ERR("get CTDR information Tx error(%d)!\n", ret);
+				STPSDIO_pr_no_info("get CTDR information Tx error(%d)!\n", ret);
 				if (p_info->retry_enable_flag) {
 					if (ret == -EIO || ret == -EILSEQ || ret == -EBUSY)
 						p_info->tx_retry_flag = STP_SDIO_RETRY_CRC_ERROR;
@@ -1915,10 +1891,10 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 
 			osal_do_gettimeofday(&now);
 			if ((now.tv_sec - old.tv_sec) > TX_NO_ACK_TIMEOUT_ASSERT) {
-				STPSDIO_PR_INFO("tx_fifo_size(%d), four_byte_align_len(%d), tx_packet_num(%d)\n",
+				STPSDIO_pr_no_info("tx_fifo_size(%d), four_byte_align_len(%d), tx_packet_num(%d)\n",
 						p_info->firmware_info.tx_fifo_size, four_byte_align_len,
 						p_info->firmware_info.tx_packet_num);
-				STPSDIO_PR_INFO("No ack trigger assert, tx %d seconds later\n",
+				STPSDIO_pr_no_info("No ack trigger assert, tx %d seconds later\n",
 						TX_NO_ACK_TIMEOUT_ASSERT);
 				stp_dbg_poll_cpupcr(5, 1, 1);
 				p_info->firmware_info.tx_fifo_size = STP_SDIO_TX_FIFO_SIZE;
@@ -1929,7 +1905,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 				}
 				ret = mtk_wcn_wmt_assert_timeout(WMTDRV_TYPE_STP, 33, 0);
 				if (!ret)
-					STPSDIO_PR_INFO("trigger assert fail\n");
+					STPSDIO_pr_no_info("trigger assert fail\n");
 			}
 			break;
 		}
@@ -1989,7 +1965,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 		four_byte_align_len = bus_txlen;
 		/* Sanity check: 4-byte aligned length shall not exceed HW FIFO Size */
 		if (four_byte_align_len > STP_SDIO_TX_FIFO_SIZE) {
-			STPSDIO_PR_ERR("abnormal four_byte_align_len(%d) > TX_FIFO_SIZE(%ld)!!\n",
+			STPSDIO_pr_no_info("abnormal four_byte_align_len(%d) > TX_FIFO_SIZE(%ld)!!\n",
 					 four_byte_align_len, STP_SDIO_TX_FIFO_SIZE);
 		}
 
@@ -2008,7 +1984,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 
 			/* Sanity check: bus_txlen shall not exceed SW entry size */
 			if (bus_txlen > STP_SDIO_TX_ENTRY_SIZE) {
-				STPSDIO_PR_ERR
+				STPSDIO_pr_no_info
 				    ("abnormal bus_txlen(%d) > STP_SDIO_TX_ENTRY_SIZE(%ld)!!\n",
 				     bus_txlen, STP_SDIO_TX_ENTRY_SIZE);
 			}
@@ -2053,13 +2029,13 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 				} else {
 					memcpy(&stp_sdio_txdbg_buffer[idx].tx_pkt_buf[0], buf_tx,
 					       STP_SDIO_TX_ENTRY_SIZE);
-					STPSDIO_PR_ERR("abnormal bus_txlen(%d)!\n", bus_txlen);
+					STPSDIO_pr_no_info("abnormal bus_txlen(%d)!\n", bus_txlen);
 				}
 			} while (0);
 #endif
 
 			if (ret) {
-				STPSDIO_PR_ERR("get CTDR information Tx error(%d)!\n", ret);
+				STPSDIO_pr_no_info("get CTDR information Tx error(%d)!\n", ret);
 				if (p_info->retry_enable_flag) {
 					if (ret == -EIO || ret == -EILSEQ || ret == -EBUSY)
 						p_info->tx_retry_flag = STP_SDIO_RETRY_CRC_ERROR;
@@ -2101,10 +2077,10 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 			/* (tx FIFO free space < packet size) or (the number of tx packets >= 7) */
 			osal_do_gettimeofday(&now);
 			if ((now.tv_sec - old.tv_sec) > TX_NO_ACK_TIMEOUT_ASSERT) {
-				STPSDIO_PR_INFO("tx_fifo_size(%d), four_byte_align_len(%d), tx_packet_num(%d)\n",
+				STPSDIO_pr_no_info("tx_fifo_size(%d), four_byte_align_len(%d), tx_packet_num(%d)\n",
 						p_info->firmware_info.tx_fifo_size, four_byte_align_len,
 						p_info->firmware_info.tx_packet_num);
-				STPSDIO_PR_INFO("No ack trigger assert, tx %d seconds later\n",
+				STPSDIO_pr_no_info("No ack trigger assert, tx %d seconds later\n",
 						TX_NO_ACK_TIMEOUT_ASSERT);
 				stp_dbg_poll_cpupcr(5, 1, 1);
 				osal_ftrace_print("tx_fifo_size:%d, four_byte_align_len:%d, tx_packet_num(%d)\n",
@@ -2118,7 +2094,7 @@ static VOID stp_sdio_tx_wkr(struct work_struct *work)
 				}
 				ret = mtk_wcn_wmt_assert_timeout(WMTDRV_TYPE_STP, 33, 0);
 				if (!ret)
-					STPSDIO_PR_INFO("trigger assert fail\n");
+					STPSDIO_pr_no_info("trigger assert fail\n");
 			}
 			break;
 		}
@@ -2165,7 +2141,7 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 
 	if (chisr_rxlen > STP_SDIO_RX_FIFO_SIZE) {
 		/* TODO: error handling! */
-		STPSDIO_PR_ERR("abnormal chisr_rxlen(%d) rx_worker stop\n", chisr_rxlen);
+		STPSDIO_pr_no_info("abnormal chisr_rxlen(%d) rx_worker stop\n", chisr_rxlen);
 		return;
 	}
 
@@ -2187,20 +2163,20 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 				cccr_value = 0;
 				ret_1 = mtk_wcn_hif_sdio_f0_readb(p_info->sdio_cltctx, CCCR_F0, &cccr_value);
 				if (ret_1)
-					STPSDIO_PR_ERR("read CCCR_F0 fail(%d)\n", ret_1);
-				STPSDIO_PR_ERR("read CCCR_F0: (0x%x)\n", cccr_value);
+					STPSDIO_pr_no_info("read CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("read CCCR_F0: (0x%x)\n", cccr_value);
 				cccr_value |= CCCR_F0_RX_CRC;
 				cccr_value |= CCCR_F0_RX_INT;
 				ret_1 = mtk_wcn_hif_sdio_f0_writeb(p_info->sdio_cltctx, CCCR_F0, cccr_value);
 				if (ret_1)
-					STPSDIO_PR_ERR("write CCCR_F0 fail(%d)\n", ret_1);
-				STPSDIO_PR_ERR("write CCCR_F0: (0x%x)\n", cccr_value);
+					STPSDIO_pr_no_info("write CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("write CCCR_F0: (0x%x)\n", cccr_value);
 				cccr_value = 0;
 				ret_1 = mtk_wcn_hif_sdio_f0_readb(p_info->sdio_cltctx, CCCR_F0, &cccr_value);
 				if (ret_1)
-					STPSDIO_PR_ERR("read CCCR_F0 fail(%d)\n", ret_1);
-				STPSDIO_PR_ERR("read CCCR_F0: (0x%x)\n", cccr_value);
-				STPSDIO_PR_ERR("sdio read buffer happen crc error will be retry(%d)\n", ret);
+					STPSDIO_pr_no_info("read CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("read CCCR_F0: (0x%x)\n", cccr_value);
+				STPSDIO_pr_no_info("sdio read buffer happen crc error will be retry(%d)\n", ret);
 				p_info->rx_retry_count++;
 				if (p_info->rx_retry_count > STP_SDIO_RETRY_LIMIT) {
 					p_info->rx_retry_count = 0;
@@ -2214,18 +2190,18 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 			cccr_value = 0;
 			ret_1 = mtk_wcn_hif_sdio_f0_readb(p_info->sdio_cltctx, CCCR_F0, &cccr_value);
 			if (ret_1)
-				STPSDIO_PR_ERR("read CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("read CCCR_F0 fail(%d)\n", ret_1);
 			STPSDIO_PR_DBG("read CCCR_F0: (0x%x)\n", cccr_value);
 			cccr_value &= ~CCCR_F0_RX_CRC;
 			cccr_value |= CCCR_F0_RX_INT;
 			ret_1 = mtk_wcn_hif_sdio_f0_writeb(p_info->sdio_cltctx, CCCR_F0, cccr_value);
 			if (ret_1)
-				STPSDIO_PR_ERR("write CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("write CCCR_F0 fail(%d)\n", ret_1);
 			STPSDIO_PR_DBG("write CCCR_F0: (0x%x)\n", cccr_value);
 			cccr_value = 0;
 			ret_1 = mtk_wcn_hif_sdio_f0_readb(p_info->sdio_cltctx, CCCR_F0, &cccr_value);
 			if (ret_1)
-				STPSDIO_PR_ERR("read CCCR_F0 fail(%d)\n", ret_1);
+				STPSDIO_pr_no_info("read CCCR_F0 fail(%d)\n", ret_1);
 			STPSDIO_PR_DBG("read CCCR_F0: (0x%x)\n", cccr_value);
 			STPSDIO_PR_DBG("sdio read buffer success(%d)\n", ret);
 
@@ -2239,7 +2215,7 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 	}
 	if (ret) {
 		/* TODO: error handling! */
-		STPSDIO_PR_ERR("read CRDR len(%d) rx error!(%d)\n", bus_rxlen, ret);
+		STPSDIO_pr_no_info("read CRDR len(%d) rx error!(%d)\n", bus_rxlen, ret);
 		p_info->rx_pkt_len = 0;
 		return;
 	}
@@ -2266,12 +2242,12 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 	bus_rxlen = (bus_rxlen << 8) | p_info->pkt_buf.rx_buf[0];
 	STPSDIO_PR_DBG("bus_rxlen(%d) rx_len in chisr(%d)\n", bus_rxlen, chisr_rxlen);
 	if (bus_rxlen != chisr_rxlen) {
-		STPSDIO_PR_ERR("abnormal bus_rxlen(%d) in SDIO packet header!in chisr(%d)\n",
+		STPSDIO_pr_no_info("abnormal bus_rxlen(%d) in SDIO packet header!in chisr(%d)\n",
 				 bus_rxlen, chisr_rxlen);
 		return;
 	}
 	if (p_info->pkt_buf.rx_buf[2] || p_info->pkt_buf.rx_buf[3]) {
-		STPSDIO_PR_ERR("abnormal p_info->pkt_buf.rx_buf[2](0x%02x) [3](0x%02x)\n",
+		STPSDIO_pr_no_info("abnormal p_info->pkt_buf.rx_buf[2](0x%02x) [3](0x%02x)\n",
 				 p_info->pkt_buf.rx_buf[2], p_info->pkt_buf.rx_buf[3]);
 		return;
 	}
@@ -2289,7 +2265,7 @@ static VOID stp_sdio_rx_wkr(struct work_struct *work)
 		}
 #endif
 	} else {
-		STPSDIO_PR_ERR("abnormal rx length(%d, %d)\n", bus_rxlen, chisr_rxlen);
+		STPSDIO_pr_no_info("abnormal rx length(%d, %d)\n", bus_rxlen, chisr_rxlen);
 	}
 
 	/* [George]: no need to mask/unmask rx interrupt. chip/fw assert next rx int
@@ -2320,12 +2296,12 @@ static INT32 stp_sdio_irq(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx)
 			&write_value, 0);
 #endif				/* COHEC_00006052 */
 	if (iRet)
-		STPSDIO_PR_ERR("disalbe IRQ fail\n");
+		STPSDIO_pr_no_info("disalbe IRQ fail\n");
 	else {
 		iRet = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHLPCR,
 				&chlcpr_value, 0);
 		if (iRet)
-			STPSDIO_PR_ERR("read CHLPCR fail. iRet(%d)\n", iRet);
+			STPSDIO_pr_no_info("read CHLPCR fail. iRet(%d)\n", iRet);
 		else {
 			if (!(chlcpr_value & C_FW_INT_EN_SET)) {
 				STPSDIO_PR_DBG("disable COM IRQ okay (0x%x)\n", chlcpr_value);
@@ -2336,7 +2312,7 @@ static INT32 stp_sdio_irq(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx)
 				osal_trigger_event(&gp_info->tx_rx_event);
 				osal_ftrace_print("%s|stp_tx_rx\n", __func__);
 			} else
-				STPSDIO_PR_ERR
+				STPSDIO_pr_no_info
 				    ("**********disable COM IRQ fail, don't signal stp-sdio thread******\n");
 		}
 
@@ -2387,7 +2363,7 @@ TODO:[FixMe][George] do sanity check !
 		if (stp_sdio_do_own_clr(0) == 0)
 			STPSDIO_PR_DBG("set OWN to driver side ok!\n");
 		else {
-			STPSDIO_PR_ERR("set OWN to driver side error!\n");
+			STPSDIO_pr_no_info("set OWN to driver side error!\n");
 			return -1;
 		}
 
@@ -2398,9 +2374,9 @@ retry:
 	if (ret) {
 		/* 4 <1.1> get CHISR Rx error handling */
 		/* TODO: error handling! */
-		STPSDIO_PR_ERR("get CHISR information rx error,ret:%d\n", ret);
+		STPSDIO_pr_no_info("get CHISR information rx error,ret:%d\n", ret);
 		if (ret == -5) {
-			STPSDIO_PR_ERR("get CHISR DAT CRC error, retry.\n");
+			STPSDIO_pr_no_info("get CHISR DAT CRC error, retry.\n");
 			ret = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_MAX_RETRY_NUM, clt_ctx, CSR, &chisr,
 					0);
 		} else
@@ -2408,12 +2384,12 @@ retry:
 	}
 	STPSDIO_PR_HINT("CHISR(0x%08x)\n", chisr);
 	if (chisr == 0x0) {
-		STPSDIO_PR_ERR("******CHISR == 0*****\n");
+		STPSDIO_pr_no_info("******CHISR == 0*****\n");
 		return 0;
 	}
 	/* 4 <2> handle ownership back interrupt */
 	if (chisr & FW_OWN_BACK_INT) {
-		STPSDIO_PR_INFO("FW_OWN_BACK_INT\n");
+		STPSDIO_pr_no_info("FW_OWN_BACK_INT\n");
 
 		if (is_wait_ownback) {
 			is_wait_ownback = 0;
@@ -2427,11 +2403,11 @@ retry:
 	}
 	/* 4 <3> handle Rx interrupt */
 	if (chisr & RX_DONE) {
-		/* STPSDIO_PR_INFO("RX_DONE_INT\n"); */
+		/* STPSDIO_pr_no_info("RX_DONE_INT\n"); */
 
 		/* TODO: [FixMe][George] testing... */
 		if (p_info->rx_pkt_len)
-			STPSDIO_PR_ERR("rx worker is not finished yet!!!(%d)\n",
+			STPSDIO_pr_no_info("rx worker is not finished yet!!!(%d)\n",
 					 p_info->rx_pkt_len);
 
 		/* get Rx packet length */
@@ -2440,7 +2416,7 @@ retry:
 		/* sanity check */
 		if ((p_info->rx_pkt_len == 0)
 		    || (p_info->rx_pkt_len > STP_SDIO_RX_FIFO_SIZE)) {
-			STPSDIO_PR_ERR
+			STPSDIO_pr_no_info
 			    ("abnormal rx_pkt_len(%d) in CHISR(0x%08x) skip rx_worker\n",
 			     p_info->rx_pkt_len, chisr);
 			p_info->rx_pkt_len = 0;
@@ -2450,7 +2426,7 @@ retry:
 			 * back and handle it.
 			 */
 			if (p_info->rx_pkt_len & 0x3) {
-				STPSDIO_PR_WARN
+				STPSDIO_pr_no_info
 				    ("rx data len is not 4 bytes allignment, CHISR(0x%08x), rx len (%d).\n",
 				     chisr, p_info->rx_pkt_len);
 			}
@@ -2476,7 +2452,7 @@ retry:
 		tx_comp = atomic_add_return(tx_comp, &p_info->firmware_info.tx_comp_num);
 #endif
 		if (tx_comp > STP_SDIO_TX_PKT_MAX_CNT) {
-			STPSDIO_PR_ERR("Abnormal accumulated comp count(%d) chisr(0x%x)\n",
+			STPSDIO_pr_no_info("Abnormal accumulated comp count(%d) chisr(0x%x)\n",
 					 tx_comp, chisr);
 		}
 
@@ -2522,7 +2498,7 @@ static INT32 stp_sdio_ownback_poll(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx, UINT32
 		ret = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHLPCR, &chlpcr, 0);
 		if (ret) {
 			/* 4 <1.1> get CHISR Rx error handling */
-			STPSDIO_PR_ERR("get CHLPCR information rx error!(%d)\n", ret);
+			STPSDIO_pr_no_info("get CHLPCR information rx error!(%d)\n", ret);
 			return ret;
 		}
 
@@ -2563,13 +2539,13 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 	STPSDIO_PR_DBG("sdio_cltctx: 0x%08x\n", clt_ctx);
 
 	if (g_stp_sdio_host_count) {
-		STPSDIO_PR_ERR("g_stp_sdio_host_count(%d) probed already!\n",
+		STPSDIO_pr_no_info("g_stp_sdio_host_count(%d) probed already!\n",
 				 g_stp_sdio_host_count);
 		return -1;
 	}
 	/* 4 <1> check if input pointer is valid */
 	if (g_stp_sdio_host_info.sdio_cltctx == clt_ctx) {
-		STPSDIO_PR_WARN("sdio_cltctx(%d) already probed!\n", clt_ctx);
+		STPSDIO_pr_no_info("sdio_cltctx(%d) already probed!\n", clt_ctx);
 		return 0;
 	}
 	/* 4 <2> allocate host inform structure and initialize private variables */
@@ -2640,7 +2616,7 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 		     "stp_sdio_tx_rx", osal_sizeof(g_stp_sdio_host_info.tx_rx_thread.threadName));
 	ret = osal_thread_create(&g_stp_sdio_host_info.tx_rx_thread);
 	if (ret < 0) {
-		STPSDIO_PR_ERR("osal_thread_create fail...: %p\n",
+		STPSDIO_pr_no_info("osal_thread_create fail...: %p\n",
 				g_stp_sdio_host_info.tx_rx_thread.pThread);
 		return ret;
 	}
@@ -2668,7 +2644,7 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 			&write_value, 0);
 #endif				/* COHEC_00006052 */
 	if (ret) {
-		STPSDIO_PR_ERR("request FW-Own back fail!(%d)\n", ret);
+		STPSDIO_pr_no_info("request FW-Own back fail!(%d)\n", ret);
 		goto out;
 	}
 	STPSDIO_PR_DBG("request FW-Own back done\n");
@@ -2677,7 +2653,7 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 	/* 4 <3.1> polling own back bit */
 	ret = stp_sdio_ownback_poll(clt_ctx, 10, 100);
 	if (ret) {
-		STPSDIO_PR_ERR("poll FW-Own back fail!(%d)\n", ret);
+		STPSDIO_pr_no_info("poll FW-Own back fail!(%d)\n", ret);
 		goto out;
 	}
 #endif
@@ -2691,7 +2667,7 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 	ret = stp_sdio_rw_retry(HIF_TYPE_WRITEL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHIER,
 			&write_value, 0);
 	if (ret) {
-		STPSDIO_PR_ERR("set interrupt output fail!(%d)\n", ret);
+		STPSDIO_pr_no_info("set interrupt output fail!(%d)\n", ret);
 		goto out;
 	}
 	STPSDIO_PR_DBG("set interrupt output done\n");
@@ -2707,13 +2683,13 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 			0);	/* enable interrupt */
 #endif				/* COHEC_00006052 */
 	if (ret) {
-		STPSDIO_PR_ERR("enable interrupt fail!(%d)\n", ret);
+		STPSDIO_pr_no_info("enable interrupt fail!(%d)\n", ret);
 		goto out;
 	}
 	ret = stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHLPCR, &chlcpr_value,
 			0);
 	if (ret) {
-		STPSDIO_PR_ERR("Read CHLPCR fail!(%d)\n", ret);
+		STPSDIO_pr_no_info("Read CHLPCR fail!(%d)\n", ret);
 		goto out;
 	} else {
 		if (chlcpr_value & C_FW_INT_EN_SET)
@@ -2729,7 +2705,7 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 #if STP_SDIO_OWN_THREAD
 	ret = osal_thread_run(&g_stp_sdio_host_info.tx_rx_thread);
 	if (ret < 0) {
-		STPSDIO_PR_ERR("osal_thread_run fail...\n");
+		STPSDIO_pr_no_info("osal_thread_run fail...\n");
 		goto out;
 	}
 #endif
@@ -2739,11 +2715,11 @@ static INT32 stp_sdio_probe(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx,
 
 #if 0				/* controlled by 6620_launcher & WMT */
 	/*set STP sdio mode */
-	pr_warn(DFT_TAG "%s: set stp sdio mode\n", __func__);
+	pr_no_info(DFT_TAG "%s: set stp sdio mode\n", __func__);
 	mtk_wcn_stp_set_sdio_mode(1);
 
 	/*indicate the stp the sdio ready */
-	pr_warn(DFT_TAG "%s: stp enable\n", __func__);
+	pr_no_info(DFT_TAG "%s: stp enable\n", __func__);
 	mtk_wcn_stp_enable(1);
 #endif
 
@@ -2782,7 +2758,7 @@ static INT32 stp_sdio_remove(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx)
 	if (g_stp_sdio_host_info.sdio_cltctx == clt_ctx)
 		STPSDIO_PR_DBG("sdio_cltctx(%d) found\n", clt_ctx);
 	else {
-		STPSDIO_PR_ERR("sdio_cltctx(%d) not found\n", clt_ctx);
+		STPSDIO_pr_no_info("sdio_cltctx(%d) not found\n", clt_ctx);
 		return -1;
 	}
 	osal_sleepable_lock_deinit(&fake_coredump_lock);
@@ -2796,14 +2772,14 @@ static INT32 stp_sdio_remove(const MTK_WCN_HIF_SDIO_CLTCTX clt_ctx)
 	/* <2> stop Tx tasklet/Rx work queue of the host */
 #if STP_SDIO_OWN_THREAD
 	/* tasklet_kill(&g_stp_sdio_host_info.tx_rx_job); */
-	/* STPSDIO_PR_INFO("kill tasklet finished\n"); */
+	/* STPSDIO_pr_no_info("kill tasklet finished\n"); */
 	osal_thread_destroy(&g_stp_sdio_host_info.tx_rx_thread);
 	osal_event_deinit(&g_stp_sdio_host_info.tx_rx_event);
 	osal_signal_deinit(&g_stp_sdio_host_info.isr_check_complete);
 	STPSDIO_PR_DBG("destroy STP-SDIO tx_rx_thread\n");
 #else
 	flush_scheduled_work();
-	STPSDIO_PR_INFO("flush scheduled work end\n");
+	STPSDIO_pr_no_info("flush scheduled work end\n");
 #endif
 
 	/* 4 <3> return ownership to firmware of the host */
@@ -2865,15 +2841,15 @@ INT32 stp_sdio_rw_retry(ENUM_STP_SDIO_HIF_TYPE_T type, UINT32 retry_limit,
 			ret = mtk_wcn_hif_sdio_write_buf(clt_ctx, offset, pData, len);
 			break;
 		default:
-			STPSDIO_PR_ERR("unknown hif sdio type!\n");
+			STPSDIO_pr_no_info("unknown hif sdio type!\n");
 			goto exit;
 		}
 
 		if (ret) {
-			STPSDIO_PR_ERR("sdio read or write failed, ret:%d\n", ret);
+			STPSDIO_pr_no_info("sdio read or write failed, ret:%d\n", ret);
 			if (ret == -ETIMEDOUT) {
 				ret_1 = mtk_wcn_hif_sdio_readl(clt_ctx, CCIR, &value);
-				STPSDIO_PR_ERR("sdio read or write timeout, ret:%d ret_1:%d, read chip id:%x\n",
+				STPSDIO_pr_no_info("sdio read or write timeout, ret:%d ret_1:%d, read chip id:%x\n",
 						ret, ret_1, value);
 				stp_sdio_dump_register();
 			}
@@ -2882,10 +2858,10 @@ INT32 stp_sdio_rw_retry(ENUM_STP_SDIO_HIF_TYPE_T type, UINT32 retry_limit,
 				if (ret == -EIO || ret == -EILSEQ || ret == -EBUSY) {
 					ret_1 = mtk_wcn_hif_sdio_abort(clt_ctx);
 					if (ret_1)
-						STPSDIO_PR_ERR("sdio crc error send abort fail, ret_1:%d\n",
+						STPSDIO_pr_no_info("sdio crc error send abort fail, ret_1:%d\n",
 								ret_1);
 					else
-						STPSDIO_PR_ERR("sdio crc error send abort success, ret_1:%d\n",
+						STPSDIO_pr_no_info("sdio crc error send abort success, ret_1:%d\n",
 								ret_1);
 					goto exit;
 				}
@@ -2927,23 +2903,23 @@ ssize_t stp_sdio_rxdbg_read(struct file *filp, char __user *buf, size_t count, l
 		idx = (stp_sdio_rxdbg_cnt - 1 - i) & STP_SDIO_TXDBG_COUNT_MASK;
 		len = stp_sdio_rxdbg_buffer[idx].bus_rxlen;
 		if (len == 0) {
-			pr_warn(DFT_TAG "idx(0x%x) 0 == len dump skip\n",
+			pr_no_info(DFT_TAG "idx(0x%x) 0 == len dump skip\n",
 				stp_sdio_rxdbg_cnt);
 		}
-		pr_warn(DFT_TAG "idx(0x%x) chisr_rxlen(%d) bus_rxlen(%d) ts(%d)\n",
+		pr_no_info(DFT_TAG "idx(0x%x) chisr_rxlen(%d) bus_rxlen(%d) ts(%d)\n",
 			stp_sdio_rxdbg_cnt, stp_sdio_rxdbg_buffer[idx].chisr_rxlen, len,
 			stp_sdio_rxdbg_buffer[idx].ts);
 		for (j = 0; j < STP_SDIO_RX_BUF_SIZE && j < len; j += 16) {
 			pbuf = &stp_sdio_rxdbg_buffer[idx].rx_pkt_buf[j];
-			pr_warn(DFT_TAG "[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x ",
+			pr_no_info(DFT_TAG "[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x ",
 					pbuf[0], pbuf[1], pbuf[2], pbuf[3], pbuf[4], pbuf[5], pbuf[6],
 					pbuf[7]);
-			pr_warn(DFT_TAG "0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
+			pr_no_info(DFT_TAG "0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
 				pbuf[8], pbuf[9], pbuf[10], pbuf[11], pbuf[12], pbuf[13],
 				pbuf[14], pbuf[15]);
 			msleep(20);
 		}
-		pr_warn(DFT_TAG "dump ok\n");
+		pr_no_info(DFT_TAG "dump ok\n");
 	}
 
 	return 0;
@@ -2961,7 +2937,7 @@ ssize_t stp_sdio_rxdbg_write(struct file *filp, const char __user *buf, size_t c
 {
 	ULONG len = count;
 
-	pr_warn(DFT_TAG "write parameter len = %lu\n\r", len);
+	pr_no_info(DFT_TAG "write parameter len = %lu\n\r", len);
 
 	return len;
 }
@@ -2979,7 +2955,7 @@ INT32 stp_sdio_rxdbg_setup(VOID)
 
 	gStpSdioRxDbgEntry = proc_create(STP_SDIO_RXDBG_PROCNAME, 0644, NULL, &stp_sdio_rxdbg_fops);
 	if (gStpSdioRxDbgEntry == NULL) {
-		pr_warn(DFT_TAG "Unable to create /proc entry\n\r");
+		pr_no_info(DFT_TAG "Unable to create /proc entry\n\r");
 		return -1;
 	}
 
@@ -3023,11 +2999,11 @@ static VOID stp_sdio_txperf_dump(VOID)
 	pkt_num = stp_sdio_txperf_txed_pkt_num;
 	lmt_cnt = stp_sdio_txperf_pkt_num_lmt_cnt;
 
-	pr_warn(DFT_TAG "txwait_fifo_left(%d), txwait_to_send(%d), txwait_count(%d)\n",
+	pr_no_info(DFT_TAG "txwait_fifo_left(%d), txwait_to_send(%d), txwait_count(%d)\n",
 		fifo, data, cnt);
 	if (cnt)
-		pr_warn(DFT_TAG "avg left(%d), to_send(%d)\n", (fifo / cnt), (data / cnt));
-	pr_warn(DFT_TAG "tx_worker_cnt(%d), pkt_num(%d), pkt_num_lmt_cnt(%d)\n",
+		pr_no_info(DFT_TAG "avg left(%d), to_send(%d)\n", (fifo / cnt), (data / cnt));
+	pr_no_info(DFT_TAG "tx_worker_cnt(%d), pkt_num(%d), pkt_num_lmt_cnt(%d)\n",
 		wkr, pkt_num, lmt_cnt);
 
 #endif
@@ -3035,12 +3011,12 @@ static VOID stp_sdio_txperf_dump(VOID)
 
 VOID stp_sdio_dump_info(MTK_WCN_STP_SDIO_HIF_INFO *p_info)
 {
-	STPSDIO_PR_INFO("stp_is_ready(%d) irq_pending(%d) tx_packet_num(%d) rx_pkt_len(%d)\n",
+	STPSDIO_pr_no_info("stp_is_ready(%d) irq_pending(%d) tx_packet_num(%d) rx_pkt_len(%d)\n",
 			mtk_wcn_stp_is_ready(), p_info->irq_pending,
 			p_info->firmware_info.tx_packet_num, p_info->rx_pkt_len);
-	STPSDIO_PR_INFO("sleep_flag(%d) wakeup_flag(%d) awake_flag(%d) txwkr_flag(%d)\n",
+	STPSDIO_pr_no_info("sleep_flag(%d) wakeup_flag(%d) awake_flag(%d) txwkr_flag(%d)\n",
 			p_info->sleep_flag, p_info->wakeup_flag, p_info->awake_flag, p_info->txwkr_flag);
-	STPSDIO_PR_INFO("wr_idx(%d), rd_idx(%d), full_flag(%d), tx_fifo_size(%d)\n",
+	STPSDIO_pr_no_info("wr_idx(%d), rd_idx(%d), full_flag(%d), tx_fifo_size(%d)\n",
 			atomic_read(&p_info->pkt_buf.wr_idx), atomic_read(&p_info->pkt_buf.rd_idx),
 			p_info->pkt_buf.full_flag, p_info->firmware_info.tx_fifo_size);
 }
@@ -3058,34 +3034,34 @@ VOID stp_sdio_txdbg_dump(VOID)
 		idx = (stp_sdio_txdbg_cnt - 1 - i) & STP_SDIO_TXDBG_COUNT_MASK;
 		len = stp_sdio_txdbg_buffer[idx].bus_txlen;
 		if (len == 0) {
-			STPSDIO_PR_INFO("idx(%x) 0 == len dump skip\n", idx);
+			STPSDIO_pr_no_info("idx(%x) 0 == len dump skip\n", idx);
 			continue;
 		}
 
 		len = len > STP_SDIO_TXDBG_MAX_SIZE ? STP_SDIO_TXDBG_MAX_SIZE : len;
-		STPSDIO_PR_INFO(
+		STPSDIO_pr_no_info(
 				"stp_sdio_txdbg_buffer idx(%x) bus_txlen(0x%x, %d), time[%llu.%06lu]\n",
 				idx, len, len, stp_sdio_txdbg_buffer[idx].l_sec, stp_sdio_txdbg_buffer[idx].l_nsec);
 		for (j = 0; j < STP_SDIO_TX_ENTRY_SIZE && j < len; j += 16) {
 			pbuf = &stp_sdio_txdbg_buffer[idx].tx_pkt_buf[j];
-			STPSDIO_PR_INFO("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
+			STPSDIO_pr_no_info("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
 				pbuf[0], pbuf[1], pbuf[2], pbuf[3], pbuf[4], pbuf[5], pbuf[6], pbuf[7]);
-			STPSDIO_PR_INFO("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
+			STPSDIO_pr_no_info("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
 				pbuf[8], pbuf[9], pbuf[10], pbuf[11], pbuf[12], pbuf[13], pbuf[14],
 				pbuf[15]);
 			msleep(20);
 		}
-		STPSDIO_PR_INFO("stp_sdio_txdbg_buffer dump ok\n");
+		STPSDIO_pr_no_info("stp_sdio_txdbg_buffer dump ok\n");
 	}
 #if STP_TXDBG
 	for (i = 0; i < STP_SDIO_TXDBG_COUNT; ++i) {
 		idx = (stp_sdio_txdbg_cnt - 1 - i) & STP_SDIO_TXDBG_COUNT_MASK;
 		len = stp_sdio_txdbg_buffer[idx].bus_txlen;
-		STPSDIO_PR_INFO(
+		STPSDIO_pr_no_info(
 			"stp_sdio_txdbg_buffer idx(%x) bus_txlen(0x%x, %d) ts(%d)\n", idx, len, len,
 			stp_sdio_txdbg_buffer[idx].ts);
 	}
-	STPSDIO_PR_INFO(
+	STPSDIO_pr_no_info(
 			"Dump tx info: pkt_num(%d) fifo(%d) pkt_list.rd(0x%x, %ld) pkt_list.wr(0x%x, %ld)\n",
 			gp_info->firmware_info.tx_packet_num, gp_info->firmware_info.tx_fifo_size,
 			gp_info->tx_pkt_list.pkt_rd_cnt,
@@ -3095,7 +3071,7 @@ VOID stp_sdio_txdbg_dump(VOID)
 
 	for (i = 0; i < STP_SDIO_TX_PKT_LIST_SIZE; ++i) {
 		idx = STP_SDIO_GET_PKT_AR_IDX(gp_info->tx_pkt_list.pkt_wr_cnt - 1 - i);
-		STPSDIO_PR_INFO(
+		STPSDIO_pr_no_info(
 				"tx_pkt_list idx(0x%x, %d) size(0x%x, %d), in_ts(%d), out_ts(%d)\n",
 				(gp_info->tx_pkt_list.pkt_wr_cnt - 1 - i), idx,
 				gp_info->tx_pkt_list.pkt_size_list[idx],
@@ -3104,11 +3080,11 @@ VOID stp_sdio_txdbg_dump(VOID)
 	}
 
 #if STP_SDIO_NEW_TXRING
-	STPSDIO_PR_INFO("\n\ndump pkt_buf.tx_buf: rd(%d) wr(%d) full(%d)\n",
+	STPSDIO_pr_no_info("\n\ndump pkt_buf.tx_buf: rd(%d) wr(%d) full(%d)\n",
 			atomic_read(&gp_info->pkt_buf.rd_cnt), atomic_read(&gp_info->pkt_buf.wr_cnt),
 			gp_info->pkt_buf.full_flag);
 #else
-	STPSDIO_PR_INFO("\n\ndump pkt_buf.tx_buf: rdi(%d) wri(%d) full(%d)\n",
+	STPSDIO_pr_no_info("\n\ndump pkt_buf.tx_buf: rdi(%d) wri(%d) full(%d)\n",
 			atomic_read(&gp_info->pkt_buf.rd_idx), atomic_read(&gp_info->pkt_buf.wr_idx),
 			gp_info->pkt_buf.full_flag);
 #endif
@@ -3129,11 +3105,11 @@ VOID stp_sdio_txdbg_dump(VOID)
 #endif
 
 #endif
-		STPSDIO_PR_INFO("pkt_buf.tx_buf idx(%x) ts(%d) len(%d), time[%llu.%06lu]\n",
+		STPSDIO_pr_no_info("pkt_buf.tx_buf idx(%x) ts(%d) len(%d), time[%llu.%06lu]\n",
 				idx, gp_info->pkt_buf.tx_buf_ts[idx], len,
 				gp_info->pkt_buf.tx_buf_local_ts[idx], gp_info->pkt_buf.tx_buf_local_nsec[idx]);
 		if (len == 0) {
-			STPSDIO_PR_INFO("idx(%x) 0 == len dump skip\n", idx);
+			STPSDIO_pr_no_info("idx(%x) 0 == len dump skip\n", idx);
 			continue;
 		}
 		len = len > STP_SDIO_TXDBG_MAX_SIZE ? STP_SDIO_TXDBG_MAX_SIZE : len;
@@ -3143,15 +3119,15 @@ VOID stp_sdio_txdbg_dump(VOID)
 #else
 			pbuf = &gp_info->pkt_buf.tx_buf[idx][j];
 #endif
-			STPSDIO_PR_INFO("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
+			STPSDIO_pr_no_info("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
 					pbuf[0], pbuf[1], pbuf[2], pbuf[3], pbuf[4], pbuf[5], pbuf[6],
 					pbuf[7]);
-			STPSDIO_PR_INFO("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
+			STPSDIO_pr_no_info("[0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x]\n",
 					pbuf[8], pbuf[9], pbuf[10], pbuf[11], pbuf[12], pbuf[13], pbuf[14],
 					pbuf[15]);
 			msleep(20);
 		}
-		STPSDIO_PR_INFO("pkt_buf.tx_buf dump ok\n");
+		STPSDIO_pr_no_info("pkt_buf.tx_buf dump ok\n");
 	}
 #endif				/*end of STP_TXDBG*/
 #endif				/* end of STP_SDIO_TXDBG */
@@ -3187,7 +3163,7 @@ ssize_t stp_sdio_txdbg_write(struct file *filp, const char __user *buf, size_t c
 {
 	ULONG len = count;
 
-	pr_warn(DFT_TAG "write parameter len = %lu\n\r", len);
+	pr_no_info(DFT_TAG "write parameter len = %lu\n\r", len);
 
 	return len;
 }
@@ -3226,13 +3202,13 @@ ssize_t stp_sdio_own_write(struct file *filp, const char __user *buffer, size_t 
 	LONG res = 0;
 
 	if (len >= osal_sizeof(buf)) {
-		STPSDIO_PR_ERR("input handling fail!\n");
+		STPSDIO_pr_no_info("input handling fail!\n");
 		len = osal_sizeof(buf) - 1;
 		return -1;
 	}
 
 	if (copy_from_user(buf, buffer, len)) {
-		STPSDIO_PR_ERR("copy_from_user error.\n");
+		STPSDIO_pr_no_info("copy_from_user error.\n");
 		return -EFAULT;
 	}
 
@@ -3247,26 +3223,26 @@ ssize_t stp_sdio_own_write(struct file *filp, const char __user *buffer, size_t 
 	}
 
 	if (x == 0) {
-		STPSDIO_PR_INFO("stp_sdio_own_ctrl(OWN_CLR)\n\r");
+		STPSDIO_pr_no_info("stp_sdio_own_ctrl(OWN_CLR)\n\r");
 		stp_sdio_own_ctrl(OWN_CLR);
 	} else if (x == 2) {
-		STPSDIO_PR_INFO("stp_sdio_own_ctrl(OWN_SET) -->Sleep\n\r");
+		STPSDIO_pr_no_info("stp_sdio_own_ctrl(OWN_SET) -->Sleep\n\r");
 		stp_sdio_own_ctrl(OWN_SET);
 	} else if (x == 3) {
 		gStpSdioDbgLvl = STPSDIO_LOG_WARN;
-		STPSDIO_PR_WARN("set STP-SDIO LogLevel to STPSDIO_LOG_WARN\n\r");
+		STPSDIO_pr_no_info("set STP-SDIO LogLevel to STPSDIO_LOG_WARN\n\r");
 	} else if (x == 4) {
 		gStpSdioDbgLvl = STPSDIO_LOG_INFO;
-		STPSDIO_PR_INFO("set STP-SDIO LogLevel to STPSDIO_LOG_INFO\n\r");
+		STPSDIO_pr_no_info("set STP-SDIO LogLevel to STPSDIO_LOG_INFO\n\r");
 	} else if (x == 5) {
 		gStpSdioDbgLvl = STPSDIO_LOG_HINT;
-		STPSDIO_PR_INFO("set STP-SDIO LogLevel to STPSDIO_LOG_HINT\n\r");
+		STPSDIO_pr_no_info("set STP-SDIO LogLevel to STPSDIO_LOG_HINT\n\r");
 	} else if (x == 6) {
 		gStpSdioDbgLvl = STPSDIO_LOG_DBG;
-		STPSDIO_PR_INFO("set STP-SDIO LogLevel to STPSDIO_LOG_DBG\n\r");
+		STPSDIO_pr_no_info("set STP-SDIO LogLevel to STPSDIO_LOG_DBG\n\r");
 	} else if (x == 7) {
 		gStpSdioDbgLvl = STPSDIO_LOG_LOUD;
-		STPSDIO_PR_INFO("set STP-SDIO LogLevel to STPSDIO_LOG_LOUD\n\r");
+		STPSDIO_pr_no_info("set STP-SDIO LogLevel to STPSDIO_LOG_LOUD\n\r");
 	}
 
 	return len;
@@ -3284,7 +3260,7 @@ INT32 stp_sdio_txdbg_setup(VOID)
 {
 	gStpSdioTxDbgEntry = proc_create(STP_SDIO_TXDBG_PROCNAME, 0644, NULL, &stp_sdio_txdbg_fops);
 	if (gStpSdioTxDbgEntry == NULL) {
-		pr_warn(DFT_TAG "Unable to create /proc entry\n\r");
+		pr_no_info(DFT_TAG "Unable to create /proc entry\n\r");
 		return -1;
 	}
 
@@ -3336,7 +3312,7 @@ INT32 stp_sdio_owndbg_setup(VOID)
 {
 	gStpSdioOwnEntry = proc_create(STP_SDIO_OWNDBG_PROCNAME, 0644, NULL, &stp_sdio_own_fops);
 	if (gStpSdioOwnEntry == NULL) {
-		pr_warn(DFT_TAG "Unable to create /proc entry\n\r");
+		pr_no_info(DFT_TAG "Unable to create /proc entry\n\r");
 		return -1;
 	}
 
@@ -3396,11 +3372,11 @@ static INT32 stp_sdio_init(VOID)
 	/* 4 <2> register supported functions from sdio id table to hif sdio driver */
 	ret = mtk_wcn_hif_sdio_client_reg(&g_stp_sdio_cltinfo);
 	if (ret)
-		STPSDIO_PR_ERR("mtk_wcn_hif_sdio_client_reg fail(%d)!\n", ret);
+		STPSDIO_pr_no_info("mtk_wcn_hif_sdio_client_reg fail(%d)!\n", ret);
 
 	ret = mtk_wcn_stp_wmt_sdio_op_reg(stp_sdio_own_ctrl);
 	if (ret)
-		STPSDIO_PR_ERR
+		STPSDIO_pr_no_info
 		    ("mtk_wcn_stp_wmt_sdio_op_reg(mtk_wcn_stp_sdio_own_ctrl) fail(%d)!\n", ret);
 #ifdef CONFIG_MTK_COMBO_CHIP_DEEP_SLEEP_SUPPORT
 	mtk_wcn_wmt_sdio_deep_sleep_flag_cb_reg(stp_sdio_deep_sleep_flag_set);
@@ -3435,7 +3411,7 @@ INT32 stp_sdio_reg_rw(INT32 func_num, INT32 direction,  UINT32 offset, UINT32 va
 	else if (func_num == 2)
 		return stp_sdio_func_reg_rw(direction, offset, value);
 
-	STPSDIO_PR_ERR("func_num(%d) is not support!\n", func_num);
+	STPSDIO_pr_no_info("func_num(%d) is not support!\n", func_num);
 	return -1;
 }
 
@@ -3448,11 +3424,11 @@ INT32 stp_sdio_func0_reg_rw(INT32 direction,  UINT32 offset, UINT32 value)
 	switch (direction) {
 	case 0:
 		ret = mtk_wcn_hif_sdio_f0_readb(g_stp_sdio_host_info.sdio_cltctx, offset, &val);
-		STPSDIO_PR_INFO("read func0 CR(0x%x), value(0x%x)\n", offset, val);
+		STPSDIO_pr_no_info("read func0 CR(0x%x), value(0x%x)\n", offset, val);
 		break;
 	case 1:
 		ret = mtk_wcn_hif_sdio_f0_writeb(g_stp_sdio_host_info.sdio_cltctx, offset, val);
-		STPSDIO_PR_INFO("write func0 CR(0x%x), value(0x%x)\n", offset, val);
+		STPSDIO_pr_no_info("write func0 CR(0x%x), value(0x%x)\n", offset, val);
 		break;
 	default:
 		break;
@@ -3470,11 +3446,11 @@ INT32 stp_sdio_func_reg_rw(INT32 direction,  UINT32 offset, UINT32 value)
 	switch (direction) {
 	case 0:
 		ret = mtk_wcn_hif_sdio_readl(g_stp_sdio_host_info.sdio_cltctx, offset, &val);
-		STPSDIO_PR_INFO("read sdio CR(0x%x), value(0x%x)\n", offset, val);
+		STPSDIO_pr_no_info("read sdio CR(0x%x), value(0x%x)\n", offset, val);
 		break;
 	case 1:
 		ret = mtk_wcn_hif_sdio_writel(g_stp_sdio_host_info.sdio_cltctx, offset, val);
-		STPSDIO_PR_INFO("write sdio CR(0x%x), value(0x%x)\n", offset, val);
+		STPSDIO_pr_no_info("write sdio CR(0x%x), value(0x%x)\n", offset, val);
 		break;
 	default:
 		break;
@@ -3488,11 +3464,11 @@ INT32 stp_sdio_wake_up_ctrl(MTK_WCN_HIF_SDIO_CLTCTX ctx)
 
 	ret = hif_sdio_wake_up_ctrl(ctx);
 	if (ret == -11) {
-		STPSDIO_PR_ERR("wake up fail, polling [GPIO_CHIP_DEEP_SLEEP_PIN] low over 30ms\n");
+		STPSDIO_pr_no_info("wake up fail, polling [GPIO_CHIP_DEEP_SLEEP_PIN] low over 30ms\n");
 		ret = stp_sdio_issue_fake_coredump
 			("<ASSERT> wake up fail, polling [GPIO_CHIP_DEEP_SLEEP_PIN] low over 30ms # -");
 	} else if (ret == -2 || ret == -3)
-		STPSDIO_PR_ERR("get wake up, sleep pin error\n");
+		STPSDIO_pr_no_info("get wake up, sleep pin error\n");
 
 	return ret;
 }
@@ -3507,21 +3483,21 @@ VOID stp_sdio_dump_register(VOID)
 	clt_ctx = gp_info->sdio_cltctx;
 	while (count) {
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CCIR, &val, 0);
-		STPSDIO_PR_ERR("******CCIR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CCIR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHLPCR, &val, 0);
-		STPSDIO_PR_ERR("******CHLPCR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CHLPCR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CSDIOCSR, &val, 0);
-		STPSDIO_PR_ERR("******CSDIOCSR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CSDIOCSR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHCR, &val, 0);
-		STPSDIO_PR_ERR("******CHCR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CHCR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHISR, &val, 0);
-		STPSDIO_PR_ERR("******CHISR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CHISR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CHIER, &val, 0);
-		STPSDIO_PR_ERR("******CHIER == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CHIER == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CTFSR, &val, 0);
-		STPSDIO_PR_ERR("******CTFSR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CTFSR == 0x%x*****\n", val);
 		stp_sdio_rw_retry(HIF_TYPE_READL, STP_SDIO_RETRY_LIMIT, clt_ctx, CRPLR, &val, 0);
-		STPSDIO_PR_ERR("******CRPLR == 0x%x*****\n", val);
+		STPSDIO_pr_no_info("******CRPLR == 0x%x*****\n", val);
 		count--;
 		osal_usleep_range(delay_us, 2 * delay_us);
 	}

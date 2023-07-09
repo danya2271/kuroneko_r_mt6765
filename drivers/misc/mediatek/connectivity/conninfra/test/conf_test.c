@@ -77,29 +77,29 @@ int conninfra_conf_test(void)
 #if 0
 	ret = conninfra_conf_set_cfg_file("WMT_SOC.cfg");
 	if (ret) {
-		pr_err("set cfg file fail [%d]", ret);
+		pr_no_info("set cfg file fail [%d]", ret);
 		return -1;
 	}
 #endif
 
 	ret = conninfra_conf_init();
 	if (ret) {
-		pr_err("int conf fail [%d]", ret);
+		pr_no_info("int conf fail [%d]", ret);
 		return -1;
 	}
 
 	conf = conninfra_conf_get_cfg();
 	if (NULL == conf) {
-		pr_err("int conf fail [%d]", ret);
+		pr_no_info("int conf fail [%d]", ret);
 		return -1;
 	}
 	if (conf->tcxo_gpio != 0) {
-		pr_err("test tcxo gpio fail [%d]. For most case, it should be 0.",
+		pr_no_info("test tcxo gpio fail [%d]. For most case, it should be 0.",
 			conf->tcxo_gpio);
 		return -1;
 	}
 
-	pr_info("[%s] test PASS\n", __func__);
+	pr_no_info("[%s] test PASS\n", __func__);
 	return 0;
 }
 

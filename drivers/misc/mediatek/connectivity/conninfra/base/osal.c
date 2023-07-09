@@ -290,7 +290,7 @@ int osal_thread_create(P_OSAL_THREAD pThread)
 	task = kthread_create(pThread->pThreadFunc,
 				pThread->pThreadData, pThread->threadName);
 	if (IS_ERR(task)) {
-		pr_err("[%s] create %s thread fail", __func__, pThread->threadName);
+		pr_no_info("[%s] create %s thread fail", __func__, pThread->threadName);
 		return -1;
 	}
 
@@ -507,19 +507,19 @@ int osal_wait_for_signal_timeout(P_OSAL_SIGNAL pSignal, P_OSAL_THREAD pThread)
 			break;
 
 		if (schedstats.runnable > schedstats.exec) {
-			pr_err(
+			pr_no_info(
 				"[E]%s:wait completion timeout, %s cannot get CPU, extension(%d), show backtrace:\n",
 				__func__,
 				pThread->threadName,
 				pSignal->timeoutExtension);
 		} else {
-			pr_err(
+			pr_no_info(
 				"[E]%s:wait completion timeout, show %s backtrace:\n",
 				__func__,
 				pThread->threadName);
 			pSignal->timeoutExtension = 0;
 		}
-		pr_err(
+		pr_no_info(
 			"[E]%s:\tduration:%llums, sched(x%llu/r%llu/i%llu)\n",
 			__func__,
 			schedstats.time,
@@ -788,12 +788,12 @@ int _osal_fifo_init(OSAL_FIFO *pFifo, unsigned char *buf, unsigned int size)
 	int ret = -1;
 
 	if (!pFifo) {
-		pr_err("pFifo must be !NULL\n");
+		pr_no_info("pFifo must be !NULL\n");
 		return -1;
 	}
 	if (pFifo->pFifoBody) {
-		pr_err("pFifo->pFifoBody must be NULL\n");
-		pr_err("pFifo(0x%p), pFifo->pFifoBody(0x%p)\n",
+		pr_no_info("pFifo->pFifoBody must be NULL\n");
+		pr_no_info("pFifo(0x%p), pFifo->pFifoBody(0x%p)\n",
 					pFifo, pFifo->pFifoBody);
 		return -1;
 	}
@@ -821,7 +821,7 @@ int _osal_fifo_deinit(OSAL_FIFO *pFifo)
 	struct kfifo *fifo = NULL;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -840,7 +840,7 @@ int _osal_fifo_size(OSAL_FIFO *pFifo)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -860,7 +860,7 @@ int _osal_fifo_avail_size(OSAL_FIFO *pFifo)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -880,7 +880,7 @@ int _osal_fifo_len(OSAL_FIFO *pFifo)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -899,7 +899,7 @@ int _osal_fifo_is_empty(OSAL_FIFO *pFifo)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -918,7 +918,7 @@ int _osal_fifo_is_full(OSAL_FIFO *pFifo)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -937,7 +937,7 @@ int _osal_fifo_data_in(OSAL_FIFO *pFifo, const void *buf, unsigned int len)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -947,7 +947,7 @@ int _osal_fifo_data_in(OSAL_FIFO *pFifo, const void *buf, unsigned int len)
 	if (fifo && buf && (len <= _osal_fifo_avail_size(pFifo))) {
 		ret = kfifo_in(fifo, buf, len);
 	} else {
-		pr_err("%s: kfifo_in, error, len = %d, _osal_fifo_avail_size = %d, buf=%p\n",
+		pr_no_info("%s: kfifo_in, error, len = %d, _osal_fifo_avail_size = %d, buf=%p\n",
 		       __func__, len, _osal_fifo_avail_size(pFifo), buf);
 
 		ret = 0;
@@ -962,7 +962,7 @@ int _osal_fifo_data_out(OSAL_FIFO *pFifo, void *buf, unsigned int len)
 	int ret = 0;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n"
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n"
 				, __func__);
 		return -1;
 	}
@@ -972,7 +972,7 @@ int _osal_fifo_data_out(OSAL_FIFO *pFifo, void *buf, unsigned int len)
 	if (fifo && buf && (len <= _osal_fifo_len(pFifo))) {
 		ret = kfifo_out(fifo, buf, len);
 	} else {
-		pr_err("%s: kfifo_out, error, len = %d, osal_fifo_len = %d, buf=%p\n",
+		pr_no_info("%s: kfifo_out, error, len = %d, osal_fifo_len = %d, buf=%p\n",
 		       __func__, len, _osal_fifo_len(pFifo), buf);
 
 		ret = 0;
@@ -986,7 +986,7 @@ int _osal_fifo_reset(OSAL_FIFO *pFifo)
 	struct kfifo *fifo = NULL;
 
 	if (!pFifo || !pFifo->pFifoBody) {
-		pr_err("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
+		pr_no_info("%s:pFifo = NULL or pFifo->pFifoBody = NULL, error\n",
 				__func__);
 		return -1;
 	}
@@ -1002,7 +1002,7 @@ int _osal_fifo_reset(OSAL_FIFO *pFifo)
 int osal_fifo_init(P_OSAL_FIFO pFifo, unsigned char *buffer, unsigned int size)
 {
 	if (!pFifo) {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		return -1;
 	}
 
@@ -1018,7 +1018,7 @@ int osal_fifo_init(P_OSAL_FIFO pFifo, unsigned char *buffer, unsigned int size)
 	pFifo->FifoReset = _osal_fifo_reset;
 
 	if (pFifo->pFifoBody != NULL) {
-		pr_err("%s:Because pFifo room is avialable, we clear the room and allocate them again.\n", __func__);
+		pr_no_info("%s:Because pFifo room is avialable, we clear the room and allocate them again.\n", __func__);
 		pFifo->FifoDeInit(pFifo->pFifoBody);
 		pFifo->pFifoBody = NULL;
 	}
@@ -1033,7 +1033,7 @@ void osal_fifo_deinit(P_OSAL_FIFO pFifo)
 	if (pFifo)
 		pFifo->FifoDeInit(pFifo);
 	else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		return;
 	}
 	kfree(pFifo->pFifoBody);
@@ -1046,7 +1046,7 @@ int osal_fifo_reset(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoReset(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = -1;
 	}
 	return ret;
@@ -1060,7 +1060,7 @@ unsigned int osal_fifo_in(P_OSAL_FIFO pFifo,
 	if (pFifo) {
 		ret = pFifo->FifoDataIn(pFifo, buffer, size);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1075,7 +1075,7 @@ unsigned int osal_fifo_out(P_OSAL_FIFO pFifo,
 	if (pFifo) {
 		ret = pFifo->FifoDataOut(pFifo, buffer, size);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1089,7 +1089,7 @@ unsigned int osal_fifo_len(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoLen(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1103,7 +1103,7 @@ unsigned int osal_fifo_sz(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoSz(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1117,7 +1117,7 @@ unsigned int osal_fifo_avail(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoAvailSz(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1131,7 +1131,7 @@ unsigned int osal_fifo_is_empty(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoIsEmpty(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 
@@ -1145,7 +1145,7 @@ unsigned int osal_fifo_is_full(P_OSAL_FIFO pFifo)
 	if (pFifo) {
 		ret = pFifo->FifoIsFull(pFifo);
 	} else {
-		pr_err("%s:pFifo = NULL, error\n", __func__);
+		pr_no_info("%s:pFifo = NULL, error\n", __func__);
 		ret = 0;
 	}
 	return ret;
@@ -1267,7 +1267,7 @@ void osal_get_local_time(unsigned long long *sec, unsigned long *nsec)
 		*sec = local_clock();
 		*nsec = do_div(*sec, 1000000000)/1000;
 	} else
-		pr_err("The input parameters error when get local time\n");
+		pr_no_info("The input parameters error when get local time\n");
 }
 
 unsigned long long osal_elapsed_us(unsigned long long ts, unsigned long usec)
@@ -1288,7 +1288,7 @@ void osal_buffer_dump(const unsigned char *buf,
 	char str[DBG_LOG_STR_SIZE] = {""};
 	int strlen = 0;
 
-	pr_info("[%s] len=%d, limit=%d, start dump\n", title, len, limit);
+	pr_no_info("[%s] len=%d, limit=%d, start dump\n", title, len, limit);
 
 	dump_len = ((limit != 0) && (len > limit)) ? limit : len;
 	for (k = 0; k < dump_len; k++) {
@@ -1299,14 +1299,14 @@ void osal_buffer_dump(const unsigned char *buf,
 			strlen += osal_snprintf(str + strlen, DBG_LOG_STR_SIZE - strlen,
 						"%02x ", buf[k]);
 
-			pr_info("%s", str);
+			pr_no_info("%s", str);
 			strlen = 0;
 		}
 	}
 	if (k % 16 != 0)
-		pr_info("%s\n", str);
+		pr_no_info("%s\n", str);
 
-	pr_info("end of dump\n");
+	pr_no_info("end of dump\n");
 }
 
 void osal_buffer_dump_data(const unsigned int *buf,
@@ -1330,7 +1330,7 @@ void osal_buffer_dump_data(const unsigned int *buf,
 			if (flag)
 				osal_ftrace_print("%s%s", title, str);
 			else
-				pr_info("%s%s", title, str);
+				pr_no_info("%s%s", title, str);
 			strlen = 0;
 		}
 	}
@@ -1338,7 +1338,7 @@ void osal_buffer_dump_data(const unsigned int *buf,
 		if (flag)
 			osal_ftrace_print("%s%s", title, str);
 		else
-			pr_info("%s%s", title, str);
+			pr_no_info("%s%s", title, str);
 	}
 }
 
@@ -1425,14 +1425,14 @@ static void osal_op_history_print_work(struct work_struct *work)
 	int index = 0;
 
 	if (queue == NULL) {
-		pr_info("queue shouldn't be NULL, %s", log_history->name);
+		pr_no_info("queue shouldn't be NULL, %s", log_history->name);
 		return;
 	}
 
 	RING_READ_FOR_EACH_ITEM(RING_SIZE(ring_buffer), seg, ring_buffer) {
 		index = seg.ring_pt - ring_buffer->base;
 		entry = &queue[index];
-		pr_info("(%llu.%06lu) %s: pOp(%p):%u(%d)-%x-%zx,%zx,%zx,%zx\n",
+		pr_no_info("(%llu.%06lu) %s: pOp(%p):%u(%d)-%x-%zx,%zx,%zx,%zx\n",
 			entry->ts,
 			entry->usec,
 			log_history->name,
@@ -1480,7 +1480,7 @@ void osal_op_history_print(struct osal_op_history *log_history, char *name)
 	spinlock_t *lock = &(log_history->lock);
 
 	if (log_history->queue == NULL) {
-		pr_info("Queue is NULL, name: %s\n", name);
+		pr_no_info("Queue is NULL, name: %s\n", name);
 		return;
 	}
 
@@ -1499,7 +1499,7 @@ void osal_op_history_print(struct osal_op_history *log_history, char *name)
 	if (dump_ring_buffer->base != NULL) {
 		spin_unlock_irqrestore(lock, flags);
 		kfree(queue);
-		pr_info("print is ongoing: %s\n", name);
+		pr_no_info("print is ongoing: %s\n", name);
 		return;
 	}
 
@@ -1533,7 +1533,7 @@ void osal_op_history_save(struct osal_op_history *log_history, P_OSAL_OP pOp)
 	}
 
 	if (entry == NULL) {
-		pr_info("Entry is null, size %d\n",
+		pr_no_info("Entry is null, size %d\n",
 				RING_SIZE(&log_history->ring_buffer));
 		spin_unlock_irqrestore(&(log_history->lock), flags);
 		return;
@@ -1592,7 +1592,7 @@ void osal_systrace_major_b(const char *fmt, ...)
 	memset(log, ' ', sizeof(log));
 	va_start(args, fmt);
 	if (vsnprintf(log, sizeof(log), fmt, args) < 0)
-		pr_err("[%s:%d] vsnprintf error", __func__, __LINE__);
+		pr_no_info("[%s:%d] vsnprintf error", __func__, __LINE__);
 	va_end(args);
 	osal_systrace_b(log);
 }
@@ -1613,7 +1613,7 @@ void osal_systrace_minor_b(const char *fmt, ...)
 	memset(log, ' ', sizeof(log));
 	va_start(args, fmt);
 	if (vsnprintf(log, sizeof(log), fmt, args) < 0)
-		pr_err("[%s:%d] vsnprintf error", __func__, __LINE__);
+		pr_no_info("[%s:%d] vsnprintf error", __func__, __LINE__);
 	va_end(args);
 	osal_systrace_b(log);
 
@@ -1637,7 +1637,7 @@ void osal_systrace_minor_c(int val, const char *fmt, ...)
 	memset(log, ' ', sizeof(log));
 	va_start(args, fmt);
 	if (vsnprintf(log, sizeof(log), fmt, args) < 0)
-		pr_err("[%s:%d] vsnprintf error", __func__, __LINE__);
+		pr_no_info("[%s:%d] vsnprintf error", __func__, __LINE__);
 	va_end(args);
 	osal_systrace_c(val, log);
 }

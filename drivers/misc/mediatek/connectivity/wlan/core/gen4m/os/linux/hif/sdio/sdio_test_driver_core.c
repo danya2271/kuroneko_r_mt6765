@@ -44,7 +44,7 @@ static inline void mmc_set_ios(struct mmc_host *host)
 {
 	struct mmc_ios *ios = &host->ios;
 
-	pr_debug("%s: clock %uHz busmode %u powermode %u cs %u Vdd %u width %u timing %u\n",
+	pr_no_info("%s: clock %uHz busmode %u powermode %u cs %u Vdd %u width %u timing %u\n",
 		 mmc_hostname(host), ios->clock, ios->bus_mode,
 		 ios->power_mode, ios->chip_select, ios->vdd,
 		 ios->bus_width, ios->timing);
@@ -73,7 +73,7 @@ void mmc_set_clock(struct mmc_host *host, unsigned int hz)
 		hz = host->f_max;
 
 	#if 1
-	pr_debug("%s(): %dHz\n", __func__, hz);
+	pr_no_info("%s(): %dHz\n", __func__, hz);
 	#endif
 
 	host->ios.clock = hz;
@@ -117,7 +117,7 @@ u32 mmc_select_voltage(struct mmc_host *host, u32 ocr)
 		host->ios.vdd = bit;
 		mmc_set_ios(host);
 	} else {
-		pr_warn("%s: host doesn't support card's voltages\n",
+		pr_no_info("%s: host doesn't support card's voltages\n",
 				mmc_hostname(host));
 		ocr = 0;
 	}
@@ -365,7 +365,7 @@ static int sdio_enable_wide(struct mmc_card *card)
 
 
 	if ((ctrl & SDIO_BUS_WIDTH_MASK) == SDIO_BUS_WIDTH_RESERVED)
-		pr_warn("%s: SDIO_CCCR_IF is invalid: 0x%02x\n",
+		pr_no_info("%s: SDIO_CCCR_IF is invalid: 0x%02x\n",
 			mmc_hostname(card->host), ctrl);
 
 	/* set as 4-bit bus width */

@@ -69,7 +69,7 @@ P_CONSYS_PLATFORM_PMIC_OPS consys_platform_pmic_ops;
 
 P_CONSYS_PLATFORM_PMIC_OPS __weak get_consys_platform_pmic_ops(void)
 {
-	pr_err("No specify project\n");
+	pr_no_info("No specify project\n");
 	return NULL;
 }
 
