@@ -327,8 +327,6 @@ extern int kptr_restrict;
  * or CONFIG_DYNAMIC_DEBUG is set.
  */
 /* -------printk too much patch------ */
-#if defined CONFIG_LOG_TOO_MUCH_WARNING \
-	&& defined CONFIG_DYNAMIC_DEBUG
 #ifdef CONFIG_NO_LOG
 #define pr_emerg(fmt, ...) do {} while(0)
 #define pr_alert(fmt, ...) do {} while(0)
@@ -362,25 +360,8 @@ extern int kptr_restrict;
 	dynamic_pr_notice(KLOG_MODNAME fmt, ##__VA_ARGS__) \
 
 #define pr_info(fmt, ...) \
-	dynamic_pr_info(KLOG_MODNAME fmt, ##__VA_ARGS__) \
+	dynamic_pr_info(KLOG_MODNAME fmt, ##__VA_ARGS__)
 
-#else
-#define pr_emerg(fmt, ...) \
-	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_alert(fmt, ...) \
-	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_crit(fmt, ...) \
-	printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_err(fmt, ...) \
-	printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_warning(fmt, ...) \
-	printk(KERN_WARNING pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_warn pr_warning
-#define pr_notice(fmt, ...) \
-	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_info(fmt, ...) \
-	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-#endif
 #define pr_cont(fmt, ...) \
 	printk(KERN_CONT fmt, ##__VA_ARGS__)
 #endif
@@ -468,14 +449,6 @@ extern int kptr_restrict;
 #define pr_no_debug(fmt, ...) \
 	printk(KERN_DEBUG KLOG_MODNAME pr_fmt(fmt), ##__VA_ARGS__)
 #endif
-
-/*
- * Like KERN_CONT, pr_cont() should only be used when continuing
- * a line with no newline ('\n') enclosed. Otherwise it defaults
- * back to KERN_DEFAULT.
- */
-#define pr_cont(fmt, ...) \
-	printk(KERN_CONT fmt, ##__VA_ARGS__)
 
 /* pr_devel() should produce zero code unless DEBUG is defined */
 #ifdef DEBUG
