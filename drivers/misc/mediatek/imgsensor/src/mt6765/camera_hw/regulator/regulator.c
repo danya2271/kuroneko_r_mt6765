@@ -283,7 +283,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			//atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(regVCAMAF)) {
-				/*pr_no_debug("[regulator]%d is enabled\n", pin);*/
+				/*pr_debug("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(regVCAMAF)) {
 					pr_err(
