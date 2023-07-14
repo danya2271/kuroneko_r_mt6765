@@ -371,87 +371,25 @@ extern int kptr_restrict;
 	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
 #endif
 #ifdef CONFIG_FK_LOG
-#define pr_no_emerg(fmt, ...)  				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_alert(fmt, ...)  				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_crit(fmt, ...)  				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_err(fmt, ...)  				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_warn(fmt, ...)   				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_notice(fmt, ...) 				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_info(fmt, ...) 				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
-#define pr_no_debug(fmt, ...) 				\
-({							\
-	do {						\
-		if (0)					\
-			printk(fmt, ##__VA_ARGS__);	\
-	} while (0);					\
-	0;						\
-})
+#define pr_no_emerg( fmt, ... ) 	do { } while (0);
+#define pr_no_alert( fmt, ... )		do { } while (0);
+#define pr_no_crit( fmt, ... )		do { } while (0);
+#define pr_no_err( fmt, ... )		do { } while (0);
+#define pr_no_warn( fmt, ... )		do { } while (0);
+#define pr_no_notice( fmt, ... )	do { } while (0);
+#define pr_no_info( fmt, ... )		do { } while (0);
+#define pr_no_debug( fmt, ... )		do { } while (0);
 
 #else
-#define pr_no_emerg(fmt, ...) \
-			printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_alert(fmt, ...) \
-			printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_crit(fmt, ...) \
-			printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_err(fmt, ...) \
-			printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_warn pr_warning
-#define pr_no_notice(fmt, ...) \
-			printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_info(fmt, ...) \
-			printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_debug(fmt, ...) \
-	printk(KERN_DEBUG KLOG_MODNAME pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_emerg( fmt, ... ) 	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_alert( fmt, ... ) 	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_crit( fmt, ... ) 		printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_err( fmt, ... )		printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_warn 			pr_warning
+#define pr_no_notice( fmt, ... )	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_info( fmt, ... )		printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_debug( fmt, ... )		printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+
 #endif
 
 /*
