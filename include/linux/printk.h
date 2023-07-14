@@ -329,17 +329,6 @@ extern int kptr_restrict;
 /* -------printk too much patch------ */
 #if defined CONFIG_LOG_TOO_MUCH_WARNING \
 	&& defined CONFIG_DYNAMIC_DEBUG
-#ifdef CONFIG_NO_LOG
-#define pr_emerg(fmt, ...) do {} while(0)
-#define pr_alert(fmt, ...) do {} while(0)
-#define pr_crit(fmt, ...) do {} while(0)
-#define pr_err(fmt, ...) do {} while(0)
-#define pr_warning(fmt, ...) do {} while(0)
-#define pr_warn pr_warning
-#define pr_notice(fmt, ...) do {} while(0)
-#define pr_info(fmt, ...) do {} while(0)
-#define pr_cont(fmt, ...) do {} while(0)
-#else
 #define pr_emerg(fmt, ...) \
 	dynamic_pr_emerg(KLOG_MODNAME fmt, ##__VA_ARGS__) \
 
@@ -381,10 +370,6 @@ extern int kptr_restrict;
 #define pr_info(fmt, ...) \
 	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
 #endif
-#define pr_cont(fmt, ...) \
-	printk(KERN_CONT fmt, ##__VA_ARGS__)
-#endif
-	
 #ifdef CONFIG_FK_LOG
 #define pr_no_emerg(fmt, ...)  				\
 ({							\
@@ -487,9 +472,6 @@ extern int kptr_restrict;
 #endif
 
 
-#ifdef CONFIG_NO_LOG
-#define pr_debug(fmt, ...) do {} while(0)
-#else
 /* If you are writing a driver, please use dev_dbg instead */
 #if defined(CONFIG_DYNAMIC_DEBUG)
 #include <linux/dynamic_debug.h>
@@ -503,7 +485,6 @@ extern int kptr_restrict;
 #else
 #define pr_debug(fmt, ...) \
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
-#endif
 #endif
 
 /*
