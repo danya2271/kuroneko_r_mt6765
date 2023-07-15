@@ -391,3 +391,18 @@ config BT_DRV_BUILD_IN
 	  This will build the bluetooth driver and the corresponding componenets
 	  into the kernel.
 	  If unsure say n
+	  
+config GPS_DRV_BUILD_IN
+	bool "Build GPS module in kernel"
+	help
+	  This will build the GPS driver and the corresponding componenets
+	  into the kernel.
+	  If unsure say n
+	  
+	  
+config FM_DRV_BUILD_IN
+	bool "Build FM module in kernel"
+	help
+	  This will build the FM driver and the corresponding componenets
+	  into the kernel.
+	  If unsure say n
