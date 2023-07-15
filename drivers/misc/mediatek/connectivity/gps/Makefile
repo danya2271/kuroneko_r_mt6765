@@ -49,7 +49,13 @@ ccflags-y += -I$(srctree)/drivers/devfreq
 ###############################################################################
 
 MODULE_NAME := gps_drv
+ifeq ($(CONFIG_GPS_DRV_BUILD_IN),y)
+$(warning $(MODULE_NAME) build-in boot.img)
+obj-y += $(MODULE_NAME).o
+else
+$(warning $(MODULE_NAME) is kernel module)
 obj-m += $(MODULE_NAME).o
+endif
 
 GPS_DRV_CONTROL_LNA := n
 SELECT_GPS_DL_DRV := n
