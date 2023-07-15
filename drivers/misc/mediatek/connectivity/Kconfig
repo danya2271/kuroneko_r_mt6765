@@ -383,3 +383,11 @@ config WLAN_DRV_BUILD_IN
 	  This will build the wlan driver and the corresponding componenets
 	  into the kernel.
 	  If unsure say n
+	  
+	  
+config BT_DRV_BUILD_IN
+	bool "Build Bluetooth module in kernel"
+	help
+	  This will build the bluetooth driver and the corresponding componenets
+	  into the kernel.
+	  If unsure say n
