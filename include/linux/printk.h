@@ -370,6 +370,7 @@ extern int kptr_restrict;
 #define pr_info(fmt, ...) \
 	printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
 #endif
+
 #ifdef CONFIG_FK_LOG
 #define pr_no_emerg( fmt, ... ) 	do { } while (0);
 #define pr_no_alert( fmt, ... )		do { } while (0);
@@ -381,14 +382,27 @@ extern int kptr_restrict;
 #define pr_no_debug( fmt, ... )		do { } while (0);
 
 #else
-#define pr_no_emerg( fmt, ... ) 	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_alert( fmt, ... ) 	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_crit( fmt, ... ) 		printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_err( fmt, ... )		printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_emerg(fmt, ...) 	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_alert(fmt, ...) 	printk(KERN_ALERT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_crit(fmt, ...) 		printk(KERN_CRIT pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_err(fmt, ...)		printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
 #define pr_no_warn 			pr_warning
-#define pr_no_notice( fmt, ... )	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_info( fmt, ... )		printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
-#define pr_no_debug( fmt, ... )		printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_notice(fmt, ...)	printk(KERN_NOTICE pr_fmt(fmt), ##__VA_ARGS__)
+#define pr_no_info(fmt, ...)		printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+#if defined(CONFIG_DYNAMIC_DEBUG)
+#include <linux/dynamic_debug.h>
+
+/* dynamic_pr_debug() uses pr_fmt() internally so we don't need it here */
+#define pr_no_debug(fmt, ...) \
+	dynamic_pr_debug(fmt, ##__VA_ARGS__)
+#elif defined(DEBUG)
+#define pr_no_debug(fmt, ...) \
+	printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#else
+#define pr_no_debug(fmt, ...) \
+	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#endif
+
 
 #endif
 
