@@ -38,7 +38,13 @@ endif
 ###############################################################################
 
 MODULE_NAME := bt_drv
+ifeq ($(CONFIG_BT_DRV_BUILD_IN),y)
+$(warning $(MODULE_NAME) build-in boot.img)
+obj-y += $(MODULE_NAME).o
+else
+$(warning $(MODULE_NAME) is kernel module)
 obj-m += $(MODULE_NAME).o
+endif
 
 ccflags-y += -D CREATE_NODE_DYNAMIC=1
 
