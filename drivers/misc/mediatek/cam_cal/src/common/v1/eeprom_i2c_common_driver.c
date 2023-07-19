@@ -1,6 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (c) 2019 MediaTek Inc.
+ * Copyright (C) 2016 MediaTek Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
  */
 #define PFX "CAM_CAL"
 #define pr_fmt(fmt) PFX "[%s] " fmt, __func__
@@ -58,7 +66,7 @@ static int Read_I2C_CAM_CAL(u16 a_u2Addr, u32 ui4_length, u8 *a_puBuff)
 
 
 	if (ui4_length > EEPROM_I2C_READ_MSG_LENGTH_MAX) {
-		pr_no_debug("exceed one transition %d bytes limitation\n",
+		no_printk("exceed one transition %d bytes limitation\n",
 			 EEPROM_I2C_READ_MSG_LENGTH_MAX);
 		return -1;
 	}
@@ -87,7 +95,7 @@ static int Read_I2C_CAM_CAL(u16 a_u2Addr, u32 ui4_length, u8 *a_puBuff)
 	spin_unlock(&g_spinLock);
 
 	if (i4RetValue != EEPROM_I2C_MSG_SIZE_READ) {
-		pr_no_debug("I2C read data failed!!\n");
+		no_printk("I2C read data failed!!\n");
 		return -1;
 	}
 
@@ -112,7 +120,7 @@ int iReadData_CAM_CAL(unsigned int ui4_offset,
 				(u16) u4CurrentOffset,
 				EEPROM_I2C_READ_MSG_LENGTH_MAX, pBuff);
 			if (i4RetValue != 0) {
-				pr_no_debug("I2C iReadData failed!!\n");
+				no_printk("I2C iReadData failed!!\n");
 				return -1;
 			}
 			u4IncOffset += EEPROM_I2C_READ_MSG_LENGTH_MAX;
@@ -124,7 +132,7 @@ int iReadData_CAM_CAL(unsigned int ui4_offset,
 			    Read_I2C_CAM_CAL(
 			    (u16) u4CurrentOffset, i4ResidueDataLength, pBuff);
 			if (i4RetValue != 0) {
-				pr_no_debug("I2C iReadData failed!!\n");
+				no_printk("I2C iReadData failed!!\n");
 				return -1;
 			}
 			u4IncOffset += i4ResidueDataLength;

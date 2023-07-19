@@ -1,7 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
 /*
- * Copyright (c) 2020 MediaTek Inc.
+ * Copyright (C) 2018 MediaTek Inc.
  * Copyright (C) 2021 XiaoMi, Inc.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See http://www.gnu.org/licenses/gpl-2.0.html for more details.
  */
 #include <linux/kernel.h>
 #include "cam_cal_list.h"
@@ -14,11 +22,9 @@ struct stCAM_CAL_LIST_STRUCT g_camCalList[] = {
 	{HYNIX_HI1337_I_SENSOR_ID, 0xA8, Common_read_region},
 	{HYNIX_HI1337_II_SENSOR_ID, 0xB0, Common_read_region},
 	{HYNIX_HI1337_III_SENSOR_ID, 0xA8, Common_read_region},
-	{HYNIX_HI1337_IIII_SENSOR_ID, 0xA8, Common_read_region},
 	{GC_GC5035_I_SENSOR_ID, 0xA2, Common_read_region},
 	{GC_GC5035_II_SENSOR_ID, 0xA2, Common_read_region},
 	{GC_GC5035_III_SENSOR_ID, 0xA2, Common_read_region},
-	{GC_GC5035_IIII_SENSOR_ID, 0xA2, Common_read_region},
 	/*  ADD before this line */
 	{0, 0, 0}       /*end of list */
 };
