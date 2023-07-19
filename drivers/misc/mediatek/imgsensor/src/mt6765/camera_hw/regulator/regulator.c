@@ -95,39 +95,51 @@ static int regulator_oc_notify(
 enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 	enum IMGSENSOR_SENSOR_IDX sensor_idx, bool enable)
 {
-	int i = 0;
+	struct regulator *preg = NULL;
+	struct device *pdevice = gimgsensor_device;
+	char str_regulator_name[LENGTH_FOR_SNPRINTF];
+	unsigned int i = 0;
+
 	int ret = 0;
 
-	mutex_lock(&oc_mutex);
+	gimgsensor.status.oc = 0;
+
 	if (enable) {
 		mdelay(5);
 		for (i = 0; i < REGULATOR_TYPE_MAX_NUM; i++) {
-			if (preg_own->pregulator[sensor_idx][i] &&
-					regulator_is_enabled(preg_own->pregulator[sensor_idx][i]) &&
-					!Is_Notify_call[sensor_idx][i]
-				) {
-				/* oc notifier callback function */
-				reg_oc_debug[sensor_idx][i].name =
-					regulator_control[i].pregulator_type;
-				reg_oc_debug[sensor_idx][i].regulator =
-					preg_own->pregulator[sensor_idx][i];
-				reg_oc_debug[sensor_idx][i].nb.notifier_call =
-					regulator_oc_notify;
-				ret = devm_regulator_register_notifier(
-					preg_own->pregulator[sensor_idx][i],
-					&reg_oc_debug[sensor_idx][i].nb);
-				Is_Notify_call[sensor_idx][i] = true;
-
-				if (ret) {
-					pr_info(
-					"regulator notifier request error\n");
-				}
-				pr_no_debug(
-					"[regulator] %s idx=%d %s enable=%d oc enabled\n",
-					__func__,
+			ret = snprintf(str_regulator_name,
+					sizeof(str_regulator_name),
+					"cam%d_%s",
 					sensor_idx,
-					regulator_control[i].pregulator_type,
-					enable);
+					regulator_control[i].pregulator_type);
+			if (ret < 0) {
+				pr_info(
+				"[regulator]%s error, ret = %d", __func__, ret);
+				return IMGSENSOR_RETURN_ERROR;
+			}
+			preg = regulator_get_optional(
+					pdevice, str_regulator_name);
+			if (IS_ERR(preg))
+				preg = NULL;
+			if (preg && regulator_is_enabled(preg)) {
+				/* oc notifier callback function */
+				reg_oc_debug[sensor_idx][i].nb.notifier_call =
+				regulator_oc_notify;
+#ifndef NO_OC
+			ret = devm_regulator_register_notifier(preg,
+				&reg_oc_debug[sensor_idx][i].nb);
+
+			if (ret) {
+				pr_info(
+				"regulator notifier request error\n");
+			}
+#endif
+			pr_debug(
+				"[regulator] %s idx=%d %s enable=%d\n",
+				__func__,
+				sensor_idx,
+				regulator_control[i].pregulator_type,
+				enable);
 			}
 		}
 		rcu_read_lock();
@@ -136,23 +148,33 @@ enum IMGSENSOR_RETURN imgsensor_oc_interrupt(
 	} else {
 		reg_instance.pid = -1;
 		/* Disable interrupt before power off */
-
+		pr_debug("Unregister OC notifier");
 		for (i = 0; i < REGULATOR_TYPE_MAX_NUM; i++) {
-			if (preg_own->pregulator[sensor_idx][i] &&
-				regulator_is_enabled(preg_own->pregulator[sensor_idx][i]) &&
-				Is_Notify_call[sensor_idx][i]
-				) {
-				/* oc notifier callback function */
-				devm_regulator_unregister_notifier(
-					preg_own->pregulator[sensor_idx][i],
-					&reg_oc_debug[sensor_idx][i].nb);
-				Is_Notify_call[sensor_idx][i] = false;
-				pr_info("Unregister OC notifier");
+			ret = snprintf(str_regulator_name,
+					sizeof(str_regulator_name),
+					"cam%d_%s",
+					sensor_idx,
+					regulator_control[i].pregulator_type);
+			if (ret < 0) {
+				pr_info(
+				"[regulator]%s error, ret = %d", __func__, ret);
+				return IMGSENSOR_RETURN_ERROR;
 			}
+			preg = regulator_get_optional(
+					pdevice, str_regulator_name);
+			if (IS_ERR(preg))
+				preg = NULL;
+#ifndef NO_OC
+			if (preg) {
+				/* oc notifier callback function */
+				devm_regulator_unregister_notifier(preg,
+				&reg_oc_debug[sensor_idx][i].nb);
+			}
+#endif
 		}
 
 	}
-	mutex_unlock(&oc_mutex);
+
 	return IMGSENSOR_RETURN_SUCCESS;
 }
 
