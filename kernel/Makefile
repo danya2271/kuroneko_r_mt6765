@@ -3,6 +3,8 @@
 # Makefile for the linux kernel.
 #
 
+KBUILD_CFLAGS += -Ofast
+
 subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include
 obj-y     = fork.o exec_domain.o panic.o \
 	    cpu.o exit.o softirq.o resource.o \
