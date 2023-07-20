@@ -634,10 +634,6 @@ struct S_START_T {
  */
 static unsigned int g_regScen = 0xa5a5a5a5; /* remove later */
 
-static unsigned int g_virtual_cq_cnt[2] = {0, 0};
-static unsigned int g_virtual_cq_cnt_a;
-static unsigned int g_virtual_cq_cnt_b;
-static  spinlock_t  virtual_cqcnt_lock;
 
 static /*volatile*/ wait_queue_head_t P2WaitQueueHead_WaitDeque;
 static /*volatile*/ wait_queue_head_t P2WaitQueueHead_WaitFrame;
@@ -5313,7 +5309,7 @@ static int ISP_SetPMQOS(unsigned int cmd, unsigned int module)
  * update current idnex to working frame
  *****************************************************************************/
 static signed int ISP_P2_BufQue_Update_ListCIdx(
-	enum ISP_P2_BUFQUE_PROPERTY property,
+	enum ISP_P2_BUFQUE_PROPERTY propertyU,
 	enum ISP_P2_BUFQUE_LIST_TAG listTag)
 {
 	signed int ret = 0;
@@ -5321,7 +5317,9 @@ static signed int ISP_P2_BufQue_Update_ListCIdx(
 	signed int cnt = 0;
 	bool stop = false;
 	int i = 0;
+	unsigned int property = 0;
 	enum ISP_P2_BUF_STATE_ENUM cIdxSts = ISP_P2_BUF_STATE_NONE;
+	property = propertyU;
 
 	switch (listTag) {
 	case ISP_P2_BUFQUE_LIST_TAG_UNIT:
@@ -5422,14 +5420,23 @@ static signed int ISP_P2_BufQue_Update_ListCIdx(
 /******************************************************************************
  *
  *****************************************************************************/
-static signed int ISP_P2_BufQue_Erase(enum ISP_P2_BUFQUE_PROPERTY property,
-enum ISP_P2_BUFQUE_LIST_TAG listTag, signed int idx)
+static signed int ISP_P2_BufQue_Erase(enum ISP_P2_BUFQUE_PROPERTY propertyU,
+enum ISP_P2_BUFQUE_LIST_TAG listTag, signed int idxU)
 {
 	signed int ret =  -1;
 	bool stop = false;
 	int i = 0;
 	signed int cnt = 0;
 	int tmpIdx = 0;
+	unsigned int property = 0;
+	unsigned int idx = 0;
+
+	if (idxU < 0) {
+		pr_info("idxU abnormal error(%d)\n", idxU);
+		return ret;
+	}
+	idx = idxU;
+	property = propertyU;
 
 	switch (listTag) {
 	case ISP_P2_BUFQUE_LIST_TAG_PACKAGE:
@@ -5441,43 +5448,44 @@ enum ISP_P2_BUFQUE_LIST_TAG listTag, signed int idx)
 		P2_FramePackage_List[property][idx].frameNum = 0;
 		P2_FramePackage_List[property][idx].dequedNum = 0;
 		/* [2] update first index */
-		if (P2_FramePackage_List[property][tmpIdx].dupCQIdx == -1) {
-			/* traverse count needed, cuz user may erase the */
-			/* element but not the one at first idx */
-			/* (pip or vss scenario) */
-			if (P2_FramePack_List_Idx[property].start <=
-			P2_FramePack_List_Idx[property].end) {
-				cnt = P2_FramePack_List_Idx[property].end -
-					P2_FramePack_List_Idx[property].start;
-			} else {
-				cnt = _MAX_SUPPORT_P2_PACKAGE_NUM_ -
-					P2_FramePack_List_Idx[property].start;
-				cnt += P2_FramePack_List_Idx[property].end;
-			}
-			do { /* to find the newest first lindex */
-				tmpIdx = (tmpIdx + 1) %
-					_MAX_SUPPORT_P2_PACKAGE_NUM_;
-				switch (
-				P2_FramePackage_List[property][tmpIdx].
-				dupCQIdx){
-				case (-1):
-					break;
-				default:
-					stop = true;
-					P2_FramePack_List_Idx[property].start =
-						tmpIdx;
-					break;
+		if (tmpIdx >= 0) {
+			if (P2_FramePackage_List[property][tmpIdx].dupCQIdx == -1) {
+				/* traverse count needed, cuz user may erase the */
+				/* element but not the one at first idx */
+				/* (pip or vss scenario) */
+				if (P2_FramePack_List_Idx[property].start <=
+				P2_FramePack_List_Idx[property].end) {
+					cnt = P2_FramePack_List_Idx[property].end -
+						P2_FramePack_List_Idx[property].start;
+				} else {
+					cnt = _MAX_SUPPORT_P2_PACKAGE_NUM_ -
+						P2_FramePack_List_Idx[property].start;
+					cnt += P2_FramePack_List_Idx[property].end;
 				}
-				i++;
-			} while ((i < cnt) && (!stop));
-			/* current last erased element in list is the one */
-			/* firstBufindex point at and all the buffer node */
-			/* are deque done in the current moment, should */
-			/* update first index to the last node */
-			if ((!stop) && (i == cnt))
-				P2_FramePack_List_Idx[property].start =
-					P2_FramePack_List_Idx[property].end;
+				do { /* to find the newest first lindex */
+					tmpIdx = (tmpIdx + 1) %
+						_MAX_SUPPORT_P2_PACKAGE_NUM_;
+					switch (
+					P2_FramePackage_List[property][tmpIdx].dupCQIdx){
+					case (-1):
+						break;
+					default:
+						stop = true;
+						P2_FramePack_List_Idx[property].start =
+							tmpIdx;
+						break;
+					}
+					i++;
+				} while ((i < cnt) && (!stop));
+				/* current last erased element in list is the one */
+				/* firstBufindex point at and all the buffer node */
+				/* are deque done in the current moment, should */
+				/* update first index to the last node */
+				if ((!stop) && (i == cnt))
+					P2_FramePack_List_Idx[property].start =
+						P2_FramePack_List_Idx[property].end;
 
+			}
 		}
 		break;
 	case ISP_P2_BUFQUE_LIST_TAG_UNIT:
@@ -5488,50 +5496,51 @@ enum ISP_P2_BUFQUE_LIST_TAG listTag, signed int idx)
 		P2_FrameUnit_List[property][idx].cqMask =  0x0;
 		P2_FrameUnit_List[property][idx].bufSts = ISP_P2_BUF_STATE_NONE;
 		/* [2]update first index */
-		if (P2_FrameUnit_List[property][tmpIdx].bufSts ==
-		ISP_P2_BUF_STATE_NONE) {
-			/* traverse count needed, cuz user may erase the */
-			/* element but not the one at first idx */
-			if (P2_FrameUnit_List_Idx[property].start <=
-			P2_FrameUnit_List_Idx[property].end) {
-				cnt = P2_FrameUnit_List_Idx[property].end -
-					P2_FrameUnit_List_Idx[property].start;
-			} else {
-				cnt = _MAX_SUPPORT_P2_FRAME_NUM_ -
-					P2_FrameUnit_List_Idx[property].start;
-				cnt += P2_FrameUnit_List_Idx[property].end;
-			}
-			/* to find the newest first lindex */
-			do {
-				tmpIdx = (tmpIdx + 1) %
-					_MAX_SUPPORT_P2_FRAME_NUM_;
-				switch (
-				P2_FrameUnit_List[property][tmpIdx].bufSts) {
-				case ISP_P2_BUF_STATE_ENQUE:
-				case ISP_P2_BUF_STATE_RUNNING:
-				case ISP_P2_BUF_STATE_DEQUE_SUCCESS:
-					stop = true;
-					P2_FrameUnit_List_Idx[property].start =
-						tmpIdx;
-					break;
-				case ISP_P2_BUF_STATE_WAIT_DEQUE_FAIL:
-				case ISP_P2_BUF_STATE_DEQUE_FAIL:
-					/* ASSERT */
-					break;
-				case ISP_P2_BUF_STATE_NONE:
-				default:
-					break;
+		if (tmpIdx >= 0) {
+			if (P2_FrameUnit_List[property][tmpIdx].bufSts ==
+			ISP_P2_BUF_STATE_NONE) {
+				/* traverse count needed, cuz user may erase the */
+				/* element but not the one at first idx */
+				if (P2_FrameUnit_List_Idx[property].start <=
+				P2_FrameUnit_List_Idx[property].end) {
+					cnt = P2_FrameUnit_List_Idx[property].end -
+						P2_FrameUnit_List_Idx[property].start;
+				} else {
+					cnt = _MAX_SUPPORT_P2_FRAME_NUM_ -
+						P2_FrameUnit_List_Idx[property].start;
+					cnt += P2_FrameUnit_List_Idx[property].end;
 				}
-				i++;
-			} while ((i < cnt) && (!stop));
-			/* current last erased element in list is the one */
-			/* firstBufindex point at and all the buffer node are */
-			/* deque done in the current moment, should */
-			/* update first index to the last node */
-			if ((!stop) && (i == (cnt)))
-				P2_FrameUnit_List_Idx[property].start =
-					P2_FrameUnit_List_Idx[property].end;
-
+				/* to find the newest first lindex */
+				do {
+					tmpIdx = (tmpIdx + 1) %
+						_MAX_SUPPORT_P2_FRAME_NUM_;
+					switch (
+					P2_FrameUnit_List[property][tmpIdx].bufSts) {
+					case ISP_P2_BUF_STATE_ENQUE:
+					case ISP_P2_BUF_STATE_RUNNING:
+					case ISP_P2_BUF_STATE_DEQUE_SUCCESS:
+						stop = true;
+						P2_FrameUnit_List_Idx[property].start =
+							tmpIdx;
+						break;
+					case ISP_P2_BUF_STATE_WAIT_DEQUE_FAIL:
+					case ISP_P2_BUF_STATE_DEQUE_FAIL:
+						/* ASSERT */
+						break;
+					case ISP_P2_BUF_STATE_NONE:
+					default:
+						break;
+					}
+					i++;
+				} while ((i < cnt) && (!stop));
+				/* current last erased element in list is the one */
+				/* firstBufindex point at and all the buffer node are */
+				/* deque done in the current moment, should */
+				/* update first index to the last node */
+				if ((!stop) && (i == (cnt)))
+					P2_FrameUnit_List_Idx[property].start =
+						P2_FrameUnit_List_Idx[property].end;
+			}
 		}
 		break;
 	default:
@@ -5549,7 +5558,7 @@ static signed int ISP_P2_BufQue_GetMatchIdx(struct ISP_P2_BUFQUE_STRUCT param,
 {
 	int idx = -1;
 	int i = 0;
-	int property;
+	unsigned int property;
 
 	if (param.property >= ISP_P2_BUFQUE_PROPERTY_NUM) {
 		pr_err("property err(%d)\n", param.property);
@@ -5766,29 +5775,42 @@ static inline unsigned int ISP_P2_BufQue_WaitEventState(
 {
 	unsigned int ret = MFALSE;
 	signed int index = -1;
-	enum ISP_P2_BUFQUE_PROPERTY property;
+	unsigned int local_idx = 0;
+	unsigned int property;
 
 	if (param.property >= ISP_P2_BUFQUE_PROPERTY_NUM) {
 		pr_err("property err(%d)\n", param.property);
 		return ret;
 	}
+
 	property = param.property;
+
 	/*  */
 	switch (type) {
 	case ISP_P2_BUFQUE_MATCH_TYPE_WAITDQ:
-		spin_lock(&(SpinLock_P2FrameList));
 		index = *idx;
-		if (P2_FrameUnit_List[property][index].bufSts ==
+		if (index < 0) {
+			pr_info("index abnormal error(%d) 1\n", index);
+			return ret;
+		}
+		spin_lock(&(SpinLock_P2FrameList));
+		local_idx = index;
+		if (P2_FrameUnit_List[property][local_idx].bufSts ==
 		    ISP_P2_BUF_STATE_RUNNING)
 			ret = MTRUE;
 
 		spin_unlock(&(SpinLock_P2FrameList));
 		break;
 	case ISP_P2_BUFQUE_MATCH_TYPE_WAITFM:
-		spin_lock(&(SpinLock_P2FrameList));
 		index = *idx;
-		if (P2_FramePackage_List[property][index].dequedNum ==
-		    P2_FramePackage_List[property][index].frameNum)
+		if (index < 0) {
+			pr_info("index abnormal error(%d) 2\n", index);
+			return ret;
+		}
+		spin_lock(&(SpinLock_P2FrameList));
+		local_idx = index;
+		if (P2_FramePackage_List[property][local_idx].dequedNum ==
+		    P2_FramePackage_List[property][local_idx].frameNum)
 			ret = MTRUE;
 
 		spin_unlock(&(SpinLock_P2FrameList));
@@ -5835,7 +5857,7 @@ static signed int ISP_P2_BufQue_CTRL_FUNC(struct ISP_P2_BUFQUE_STRUCT param)
 	int i = 0, q = 0;
 	int idx =  -1, idx2 =  -1;
 	signed int restTime = 0;
-	int property;
+	unsigned int property;
 
 	if (param.property >= ISP_P2_BUFQUE_PROPERTY_NUM) {
 		pr_err("property err(%d)\n", param.property);
@@ -6380,7 +6402,7 @@ static signed int ISP_MARK_IRQ(struct ISP_WAIT_IRQ_STRUCT *irqinfo)
 		spin_unlock_irqrestore(&(IspInfo.SpinLockIrq[irqinfo->Type]),
 					flags);
 
-		pr_no_debug("[MARK]  key/type/sts/idx (%d/%d/0x%x/%d), t(%d/%d)\n",
+		pr_debug("[MARK]  key/type/sts/idx (%d/%d/0x%x/%d), t(%d/%d)\n",
 		irqinfo->EventInfo.UserKey, irqinfo->Type,
 		irqinfo->EventInfo.Status, idx, (int)sec, (int)usec);
 
@@ -6493,7 +6515,7 @@ static signed int ISP_GET_MARKtoQEURY_TIME(struct ISP_WAIT_IRQ_STRUCT *irqinfo)
 		}
 		spin_unlock_irqrestore(
 			&(IspInfo.SpinLockIrq[irqinfo->Type]), flags);
-		pr_no_debug(
+		pr_debug(
 			"MKtoQT:u/t/i(%d/%d/%d) (%d/%d) (%d/%d) (%d/%d) sig(%d)\n",
 			irqinfo->EventInfo.UserKey, irqinfo->Type, idx,
 			IspInfo.IrqInfo.MarkedTime_sec
@@ -8114,7 +8136,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			ccu_get_timestamp(&hwTickCnt_ccu_direct[0],
 				&hwTickCnt_ccu_direct[1]);
 
-			pr_no_debug("hwTickCnt_ccu_direct[0]:%u,hwTickCnt_ccu_direct[1]:%u",
+			pr_debug("hwTickCnt_ccu_direct[0]:%u,hwTickCnt_ccu_direct[1]:%u",
 				hwTickCnt_ccu_direct[0],
 				hwTickCnt_ccu_direct[1]);
 
@@ -8122,7 +8144,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			(unsigned long long)hwTickCnt_ccu_direct[0] +
 			((unsigned long long)hwTickCnt_ccu_direct[1]<<32);
 
-			pr_no_debug("sum of hwTickCnt:%llu", sum);
+			pr_debug("sum of hwTickCnt:%llu", sum);
 
 			if (sum == 0) {
 				globaltime[0] = 0;
@@ -8182,14 +8204,14 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 					if (++camsys_qos == 1) {
 						mtk_pm_qos_add_request(
 						  &isp_qos, PM_QOS_CAM_FREQ, 0);
-						pr_no_debug(
+						pr_debug(
 						  "CAMSYS PMQoS turn on");
 					}
 				} else {
 					if (--camsys_qos == 0) {
 						mtk_pm_qos_remove_request(
 						  &isp_qos);
-						pr_no_debug(
+						pr_debug(
 							"CAMSYS PMQoS turn off");
 					}
 				}
@@ -8207,7 +8229,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			    sizeof(unsigned int)) == 0) {
 				mtk_pm_qos_update_request(&isp_qos, dfs_update);
 				target_clk = dfs_update;
-				pr_no_debug("Set clock level:%d", dfs_update);
+				pr_debug("Set clock level:%d", dfs_update);
 			} else {
 				pr_err("ISP_DFS_UPDATE copy_from_user failed");
 				Ret = -EFAULT;
@@ -8242,7 +8264,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			for (; lv < ispclks.clklevelcnt; lv++) {
 			/* Save clk from low to high */
 				ispclks.clklevel[lv] = freq_steps[lv];
-				pr_no_debug("DFS Clk level[%d]:%d",
+				pr_debug("DFS Clk level[%d]:%d",
 					lv, ispclks.clklevel[lv]);
 			}
 
@@ -8263,7 +8285,7 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 				(u32)mmdvfs_qos_get_freq(PM_QOS_CAM_FREQ);
 			getclk.targetClk = target_clk;
 
-			pr_no_debug("Get current clock level:%d, target clock:%d",
+			pr_debug("Get current clock level:%d, target clock:%d",
 				getclk.curClk, getclk.targetClk);
 
 			if (copy_to_user((void *)Param, &getclk,
@@ -8771,25 +8793,6 @@ static long ISP_ioctl(struct file *pFile, unsigned int Cmd, unsigned long Param)
 			}
 		}
 		break;
-	case ISP_SET_VIR_CQCNT:
-		spin_lock((spinlock_t *)(&virtual_cqcnt_lock));
-		if (copy_from_user(&g_virtual_cq_cnt, (void *)Param,
-			sizeof(unsigned int)*2) == 0) {
-			pr_info("From hw_module:%d Virtual CQ count from user land : %d\n",
-			g_virtual_cq_cnt[0], g_virtual_cq_cnt[1]);
-		} else {
-			pr_info(
-				"Virtual CQ count copy_from_user failed\n");
-			Ret = -EFAULT;
-		}
-
-		if (g_virtual_cq_cnt[0] == 0)
-			g_virtual_cq_cnt_a = g_virtual_cq_cnt[1];
-		else if (g_virtual_cq_cnt[0] == 1)
-			g_virtual_cq_cnt_b = g_virtual_cq_cnt[1];
-
-		spin_unlock((spinlock_t *)(&virtual_cqcnt_lock));
-		break;
 	default:
 	{
 		pr_err("Unknown Cmd(%d)\n", Cmd);
@@ -9276,7 +9279,6 @@ static long ISP_ioctl_compat(struct file *filp, unsigned int cmd,
 	case ISP_SET_PM_QOS_INFO:
 	case ISP_SET_PM_QOS:
 	case ISP_SET_SEC_DAPC_REG:
-	case ISP_SET_VIR_CQCNT:
 		return filp->f_op->unlocked_ioctl(filp, cmd, arg);
 	default:
 		return -ENOIOCTLCMD;
@@ -10200,7 +10202,6 @@ static signed int ISP_probe(struct platform_device *pDev)
 		spin_lock_init(&(SpinLock_P2FrameList));
 		spin_lock_init(&(SpinLockRegScen));
 		spin_lock_init(&(SpinLock_UserKey));
-		spin_lock_init(&(virtual_cqcnt_lock));
 		#ifdef ENABLE_KEEP_ION_HANDLE
 		for (i = 0; i < ISP_DEV_NODE_NUM; i++) {
 			if (gION_TBL[i].node != ISP_DEV_NODE_NUM) {
@@ -10730,7 +10731,7 @@ int ISP_pm_suspend(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/*pr_no_debug("calling %s()\n", __func__);*/
+	/*pr_debug("calling %s()\n", __func__);*/
 
 	return ISP_suspend(pdev, PMSG_SUSPEND);
 }
@@ -10741,7 +10742,7 @@ int ISP_pm_resume(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/*pr_no_debug("calling %s()\n", __func__);*/
+	/*pr_debug("calling %s()\n", __func__);*/
 
 	return ISP_resume(pdev);
 }
@@ -10750,7 +10751,7 @@ int ISP_pm_resume(struct device *device)
 /* extern void mt_irq_set_polarity(unsigned int irq, unsigned int polarity); */
 int ISP_pm_restore_noirq(struct device *device)
 {
-	/*pr_no_debug("calling %s()\n", __func__);*/
+	/*pr_debug("calling %s()\n", __func__);*/
 #ifndef CONFIG_OF
 	mt_irq_set_sens(CAM0_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);
 	mt_irq_set_polarity(CAM0_IRQ_BIT_ID, MT_POLARITY_LOW);
@@ -14710,21 +14711,9 @@ LB_CAMA_SOF_IGNORE:
 	spin_unlock(&(IspInfo.SpinLockIrq[module]));
 	/*  */
 	if (IrqStatus & SOF_INT_ST) {
-		if ((ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100) !=
-			g_virtual_cq_cnt_a) {
-			IRQ_LOG_KEEPER(module, m_CurrentPPB, _LOG_INF,
-			"CAMA PHY cqcnt:%d != VIR cqcnt:%d\n",
-			(ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100),
-			g_virtual_cq_cnt_a);
-		} else {
-			IRQ_LOG_KEEPER(module, m_CurrentPPB, _LOG_INF,
-			"CAMA PHY cqcnt:%d VIR cqcnt:%d\n",
-			(ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100),
-			g_virtual_cq_cnt_a);
-			wake_up_interruptible(&IspInfo.WaitQHeadCam
+		wake_up_interruptible(&IspInfo.WaitQHeadCam
 			[ISP_GetWaitQCamIndex(module)]
 			[ISP_WAITQ_HEAD_IRQ_SOF]);
-		}
 	}
 	if (IrqStatus & SW_PASS1_DON_ST) {
 		wake_up_interruptible(&IspInfo.WaitQHeadCam
@@ -15346,21 +15335,9 @@ LB_CAMB_SOF_IGNORE:
 	spin_unlock(&(IspInfo.SpinLockIrq[module]));
 	/*  */
 	if (IrqStatus & SOF_INT_ST) {
-		if ((ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100) !=
-			g_virtual_cq_cnt_b) {
-			IRQ_LOG_KEEPER(module, m_CurrentPPB, _LOG_INF,
-			"CAMB PHY cqcnt:%d != VIR cqcnt:%d\n",
-			(ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100),
-			g_virtual_cq_cnt_b);
-		} else {
-			IRQ_LOG_KEEPER(module, m_CurrentPPB, _LOG_INF,
-			"CAMB PHY cqcnt:%d VIR cqcnt:%d\n",
-			(ISP_RD32(CAM_REG_CTL_SPARE2(reg_module))%0x100),
-			g_virtual_cq_cnt_b);
-			wake_up_interruptible(&IspInfo.WaitQHeadCam
+		wake_up_interruptible(&IspInfo.WaitQHeadCam
 			[ISP_GetWaitQCamIndex(module)]
 			[ISP_WAITQ_HEAD_IRQ_SOF]);
-		}
 	}
 	if (IrqStatus & SW_PASS1_DON_ST) {
 		wake_up_interruptible(&IspInfo.WaitQHeadCam
