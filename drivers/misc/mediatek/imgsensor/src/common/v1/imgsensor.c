@@ -2935,23 +2935,38 @@ static ssize_t imgsensor_name_show(struct device *dev, struct device_attribute *
 				}
 			}
 
-			pr_info("[chenxy] i:%d\n", i);
+		pr_info("[chenxy] i:%d\n", i);
+		    for(j=0; j < i; j++) {
+			if(!strcmp("hynix_hi1337_i", dst[j]) || !strcmp("hynix_hi1337_ii", dst[j]) || !strcmp("hynix_hi1337_iii", dst[j]) || !strcmp("hynix_hi1337_iiii", dst[j])){
+			    num1 = sprintf(buf, "WIDE=%s\n", dst[j]);
+			    no_printk("[chenxy] WIDE=%s\n", dst[j]);
+			    break;
+			}
+		    }
 
-			for(j=0; j < i; j++) {
-				if(!strcmp("hynix_hi1337_i", dst[j]) || !strcmp("hynix_hi1337_ii", dst[j]) || !strcmp("hynix_hi1337_iii", dst[j]) || !strcmp("hynix_hi1337_iiii", dst[j])){
-					num1 = sprintf(buf, "WIDE=%s\n", dst[j]);
-					pr_info("[chenxy] WIDE=%s\n", dst[j]);
-					break;
-				}
+		    for(j=0; j < i; j++) {
+			if(!strcmp("gc_gc5035_i", dst[j]) || !strcmp("gc_gc5035_ii", dst[j]) || !strcmp("gc_gc5035_iii", dst[j]) || !strcmp("gc_gc5035_iiii", dst[j]) || !strcmp("hynix_hi1337_ii", dst[j])){
+			    num2 = sprintf(buf + num1, "FRONT=%s\n", dst[j]);
+			    no_printk("[chenxy] FRONT=%s\n", dst[j]);
+			    break;
 			}
-			
-			for(j=0; j < i; j++) {
-				if(!strcmp("gc_gc5035_i", dst[j]) || !strcmp("gc_gc5035_ii", dst[j]) || !strcmp("gc_gc5035_iii", dst[j]) || !strcmp("gc_gc5035_iiii", dst[j])){
-					num2 = sprintf(buf + num1, "FRONT=%s\n", dst[j]);
-					pr_info("[chenxy] FRONT=%s\n", dst[j]);
-					break;
-				}
+		    }
+
+		    for(j=0; j < i; j++) {
+			if(!strcmp("hynix_hi259_i", dst[j]) || !strcmp("hynix_hi259_ii", dst[j]) || !strcmp("hynix_hi259_iii", dst[j]) || !strcmp("hynix_hi259_iv", dst[j])){
+			    num3 = sprintf(buf+num1+num2, "MACRO=%s\n", dst[j]);
+			    no_printk("[chenxy] MACRO=%s\n", dst[j]);
+			    break;
 			}
+		    }
+
+		    for(j=0; j < i; j++) {
+			if(!strcmp("ov_ov02b_i", dst[j]) || !strcmp("gc_gc02m1_ii", dst[j]) || !strcmp("ov_ov02b_iii", dst[j])){
+			    num4 = sprintf(buf+num1+num2+num3, "DEPTH=%s\n", dst[j]);
+			    no_printk("[chenxy] DEPTH=%s\n", dst[j]);
+			    break;
+			}
+		    }
 
 		} else {
 			pr_info("[chenxy] imgsensorname is NULL");
