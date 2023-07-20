@@ -27,7 +27,7 @@ MODULE_PARM_DESC(egn_debug, " activates debug info");
 
 #define MyTag "[STALN]"
 #define LOG_VRB(format, args...)				 \
-	pr_no_debug(MyTag "[%s] " format, __func__, ##args)
+	pr_debug(MyTag "[%s] " format, __func__, ##args)
 
 #define LOG_DBG(format, args...)				 \
 	do {							 \

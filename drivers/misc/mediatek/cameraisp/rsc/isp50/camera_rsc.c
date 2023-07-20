@@ -152,10 +152,10 @@ struct RSC_CLK_STRUCT rsc_clk;
 #define MyTag "[RSC]"
 #define IRQTag "KEEPER"
 
-#define LOG_VRB(format, args...) pr_no_debug(MyTag format, ##args)
+#define LOG_VRB(format, args...) pr_debug(MyTag format, ##args)
 
 #ifdef RSC_DEBUG_USE
-#define LOG_DBG(format, args...) pr_no_debug(MyTag format, ##args)
+#define LOG_DBG(format, args...) pr_debug(MyTag format, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
@@ -1256,7 +1256,7 @@ static inline void RSC_Prepare_Enable_ccf_clock(void)
 	int ret;
 	/* open order:CG_SCP_SYS_MM0>CG_MM_SMI_COMMON>CG_SCP_SYS_ISP>RSC clk */
 #ifdef CONFIG_MTK_SMI_EXT
-	smi_bus_prepare_enable(SMI_LARB8_REG_INDX, "camera_rsc", true);
+	smi_bus_prepare_enable(SMI_LARB8, "camera_rsc");
 #endif
 	ret = clk_prepare_enable(rsc_clk.CG_IPESYS_RSC);
 	if (ret)
@@ -1269,7 +1269,7 @@ static inline void RSC_Disable_Unprepare_ccf_clock(void)
 	/* close order:RSC clk>CG_SCP_SYS_ISP>CG_MM_SMI_COMMON>CG_SCP_SYS_MM0 */
 	clk_disable_unprepare(rsc_clk.CG_IPESYS_RSC);
 #ifdef CONFIG_MTK_SMI_EXT
-	smi_bus_disable_unprepare(SMI_LARB8_REG_INDX, "camera_rsc", true);
+	smi_bus_disable_unprepare(SMI_LARB8, "camera_rsc");
 #endif
 }
 #endif
@@ -2881,7 +2881,7 @@ int RSC_pm_resume(struct device *device)
 #endif
 int RSC_pm_restore_noirq(struct device *device)
 {
-	pr_no_debug("calling %s()\n", __func__);
+	pr_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 /*	mt_irq_set_sens(RSC_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);*/
 /*	mt_irq_set_polarity(RSC_IRQ_BIT_ID, MT_POLARITY_LOW);*/
