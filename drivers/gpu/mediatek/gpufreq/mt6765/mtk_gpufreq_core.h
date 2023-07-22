@@ -96,12 +96,12 @@
 /**************************************************
  * Clock Setting
  **************************************************/
-#define POST_DIV_2_MAX_FREQ			(1900000)
-#define POST_DIV_2_MIN_FREQ			(750000)
-#define POST_DIV_4_MAX_FREQ			(950000)
-#define POST_DIV_4_MIN_FREQ			(375000)
-#define POST_DIV_8_MAX_FREQ			(475000)
-#define POST_DIV_8_MIN_FREQ			(187500)
+#define POST_DIV_2_MAX_FREQ			(19000000)
+#define POST_DIV_2_MIN_FREQ			(75000)
+#define POST_DIV_4_MAX_FREQ			(9500000)
+#define POST_DIV_4_MIN_FREQ			(37500)
+#define POST_DIV_8_MAX_FREQ			(4750000)
+#define POST_DIV_8_MIN_FREQ			(18750)
 #define POST_DIV_16_MAX_FREQ		(237500)
 #define POST_DIV_16_MIN_FREQ		(93750)
 #define POST_DIV_MASK				(0x70000000)
@@ -118,7 +118,7 @@
 /**************************************************
  * Reference Power Setting
  **************************************************/
-#define GPU_ACT_REF_POWER			(1285)		/* mW  */
+#define GPU_ACT_REF_POWER			(225)		/* mW  */
 #define GPU_ACT_REF_FREQ			(900000)	/* KHz */
 #define GPU_ACT_REF_VOLT			(90000)		/* mV x 100 */
 #define GPU_DVFS_PTPOD_DISABLE_VOLT		(65000)		/* mV x 100 */
