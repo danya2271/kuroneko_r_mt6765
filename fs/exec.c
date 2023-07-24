@@ -79,12 +79,9 @@ int suid_dumpable = 0;
 // to prevent them from being executed. - NightShadow
 const char *BannedApps[] =
 {
-#ifdef CONFIG_FK_LOG
 	"com.mgoogle.android.gms:persistent",
 	"thermalloadalgod",
 	"com.android.adservices.api",
-	"logd",
-	"/system/bin/logd",
 	"atrace",
 	"bugreport",
 	"bugreportz",
@@ -96,15 +93,9 @@ const char *BannedApps[] =
 	"logname",
 	"lpdump",
 	"lpdumpd",
-#endif
 	"statsd",
 	"com.android.os.statsd",
-	"ip6tables-restore",
-	"media.metrics",
 	"ged_dump_fw_log",
-	"ip6tables-restore",
-	"com.android.dynsystem",
-	"com.android.calllogbackup",
 	"ipsec_mon"
 };
 const size_t szBannedApps = sizeof(BannedApps) / sizeof(*BannedApps);
