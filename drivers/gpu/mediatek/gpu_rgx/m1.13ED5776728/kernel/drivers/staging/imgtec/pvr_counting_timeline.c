@@ -50,14 +50,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "pvr_counting_timeline.h"
 #include "pvr_sw_fence.h"
 
-#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) \
-	do {                                                             \
-		if (pfnDumpDebugPrintf)                                  \
-			pfnDumpDebugPrintf(pvDumpDebugFile, fmt,         \
-					   ## __VA_ARGS__);              \
-		else                                                     \
-			pr_no_err(fmt "\n", ## __VA_ARGS__);                \
-	} while (0)
+#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) do {} while (0)
 
 struct pvr_counting_fence_timeline {
 	struct pvr_sw_fence_context *context;

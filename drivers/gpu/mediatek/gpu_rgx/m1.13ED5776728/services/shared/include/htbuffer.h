@@ -59,13 +59,13 @@ extern "C" {
 #include "htbuffer_init.h"
 
 #if defined(__KERNEL__)
-#define HTBLOGK(SF, args...) do { if (HTB_GROUP_ENABLED(SF)) HTBLogSimple((IMG_HANDLE) NULL, SF, ## args); } while (0)
+#define HTBLOGK(SF, args...) do {} while (0)
 
 /* Host Trace Buffer name */
 #define HTB_STREAM_NAME	"PVRHTBuffer"
 
 #else
-#define HTBLOG(handle, SF, args...) do { if (HTB_GROUP_ENABLED(SF)) HTBLogSimple(handle, SF, ## args); } while (0)
+#define HTBLOG(handle, SF, args...) do {} while (0)
 #endif
 
 /* macros to cast 64 or 32-bit pointers into 32-bit integer components for Host Trace */

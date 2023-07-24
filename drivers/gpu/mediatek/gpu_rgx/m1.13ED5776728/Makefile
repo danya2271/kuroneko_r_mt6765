@@ -12,8 +12,6 @@ else ifeq ($(MTK_PLATFORM),mt6739)
 	ccflags-y += -DCONFIG_MACH_MT6739
 endif
 
-ccflags-$(CONFIG_MTK_TINYSYS_SSPM_SUPPORT) += -DSSPM_DEBUG
-
 ifeq ($(word 2,$(MTK_GPU_VERSION)),marlowe)
 	ECO := v2
 	ccflags-y += -DMTCMOS_MFG3

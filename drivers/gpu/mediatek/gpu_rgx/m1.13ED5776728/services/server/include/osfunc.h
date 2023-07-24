@@ -43,7 +43,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #ifdef DEBUG_RELEASE_BUILD
 #pragma optimize( "", off )
-#define DEBUG		1
+#define DEBUG		0
 #endif
 
 #ifndef __OSFUNC_H__

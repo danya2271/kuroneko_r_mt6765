@@ -75,14 +75,7 @@ static struct kmem_cache *pvr_fence_cache;
 static DEFINE_MUTEX(pvr_fence_cache_mutex);
 static u32 pvr_fence_cache_refcount;
 
-#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) \
-	do {                                                             \
-		if (pfnDumpDebugPrintf)                                  \
-			pfnDumpDebugPrintf(pvDumpDebugFile, fmt,         \
-					   ## __VA_ARGS__);              \
-		else                                                     \
-			pr_no_err(fmt "\n", ## __VA_ARGS__);                \
-	} while (0)
+#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) do {} while (0)
 
 static inline void
 pvr_fence_sync_signal(struct pvr_fence *pvr_fence, u32 fence_sync_flags)

@@ -314,55 +314,120 @@ IMG_EXPORT void IMG_CALLCONV PVRSRVDebugPrintfDumpCCB(void);
 
 #endif /* defined(PVRSRV_NEED_PVR_DPF) */
 
-#define PVR_DPF_FUNC__(lvl, message, ...) do {} while(0)
+#define PVR_DPF_FUNC__(lvl, message, ...) PVR_DPF((lvl, "%s: " message, __func__, ##__VA_ARGS__))
 #define PVR_DPF_FUNC(x) PVR_DPF_FUNC__ x
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_RETURN_IF_ERROR macro.
  */
-#define PVR_RETURN_IF_ERROR(_rc) do {} while(0)
+#define PVR_RETURN_IF_ERROR(_rc) do \
+	{ if (unlikely(_rc != PVRSRV_OK)) { \
+		return _rc; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_RETURN_IF_FALSE macro.
  */
-#define PVR_RETURN_IF_FALSE(_expr, _rc) do {} while(0)
+#define PVR_RETURN_IF_FALSE(_expr, _rc) do \
+	{ if (unlikely(!(_expr))) { \
+		return _rc; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_RETURN_IF_INVALID_PARAM macro.
  */
-#define PVR_RETURN_IF_INVALID_PARAM(_expr) do {} while(0)
+#define PVR_RETURN_IF_INVALID_PARAM(_expr) do \
+	{ if (unlikely(!(_expr))) { \
+		return PVRSRV_ERROR_INVALID_PARAMS; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_RETURN_IF_NOMEM macro.
  */
-#define PVR_RETURN_IF_NOMEM(_expr) do {} while(0)
+#define PVR_RETURN_IF_NOMEM(_expr) do \
+	{ if (unlikely(!(_expr))) { \
+		return PVRSRV_ERROR_OUT_OF_MEMORY; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_GOTO_IF_NOMEM macro.
  */
-#define PVR_GOTO_IF_NOMEM(_expr, _err, _go) do {} while(0)
+#define PVR_GOTO_IF_NOMEM(_expr, _err, _go) do \
+	{ if (unlikely(_expr == NULL)) { \
+		_err = PVRSRV_ERROR_OUT_OF_MEMORY; \
+		goto _go; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_GOTO_IF_INVALID_PARAM macro.
  */
-#define PVR_GOTO_IF_INVALID_PARAM(_expr, _err, _go) do {} while(0)
+#define PVR_GOTO_IF_INVALID_PARAM(_expr, _err, _go) do \
+	{ if (unlikely(!(_expr))) { \
+		_err = PVRSRV_ERROR_INVALID_PARAMS; \
+		goto _go; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_GOTO_IF_FALSE macro.
  */
-#define PVR_GOTO_IF_FALSE(_expr, _go) do {} while(0)
+#define PVR_GOTO_IF_FALSE(_expr, _go) do \
+	{ if (unlikely(!(_expr))) { \
+		goto _go; } \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_GOTO_IF_ERROR macro.
  */
-#define PVR_GOTO_IF_ERROR(_rc, _go) do {} while(0)
+#define PVR_GOTO_IF_ERROR(_rc, _go) do \
+	{ if (unlikely(_rc != PVRSRV_OK)) { \
+		goto _go; } \
+	MSC_SUPPRESS_4127\
+	} while (0)
 
 /* Note: Use only when a log message due to the error absolutely should not
  *       be printed. Otherwise use PVR_LOG_GOTO_WITH_ERROR macro.
  */
-#define PVR_GOTO_WITH_ERROR(_err, _rc, _go) do {} while(0)
+#define PVR_GOTO_WITH_ERROR(_err, _rc, _go) do \
+	{ _err = _rc; goto _go; \
+	MSC_SUPPRESS_4127 \
+	} while (0)
 
 /*! @cond Doxygen_Suppress */
+#if defined(PVR_DPF_FUNCTION_TRACE_ON)
+
+	#define PVR_DPF_ENTERED \
+	PVR_DPF((PVR_DBG_CALLTRACE, "|-> %s:%d entered", __func__, __LINE__))
+
+	#define PVR_DPF_ENTERED1(p1) \
+		PVR_DPF((PVR_DBG_CALLTRACE, "|-> %s:%d entered (0x%lx)", __func__, __LINE__, ((unsigned long)p1)))
+
+	#define PVR_DPF_RETURN_RC(a) \
+	do { int _r = (a); PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned %d", __func__, __LINE__, (_r))); return (_r); MSC_SUPPRESS_4127 } while (0)
+
+	#define PVR_DPF_RETURN_RC1(a,p1) \
+		do { int _r = (a); PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned %d (0x%lx)", __func__, __LINE__, (_r), ((unsigned long)p1))); return (_r); MSC_SUPPRESS_4127 } while (0)
+
+	#define PVR_DPF_RETURN_VAL(a) \
+		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned with value", __func__, __LINE__)); return (a); MSC_SUPPRESS_4127 } while (0)
+
+	#define PVR_DPF_RETURN_OK \
+		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned ok", __func__, __LINE__)); return PVRSRV_OK; MSC_SUPPRESS_4127 } while (0)
+
+	#define PVR_DPF_RETURN \
+		do { PVR_DPF((PVR_DBG_CALLTRACE, "<-| %s:%d returned", __func__, __LINE__)); return; MSC_SUPPRESS_4127 } while (0)
+
+	#if !defined(DEBUG)
+	#error PVR DPF Function trace enabled in release build, rectify
+	#endif
+
+#else /* defined(PVR_DPF_FUNCTION_TRACE_ON) */
 
 	#define PVR_DPF_ENTERED
 	#define PVR_DPF_ENTERED1(p1)
@@ -372,6 +437,7 @@ IMG_EXPORT void IMG_CALLCONV PVRSRVDebugPrintfDumpCCB(void);
 	#define PVR_DPF_RETURN_OK        return PVRSRV_OK
 	#define PVR_DPF_RETURN           return
 
+#endif /* defined(PVR_DPF_FUNCTION_TRACE_ON) */
 /*! @endcond */
 
 #if defined(__KERNEL__) || defined(DOXYGEN) || defined(__QNXNTO__)
@@ -393,9 +459,27 @@ void IMG_CALLCONV PVRSRVReleasePrintf(const IMG_CHAR *pszFormat, ...) __printf(1
 
 /* PVR_TRACE() handling */
 
-/*! Null Implementation of PowerVR Debug Trace Macro (does nothing) */
-#define PVR_TRACE(X)
+#if defined(PVRSRV_NEED_PVR_TRACE) || defined(DOXYGEN)
 
+	#define PVR_TRACE(X)	PVRSRVTrace X    /*!< PowerVR Debug Trace Macro */
+	/* Empty string implementation that is -O0 build friendly */
+	#define PVR_TRACE_EMPTY_LINE()	PVR_TRACE(("%s", ""))
+
+/*************************************************************************/ /*!
+@Function       PVRTrace
+@Description    Output a debug message to the user
+                Invoked from the macro PVR_TRACE().
+@Input          pszFormat   The message format string
+@Input          ...         Zero or more arguments for use by the format string
+*/ /**************************************************************************/
+IMG_EXPORT void IMG_CALLCONV PVRSRVTrace(const IMG_CHAR* pszFormat, ... )
+	__printf(1, 2);
+
+#else /* defined(PVRSRV_NEED_PVR_TRACE) */
+	/*! Null Implementation of PowerVR Debug Trace Macro (does nothing) */
+	#define PVR_TRACE(X)
+
+#endif /* defined(PVRSRV_NEED_PVR_TRACE) */
 
 
 #if defined(PVRSRV_NEED_PVR_ASSERT)

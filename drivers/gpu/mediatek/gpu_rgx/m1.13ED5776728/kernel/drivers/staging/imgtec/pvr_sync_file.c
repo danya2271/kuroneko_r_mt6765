@@ -67,14 +67,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define sync_file_user_name(s)	((s)->user_name)
 #endif
 
-#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) \
-	do {                                                             \
-		if (pfnDumpDebugPrintf)                                  \
-			pfnDumpDebugPrintf(pvDumpDebugFile, fmt,         \
-					   ## __VA_ARGS__);              \
-		else                                                     \
-			pr_no_err(fmt "\n", ## __VA_ARGS__);                \
-	} while (0)
+#define PVR_DUMPDEBUG_LOG(pfnDumpDebugPrintf, pvDumpDebugFile, fmt, ...) do {} while (0)
 
 #define	FILE_NAME "pvr_sync_file"
 
