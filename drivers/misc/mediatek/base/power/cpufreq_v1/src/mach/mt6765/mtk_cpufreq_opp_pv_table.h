@@ -187,7 +187,7 @@ static unsigned int c65Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 1218, 25, 2, 1 },
 	{ 1085, 20, 2, 1 },
 	{  979, 16, 2, 1 },
-	{  900, 13, 2, 1 },
+	{  400, 13, 2, 1 },
 
 	{ 1800, 96, 1, 1 },	/* LL */
 	{ 1682, 88, 1, 1 },
@@ -204,7 +204,7 @@ static unsigned int c65Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  643, 25, 4, 1 },
 	{  542, 20, 4, 1 },
 	{  501, 18, 4, 1 },
-	{  400, 13, 4, 2 },
+	{  300, 13, 4, 2 },
 
 	{ 1051, 96, 2, 1 },	/* CCI */
 	{ 1000, 88, 2, 1 },
@@ -221,7 +221,7 @@ static unsigned int c65Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  459, 25, 4, 2 },
 	{  392, 20, 4, 2 },
 	{  339, 16, 4, 2 },
-	{  300, 13, 4, 2 },
+	{  150, 13, 4, 2 },
 };
 
 static unsigned int c62Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
@@ -241,7 +241,7 @@ static unsigned int c62Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 1218, 25, 2, 1 },
 	{ 1085, 20, 2, 1 },
 	{  979, 16, 2, 1 },
-	{  900, 13, 2, 1 },
+	{  400, 13, 2, 1 },
 
 	{ 1500, 96, 2, 1 },	/* LL */
 	{ 1429, 88, 2, 1 },
@@ -258,7 +258,7 @@ static unsigned int c62Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  643, 25, 4, 1 },
 	{  542, 20, 4, 1 },
 	{  501, 18, 4, 1 },
-	{  400, 13, 4, 2 },
+	{  300, 13, 4, 2 },
 
 	{ 1048, 96, 2, 1 },	/* CCI */
 	{  997, 88, 2, 1 },
@@ -275,7 +275,7 @@ static unsigned int c62Tbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  459, 25, 4, 2 },
 	{  392, 20, 4, 2 },
 	{  339, 16, 4, 2 },
-	{  300, 13, 4, 2 },
+	{  150, 13, 4, 2 },
 };
 
 static unsigned int c62lyTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
@@ -295,7 +295,7 @@ static unsigned int c62lyTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{ 1218, 28, 2, 1 },
 	{ 1085, 22, 2, 1 },
 	{  979, 17, 2, 1 },
-	{  900, 13, 2, 1 },
+	{  400, 13, 2, 1 },
 
 	{ 1500, 96, 2, 1 },	/* LL */
 	{ 1429, 90, 2, 1 },
@@ -312,7 +312,7 @@ static unsigned int c62lyTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  643, 28, 4, 1 },
 	{  542, 22, 4, 1 },
 	{  501, 20, 4, 1 },
-	{  400, 13, 4, 2 },
+	{  300, 13, 4, 2 },
 
 	{ 1048, 96, 2, 1 },	/* CCI */
 	{  997, 90, 2, 1 },
@@ -329,7 +329,7 @@ static unsigned int c62lyTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
 	{  459, 28, 4, 2 },
 	{  392, 22, 4, 2 },
 	{  339, 17, 4, 2 },
-	{  300, 13, 4, 2 },
+	{  150, 13, 4, 2 },
 };
 
 static unsigned int c65rTbl[NR_FREQ * NR_MT_CPU_DVFS][ARRAY_COL_SIZE] = {
