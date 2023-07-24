@@ -35,7 +35,7 @@ else
 endif
 
 ccflags-y += \
-	-D__linux__ $(OPTIM) -g \
+	-D__linux__ $(OPTIM) \
 	-fno-strict-aliasing \
 	-W -Wall \
 	-Wno-missing-field-initializers \
