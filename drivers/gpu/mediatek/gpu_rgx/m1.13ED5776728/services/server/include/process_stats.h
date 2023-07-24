@@ -110,7 +110,7 @@ void PVRSRVStatsDeregisterProcess(IMG_HANDLE hProcessStats);
  *     allocation statistics functionalities described above in a single macro
  */
 #if defined(PVRSRV_ENABLE_PROCESS_STATS) && defined(PVRSRV_ENABLE_MEMORY_STATS) && defined(PVRSRV_DEBUG_LINUX_MEMORY_STATS) && defined(DEBUG)
-#define PVRSRV_DEBUG_LINUX_MEMORY_STATS_ON
+//#define PVRSRV_DEBUG_LINUX_MEMORY_STATS_ON
 #endif
 
 /*

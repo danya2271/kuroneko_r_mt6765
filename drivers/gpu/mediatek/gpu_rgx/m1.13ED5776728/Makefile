@@ -1,4 +1,4 @@
-OPTIM = -Os
+OPTIM = -Os -fdata-sections -ffunction-sections -finline-functions -ftree-vectorize -funroll-loops
 
 $(info [GPU_DEBUG] MTK_PLATFORM = $(MTK_PLATFORM))
 
