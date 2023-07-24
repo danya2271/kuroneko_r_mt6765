@@ -140,36 +140,6 @@ AddToBufferCCB(const IMG_CHAR *pszFileName, IMG_UINT32 ui32Line,
 
 void PVRSRVDebugPrintfDumpCCB(void)
 {
-	int i;
-	unsigned long uiFlags;
-
-	spin_lock_irqsave(&gsDebugCCBLock, uiFlags);
-
-	for (i = 0; i < PVRSRV_DEBUG_CCB_MAX; i++)
-	{
-		PVRSRV_DEBUG_CCB *psDebugCCBEntry =
-			&gsDebugCCB[(giOffset + i) % PVRSRV_DEBUG_CCB_MAX];
-
-		/* Early on, we won't have PVRSRV_DEBUG_CCB_MAX messages */
-		if (!psDebugCCBEntry->pszFile)
-		{
-			continue;
-		}
-
-		printk(KERN_ERR "%s:%d: (%ld.%ld, tid=%u, pid=%u) %s\n",
-			   psDebugCCBEntry->pszFile,
-			   psDebugCCBEntry->iLine,
-			   (long)psDebugCCBEntry->sTimeVal.tv_sec,
-			   (long)psDebugCCBEntry->sTimeVal.tv_usec,
-			   psDebugCCBEntry->ui32TID,
-			   psDebugCCBEntry->ui32PID,
-			   psDebugCCBEntry->pcMesg);
-
-		/* Clear this entry so it doesn't get printed the next time again. */
-		psDebugCCBEntry->pszFile = NULL;
-	}
-
-	spin_unlock_irqrestore(&gsDebugCCBLock, uiFlags);
 }
 
 #else /* defined(PVRSRV_DEBUG_CCB_MAX) */
