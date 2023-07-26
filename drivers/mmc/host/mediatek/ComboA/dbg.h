@@ -60,70 +60,24 @@ enum {
 #define DBG_EVT_MASK        (DBG_EVT_ALL)
 
 #define TAGMSDC "msdc"
-#define N_MSG(evt, fmt, args...) \
-do {    \
-	if ((DBG_EVT_##evt) & sd_debug_zone[host->id]) { \
-		pr_no_info(TAGMSDC"%d -> "fmt" <- %s() : L<%d> PID<%s><0x%x>\n", \
-			host->id, ##args, __func__, __LINE__, \
-			current->comm, current->pid); \
-	}   \
-} while (0)
+#define N_MSG(evt, fmt, args...) do {} while (0)
 
 #ifndef MTK_MMC_PRINT_PERIOD
-#define ERR_MSG(fmt, args...) \
-	pr_no_info(TAGMSDC"%d -> "fmt" <- %s() : L<%d> PID<%s><0x%x>\n", \
-		host->id, ##args, __func__, __LINE__, current->comm, \
-		current->pid)
+#define ERR_MSG(fmt, args...) do {} while (0)
 
 #else
 #define MAX_PRINT_PERIOD            (500000000)  /* 500ms */
 #define MAX_PRINT_NUMS_OVER_PERIOD  (50)
-#define ERR_MSG(fmt, args...) \
-do { \
-	if (print_nums == 0) { \
-		print_nums++; \
-		msdc_print_start_time = sched_clock(); \
-		pr_no_info(TAGMSDC"MSDC", TAG"%d -> "fmt" <- %s() : L<%d> " \
-			"PID<%s><0x%x>\n", \
-			host->id, ##args, __func__, __LINE__, \
-			current->comm, current->pid); \
-	} else { \
-		msdc_print_end_time = sched_clock();    \
-		if ((msdc_print_end_time - msdc_print_start_time) >= \
-			MAX_PRINT_PERIOD) { \
-			pr_no_info( \
-			TAGMSDC"MSDC", TAG"%d -> "fmt" <- %s() : L<%d> " \
-				"PID<%s><0x%x>\n", \
-				host->id, ##args, __func__, __LINE__, \
-				current->comm, current->pid); \
-			print_nums = 0; \
-		} \
-		if (print_nums <= MAX_PRINT_NUMS_OVER_PERIOD) { \
-			pr_no_info(TAGMSDC"MSDC", TAG"%d -> "fmt" <- %s() : " \
-				"L<%d> PID<%s><0x%x>\n", \
-				host->id, ##args, __func__, \
-				__LINE__, current->comm, current->pid); \
-			print_nums++;   \
-		} \
-	} \
-} while (0)
+#define ERR_MSG(fmt, args...) do {} while (0)
 #endif
 
-#define INIT_MSG(fmt, args...) \
-	pr_no_info(TAGMSDC"%d -> "fmt" <- %s() : L<%d> PID<%s><0x%x>\n", \
-		host->id, ##args, __func__, __LINE__, current->comm, \
-		current->pid)
+#define INIT_MSG(fmt, args...) do {} while (0)
 
-#define INFO_MSG(fmt, args...) \
-	pr_no_debug(TAGMSDC"%d -> "fmt" <- %s() : L<%d> PID<%s><0x%x>\n", \
-		host->id, ##args, __func__, __LINE__, current->comm, \
-		current->pid)
+#define INFO_MSG(fmt, args...) do {} while (0)
 
 #ifdef MTK_MMC_PRINT_IRQ_MSG
 /* PID in ISR in not corrent */
-#define IRQ_MSG(fmt, args...) \
-	pr_no_info(TAGMSDC"%d -> "fmt" <- %s() : L<%d>\n", \
-		host->id, ##args, __func__, __LINE__)
+#define IRQ_MSG(fmt, args...) do {} while (0)
 #else
 #define IRQ_MSG(fmt, args...)
 #endif
@@ -133,23 +87,7 @@ do { \
  * that the output was truncated, thus be careful of "more"
  * case.
  */
-#define SPREAD_PRINTF(buff, size, evt, fmt, args...) \
-do { \
-	if (buff && size && *(size)) { \
-		unsigned long var = snprintf(*(buff), *(size), fmt, ##args); \
-		if (var > 0) { \
-			if (var > *(size)) \
-				var = *(size); \
-			*(size) -= var; \
-			*(buff) += var; \
-		} \
-	} \
-	if (evt) \
-		seq_printf(evt, fmt, ##args); \
-	if (!buff && !evt) { \
-		pr_no_info(fmt, ##args); \
-	} \
-} while (0)
+#define SPREAD_PRINTF(buff, size, evt, fmt, args...) do {} while (0)
 
 #define MAGIC_CQHCI_DBG_TYPE 5
 #define MAGIC_CQHCI_DBG_NUM_L 100

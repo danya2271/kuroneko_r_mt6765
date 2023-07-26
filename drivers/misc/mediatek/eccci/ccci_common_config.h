@@ -39,7 +39,7 @@
 /*#define ENABLE_EMI_PROTECTION*/
 #define ENABLE_32K_CLK_LESS
 
-#define HW_CHECK_SUM_ENABLE
+//#define HW_CHECK_SUM_ENABLE
 #define HW_FRG_FEATURE_ENABLE
 #ifdef HW_FRG_FEATURE_ENABLE
 /* #define FRG_FEATURE_TEST */
@@ -60,7 +60,7 @@
 /*#define CCCI_LOG_LEVEL     1*/
 
 /*#define DPMAIF_DEBUG_LOG*/
-#define DEBUG_FOR_CCB
+//#define DEBUG_FOR_CCB
 
 
 #endif

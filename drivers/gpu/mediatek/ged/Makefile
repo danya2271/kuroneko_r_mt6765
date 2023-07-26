@@ -81,13 +81,9 @@ ccflags-y += -DGED_MODULE_LATE_INIT
 endif
 endif
 
-ifneq ($(CONFIG_MTK_ENG_BUILD),y)
 VER:=user
-ifeq ($(CONFIG_MTK_ENABLE_GMO), y)
 ccflags-y += -DGED_LOG_SIZE_LIMITED
 ccflags-y += -DGED_BUFFER_LOG_DISABLE
-endif
-endif
 
 ccflags-y += -DMET_USER_EVENT_SUPPORT -DMTK_GPU_DVFS
 
