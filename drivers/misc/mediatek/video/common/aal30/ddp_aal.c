@@ -92,7 +92,7 @@ int aal_dbg_en;
 #define AAL_ERR(fmt, arg...) pr_notice("[AAL] %s: " fmt "\n", __func__, ##arg)
 #define AAL_NOTICE(fmt, arg...) pr_info("[AAL] %s: " fmt "\n", __func__, ##arg)
 #define AAL_DBG(fmt, arg...) \
-	do { if (aal_dbg_en) pr_debug("[AAL] %s: " fmt "\n", __func__, ##arg); \
+	do { if (aal_dbg_en) pr_no_debug("[AAL] %s: " fmt "\n", __func__, ##arg); \
 		} while (0)
 
 #ifndef AAL_SUPPORT_KERNEL_API
@@ -1296,7 +1296,7 @@ static void disp_aal_notify_backlight_log(int bl_1024)
 
 	if (diff_mesc > LOG_INTERVAL_TH) {
 		if (g_aal_log_index == 0) {
-			pr_debug("disp_aal_notify_backlight_changed: %d/1023\n",
+			pr_no_debug("disp_aal_notify_backlight_changed: %d/1023\n",
 				bl_1024);
 		} else {
 			scnprintf(g_aal_log_buffer + strlen(g_aal_log_buffer),
@@ -1304,7 +1304,7 @@ static void disp_aal_notify_backlight_log(int bl_1024)
 				strlen(g_aal_log_buffer),
 				", %d/1023 %03lu.%03lu",
 				bl_1024, tsec, tusec);
-			pr_debug("%s\n", g_aal_log_buffer);
+			pr_no_debug("%s\n", g_aal_log_buffer);
 			g_aal_log_index = 0;
 		}
 	} else {
@@ -1323,7 +1323,7 @@ static void disp_aal_notify_backlight_log(int bl_1024)
 		}
 
 		if ((g_aal_log_index >= LOG_BUFFER_SIZE) || (bl_1024 == 0)) {
-			pr_debug("%s\n", g_aal_log_buffer);
+			pr_no_debug("%s\n", g_aal_log_buffer);
 			g_aal_log_index = 0;
 		}
 	}
@@ -1337,7 +1337,7 @@ void disp_aal_notify_backlight_changed(int bl_1024)
 	int max_backlight;
 	unsigned int service_flags;
 
-	/* pr_debug("disp_aal_notify_backlight_changed: %d/1023", bl_1024); */
+	/* pr_no_debug("disp_aal_notify_backlight_changed: %d/1023", bl_1024); */
 	disp_aal_notify_backlight_log(bl_1024);
 
 	disp_aal_exit_idle(__func__, 1);
@@ -1581,16 +1581,6 @@ int disp_aal_set_param(struct DISP_AAL_PARAM __user *param,
 
 	if (atomic_read(&g_aal_backlight_notified) == 0)
 		backlight_value = 0;
-
-	if (ret == 0)
-		ret |= disp_pwm_set_backlight_cmdq(DISP_PWM0,
-			backlight_value, cmdq);
-
-	AAL_DBG("(ESS = %d, DRE[0,8] = %d,%d",
-		g_aal_param.cabc_fltgain_force, g_aal_param.DREGainFltStatus[0],
-		g_aal_param.DREGainFltStatus[8]);
-	AAL_DBG("(latency = %d): ret = %d",
-		g_aal_param.refreshLatency, ret);
 
 	backlight_brightness_set(backlight_value);
 

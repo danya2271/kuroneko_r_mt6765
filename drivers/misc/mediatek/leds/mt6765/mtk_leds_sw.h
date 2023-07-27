@@ -108,7 +108,7 @@ enum MT65XX_PMIC_ISINK_FSEL {
  *  for PWM
  *****************************************************************************/
 
-#define MIN_FRE_OLD_PWM 32/* the min frequence when use old mode pwm by kHz */
+#define MIN_FRE_OLD_PWM 28/* the min frequence when use old mode pwm by kHz */
 #define BACKLIGHT_LEVEL_PWM_64_FIFO_MODE_SUPPORT 64
 #define BACKLIGHT_LEVEL_PWM_256_SUPPORT 256
 #define BACKLIGHT_LEVEL_PWM_MODE_CONFIG BACKLIGHT_LEVEL_PWM_256_SUPPORT
