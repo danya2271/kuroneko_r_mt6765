@@ -129,7 +129,7 @@ static int dram_rshmoo_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	pr_no_debug("[DRAMC] rshmoo module probe.\n");
+	pr_debug("[DRAMC] rshmoo module probe.\n");
 
 	ret = of_property_read_u32(pdev->dev.of_node, "rank",
 			&rshmoo_test_rank);

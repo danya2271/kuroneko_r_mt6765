@@ -23,7 +23,7 @@ int cpu_ctrl_init(struct proc_dir_entry *parent)
 
 	boost_dir = proc_mkdir("cpu_ctrl_dummy", parent);
 	if (!boost_dir)
-		pr_no_debug("boost_dir null\n ");
+		pr_debug("boost_dir null\n ");
 
 	return 0;
 }

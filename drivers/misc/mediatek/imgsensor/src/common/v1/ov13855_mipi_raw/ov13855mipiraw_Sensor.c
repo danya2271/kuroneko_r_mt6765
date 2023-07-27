@@ -40,7 +40,7 @@
 
 #include "ov13855mipiraw_Sensor.h"
 #define LOG_INF(format, args...)    \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 #define MULTI_WRITE 1
 static DEFINE_SPINLOCK(imgsensor_drv_lock);

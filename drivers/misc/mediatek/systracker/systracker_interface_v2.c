@@ -493,7 +493,7 @@ static ssize_t set_wp_address_store
 	int ret;
 
 	ret = kstrtou32(buf, 16, &value);
-	pr_no_debug("watch address:0x%x, ret = %d\n", value, ret);
+	pr_debug("watch address:0x%x, ret = %d\n", value, ret);
 	systracker_set_watchpoint_addr(value);
 
 	return count;
@@ -582,7 +582,7 @@ static int __init systracker_init(void)
 	if (ret)
 		pr_notice("Fail to create systracker_drv sysfs files");
 
-	pr_no_debug("systracker init done\n");
+	pr_debug("systracker init done\n");
 
 	return 0;
 }

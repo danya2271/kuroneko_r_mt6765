@@ -168,7 +168,7 @@ static int emi_probe(struct platform_device *pdev)
 					    2 + MAX_CH + i);
 		EMI_DBG_BASE[i] = devm_ioremap_resource(&pdev->dev, res);
 		if (IS_ERR(EMI_DBG_BASE[i])) {
-			pr_no_debug("[EMI] unable to map dbg\n");
+			pr_debug("[EMI] unable to map dbg\n");
 			return -EINVAL;
 		}
 	}

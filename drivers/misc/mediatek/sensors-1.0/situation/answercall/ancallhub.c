@@ -60,7 +60,7 @@ static int answer_call_open_report_data(int open)
 #else
 
 #endif
-	pr_no_debug("%s : type=%d, open=%d\n", __func__, ID_ANSWER_CALL, open);
+	pr_debug("%s : type=%d, open=%d\n", __func__, ID_ANSWER_CALL, open);
 	ret = sensor_enable_to_hub(ID_ANSWER_CALL, open);
 	return ret;
 }
@@ -75,7 +75,7 @@ static int answer_call_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_no_debug("answer_call do not support flush\n");
+		pr_debug("answer_call do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_ANSWER_CALL,
 				(int64_t)event->time_stamp);
@@ -133,7 +133,7 @@ static int __init ancallhub_init(void)
 
 static void __exit ancallhub_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(ancallhub_init);

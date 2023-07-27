@@ -56,7 +56,7 @@ static int device_orientation_open_report_data(int open)
 #else
 
 #endif
-	pr_no_debug("%s : type=%d, open=%d\n",
+	pr_debug("%s : type=%d, open=%d\n",
 		__func__, ID_DEVICE_ORIENTATION, open);
 	ret = sensor_enable_to_hub(ID_DEVICE_ORIENTATION, open);
 	return ret;
@@ -138,7 +138,7 @@ static int __init device_orientation_init(void)
 
 static void __exit device_orientation_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(device_orientation_init);

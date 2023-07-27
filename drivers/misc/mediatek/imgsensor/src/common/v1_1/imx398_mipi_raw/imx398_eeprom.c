@@ -67,13 +67,13 @@ static bool _read_imx398_eeprom(kal_uint16 addr, BYTE *data, int size)
 	int i = 0;
 	int offset = addr;
 
-	pr_no_debug("enter _read_eeprom size = %d\n", size);
+	pr_debug("enter _read_eeprom size = %d\n", size);
 
 	for (i = 0; i < size; i++) {
 		if (!selective_read_eeprom(offset, &data[i]))
 			return false;
 
-		pr_no_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
+		pr_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
 		offset++;
 	}
 	get_done = true;
@@ -87,7 +87,7 @@ void read_imx398_SPC(BYTE *data)
 {
 	int size = 252;
 
-	pr_no_debug("read imx398 SPC, size = %d\n", size);
+	pr_debug("read imx398 SPC, size = %d\n", size);
 	/**********************************************************
 	 * if(!get_done || last_size != size || last_offset != addr) {
 	 * if(!_read_imx398_eeprom(addr, imx398_SPC_data, size)){
@@ -108,7 +108,7 @@ void read_imx398_DCC(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = 0x960;
 	size = 96;
 
-	pr_no_debug("read imx398 DCC, size = %d\n", size);
+	pr_debug("read imx398 DCC, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx398_eeprom(addr, imx398_DCC_data, size)) {

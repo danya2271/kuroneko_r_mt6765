@@ -204,7 +204,7 @@ struct cust_mt65xx_led *get_cust_led_dtsi(void)
 			strncat(node_name, leds_name[i],
 			sizeof(node_name) - strlen(node_name) - 1));
 		if (!led_node) {
-			pr_no_debug("Cannot find LED node from dts\n");
+			pr_debug("Cannot find LED node from dts\n");
 			pled_dtsi[i].mode = 0;
 			pled_dtsi[i].data = -1;
 		} else {
@@ -246,7 +246,7 @@ struct cust_mt65xx_led *get_cust_led_dtsi(void)
 					ARRAY_SIZE
 					(pwm_config));
 			if (!ret) {
-				pr_no_debug("%s's pwm cfg %d %d %d %d %d\n",
+				pr_debug("%s's pwm cfg %d %d %d %d %d\n",
 					pled_dtsi[i].name, pwm_config[0],
 					pwm_config[1], pwm_config[2],
 					pwm_config[3], pwm_config[4]);
@@ -350,7 +350,7 @@ int mt_led_set_pwm(int pwm_num, struct nled_setting *led)
 	pwm_setting.pwm_no = pwm_num;
 	pwm_setting.mode = PWM_MODE_OLD;
 
-	pr_no_debug("led_set_pwm: mode=%d,pwm_no=%d\n", led->nled_mode,
+	pr_debug("led_set_pwm: mode=%d,pwm_no=%d\n", led->nled_mode,
 		   pwm_num);
 	/* We won't choose 32K to be the clock src of old mode because of
 	 * system performance. The setting here will be clock src = 26MHz,
@@ -376,11 +376,11 @@ int mt_led_set_pwm(int pwm_num, struct nled_setting *led)
 		break;
 
 	case NLED_BLINK:
-		pr_no_debug("LED blink on time = %d offtime = %d\n",
+		pr_debug("LED blink on time = %d offtime = %d\n",
 			   led->blink_on_time, led->blink_off_time);
 		time_index =
 		    find_time_index(led->blink_on_time + led->blink_off_time);
-		pr_no_debug("LED div is %d\n", time_index);
+		pr_debug("LED div is %d\n", time_index);
 		pwm_setting.clk_div = time_index;
 		pwm_setting.PWM_MODE_OLD_REGS.DATA_WIDTH =
 		    (led->blink_on_time +
@@ -391,7 +391,7 @@ int mt_led_set_pwm(int pwm_num, struct nled_setting *led)
 						  led->blink_off_time);
 		break;
 	default:
-		pr_no_debug("Invalid nled mode\n");
+		pr_debug("Invalid nled mode\n");
 		return -1;
 	}
 
@@ -440,21 +440,21 @@ int mt_backlight_set_pwm(int pwm_num, u32 level, u32 div,
 		pwm_setting.PWM_MODE_OLD_REGS.DATA_WIDTH = 255;
 		pwm_setting.PWM_MODE_OLD_REGS.THRESH = level;
 
-		pr_no_debug("[LEDS][%d]backlight_set_pwm:duty is %d/%d\n",
+		pr_debug("[LEDS][%d]backlight_set_pwm:duty is %d/%d\n",
 			   BacklightLevelSupport, level,
 			   pwm_setting.PWM_MODE_OLD_REGS.DATA_WIDTH);
-		pr_no_debug("[LEDS][%d]backlight_set_pwm:clk_src/div is %d%d\n",
+		pr_debug("[LEDS][%d]backlight_set_pwm:clk_src/div is %d%d\n",
 			   BacklightLevelSupport, pwm_setting.clk_src,
 			   pwm_setting.clk_div);
 		if (level > 0 && level < 256) {
 			pwm_set_spec_config(&pwm_setting);
-			pr_no_debug
+			pr_debug
 			    ("[LEDS][%d]old mode: thres/data_width is %d/%d\n",
 			     BacklightLevelSupport,
 			     pwm_setting.PWM_MODE_OLD_REGS.THRESH,
 			     pwm_setting.PWM_MODE_OLD_REGS.DATA_WIDTH);
 		} else {
-			pr_no_debug("[LEDS][%d]Error level in backlight\n",
+			pr_debug("[LEDS][%d]Error level in backlight\n",
 				   BacklightLevelSupport);
 			mt_pwm_disable(pwm_setting.pwm_no,
 				       config_data->pmic_pad);
@@ -486,8 +486,8 @@ int mt_backlight_set_pwm(int pwm_num, u32 level, u32 div,
 		    (pwm_setting.PWM_MODE_FIFO_REGS.HDURATION + 1) * 32 - 1;
 		pwm_setting.PWM_MODE_FIFO_REGS.WAVE_NUM = 0;
 
-		pr_no_debug("%s :duty is %d\n", __func__, level);
-		pr_no_debug
+		pr_debug("%s :duty is %d\n", __func__, level);
+		pr_debug
 		    ("[LEDS]clk_src/div/high/low is %d%d%d%d\n",
 		     pwm_setting.clk_src, pwm_setting.clk_div,
 		     pwm_setting.PWM_MODE_FIFO_REGS.HDURATION,
@@ -505,7 +505,7 @@ int mt_backlight_set_pwm(int pwm_num, u32 level, u32 div,
 			    (1 << level) - 1;
 			pwm_set_spec_config(&pwm_setting);
 		} else {
-			pr_no_debug("[LEDS]Error level in backlight\n");
+			pr_debug("[LEDS]Error level in backlight\n");
 			mt_pwm_disable(pwm_setting.pwm_no,
 				       config_data->pmic_pad);
 		}
@@ -619,7 +619,7 @@ int mt_mt65xx_led_set_cust(struct cust_mt65xx_led *cust, int level)
 		return 1;
 
 	case MT65XX_LED_MODE_GPIO:
-		pr_no_debug("brightness_set_cust:go GPIO mode!!!!!\n");
+		pr_debug("brightness_set_cust:go GPIO mode!!!!!\n");
 		return ((cust_set_brightness) (cust->data)) (level);
 
 	case MT65XX_LED_MODE_PMIC:
@@ -643,7 +643,7 @@ int mt_mt65xx_led_set_cust(struct cust_mt65xx_led *cust, int level)
 	case MT65XX_LED_MODE_CUST_LCM:
 		if (strcmp(cust->name, "lcd-backlight") == 0)
 			bl_brightness_hal = level;
-		pr_no_debug("brightness_set_cust:backlight control by LCM\n");
+		pr_debug("brightness_set_cust:backlight control by LCM\n");
 		/* warning for this API revork */
 		return ((cust_brightness_set) (cust->data)) (level, bl_div_hal);
 
@@ -668,7 +668,7 @@ void mt_mt65xx_led_work(struct work_struct *work)
 	struct mt65xx_led_data *led_data =
 	    container_of(work, struct mt65xx_led_data, work);
 
-	pr_no_debug("%s:%d\n", led_data->cust.name, led_data->level);
+	pr_debug("%s:%d\n", led_data->cust.name, led_data->level);
 	mutex_lock(&leds_mutex);
 	mt_mt65xx_led_set_cust(&led_data->cust, led_data->level);
 	mutex_unlock(&leds_mutex);
@@ -685,7 +685,7 @@ void mt_mt65xx_led_set(struct led_classdev *led_cdev, enum led_brightness level)
 	if (led_data->level != level) {
 		led_data->level = level;
 		if (strcmp(led_data->cust.name, "lcd-backlight") != 0) {
-			pr_no_debug("Set NLED directly %d at time %lu\n",
+			pr_debug("Set NLED directly %d at time %lu\n",
 				   led_data->level, jiffies);
 			schedule_work(&led_data->work);
 		} else {
@@ -718,7 +718,7 @@ void mt_mt65xx_led_set(struct led_classdev *led_cdev, enum led_brightness level)
 	if (led_data->level != level) {
 		led_data->level = level;
 		if (strcmp(led_data->cust.name, "lcd-backlight") != 0) {
-			pr_no_debug("Set NLED directly %d at time %lu\n",
+			pr_debug("Set NLED directly %d at time %lu\n",
 				   led_data->level, jiffies);
 			schedule_work(&led_data->work);
 		} else {

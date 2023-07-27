@@ -34,12 +34,12 @@
 #endif
 
 #define mtk_fstb_dprintk_always(fmt, args...) \
-	pr_no_debug("[FSTB]" fmt, ##args)
+	pr_debug("[FSTB]" fmt, ##args)
 
 #define mtk_fstb_dprintk(fmt, args...) \
 	do { \
 		if (fstb_fps_klog_on == 1) \
-			pr_no_debug("[FSTB]" fmt, ##args); \
+			pr_debug("[FSTB]" fmt, ##args); \
 	} while (0)
 
 #define fpsgo_systrace_c_fstb_man(pid, val, fmt...) \

@@ -38,7 +38,7 @@ static int state;
 #define show_debug(fmt, x...) \
 	do { \
 		if (debug_enable) \
-			pr_no_debug(fmt, ##x); \
+			pr_debug(fmt, ##x); \
 	} while (0)
 
 DEFINE_MUTEX(cl_mlock);
@@ -199,7 +199,7 @@ static ssize_t perfmgr_poltime_secs_proc_write(struct file *filp,
 	polling_sec = val;
 	polling_ms = val * 1000;
 
-	pr_no_debug("c polling_sec :%d\n", polling_sec);
+	pr_debug("c polling_sec :%d\n", polling_sec);
 	if (onoff) {
 		stop_calculate_loading();
 		start_calculate_loading();
@@ -232,7 +232,7 @@ static ssize_t perfmgr_poltime_nsecs_proc_write(struct file *filp,
 	if (val <= 0)
 		return -EINVAL;
 
-	pr_no_debug("c polling_nsec :%d\n", val);
+	pr_debug("c polling_nsec :%d\n", val);
 
 	return cnt;
 }
@@ -268,7 +268,7 @@ static ssize_t perfmgr_onoff_proc_write(struct file *filp,
 	else
 		stop_calculate_loading();
 
-	pr_no_debug("c onoff :%d\n", onoff);
+	pr_debug("c onoff :%d\n", onoff);
 	cl_unlock(__func__);
 	return cnt;
 }
@@ -311,7 +311,7 @@ static ssize_t perfmgr_underThrhld_proc_write(
 
 	under_threshold = val;
 
-	pr_no_debug("c under_threshold :%d\n", under_threshold);
+	pr_debug("c under_threshold :%d\n", under_threshold);
 	if (onoff) {
 		stop_calculate_loading();
 		start_calculate_loading();
@@ -350,7 +350,7 @@ static ssize_t perfmgr_overThrhld_proc_write(
 	}
 
 	over_threshold = val;
-	pr_no_debug("c over_threshold :%d\n", over_threshold);
+	pr_debug("c over_threshold :%d\n", over_threshold);
 	if (onoff) {
 		stop_calculate_loading();
 		start_calculate_loading();
@@ -387,7 +387,7 @@ static ssize_t perfmgr_uevent_enable_proc_write(
 	cl_lock(__func__);
 
 	uevent_enable = val;
-	pr_no_debug("c uevent_enable :%d\n", uevent_enable);
+	pr_debug("c uevent_enable :%d\n", uevent_enable);
 	if (onoff) {
 		stop_calculate_loading();
 		start_calculate_loading();
@@ -459,7 +459,7 @@ static int init_cpu_loading_kobj(void)
 	ret = misc_register(&cpu_loading_object);
 	if (ret) {
 		ret = -ENODEV;
-		pr_no_debug("misc_register error:%d\n", ret);
+		pr_debug("misc_register error:%d\n", ret);
 		return ret;
 	}
 
@@ -468,7 +468,7 @@ static int init_cpu_loading_kobj(void)
 
 	if (ret) {
 		misc_deregister(&cpu_loading_object);
-		pr_no_debug("uevent creat fail:%d\n", ret);
+		pr_debug("uevent creat fail:%d\n", ret);
 		return ret;
 	}
 
@@ -502,7 +502,7 @@ int init_uload_ind(struct proc_dir_entry *parent)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					lt_dir, entries[i].fops)) {
-			pr_no_debug("%s(), lt_dir%s failed\n",
+			pr_debug("%s(), lt_dir%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			return ret;
@@ -513,7 +513,7 @@ int init_uload_ind(struct proc_dir_entry *parent)
 	/* dev init */
 	ret = init_cpu_loading_kobj();
 	if (ret) {
-		pr_no_debug("init cpu_loading_kobj failed");
+		pr_debug("init cpu_loading_kobj failed");
 		return ret;
 	}
 

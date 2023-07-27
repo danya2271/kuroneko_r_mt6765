@@ -82,7 +82,7 @@ static void func_CHK_VERSION(void)
 	unsigned short u16_dat = 0;
 
 	u16_dat = I2C_func_PER_READ(0x5F);
-	pr_no_debug("[bu64748af]IC Version : 0x%x.\n", u16_dat);
+	pr_debug("[bu64748af]IC Version : 0x%x.\n", u16_dat);
 }
 
 static void Set_Close_Mode(void)
@@ -157,15 +157,15 @@ static int func_PROGRAM_DOWNLOAD(void)
 	download(0);
 
 	ver_check = I2C_func_MEM_READ(_M_F7_FBAF_STS);
-	pr_no_debug("[bu64748af]ver_check : 0x%x\n", ver_check);
+	pr_debug("[bu64748af]ver_check : 0x%x\n", ver_check);
 
 	if ((ver_check & 0x0004) == 0x0004) {
 		u16_dat = I2C_func_MEM_READ(_M_FIRMVER);
 
-		pr_no_debug("[bu64748af]FW Ver : %d\n", u16_dat);
-		pr_no_debug("[bu64748af]FW Download OK.\n");
+		pr_debug("[bu64748af]FW Ver : %d\n", u16_dat);
+		pr_debug("[bu64748af]FW Download OK.\n");
 	} else {
-		pr_no_debug("[bu64748af]FW Download NG.\n");
+		pr_debug("[bu64748af]FW Download NG.\n");
 		return PROG_DL_ERR;
 	}
 	return sts;
@@ -180,8 +180,8 @@ static int func_COEF_DOWNLOAD(void)
 
 	u16_dat = I2C_func_MEM_READ(_M_CD_CEFTYP);
 
-	pr_no_debug("[bu64748af]COEF Ver : %d\n", u16_dat);
-	pr_no_debug("[bu64748af]COEF Download OK.\n");
+	pr_debug("[bu64748af]COEF Ver : %d\n", u16_dat);
+	pr_debug("[bu64748af]COEF Download OK.\n");
 	return sts;
 }
 

@@ -237,13 +237,13 @@ int emi_mpu_set_single_permission(unsigned int region,
 	int i;
 
 	if (region >= EMI_MPU_REGION_NUM) {
-		pr_no_debug("[EMI] wrong region %d when calling %s\n",
+		pr_debug("[EMI] wrong region %d when calling %s\n",
 		       region, __func__);
 		return -1;
 	}
 
 	if (domain >= EMI_MPU_DOMAIN_NUM) {
-		pr_no_debug("[EMI] wrong domain %d when calling %s\n",
+		pr_debug("[EMI] wrong domain %d when calling %s\n",
 		       domain, __func__);
 		return -1;
 	}
@@ -273,7 +273,7 @@ int emi_mpu_set_single_permission(unsigned int region,
 				(region << 24) | start, (i << 24) | end,
 				new_apc, 0, 0, 0, &smc_res);
 		} else {
-			pr_no_debug("[EMI] don't need to set apc\n");
+			pr_debug("[EMI] don't need to set apc\n");
 			continue;
 		}
 	}

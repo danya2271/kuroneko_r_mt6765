@@ -45,7 +45,7 @@
 /***************Modify Following Strings for Debug**********************/
 #define PFX "IMX519_camera_sensor"
 /****************************   Modify end	**************************/
-#define LOG_INF(format, args...) pr_no_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 #define FULL_SIZE_60_FPS 0
 #define READOUT_TIME_DECREASE 0

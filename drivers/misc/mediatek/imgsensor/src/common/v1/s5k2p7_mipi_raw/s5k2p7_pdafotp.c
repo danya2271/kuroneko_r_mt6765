@@ -67,7 +67,7 @@ static bool _read_2P7_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	for (i = 0; i < size; i++) {
 		if (!selective_read_eeprom(offset, &data[i]))
 			return false;
-		pr_no_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
+		pr_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
 		offset++;
 	}
 	get_done = true;
@@ -83,7 +83,7 @@ bool read_2P7_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	/* BYTE header[9]= {0}; */
 	/* _read_2P7_eeprom(0x0000, header, 9); */
 
-	pr_no_debug("read 2P7 eeprom, size = %d\n", size);
+	pr_debug("read 2P7 eeprom, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_2P7_eeprom(addr, s5k2P7_eeprom_data, size)) {

@@ -369,7 +369,7 @@ static enum IMGSENSOR_RETURN regulator_set(
 			atomic_inc(enable_cnt);
 		} else {
 			if (regulator_is_enabled(pregulator)) {
-				/*pr_no_debug("[regulator]%d is enabled\n", pin);*/
+				/*pr_debug("[regulator]%d is enabled\n", pin);*/
 
 				if (regulator_disable(pregulator)) {
 					pr_err(

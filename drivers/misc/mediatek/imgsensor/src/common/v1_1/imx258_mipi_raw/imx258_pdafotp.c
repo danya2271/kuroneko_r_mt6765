@@ -18,7 +18,7 @@
 #ifdef IMX258_PDAFOTP_DEBUG
 #define PFX "IMX258_pdafotp"
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 #else
 #define LOG_INF(format, args...)
 #endif

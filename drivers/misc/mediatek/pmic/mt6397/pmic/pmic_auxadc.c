@@ -108,9 +108,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 0:
 			while (upmu_get_rg_adc_rdy_c0() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -123,9 +123,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 1:
 			while (upmu_get_rg_adc_rdy_c1() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -138,9 +138,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 2:
 			while (upmu_get_rg_adc_rdy_c2() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -153,9 +153,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 3:
 			while (upmu_get_rg_adc_rdy_c3() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -168,9 +168,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 4:
 			while (upmu_get_rg_adc_rdy_c4() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -183,9 +183,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 5:
 			while (upmu_get_rg_adc_rdy_c5() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -198,9 +198,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 6:
 			while (upmu_get_rg_adc_rdy_c6() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -213,9 +213,9 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 		case 7:
 			while (upmu_get_rg_adc_rdy_c7() != 1) {
 				if ((count++) > count_time_out) {
-					pr_no_debug(
+					pr_debug(
 						"[Power/PMIC][IMM_GetOneChannelValue_PMIC] ");
-					pr_no_debug("(%d) Time out!\n", dwChannel);
+					pr_debug("(%d) Time out!\n", dwChannel);
 					break;
 				}
 			}
@@ -226,7 +226,7 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 
 			break;
 		default:
-			pr_no_debug("[Power/PMIC][AUXADC] Invalid channel value(%d,%d)\n",
+			pr_debug("[Power/PMIC][AUXADC] Invalid channel value(%d,%d)\n",
 				 dwChannel, trimd);
 			mutex_unlock(&pmic_adc_mutex);
 			return -1;
@@ -238,8 +238,8 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 
 		if (Enable_AUXADC_LOG == 1) {
 			/* debug */
-			pr_no_debug("[Power/PMIC][AUXADC] u4Sample_times=");
-			pr_no_debug("%d, ret_data=%d, u4channel[%d]=%d.\n",
+			pr_debug("[Power/PMIC][AUXADC] u4Sample_times=");
+			pr_debug("%d, ret_data=%d, u4channel[%d]=%d.\n",
 				 u4Sample_times, ret_data, dwChannel,
 				 u4channel[dwChannel]);
 		}
@@ -302,7 +302,7 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 			ADC_PRECISE;
 		break;
 	default:
-		pr_no_debug("[Power/PMIC][AUXADC] Invalid channel value(%d,%d)\n",
+		pr_debug("[Power/PMIC][AUXADC] Invalid channel value(%d,%d)\n",
 			 dwChannel, trimd);
 		mutex_unlock(&pmic_adc_mutex);
 		return -1;
@@ -310,7 +310,7 @@ int PMIC_IMM_GetOneChannelValue(unsigned int dwChannel,
 
 	if (Enable_AUXADC_LOG == 1) {
 		/* debug */
-		pr_no_debug("[Power/PMIC][AUXADC] adc_result_temp=%d, adc_result=%d, r_val_temp=%d.\n",
+		pr_debug("[Power/PMIC][AUXADC] adc_result_temp=%d, adc_result=%d, r_val_temp=%d.\n",
 			 adc_result_temp, adc_result, r_val_temp);
 	}
 

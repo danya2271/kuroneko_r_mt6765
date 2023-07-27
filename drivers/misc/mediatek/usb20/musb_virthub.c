@@ -388,24 +388,24 @@ int musb_hub_control(struct usb_hcd *hcd,
 			wIndex >>= 8;
 			switch (wIndex) {
 			case 1:
-				pr_no_debug("TEST_J\n");
+				pr_debug("TEST_J\n");
 				temp = MUSB_TEST_J;
 				break;
 			case 2:
-				pr_no_debug("TEST_K\n");
+				pr_debug("TEST_K\n");
 				temp = MUSB_TEST_K;
 				break;
 			case 3:
-				pr_no_debug("TEST_SE0_NAK\n");
+				pr_debug("TEST_SE0_NAK\n");
 				temp = MUSB_TEST_SE0_NAK;
 				break;
 			case 4:
-				pr_no_debug("TEST_PACKET\n");
+				pr_debug("TEST_PACKET\n");
 				temp = MUSB_TEST_PACKET;
 				musb_load_testpacket(musb);
 				break;
 			case 5:
-				pr_no_debug("TEST_FORCE_ENABLE\n");
+				pr_debug("TEST_FORCE_ENABLE\n");
 				temp = MUSB_TEST_FORCE_HOST
 						| MUSB_TEST_FORCE_HS;
 
@@ -413,7 +413,7 @@ int musb_hub_control(struct usb_hcd *hcd,
 					MUSB_DEVCTL, MUSB_DEVCTL_SESSION);
 				break;
 			case 6:
-				pr_no_debug("TEST_FIFO_ACCESS\n");
+				pr_debug("TEST_FIFO_ACCESS\n");
 				temp = MUSB_TEST_FIFO_ACCESS;
 				break;
 			default:

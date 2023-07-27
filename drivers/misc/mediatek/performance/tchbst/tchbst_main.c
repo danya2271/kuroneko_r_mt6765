@@ -11,7 +11,7 @@ int init_tchbst(struct proc_dir_entry *parent)
 {
 	struct proc_dir_entry *tchbst_root = NULL;
 
-	pr_no_debug("__init %s\n", __func__);
+	pr_debug("__init %s\n", __func__);
 
 	/*create touch root procfs*/
 	tchbst_root = proc_mkdir("tchbst", parent);

@@ -44,7 +44,7 @@ static long alsps_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				 _IOC_SIZE(cmd));
 
 	if (err) {
-		pr_no_debug("access error: %08X, (%2d, %2d)\n", cmd,
+		pr_debug("access error: %08X, (%2d, %2d)\n", cmd,
 			  _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -60,7 +60,7 @@ static long alsps_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				pr_err("ALSPS_SET_PS_MODE fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug(
+			pr_debug(
 				"ALSPS_SET_PS_MODE, enable: %d, sample_period:%dms\n",
 				enable, 200);
 		} else {
@@ -95,7 +95,7 @@ static long alsps_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				pr_err("ALSPS_SET_ALS_MODE fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug(
+			pr_debug(
 				"ALSPS_SET_ALS_MODE, enable: %d, sample_period:%dms\n",
 				enable, 200);
 		} else {

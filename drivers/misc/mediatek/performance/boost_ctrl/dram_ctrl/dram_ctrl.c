@@ -36,17 +36,17 @@ static ssize_t ddr_ctrl_proc_write(struct file *filp, const char *ubuf,
 	int ret;
 
 	if (cnt >= sizeof(buf)) {
-		pr_no_debug("ddr_write cnt >= sizeof\n");
+		pr_debug("ddr_write cnt >= sizeof\n");
 		return -EINVAL;
 	}
 	if (copy_from_user(buf, ubuf, cnt)) {
-		pr_no_debug("ddr_write copy_from_user\n");
+		pr_debug("ddr_write copy_from_user\n");
 		return -EFAULT;
 	}
 	buf[cnt] = 0;
 	ret = kstrtoint(buf, 10, &val);
 	if (ret < 0) {
-		pr_no_debug("ddr_write ret < 0\n");
+		pr_debug("ddr_write ret < 0\n");
 		return ret;
 	}
 
@@ -136,7 +136,7 @@ static int mtk_dram_ctrl_probe(struct platform_device *pdev)
 
 	dram_ctrl->proc_dir = proc_mkdir("dram_ctrl", dram_proc_parent);
 	if (!dram_ctrl->proc_dir) {
-		pr_no_debug("drams_dir not create success\n");
+		pr_debug("drams_dir not create success\n");
 		return -ENOMEM;
 	}
 

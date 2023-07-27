@@ -203,13 +203,13 @@ int topo_ctrl_init(struct proc_dir_entry *parent)
 	topo_dir = proc_mkdir("topo_ctrl", parent);
 
 	if (!topo_dir)
-		pr_no_debug("topo_dir null\n ");
+		pr_debug("topo_dir null\n ");
 
 	/* create procfs */
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					topo_dir, entries[i].fops)) {
-			pr_no_debug("%s(), create /topo_ctrl%s failed\n",
+			pr_debug("%s(), create /topo_ctrl%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			goto out;

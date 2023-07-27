@@ -44,18 +44,18 @@ int ccorr_scenario;
 	pr_notice("[GAMMA] %s: " fmt "\n", __func__, ##arg)
 #define GAMMA_NOTICE(fmt, arg...) \
 	do { if (corr_dbg_en) \
-		pr_no_debug("[GAMMA] %s: " fmt "\n", __func__, ##arg); } while (0)
+		pr_debug("[GAMMA] %s: " fmt "\n", __func__, ##arg); } while (0)
 #define GAMMA_DBG(fmt, arg...) \
 	do { if (corr_dbg_en) \
-		pr_no_debug("[GAMMA] %s: " fmt "\n", __func__, ##arg); } while (0)
+		pr_debug("[GAMMA] %s: " fmt "\n", __func__, ##arg); } while (0)
 #define CCORR_ERR(fmt, arg...) \
 	pr_notice("[CCORR] %s: " fmt "\n", __func__, ##arg)
 #define CCORR_NOTICE(fmt, arg...) \
 	do { if (corr_dbg_en) \
-		pr_no_debug("[CCORR] %s: " fmt "\n", __func__, ##arg); } while (0)
+		pr_debug("[CCORR] %s: " fmt "\n", __func__, ##arg); } while (0)
 #define CCORR_DBG(fmt, arg...) \
 	do { if (corr_dbg_en) \
-		pr_no_debug("[CCORR] %s: " fmt "\n", __func__, ##arg); } while (0)
+		pr_debug("[CCORR] %s: " fmt "\n", __func__, ##arg); } while (0)
 
 static DEFINE_MUTEX(g_gamma_global_lock);
 

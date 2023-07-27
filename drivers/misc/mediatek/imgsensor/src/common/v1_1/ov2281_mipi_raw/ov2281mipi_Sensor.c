@@ -49,7 +49,7 @@
 	"capture 5M@30fps,864Mbps/lane")
 /****************************   Modify end    *******************************/
 
-#define LOG_INF(fmt, args...)   pr_no_debug(PFX "[%s] " fmt, __func__, ##args)
+#define LOG_INF(fmt, args...)   pr_debug(PFX "[%s] " fmt, __func__, ##args)
 
 /* sensor output data format */
 #define SENSOR_OUTPUT_FMT_8BIT  1

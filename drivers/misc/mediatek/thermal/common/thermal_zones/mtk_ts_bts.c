@@ -106,7 +106,7 @@ do {                                    \
 
 
 #define mtkts_bts_printk(fmt, args...) \
-pr_no_debug("[Thermal/TZ/BTS]" fmt, ##args)
+pr_debug("[Thermal/TZ/BTS]" fmt, ##args)
 
 #if defined(CONFIG_MEDIATEK_MT6577_AUXADC)
 struct iio_channel *thermistor_ch0;

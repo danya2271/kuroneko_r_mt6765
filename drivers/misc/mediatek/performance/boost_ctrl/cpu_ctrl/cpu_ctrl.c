@@ -60,7 +60,7 @@ int update_userlimit_cpu_freq(int kicker, int num_cluster
 		goto ret_update;
 	}
 	if (num_cluster != perfmgr_clusters) {
-		pr_no_debug(
+		pr_debug(
 				"num_cluster : %d perfmgr_clusters: %d, doesn't match\n",
 				num_cluster, perfmgr_clusters);
 		retval = -1;
@@ -70,7 +70,7 @@ int update_userlimit_cpu_freq(int kicker, int num_cluster
 	}
 
 	if (kicker < 0 || kicker >= CPU_MAX_KIR) {
-		pr_no_debug("kicker:%d, error\n", kicker);
+		pr_debug("kicker:%d, error\n", kicker);
 		retval = -1;
 		goto ret_update;
 	}
@@ -153,7 +153,7 @@ int update_userlimit_cpu_freq(int kicker, int num_cluster
 			strncat(msg, msg1, len1);
 	}
 	if (log_enable)
-		pr_no_debug("%s", msg);
+		pr_debug("%s", msg);
 
 #ifdef CONFIG_TRACING
 	perfmgr_trace_printk("cpu_ctrl", msg);
@@ -191,7 +191,7 @@ static ssize_t perfmgr_perfserv_freq_proc_write(struct file *filp
 	char *buf = perfmgr_copy_from_user_for_proc(ubuf, cnt);
 
 	if (!buf) {
-		pr_no_debug("buf is null\n");
+		pr_debug("buf is null\n");
 		goto out1;
 	}
 	freq_limit = kcalloc(perfmgr_clusters, sizeof(struct cpu_ctrl_data),
@@ -200,17 +200,17 @@ static ssize_t perfmgr_perfserv_freq_proc_write(struct file *filp
 		goto out;
 
 	tmp = buf;
-	pr_no_debug("freq write_to_file\n");
+	pr_debug("freq write_to_file\n");
 	while ((tok = strsep(&tmp, " ")) != NULL) {
 		if (i == arg_num) {
-			pr_no_debug(
+			pr_debug(
 					"@%s: number of arguments > %d!\n",
 					__func__, arg_num);
 			goto out;
 		}
 
 		if (kstrtoint(tok, 10, &data)) {
-			pr_no_debug("@%s: Invalid input: %s\n",
+			pr_debug("@%s: Invalid input: %s\n",
 					__func__, tok);
 			goto out;
 		} else {
@@ -258,13 +258,13 @@ static ssize_t perfmgr_boot_freq_proc_write(struct file *filp,
 	tmp = buf;
 	while ((tok = strsep(&tmp, " ")) != NULL) {
 		if (i == arg_num) {
-			pr_no_debug("@%s: number of arguments > %d!\n",
+			pr_debug("@%s: number of arguments > %d!\n",
 					__func__, arg_num);
 			break;
 		}
 
 		if (kstrtoint(tok, 10, &data)) {
-			pr_no_debug("@%s: Invalid input: %s\n", __func__, tok);
+			pr_debug("@%s: Invalid input: %s\n", __func__, tok);
 			goto out;
 		} else {
 			if (i % 2) /* max */
@@ -377,13 +377,13 @@ int cpu_ctrl_init(struct proc_dir_entry *parent)
 	boost_dir = proc_mkdir("cpu_ctrl", parent);
 
 	if (!boost_dir)
-		pr_no_debug("boost_dir null\n ");
+		pr_debug("boost_dir null\n ");
 
 	/* create procfs */
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					boost_dir, entries[i].fops)) {
-			pr_no_debug("%s(), create /cpu_ctrl%s failed\n",
+			pr_debug("%s(), create /cpu_ctrl%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			goto out;

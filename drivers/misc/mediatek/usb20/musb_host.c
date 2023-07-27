@@ -752,7 +752,7 @@ check_recycle_qh:
 			static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 			if (__ratelimit(&ratelimit))
-				pr_no_debug("<ratelimit> no URB in QH, possible performance drop\n");
+				pr_debug("<ratelimit> no URB in QH, possible performance drop\n");
 		}
 
 		DBG(3, "musb_advance_schedule::ep urb_list is empty\n");
@@ -1377,7 +1377,7 @@ finish:
 					urb->actual_length)
 			    > hw_ep->max_packet_sz_rx) {
 
-				/* pr_no_debug("Using DMA epnum%d: is_out=%d,
+				/* pr_debug("Using DMA epnum%d: is_out=%d,
 				 * urb->actual_length = %d,
 				 * urb->transfer_buffer_length = %d\n",
 				 * epnum, is_out, urb->actual_length,
@@ -1393,7 +1393,7 @@ finish:
 				rx_count =
 					musb_readw(hw_ep->regs, MUSB_RXCOUNT);
 
-				/* pr_no_debug("RX%d count %d,
+				/* pr_debug("RX%d count %d,
 				 * buffer 0x%p len %d/%d\n",
 				 * epnum, rx_count,
 				 * urb->transfer_dma
@@ -1403,7 +1403,7 @@ finish:
 
 				length = rx_count;
 				buf = urb->transfer_dma + urb->actual_length;
-				 /* pr_no_debug("urb->transfer_flags = 0x%x,
+				 /* pr_debug("urb->transfer_flags = 0x%x,
 				  * urb->transfer_buffer_length = %d,
 				  * urb->actual_length = %d,
 				  * qh->maxpacket= %d, rx_count= %d\n",
@@ -1445,7 +1445,7 @@ finish:
 				 */
 
 				csr = musb_readw(hw_ep->regs, MUSB_RXCSR);
-				/* pr_no_debug("dma_channel->desired_mode = %d,
+				/* pr_debug("dma_channel->desired_mode = %d,
 				 * length = %d, csr= 0x%x\n",
 				 * dma_channel->desired_mode, length, csr);
 				 */
@@ -1515,7 +1515,7 @@ finish:
 
 				packetSize = (length / qh->maxpacket)
 							+ shortPkt;
-				/* pr_no_debug("length = %d, packetSize = %d,
+				/* pr_debug("length = %d, packetSize = %d,
 				 * shortPkt = %d, epnum = %d\n",
 				 * length, packetSize, shortPkt, epnum);
 				 */
@@ -2759,7 +2759,7 @@ success:
 			static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 			if (__ratelimit(&ratelimit))
-				pr_no_debug("<ratelimit> QH create, 1st transfer\n");
+				pr_debug("<ratelimit> QH create, 1st transfer\n");
 		}
 
 #ifdef CONFIG_MTK_MUSB_QMU_SUPPORT
@@ -3383,7 +3383,7 @@ static int musb_bus_suspend(struct usb_hcd *hcd)
 		static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 1);
 
 		if (__ratelimit(&ratelimit))
-			pr_no_debug("<ratelimit> trying to suspend as %s while active\n"
+			pr_debug("<ratelimit> trying to suspend as %s while active\n"
 				, otg_state_string(musb->xceiv->otg->state));
 		return -EBUSY;
 	}

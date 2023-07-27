@@ -187,7 +187,7 @@ static long eara_ioctl_impl(struct file *filp,
 				sizeof(struct _EARA_NN_PACKAGE));
 		break;
 	default:
-		pr_no_debug(TAG "%s %d: unknown cmd %x\n",
+		pr_debug(TAG "%s %d: unknown cmd %x\n",
 			__FILE__, __LINE__, cmd);
 		ret = -1;
 		goto ret_ioctl;
@@ -349,7 +349,7 @@ static long device_ioctl(struct file *filp,
 #endif
 
 	default:
-		pr_no_debug(TAG "%s %d: unknown cmd %x\n",
+		pr_debug(TAG "%s %d: unknown cmd %x\n",
 			__FILE__, __LINE__, cmd);
 		ret = -1;
 		goto ret_ioctl;
@@ -375,11 +375,11 @@ int init_perfctl(struct proc_dir_entry *parent)
 	int ret_val = 0;
 
 
-	pr_no_debug(TAG"Start to init perf_ioctl driver\n");
+	pr_debug(TAG"Start to init perf_ioctl driver\n");
 
 	pe = proc_create("perf_ioctl", 0664, parent, &Fops);
 	if (!pe) {
-		pr_no_debug(TAG"%s failed with %d\n",
+		pr_debug(TAG"%s failed with %d\n",
 				"Creating file node ",
 				ret_val);
 		ret_val = -ENOMEM;
@@ -388,14 +388,14 @@ int init_perfctl(struct proc_dir_entry *parent)
 
 	pe = proc_create("eara_ioctl", 0664, parent, &eara_Fops);
 	if (!pe) {
-		pr_no_debug(TAG"%s failed with %d\n",
+		pr_debug(TAG"%s failed with %d\n",
 				"Creating file node ",
 				ret_val);
 		ret_val = -ENOMEM;
 		goto out_wq;
 	}
 
-	pr_no_debug(TAG"init perf_ioctl driver done\n");
+	pr_debug(TAG"init perf_ioctl driver done\n");
 
 	return 0;
 

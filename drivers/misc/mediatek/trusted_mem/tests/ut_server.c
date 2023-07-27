@@ -172,11 +172,11 @@ static int run_one_test_case(struct UT_TEST_CASE *t_case, u64 cmd, u64 param1,
 					     t_case->item.test_description);
 
 	if (case_ret == UT_STATE_PASS)
-		pr_no_debug("  UT case:%lld passed!\n", cmd);
+		pr_debug("  UT case:%lld passed!\n", cmd);
 	else if (case_ret == UT_STATE_FAIL)
-		pr_no_debug("  UT case:%lld failed!\n", cmd);
+		pr_debug("  UT case:%lld failed!\n", cmd);
 	else
-		pr_no_debug("  UT case:%lld unsupported!\n", cmd);
+		pr_debug("  UT case:%lld unsupported!\n", cmd);
 
 	ut_status_dump();
 

@@ -295,38 +295,38 @@ void scp_A_dump_regs(void)
 	uint32_t tmp;
 
 	if (is_scp_ready(SCP_A_ID)) {
-		pr_no_debug("[SCP]ready PC:0x%x,LR:0x%x,PSP:0x%x,SP:0x%x\n"
+		pr_debug("[SCP]ready PC:0x%x,LR:0x%x,PSP:0x%x,SP:0x%x\n"
 		, readl(SCP_A_DEBUG_PC_REG), readl(SCP_A_DEBUG_LR_REG)
 		, readl(SCP_A_DEBUG_PSP_REG), readl(SCP_A_DEBUG_SP_REG));
 	} else {
-		pr_no_debug("[SCP]not ready PC:0x%x,LR:0x%x,PSP:0x%x,SP:0x%x\n"
+		pr_debug("[SCP]not ready PC:0x%x,LR:0x%x,PSP:0x%x,SP:0x%x\n"
 		, readl(SCP_A_DEBUG_PC_REG), readl(SCP_A_DEBUG_LR_REG)
 		, readl(SCP_A_DEBUG_PSP_REG), readl(SCP_A_DEBUG_SP_REG));
 	}
 
-	pr_no_debug("[SCP]GIPC     0x%x\n", readl(SCP_GIPC_IN_REG));
-	pr_no_debug("[SCP]BUS_CTRL 0x%x\n", readl(SCP_BUS_CTRL));
-	pr_no_debug("[SCP]SLEEP_STATUS 0x%x\n", readl(SCP_CPU_SLEEP_STATUS));
-	pr_no_debug("[SCP]INFRA_STATUS 0x%x\n", readl(INFRA_CTRL_STATUS));
-	pr_no_debug("[SCP]IRQ_STATUS 0x%x\n", readl(SCP_INTC_IRQ_STATUS));
-	pr_no_debug("[SCP]IRQ_ENABLE 0x%x\n", readl(SCP_INTC_IRQ_ENABLE));
-	pr_no_debug("[SCP]IRQ_SLEEP 0x%x\n", readl(SCP_INTC_IRQ_SLEEP));
-	pr_no_debug("[SCP]IRQ_STATUS_MSB 0x%x\n", readl(SCP_INTC_IRQ_STATUS_MSB));
-	pr_no_debug("[SCP]IRQ_ENABLE_MSB 0x%x\n", readl(SCP_INTC_IRQ_ENABLE_MSB));
-	pr_no_debug("[SCP]IRQ_SLEEP_MSB 0x%x\n", readl(SCP_INTC_IRQ_SLEEP_MSB));
-	pr_no_debug("[SCP]CLK_CTRL_SEL 0x%x\n", readl(SCP_CLK_SW_SEL));
-	pr_no_debug("[SCP]CLK_ENABLE  0x%x\n", readl(SCP_CLK_ENABLE));
-	pr_no_debug("[SCP]SLEEP_DEBUG 0x%x\n", readl(SCP_A_SLEEP_DEBUG_REG));
+	pr_debug("[SCP]GIPC     0x%x\n", readl(SCP_GIPC_IN_REG));
+	pr_debug("[SCP]BUS_CTRL 0x%x\n", readl(SCP_BUS_CTRL));
+	pr_debug("[SCP]SLEEP_STATUS 0x%x\n", readl(SCP_CPU_SLEEP_STATUS));
+	pr_debug("[SCP]INFRA_STATUS 0x%x\n", readl(INFRA_CTRL_STATUS));
+	pr_debug("[SCP]IRQ_STATUS 0x%x\n", readl(SCP_INTC_IRQ_STATUS));
+	pr_debug("[SCP]IRQ_ENABLE 0x%x\n", readl(SCP_INTC_IRQ_ENABLE));
+	pr_debug("[SCP]IRQ_SLEEP 0x%x\n", readl(SCP_INTC_IRQ_SLEEP));
+	pr_debug("[SCP]IRQ_STATUS_MSB 0x%x\n", readl(SCP_INTC_IRQ_STATUS_MSB));
+	pr_debug("[SCP]IRQ_ENABLE_MSB 0x%x\n", readl(SCP_INTC_IRQ_ENABLE_MSB));
+	pr_debug("[SCP]IRQ_SLEEP_MSB 0x%x\n", readl(SCP_INTC_IRQ_SLEEP_MSB));
+	pr_debug("[SCP]CLK_CTRL_SEL 0x%x\n", readl(SCP_CLK_SW_SEL));
+	pr_debug("[SCP]CLK_ENABLE  0x%x\n", readl(SCP_CLK_ENABLE));
+	pr_debug("[SCP]SLEEP_DEBUG 0x%x\n", readl(SCP_A_SLEEP_DEBUG_REG));
 
 	tmp = readl(SCP_BUS_CTRL)&(~dbg_irq_info_sel_mask);
 	writel(tmp | (0 << dbg_irq_info_sel_shift), SCP_BUS_CTRL);
-	pr_no_debug("[SCP]BUS:INFRA LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
+	pr_debug("[SCP]BUS:INFRA LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
 	writel(tmp | (1 << dbg_irq_info_sel_shift), SCP_BUS_CTRL);
-	pr_no_debug("[SCP]BUS:DCACHE LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
+	pr_debug("[SCP]BUS:DCACHE LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
 	writel(tmp | (2 << dbg_irq_info_sel_shift), SCP_BUS_CTRL);
-	pr_no_debug("[SCP]BUS:ICACHE LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
+	pr_debug("[SCP]BUS:ICACHE LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
 	writel(tmp | (3 << dbg_irq_info_sel_shift), SCP_BUS_CTRL);
-	pr_no_debug("[SCP]BUS:PC LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
+	pr_debug("[SCP]BUS:PC LATCH,  0x%x\n", readl(SCP_DEBUG_IRQ_INFO));
 }
 
 /*
@@ -335,7 +335,7 @@ void scp_A_dump_regs(void)
  */
 void scp_aee_last_reg(void)
 {
-	pr_no_debug("[SCP] %s begins\n", __func__);
+	pr_debug("[SCP] %s begins\n", __func__);
 
 	scp_A_aee_status.pc = readl(SCP_A_DEBUG_PC_REG);
 	scp_A_aee_status.lr = readl(SCP_A_DEBUG_LR_REG);
@@ -344,7 +344,7 @@ void scp_aee_last_reg(void)
 	scp_A_aee_status.m2h = readl(SCP_A_TO_HOST_REG);
 	scp_A_aee_status.h2m = readl(SCP_GIPC_IN_REG);
 
-	pr_no_debug("[SCP] %s ends\n", __func__);
+	pr_debug("[SCP] %s ends\n", __func__);
 }
 
 /*
@@ -379,7 +379,7 @@ static unsigned int scp_crash_dump(struct MemoryDump *pMemoryDump,
 	*reg &= ~SCP_TCM_LOCK_BIT;
 	dsb(SY);
 	if ((*reg & SCP_TCM_LOCK_BIT)) {
-		pr_no_debug("[SCP]unlock failed, skip dump\n");
+		pr_debug("[SCP]unlock failed, skip dump\n");
 		return 0;
 	}
 
@@ -412,7 +412,7 @@ static unsigned int scp_crash_dump(struct MemoryDump *pMemoryDump,
 		scp_l1c_flua(SCP_IL1C);
 		udelay(10);
 #if SCP_RECOVERY_SUPPORT
-		pr_no_debug("scp:scp_l1c_start_virt %p\n",
+		pr_debug("scp:scp_l1c_start_virt %p\n",
 			scp_l1c_start_virt);
 		/* copy dram data*/
 		memcpy((void *)&(pMemoryDump->scp_reg_dump),
@@ -431,7 +431,7 @@ static unsigned int scp_crash_dump(struct MemoryDump *pMemoryDump,
 	/*check SRAM unlock*/
 	if (scp_awake_fail_flag != 1) {
 		if (scp_awake_unlock(id) == -1)
-			pr_no_debug("[SCP]%s awake unlock fail, scp id=%u\n",
+			pr_debug("[SCP]%s awake unlock fail, scp id=%u\n",
 				__func__, id);
 	}
 
@@ -449,7 +449,7 @@ static void scp_prepare_aed(char *aed_str, struct scp_aed_cfg *aed)
 	u32 log_size, phy_size;
 	int ret = 0;
 
-	pr_no_debug("[SCP] %s begins\n", __func__);
+	pr_debug("[SCP] %s begins\n", __func__);
 
 	aed->detail = NULL;
 	detail = scp_A_detail_buffer;
@@ -475,7 +475,7 @@ static void scp_prepare_aed(char *aed_str, struct scp_aed_cfg *aed)
 	aed->phy_size = phy_size;
 	aed->detail = detail;
 
-	pr_no_debug("[SCP] %s ends\n", __func__);
+	pr_debug("[SCP] %s ends\n", __func__);
 }
 
 /*
@@ -497,7 +497,7 @@ static void scp_prepare_aed_dump(char *aed_str,
 
 	char *scp_A_log = NULL;
 
-	pr_no_debug("[SCP] %s begins:%s\n", __func__, aed_str);
+	pr_debug("[SCP] %s begins:%s\n", __func__, aed_str);
 	scp_aee_last_reg();
 
 	scp_A_log = scp_get_last_log(SCP_A_ID);
@@ -535,7 +535,7 @@ static void scp_prepare_aed_dump(char *aed_str,
 			memory_dump_size);
 		memory_dump_size = 0;
 	} else {
-		pr_no_debug("[SCP AEE]scp A dump ptr:%p\n", scp_dump_ptr);
+		pr_debug("[SCP AEE]scp A dump ptr:%p\n", scp_dump_ptr);
 		pMemoryDump = (struct MemoryDump *) scp_dump_ptr;
 		memset(pMemoryDump, 0x0, sizeof(*pMemoryDump));
 		memory_dump_size = scp_crash_dump(pMemoryDump, SCP_A_ID);
@@ -556,7 +556,7 @@ static void scp_prepare_aed_dump(char *aed_str,
 	aed->pMemoryDump = NULL;
 	aed->memory_dump_size = 0;
 
-	pr_no_debug("[SCP] %s ends\n", __func__);
+	pr_debug("[SCP] %s ends\n", __func__);
 }
 
 /*
@@ -608,19 +608,19 @@ void scp_aed(enum scp_excep_id type, enum scp_core_id id)
 		break;
 	}
 	/*print scp message*/
-	pr_no_debug("scp_aed_title=%s", scp_aed_title);
+	pr_debug("scp_aed_title=%s", scp_aed_title);
 
 	if (type != EXCEP_LOAD_FIRMWARE)
 		scp_prepare_aed_dump(scp_aed_title, &aed, id);
 	/*print detail info. in kernel*/
-	pr_no_debug("%s", aed.detail);
+	pr_debug("%s", aed.detail);
 
 #if IS_ENABLED(CONFIG_MTK_AEE_FEATURE)
 	/* scp aed api, only detail information available*/
 	aed_common_exception_api("scp", NULL, 0, NULL, 0,
 			aed.detail, DB_OPT_DEFAULT);
 #endif
-	pr_no_debug("[SCP] scp exception dump is done\n");
+	pr_debug("[SCP] scp exception dump is done\n");
 
 	mutex_unlock(&scp_excep_mutex);
 }
@@ -633,11 +633,11 @@ void scp_aed(enum scp_excep_id type, enum scp_core_id id)
  */
 void scp_aed_reset_inplace(enum scp_excep_id type, enum scp_core_id id)
 {
-	pr_no_debug("[SCP] %s begins\n", __func__);
+	pr_debug("[SCP] %s begins\n", __func__);
 	if (scp_ee_enable)
 		scp_aed(type, id);
 	else
-		pr_no_debug("[SCP]ee disable value=%d\n", scp_ee_enable);
+		pr_debug("[SCP]ee disable value=%d\n", scp_ee_enable);
 
 #if (SCP_RECOVERY_SUPPORT == 0)
 	/* workaround for QA, not reset SCP in WDT */
@@ -649,7 +649,7 @@ void scp_aed_reset_inplace(enum scp_excep_id type, enum scp_core_id id)
 #if SCP_RECOVERY_SUPPORT
 	if (atomic_read(&scp_reset_status) == RESET_STATUS_START) {
 		/*complete scp ee, if scp reset by wdt or awake fail*/
-		pr_no_debug("[SCP]aed finished, complete it\n");
+		pr_debug("[SCP]aed finished, complete it\n");
 		complete(&scp_sys_reset_cp);
 	}
 #endif
@@ -669,7 +669,7 @@ static void scp_aed_reset_ws(struct work_struct *ws)
 	enum scp_excep_id type = (enum scp_excep_id) sws->flags;
 	enum scp_core_id id = (enum scp_core_id) sws->id;
 
-	pr_no_debug("[SCP] %s begins: scp_excep_id=%u scp_core_id=%u\n",
+	pr_debug("[SCP] %s begins: scp_excep_id=%u scp_core_id=%u\n",
 		__func__, type, id);
 	scp_aed_reset_inplace(type, id);
 }
@@ -780,7 +780,7 @@ void scp_ram_dump_init(void)
 {
 #if SCP_RECOVERY_SUPPORT
 	scp_A_task_context_addr = scp_region_info->TaskContext_ptr;
-	pr_no_debug("[SCP] get scp_A_task_context_addr: 0x%x\n",
+	pr_debug("[SCP] get scp_A_task_context_addr: 0x%x\n",
 		scp_A_task_context_addr);
 #endif
 }
@@ -797,6 +797,6 @@ void scp_excep_cleanup(void)
 
 	scp_A_task_context_addr = 0;
 
-	pr_no_debug("[SCP] %s ends\n", __func__);
+	pr_debug("[SCP] %s ends\n", __func__);
 }
 

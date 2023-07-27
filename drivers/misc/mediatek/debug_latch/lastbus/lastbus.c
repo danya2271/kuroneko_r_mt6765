@@ -159,7 +159,7 @@ static int lastbus_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	pr_no_debug("%s:%d: enter\n", __func__, __LINE__);
+	pr_debug("%s:%d: enter\n", __func__, __LINE__);
 	if (lastbus_ctrl->init)
 		lastbus_ctrl->init(lastbus_ctrl);
 	else {

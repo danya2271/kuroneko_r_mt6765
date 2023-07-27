@@ -317,7 +317,7 @@ static int __init mrdump_panic_init(void)
 
 	atomic_notifier_chain_register(&panic_notifier_list, &panic_blk);
 	register_die_notifier(&die_blk);
-	pr_no_debug("ipanic: startup\n");
+	pr_debug("ipanic: startup\n");
 	return 0;
 }
 
@@ -328,7 +328,7 @@ static void __exit mrdump_panic_exit(void)
 {
 	atomic_notifier_chain_unregister(&panic_notifier_list, &panic_blk);
 	unregister_die_notifier(&die_blk);
-	pr_no_debug("ipanic: exit\n");
+	pr_debug("ipanic: exit\n");
 }
 module_exit(mrdump_panic_exit);
 #endif

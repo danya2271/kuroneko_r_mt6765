@@ -578,16 +578,16 @@ int dynamic_debug_msg_print(unsigned int mva, int w, int h, int pitch, int Bpp)
 
 	ret = m4u_query_mva_info(0, mva, layer_size, &real_mva, &real_size);
 	if (ret < 0) {
-		pr_no_debug("m4u_query_mva_info error\n");
+		pr_debug("m4u_query_mva_info error\n");
 		return -1;
 	}
 	ret = m4u_mva_map_kernel(real_mva, real_size, &kva, &mapped_size);
 	if (ret < 0) {
-		pr_no_debug("m4u_mva_map_kernel fail.\n");
+		pr_debug("m4u_mva_map_kernel fail.\n");
 		return -1;
 	}
 	if (layer_size > mapped_size) {
-		pr_no_debug("warning: layer size > mapped size\n");
+		pr_debug("warning: layer size > mapped size\n");
 		goto err;
 	}
 
@@ -8123,17 +8123,17 @@ int primary_display_vsync_switch(int method)
 	int ret = 0;
 
 	if (method == 0) {
-		pr_no_debug("Vsync mapped to RDMA %d\n", method);
+		pr_debug("Vsync mapped to RDMA %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_RDMA0_DONE);
 	} else if (method == 1) {
-		pr_no_debug("Vsync mapped to DSI TE %d\n", method);
+		pr_debug("Vsync mapped to DSI TE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_DSI0_EXT_TE);
 	} else if (method == 2) {
-		pr_no_debug("Vsync mapped to DSI FRAME DONE %d\n", method);
+		pr_debug("Vsync mapped to DSI FRAME DONE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_DSI0_FRAME_DONE);
@@ -9042,12 +9042,12 @@ static int Panel_Master_primary_display_config_dsi(const char *name,
 
 	/* modify below for config dsi */
 	if (!strcmp(name, "PM_CLK")) {
-		pr_no_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
+		pr_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
 		data_config->dispif_config.dsi.PLL_CLOCK = config_value;
 	} else if (!strcmp(name, "PM_SSC")) {
 		data_config->dispif_config.dsi.ssc_range = config_value;
 	}
-	pr_no_debug("Pmaster_config_dsi: will Run path_config()\n");
+	pr_debug("Pmaster_config_dsi: will Run path_config()\n");
 	ret = dpmgr_path_config(pgc->dpmgr_handle, data_config, NULL);
 
 	return ret;

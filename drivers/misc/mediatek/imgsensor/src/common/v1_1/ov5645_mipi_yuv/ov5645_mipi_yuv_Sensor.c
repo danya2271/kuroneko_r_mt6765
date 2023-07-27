@@ -54,10 +54,10 @@
  *    xlog_printk(ANDROID_LOG_ERROR, PFX, "[%s] " format, __FUNCTION__, ##args)
  */
 /* #define LOG_INF(format, args...)\
- *    pr_no_debug(PFX "[%s] " format, __func__, ##args)
+ *    pr_debug(PFX "[%s] " format, __func__, ##args)
  */
 #define LOG_INF(format, args...)\
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 #define USE_STREAM 1
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);

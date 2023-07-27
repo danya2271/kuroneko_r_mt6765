@@ -1673,7 +1673,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 			set_dummy();
 		else {
 			/*No need to set*/
-			pr_no_debug("frame_length %d < shutter %d",
+			pr_debug("frame_length %d < shutter %d",
 				imgsensor.frame_length, imgsensor.shutter);
 		}
 		break;
@@ -1747,7 +1747,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 			set_dummy();
 		else {
 			/*No need to set*/
-			pr_no_debug("frame_length %d < shutter %d",
+			pr_debug("frame_length %d < shutter %d",
 				imgsensor.frame_length, imgsensor.shutter);
 		}
 		break;
@@ -1766,7 +1766,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 			set_dummy();
 		else {
 			/*No need to set*/
-			pr_no_debug("frame_length %d < shutter %d",
+			pr_debug("frame_length %d < shutter %d",
 				imgsensor.frame_length, imgsensor.shutter);
 		}
 		break;
@@ -1785,7 +1785,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 			set_dummy();
 		else {
 			/*No need to set*/
-			pr_no_debug("frame_length %d < shutter %d",
+			pr_debug("frame_length %d < shutter %d",
 				imgsensor.frame_length, imgsensor.shutter);
 		}
 		break;
@@ -1804,7 +1804,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 			set_dummy();
 		else {
 			/*No need to set*/
-			pr_no_debug("frame_length %d < shutter %d",
+			pr_debug("frame_length %d < shutter %d",
 				imgsensor.frame_length, imgsensor.shutter);
 		}
 		pr_info("error scenario_id = %d, preview scenario\n",
@@ -1861,7 +1861,7 @@ static kal_uint32 set_test_pattern_mode(kal_bool enable)
 }
 static kal_uint32 streaming_control(kal_bool enable)
 {
-	pr_no_debug("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
+	pr_debug("streaming_enable(0=Sw Standby,1=streaming): %d\n", enable);
 	if (enable) {
 		write_cmos_sensor(0x3C16, 0x00);
 		write_cmos_sensor(0x3C0D, 0x04);
@@ -1958,7 +1958,7 @@ static kal_uint32 feature_control(
 		*feature_para_len = 4;
 		break;
 	case SENSOR_FEATURE_SET_FRAMERATE:
-		pr_no_debug("current fps :%d\n", *feature_data_32);
+		pr_debug("current fps :%d\n", *feature_data_32);
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.current_fps = (UINT16)*feature_data_32;
 		spin_unlock(&imgsensor_drv_lock);
@@ -2016,11 +2016,11 @@ static kal_uint32 feature_control(
 			(UINT16)*(feature_data+1));
 		break;
 	case SENSOR_FEATURE_SET_STREAMING_SUSPEND:
-		pr_no_debug("SENSOR_FEATURE_SET_STREAMING_SUSPEND\n");
+		pr_debug("SENSOR_FEATURE_SET_STREAMING_SUSPEND\n");
 		streaming_control(KAL_FALSE);
 		break;
 	case SENSOR_FEATURE_SET_STREAMING_RESUME:
-		pr_no_debug(
+		pr_debug(
 		    "SENSOR_FEATURE_SET_STREAMING_RESUME, shutter:%llu\n",
 		    *feature_data);
 

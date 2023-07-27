@@ -26,9 +26,9 @@ static void step_c_work_func(struct work_struct *work)
 	cxt = step_c_context_obj;
 
 	if (cxt->step_c_data.get_data == NULL)
-		pr_no_debug("step_c driver not register data path\n");
+		pr_debug("step_c driver not register data path\n");
 	if (cxt->step_c_data.get_data_floor_c == NULL)
-		pr_no_debug("floor_c driver not register data path\n");
+		pr_debug("floor_c driver not register data path\n");
 
 
 	status = 0;
@@ -73,7 +73,7 @@ static void step_c_work_func(struct work_struct *work)
 		cxt->is_first_data_after_enable = false;
 		/* filter -1 value */
 		if (cxt->drv_data.counter == STEP_C_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto step_c_loop;
 
 		}
@@ -83,14 +83,14 @@ static void step_c_work_func(struct work_struct *work)
 		cxt->is_first_floor_c_data_after_enable = false;
 		/* filter -1 value */
 		if (cxt->drv_data.floor_counter == STEP_C_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto step_c_loop;
 
 		}
 	}
 
 	/* report data to input device */
-	/*pr_no_debug("step_c data[%d]\n", cxt->drv_data.counter);*/
+	/*pr_debug("step_c data[%d]\n", cxt->drv_data.counter);*/
 
 	step_c_data_report(cxt->drv_data.counter, cxt->drv_data.status);
 	floor_c_data_report(cxt->drv_data.floor_counter,
@@ -115,7 +115,7 @@ static struct step_c_context *step_c_context_alloc_object(void)
 {
 	struct step_c_context *obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	if (!obj) {
 		pr_err("Alloc step_c object error!\n");
 		return NULL;
@@ -131,7 +131,7 @@ static struct step_c_context *step_c_context_alloc_object(void)
 	obj->is_step_c_batch_enable = false;	/* for batch mode init */
 	obj->is_step_d_batch_enable = false;	/* for batch mode init */
 
-	pr_no_debug("%s end\n", __func__);
+	pr_debug("%s end\n", __func__);
 	return obj;
 }
 
@@ -155,7 +155,7 @@ int step_notify_t(enum STEP_NOTIFY_TYPE type, int64_t time_stamp)
 
 	}
 	if (type == TYPE_SIGNIFICANT) {
-		pr_no_debug("fwq TYPE_SIGNIFICANT notify\n");
+		pr_debug("fwq TYPE_SIGNIFICANT notify\n");
 		/* cxt->step_c_data.get_data_significant(&value); */
 		event.flush_action = DATA_ACTION;
 		event.handle = ID_SIGNIFICANT_MOTION;
@@ -189,7 +189,7 @@ static int step_d_real_enable(int enable)
 			}
 		}
 
-		pr_no_debug("step_d real enable\n");
+		pr_debug("step_d real enable\n");
 	}
 	if (enable == 0) {
 
@@ -197,7 +197,7 @@ static int step_d_real_enable(int enable)
 		if (err)
 			pr_err("step_d enable(%d) err = %d\n",
 				enable, err);
-		pr_no_debug("step_d real disable\n");
+		pr_debug("step_d real disable\n");
 
 	}
 
@@ -223,14 +223,14 @@ static int significant_real_enable(int enable)
 			}
 		}
 
-		pr_no_debug("enable_significant real enable\n");
+		pr_debug("enable_significant real enable\n");
 	}
 	if (enable == 0) {
 		err = cxt->step_c_ctl.enable_significant(0);
 		if (err)
 			pr_err("enable_significantenable(%d) err = %d\n",
 				enable, err);
-		pr_no_debug("enable_significant real disable\n");
+		pr_debug("enable_significant real disable\n");
 
 	}
 	return err;
@@ -258,7 +258,7 @@ static int step_c_real_enable(int enable)
 				}
 			}
 
-			pr_no_debug("step_c real enable\n");
+			pr_debug("step_c real enable\n");
 		}
 	}
 	if (enable == 0) {
@@ -268,7 +268,7 @@ static int step_c_real_enable(int enable)
 			if (err)
 				pr_err("step_c enable(%d) err = %d\n",
 					enable, err);
-			pr_no_debug("step_c real disable\n");
+			pr_debug("step_c real disable\n");
 		}
 
 	}
@@ -294,14 +294,14 @@ static int floor_c_real_enable(int enable)
 					enable, err);
 		}
 
-		pr_no_debug("floor_c real enable\n");
+		pr_debug("floor_c real enable\n");
 	}
 	if (enable == 0) {
 		err = cxt->step_c_ctl.enable_floor_c(0);
 		if (err)
 			pr_err("floor_c enable(%d) err = %d\n",
 				enable, err);
-		pr_no_debug("floor_c real disable\n");
+		pr_debug("floor_c real disable\n");
 
 	}
 
@@ -321,7 +321,7 @@ static int step_c_enable_data(int enable)
 	}
 
 	if (enable == 1) {
-		pr_no_debug("STEP_C enable data\n");
+		pr_debug("STEP_C enable data\n");
 		cxt->is_active_data = true;
 		cxt->is_first_data_after_enable = true;
 		cxt->step_c_ctl.open_report_data(1);
@@ -335,7 +335,7 @@ static int step_c_enable_data(int enable)
 		}
 	}
 	if (enable == 0) {
-		pr_no_debug("STEP_C disable\n");
+		pr_debug("STEP_C disable\n");
 		cxt->is_active_data = false;
 		cxt->step_c_ctl.open_report_data(0);
 		if (true == cxt->is_polling_run) {
@@ -360,7 +360,7 @@ static int floor_c_enable_data(int enable)
 	cxt = step_c_context_obj;
 
 	if (enable == 1) {
-		pr_no_debug("FLOOR_C enable data\n");
+		pr_debug("FLOOR_C enable data\n");
 		cxt->is_floor_c_active_data = true;
 		cxt->is_first_floor_c_data_after_enable = true;
 		floor_c_real_enable(1);
@@ -374,7 +374,7 @@ static int floor_c_enable_data(int enable)
 		}
 	}
 	if (enable == 0) {
-		pr_no_debug("FLOOR_C disable\n");
+		pr_debug("FLOOR_C disable\n");
 		cxt->is_floor_c_active_data = false;
 		floor_c_real_enable(0);
 		if (true == cxt->is_polling_run) {
@@ -418,7 +418,7 @@ static ssize_t step_cenablenodata_show(struct device *dev,
 {
 	int len = 0;
 
-	pr_no_debug(" not support now\n");
+	pr_debug(" not support now\n");
 	return len;
 }
 
@@ -428,11 +428,11 @@ static ssize_t step_cenablenodata_store(struct device *dev,
 	int err = 0;
 	struct step_c_context *cxt = NULL;
 
-	pr_no_debug("step_c_store_enable nodata buf=%s\n", buf);
+	pr_debug("step_c_store_enable nodata buf=%s\n", buf);
 	mutex_lock(&step_c_context_obj->step_c_op_mutex);
 	cxt = step_c_context_obj;
 	if (cxt->step_c_ctl.enable_nodata == NULL) {
-		pr_no_debug("step_c_ctl enable nodata NULL\n");
+		pr_debug("step_c_ctl enable nodata NULL\n");
 		mutex_unlock(&step_c_context_obj->step_c_op_mutex);
 		return count;
 	}
@@ -454,19 +454,19 @@ static ssize_t step_cactive_store(struct device *dev,
 	int handle = 0;
 	int en = 0;
 
-	pr_no_debug("%s buf=%s\n", __func__, buf);
+	pr_debug("%s buf=%s\n", __func__, buf);
 	mutex_lock(&step_c_context_obj->step_c_op_mutex);
 
 	cxt = step_c_context_obj;
 	if (cxt->step_c_ctl.open_report_data == NULL) {
-		pr_no_debug("step_c_ctl enable NULL\n");
+		pr_debug("step_c_ctl enable NULL\n");
 		mutex_unlock(&step_c_context_obj->step_c_op_mutex);
 		return count;
 	}
 	res = sscanf(buf, "%d,%d", &handle, &en);
 	if (res != 2)
-		pr_no_debug("%s param error: res = %d\n", __func__, res);
-	pr_no_debug("%s handle=%d ,en=%d\n", __func__, handle, en);
+		pr_debug("%s param error: res = %d\n", __func__, res);
+	pr_debug("%s handle=%d ,en=%d\n", __func__, handle, en);
 	switch (handle) {
 	case ID_STEP_COUNTER:
 		if (en == 1)
@@ -503,7 +503,7 @@ static ssize_t step_cactive_store(struct device *dev,
 
 	}
 	mutex_unlock(&step_c_context_obj->step_c_op_mutex);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	return res;
 }
 
@@ -516,7 +516,7 @@ static ssize_t step_cactive_show(struct device *dev,
 
 	cxt = step_c_context_obj;
 	div = cxt->step_c_data.vender_div;
-	pr_no_debug("step_c vender_div value: %d\n", div);
+	pr_debug("step_c vender_div value: %d\n", div);
 	return snprintf(buf, PAGE_SIZE, "%d\n", div);
 }
 
@@ -530,7 +530,7 @@ static ssize_t step_cdelay_store(struct device *dev,
 	mutex_lock(&step_c_context_obj->step_c_op_mutex);
 	cxt = step_c_context_obj;
 	if (cxt->step_c_ctl.step_c_set_delay == NULL) {
-		pr_no_debug("step_c_ctl step_c_set_delay NULL\n");
+		pr_debug("step_c_ctl step_c_set_delay NULL\n");
 		mutex_unlock(&step_c_context_obj->step_c_op_mutex);
 		return -1;
 	}
@@ -546,7 +546,7 @@ static ssize_t step_cdelay_store(struct device *dev,
 		atomic_set(&step_c_context_obj->delay, mdelay);
 	}
 	err = cxt->step_c_ctl.step_c_set_delay(delay);
-	pr_no_debug(" step_c_delay %d ns\n", delay);
+	pr_debug(" step_c_delay %d ns\n", delay);
 	mutex_unlock(&step_c_context_obj->step_c_op_mutex);
 	return err;
 
@@ -557,7 +557,7 @@ static ssize_t step_cdelay_show(struct device *dev,
 {
 	int len = 0;
 
-	pr_no_debug(" not support now\n");
+	pr_debug(" not support now\n");
 	return len;
 }
 
@@ -573,7 +573,7 @@ static ssize_t step_cbatch_store(struct device *dev,
 		&handle, &flag, &samplingPeriodNs, &maxBatchReportLatencyNs);
 	if (res != 4)
 		pr_err("%s param error: err =%d\n", __func__, res);
-	pr_no_debug("handle %d, flag:%d PeriodNs:%lld, LatencyNs: %lld\n",
+	pr_debug("handle %d, flag:%d PeriodNs:%lld, LatencyNs: %lld\n",
 		handle, flag, samplingPeriodNs, maxBatchReportLatencyNs);
 	mutex_lock(&step_c_context_obj->step_c_op_mutex);
 	cxt = step_c_context_obj;
@@ -623,7 +623,7 @@ static ssize_t step_cbatch_store(struct device *dev,
 			pr_err("floor count enable batch err %d\n", res);
 	}
 	mutex_unlock(&step_c_context_obj->step_c_op_mutex);
-	pr_no_debug("%s done: %d\n", __func__, cxt->is_step_c_batch_enable);
+	pr_debug("%s done: %d\n", __func__, cxt->is_step_c_batch_enable);
 	return res;
 }
 
@@ -644,7 +644,7 @@ static ssize_t step_cflush_store(struct device *dev,
 	if (err != 0)
 		pr_err("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&step_c_context_obj->step_c_op_mutex);
 	cxt = step_c_context_obj;
@@ -699,13 +699,13 @@ static ssize_t step_cdevnum_show(struct device *dev,
 
 static int step_counter_remove(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
 static int step_counter_probe(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
@@ -733,15 +733,15 @@ static int step_c_real_driver_init(void)
 	int i = 0;
 	int err = 0;
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	for (i = 0; i < MAX_CHOOSE_STEP_C_NUM; i++) {
-		pr_no_debug(" i=%d\n", i);
+		pr_debug(" i=%d\n", i);
 		if (step_counter_init_list[i] != 0) {
-			pr_no_debug(" step_c try to init driver %s\n",
+			pr_debug(" step_c try to init driver %s\n",
 				   step_counter_init_list[i]->name);
 			err = step_counter_init_list[i]->init();
 			if (err == 0) {
-				pr_no_debug(" step_c real driver %s probe ok\n",
+				pr_debug(" step_c real driver %s probe ok\n",
 					   step_counter_init_list[i]->name);
 				break;
 			}
@@ -749,7 +749,7 @@ static int step_c_real_driver_init(void)
 	}
 
 	if (i == MAX_CHOOSE_STEP_C_NUM) {
-		pr_no_debug("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 		err = -1;
 	}
 	return err;
@@ -760,9 +760,9 @@ int step_c_driver_add(struct step_c_init_info *obj)
 	int err = 0;
 	int i = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
-	pr_no_debug("register step_counter driver for the first time\n");
+	pr_debug("register step_counter driver for the first time\n");
 	if (platform_driver_register(&step_counter_driver))
 		pr_err("fail to register gensor driver already exist\n");
 	for (i = 0; i < MAX_CHOOSE_STEP_C_NUM; i++) {
@@ -856,12 +856,12 @@ int step_c_register_data_path(struct step_c_data_path *data)
 	cxt->step_c_data.get_data_significant = data->get_data_significant;
 	cxt->step_c_data.get_data_step_d = data->get_data_step_d;
 	cxt->step_c_data.get_data_floor_c = data->get_data_floor_c;
-	pr_no_debug("step_c register data path vender_div: %d\n",
+	pr_debug("step_c register data path vender_div: %d\n",
 		cxt->step_c_data.vender_div);
 	if (cxt->step_c_data.get_data == NULL
 	    || cxt->step_c_data.get_data_significant == NULL
 	    || cxt->step_c_data.get_data_step_d == NULL) {
-		pr_no_debug("step_c register data path fail\n");
+		pr_debug("step_c register data path fail\n");
 		return -1;
 	}
 	return 0;
@@ -904,7 +904,7 @@ int step_c_register_control_path(struct step_c_control_path *ctl)
 		|| (cxt->step_c_ctl.step_d_set_delay == NULL)
 		|| (cxt->step_c_ctl.enable_significant == NULL)
 		|| (cxt->step_c_ctl.enable_step_detect == NULL)) {
-		pr_no_debug("step_c register control path fail\n");
+		pr_debug("step_c register control path fail\n");
 		return -1;
 	}
 
@@ -983,7 +983,7 @@ int step_c_flush_report(void)
 	event.handle = ID_STEP_COUNTER;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(step_c_context_obj->mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 
@@ -997,7 +997,7 @@ int step_d_flush_report(void)
 	event.handle = ID_STEP_DETECTOR;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(step_c_context_obj->mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 
@@ -1016,7 +1016,7 @@ int floor_c_flush_report(void)
 	event.handle = ID_FLOOR_COUNTER;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(step_c_context_obj->mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 
@@ -1025,7 +1025,7 @@ static int step_c_probe(void)
 
 	int err;
 
-	pr_no_debug("%s+++!!\n", __func__);
+	pr_debug("%s+++!!\n", __func__);
 
 	step_c_context_obj = step_c_context_alloc_object();
 	if (!step_c_context_obj) {
@@ -1041,12 +1041,12 @@ static int step_c_probe(void)
 		goto real_driver_init_fail;
 	}
 
-	pr_no_debug("%s---- OK !!\n", __func__);
+	pr_debug("%s---- OK !!\n", __func__);
 	return 0;
 real_driver_init_fail:
 	kfree(step_c_context_obj);
 exit_alloc_data_failed:
-	pr_no_debug("%s---- fail !!!\n", __func__);
+	pr_debug("%s---- fail !!!\n", __func__);
 	return err;
 }
 
@@ -1055,7 +1055,7 @@ static int step_c_remove(void)
 
 	int err = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	sysfs_remove_group(&step_c_context_obj->mdev.this_device->kobj,
 		&step_c_attribute_group);
 
@@ -1070,7 +1070,7 @@ static int step_c_remove(void)
 
 static int __init step_c_init(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (step_c_probe()) {
 		pr_err("failed to register step_c driver\n");

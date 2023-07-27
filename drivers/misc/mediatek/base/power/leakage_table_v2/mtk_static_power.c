@@ -29,7 +29,7 @@
 #if (SPOWER_LOG_PRINT == SPOWER_LOG_NONE)
 #define SPOWER_DEBUG(fmt, args...)
 #elif (SPOWER_LOG_PRINT == SPOWER_LOG_WITH_PRINTK)
-#define SPOWER_DEBUG(fmt, args...)	 pr_no_debug(SP_TAG fmt, ##args)
+#define SPOWER_DEBUG(fmt, args...)	 pr_debug(SP_TAG fmt, ##args)
 #endif
 
 static struct sptab_s sptab[MTK_SPOWER_MAX];

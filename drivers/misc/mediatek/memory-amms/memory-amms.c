@@ -111,7 +111,7 @@ static int __init amms_sysfs_init(void)
 		return -EINVAL;
 	}
 
-	pr_no_debug("%s: done.\n", __func__);
+	pr_debug("%s: done.\n", __func__);
 	return 0;
 }
 

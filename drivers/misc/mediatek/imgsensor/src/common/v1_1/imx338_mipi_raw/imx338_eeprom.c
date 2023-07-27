@@ -16,7 +16,7 @@
 
 #define PFX "IMX338_pdafotp"
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 #include "kd_imgsensor.h"
 #include "kd_imgsensor_define.h"

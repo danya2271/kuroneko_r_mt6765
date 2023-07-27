@@ -67,11 +67,11 @@ static bool _read_imx338_eeprom(kal_uint16 addr, BYTE *data, int size)
 	int i = 0;
 	int offset = addr;
 
-	pr_no_debug("enter _read_eeprom size = %d\n", size);
+	pr_debug("enter _read_eeprom size = %d\n", size);
 	for (i = 0; i < size; i++) {
 		if (!selective_read_eeprom(offset, &data[i]))
 			return false;
-		/* pr_no_debug("read_eeprom 0x%0x %d\n",offset, data[i]); */
+		/* pr_debug("read_eeprom 0x%0x %d\n",offset, data[i]); */
 		offset++;
 	}
 

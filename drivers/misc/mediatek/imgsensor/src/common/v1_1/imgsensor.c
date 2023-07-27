@@ -698,13 +698,13 @@ static inline int adopt_CAMERA_HW_GetInfo2(void *pBuf)
 	/* Step2 : Get Resolution */
 	imgsensor_sensor_get_resolution(psensor, &sensor_resolution);
 
-	pr_no_debug("[CAMERA_HW][Pre]w=0x%x, h = 0x%x\n",
+	pr_debug("[CAMERA_HW][Pre]w=0x%x, h = 0x%x\n",
 			sensor_resolution.SensorPreviewWidth,
 			sensor_resolution.SensorPreviewHeight);
-	pr_no_debug("[CAMERA_HW][Full]w=0x%x, h = 0x%x\n",
+	pr_debug("[CAMERA_HW][Full]w=0x%x, h = 0x%x\n",
 			sensor_resolution.SensorFullWidth,
 			sensor_resolution.SensorFullHeight);
-	pr_no_debug("[CAMERA_HW][VD]w=0x%x, h = 0x%x\n",
+	pr_debug("[CAMERA_HW][VD]w=0x%x, h = 0x%x\n",
 			sensor_resolution.SensorVideoWidth,
 			sensor_resolution.SensorVideoHeight);
 
@@ -859,7 +859,7 @@ static inline int adopt_CAMERA_HW_GetInfo2(void *pBuf)
 			(void *)&sensor_resolution,
 			sizeof(struct ACDK_SENSOR_RESOLUTION_INFO_STRUCT))) {
 
-		pr_no_debug("[CAMERA_HW][Resolution] ioctl copy to user failed\n");
+		pr_debug("[CAMERA_HW][Resolution] ioctl copy to user failed\n");
 		return -EFAULT;
 	}
 
@@ -971,7 +971,7 @@ static inline int adopt_CAMERA_HW_FeatureControl(void *pBuf)
 				pFeatureCtrl->InvokeCamera,
 				__current);
 		else
-			pr_no_debug(
+			pr_debug(
 				"%s, set drive current by pinctrl was not supported\n",
 				__func__);
 
@@ -1038,7 +1038,7 @@ static inline int adopt_CAMERA_HW_FeatureControl(void *pBuf)
 
 	case SENSOR_FEATURE_SET_SENSOR_SYNC:
 	case SENSOR_FEATURE_SET_ESHUTTER_GAIN:
-		pr_no_debug("[kd_sensorlist]enter kdSetExpGain\n");
+		pr_debug("[kd_sensorlist]enter kdSetExpGain\n");
 		/* keep the information to wait Vsync synchronize */
 		pSensorSyncInfo =
 			(struct ACDK_KD_SENSOR_SYNC_STRUCT *) pFeaturePara;

@@ -52,7 +52,7 @@
 #define PFX "s5k4e6_camera_sensor"
 #define LOG_1 LOG_INF("s5k4e6,MIPI 2LANE\n")
 /**************************** Modify end **************************************/
-#define LOG_INF(fmt, args...)	pr_no_debug(PFX "[%s] " fmt, __func__, ##args)
+#define LOG_INF(fmt, args...)	pr_debug(PFX "[%s] " fmt, __func__, ##args)
 /* static int first_flag = 1; */
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 

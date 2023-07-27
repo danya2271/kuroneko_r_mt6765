@@ -69,7 +69,7 @@ static bool _read_imx258_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	for (i = 0; i < size; i++) {
 		if (!selective_read_eeprom(offset, &data[i]))
 			return false;
-		pr_no_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
+		pr_debug("read_eeprom 0x%0x %d\n", offset, data[i]);
 		offset++;
 	}
 	get_done = true;
@@ -83,7 +83,7 @@ bool read_imx258_pdaf(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = 0x0763;
 	size = 1404;
 
-	pr_no_debug("read imx258 eeprom, size = %d\n", size);
+	pr_debug("read imx258 eeprom, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx258_eeprom(addr, imx258_eeprom_data, size)) {
@@ -103,7 +103,7 @@ bool read_imx258_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = 0x0763;
 	size = 1404;
 
-	pr_no_debug("read imx258 eeprom, size = %d\n", size);
+	pr_debug("read imx258 eeprom, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx258_eeprom(addr, imx258_eeprom_data, size)) {
@@ -124,7 +124,7 @@ bool read_imx258_eeprom_SPC(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = 0x0F6D;		/* 0x0F73; */
 	size = 126;
 
-	pr_no_debug("read imx258 eeprom, size = %d\n", size);
+	pr_debug("read imx258 eeprom, size = %d\n", size);
 
 	if (!get_done || last_size != size || last_offset != addr) {
 		if (!_read_imx258_eeprom(addr, imx258_eeprom_data, size)) {

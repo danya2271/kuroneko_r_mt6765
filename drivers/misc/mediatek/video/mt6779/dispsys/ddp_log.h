@@ -42,13 +42,13 @@
 #define DISP_LOG_W(fmt, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, fmt, ##args);	\
-		pr_no_debug("[DDP/"LOG_TAG"]warn:"fmt, ##args);		\
+		pr_debug("[DDP/"LOG_TAG"]warn:"fmt, ##args);		\
 	} while (0)
 
 #define DISP_LOG_E(fmt, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_ERROR, fmt, ##args);	\
-		pr_no_debug("[DDP/"LOG_TAG"]error:"fmt, ##args);		\
+		pr_debug("[DDP/"LOG_TAG"]error:"fmt, ##args);		\
 	} while (0)
 
 #define DDPIRQ(fmt, args...)						\
@@ -58,7 +58,7 @@
 	} while (0)
 
 #define DDPDBG(fmt, args...) DISP_LOG_D(fmt, ##args)
-#define DDPDBG_pr_no_debug      DDPDBG
+#define DDPDBG_pr_debug      DDPDBG
 #define DDPMSG(fmt, args...) DISP_LOG_I(fmt, ##args)
 #define DDP_PR_WARN(fmt, args...) DISP_LOG_W(fmt, ##args)
 #define DDP_PR_ERR(fmt, args...) DISP_LOG_E(fmt, ##args)
@@ -72,12 +72,12 @@
 			dprec_logger_pr(DPREC_LOGGER_DUMP,		\
 					fmt, ##__VA_ARGS__);		\
 			if (g_mobilelog)				\
-				pr_no_debug("[DDP/"LOG_TAG"]"fmt,		\
+				pr_debug("[DDP/"LOG_TAG"]"fmt,		\
 					 ##__VA_ARGS__);		\
 		}							\
 	} while (0)
 
-#define DDPDUMP_pr_no_debug    DDPDUMP
+#define DDPDUMP_pr_debug    DDPDUMP
 
 #ifndef ASSERT
 #define ASSERT(expr)							\

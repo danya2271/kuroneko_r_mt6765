@@ -58,12 +58,12 @@ static long AAL_unlocked_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case AAL_GET_ALS_MODE:
-		pr_no_debug("AAL_GET_ALS_MODE do nothing\n");
+		pr_debug("AAL_GET_ALS_MODE do nothing\n");
 		break;
 
 	case AAL_GET_ALS_DATA:
 		dat = alsps_aal_get_data();
-		/* pr_no_debug("Get als dat :%d\n", dat); */
+		/* pr_debug("Get als dat :%d\n", dat); */
 
 		if (copy_to_user(ptr, &dat, sizeof(dat))) {
 			err = -EFAULT;
@@ -117,7 +117,7 @@ static int __init AAL_init(void)
 	if (err)
 		pr_err("AAL_device misc_register failed: %d\n", err);
 
-	pr_no_debug("OK!\n");
+	pr_debug("OK!\n");
 	return 0;
 }
 /*----------------------------------------------------------------------------*/

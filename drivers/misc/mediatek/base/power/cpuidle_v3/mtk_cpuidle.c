@@ -49,7 +49,7 @@ static void cpuidle_ts_init(void)
 
 	int cpu = smp_processor_id();
 
-	pr_no_debug("%s@%d/%d: enter\n",  __func__, __LINE__, cpu);
+	pr_debug("%s@%d/%d: enter\n",  __func__, __LINE__, cpu);
 
 	cpu_dev = get_cpu_device(cpu);
 	arch_setup_dma_ops(cpu_dev, 0, 0, NULL, false);
@@ -146,7 +146,7 @@ static void cpuidle_perf_print(int cpu, int mode)
 	cpufreq =  cpu_get_freq(cpu);
 
 	if (count < 1000) {
-		pr_no_debug("count:%d ,CPU,%d,CPU Freq,%d, idlemode:%d\n",
+		pr_debug("count:%d ,CPU,%d,CPU Freq,%d, idlemode:%d\n",
 			 count, cpu, cpufreq, mode);
 		return;
 	} else if (count > 1000)
@@ -161,34 +161,34 @@ static void cpuidle_perf_print(int cpu, int mode)
 
 	request_uart_to_wakeup();
 
-	pr_no_debug("======== MTK_CPUIDLE Time Profiling Start ========\n");
-	pr_no_debug(",CPU,%d,CPU Freq,%d, idlemode:%d\n", cpu, cpufreq, mode);
+	pr_debug("======== MTK_CPUIDLE Time Profiling Start ========\n");
+	pr_debug(",CPU,%d,CPU Freq,%d, idlemode:%d\n", cpu, cpufreq, mode);
 
-	pr_no_debug(",Kernel Platform Backup,%u\n",
+	pr_debug(",Kernel Platform Backup,%u\n",
 		 percpu_perf->kernel_plat_backup / count);
-	pr_no_debug(",Kernel to ATF,%u\n", percpu_perf->kernel_to_atf / count);
-	pr_no_debug(",ATF Setup,%u\n", percpu_perf->atf_setup / count);
-	pr_no_debug(",ATF L2 Flush,%u\n", percpu_perf->atf_l2_flush / count);
-	pr_no_debug(",ATF SPM Suspend,%u\n", percpu_perf->atf_spm_suspend / count);
-	pr_no_debug(",ATF GIC Backup,%u\n", percpu_perf->atf_gic_backup / count);
-	pr_no_debug(",ATF Platform Backup,%u\n",
+	pr_debug(",Kernel to ATF,%u\n", percpu_perf->kernel_to_atf / count);
+	pr_debug(",ATF Setup,%u\n", percpu_perf->atf_setup / count);
+	pr_debug(",ATF L2 Flush,%u\n", percpu_perf->atf_l2_flush / count);
+	pr_debug(",ATF SPM Suspend,%u\n", percpu_perf->atf_spm_suspend / count);
+	pr_debug(",ATF GIC Backup,%u\n", percpu_perf->atf_gic_backup / count);
+	pr_debug(",ATF Platform Backup,%u\n",
 		 percpu_perf->atf_plat_backup / count);
 
-	pr_no_debug("ATF CPU Init,%u\n", percpu_perf->atf_cpu_init / count);
-	pr_no_debug("ATF GIC Restore,%u\n", percpu_perf->atf_gic_restore / count);
-	pr_no_debug("ATF SPM Suspend Finish,%u\n",
+	pr_debug("ATF CPU Init,%u\n", percpu_perf->atf_cpu_init / count);
+	pr_debug("ATF GIC Restore,%u\n", percpu_perf->atf_gic_restore / count);
+	pr_debug("ATF SPM Suspend Finish,%u\n",
 		 percpu_perf->atf_spm_suspend_finish / count);
-	pr_no_debug("ATF Platform Restore,%u\n",
+	pr_debug("ATF Platform Restore,%u\n",
 		 percpu_perf->atf_plat_restore / count);
-	pr_no_debug("ATF to Kernel,%u\n", percpu_perf->atf_to_kernel / count);
-	pr_no_debug("Kernel Platform Restore,%u\n",
+	pr_debug("ATF to Kernel,%u\n", percpu_perf->atf_to_kernel / count);
+	pr_debug("Kernel Platform Restore,%u\n",
 		 percpu_perf->kernel_plat_restore / count);
 
-	pr_no_debug("Kernel to ATF before,%u\n", percpu_perf->k2atf / count);
-	pr_no_debug("ATF to wfi before,%u\n", percpu_perf->atf2wfi / count);
-	pr_no_debug("wfi to kernel before,%u\n", percpu_perf->wfi2k / count);
-	pr_no_debug("kernel to leave,%u\n", percpu_perf->k2leave / count);
-	pr_no_debug("======== MTK_CPUIDLE Percpu_Perf Profiling Done ========\n");
+	pr_debug("Kernel to ATF before,%u\n", percpu_perf->k2atf / count);
+	pr_debug("ATF to wfi before,%u\n", percpu_perf->atf2wfi / count);
+	pr_debug("wfi to kernel before,%u\n", percpu_perf->wfi2k / count);
+	pr_debug("kernel to leave,%u\n", percpu_perf->k2leave / count);
+	pr_debug("======== MTK_CPUIDLE Percpu_Perf Profiling Done ========\n");
 
 #ifndef PROFILE_EACH_CPU_ONCE
 	memset(percpu_perf, 0, sizeof(*percpu_perf));

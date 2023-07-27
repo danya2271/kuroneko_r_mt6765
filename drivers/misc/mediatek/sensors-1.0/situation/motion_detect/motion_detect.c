@@ -56,7 +56,7 @@ static int motion_detect_open_report_data(int open)
 #else
 
 #endif
-	pr_no_debug("%s : type=%d, open=%d\n",
+	pr_debug("%s : type=%d, open=%d\n",
 		__func__, ID_MOTION_DETECT, open);
 	ret = sensor_enable_to_hub(ID_MOTION_DETECT, open);
 	return ret;
@@ -73,7 +73,7 @@ static int motion_detect_recv_data(struct data_unit_t *event,
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_no_debug("stat do not support flush\n");
+		pr_debug("stat do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_MOTION_DETECT,
 				(int64_t)event->time_stamp);
@@ -131,7 +131,7 @@ static int __init motion_detect_init(void)
 
 static void __exit motion_detect_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(motion_detect_init);

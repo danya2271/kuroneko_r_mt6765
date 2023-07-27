@@ -290,7 +290,7 @@ static void _clk_buf_mode_set(enum clk_buf_id id, unsigned int mode)
 	else if (mode < val)
 		clkbuf_clr(XO_HW_SEL, id, val - mode);
 	else
-		pr_no_debug("already set mode as requested\n");
+		pr_debug("already set mode as requested\n");
 }
 
 static u32 _clk_buf_en_get(enum clk_buf_id id)
@@ -579,7 +579,7 @@ static int _clk_buf_ctrl_internal(enum clk_buf_id id,
 	}
 
 	clkbuf_read(PWRAP_DCXO_EN, 0, &val);
-	pr_no_debug("%s: id=%d, cmd=%d, DCXO_EN = 0x%x\n",
+	pr_debug("%s: id=%d, cmd=%d, DCXO_EN = 0x%x\n",
 		__func__, id, cmd, val);
 
 	if (!no_lock)
@@ -625,7 +625,7 @@ static bool _clk_buf_ctrl(enum clk_buf_id id, bool onoff)
 	if (!_clk_buf_get_init_sta())
 		return false;
 
-	pr_no_debug("%s: id=%d, onoff=%d\n",
+	pr_debug("%s: id=%d, onoff=%d\n",
 		__func__, id, onoff);
 
 	if (preempt_count() > 0 || irqs_disabled()

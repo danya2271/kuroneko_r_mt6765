@@ -30,7 +30,7 @@ static void startTimer(struct hrtimer *timer, int delay_ms, bool first)
 		obj->target_ktime =
 			ktime_add_ns(ktime_get(), (int64_t)delay_ms * 1000000);
 
-		/* pr_no_debug("cur_ns = %lld, first_target_ns = %lld\n",
+		/* pr_debug("cur_ns = %lld, first_target_ns = %lld\n",
 		 *	ktime_to_ns(ktime_get()),
 		 * ktime_to_ns(obj->target_ktime));
 		 */
@@ -41,7 +41,7 @@ static void startTimer(struct hrtimer *timer, int delay_ms, bool first)
 		} while (ktime_to_ns(obj->target_ktime) <
 			 ktime_to_ns(ktime_get()));
 
-		/* pr_no_debug("cur_ns = %lld, target_ns = %lld\n",
+		/* pr_debug("cur_ns = %lld, target_ns = %lld\n",
 		 *	ktime_to_ns(ktime_get()),
 		 *	ktime_to_ns(obj->target_ktime));
 		 */
@@ -73,7 +73,7 @@ static void baro_work_func(struct work_struct *work)
 	delay_ms = atomic_read(&cxt->delay);
 
 	if (cxt->baro_data.get_data == NULL) {
-		pr_no_debug("baro driver not register data path\n");
+		pr_debug("baro driver not register data path\n");
 		goto baro_loop;
 	}
 
@@ -101,13 +101,13 @@ static void baro_work_func(struct work_struct *work)
 		cxt->is_first_data_after_enable = false;
 		/* filter -1 value */
 		if (cxt->drv_data.baro_data.values[0] == BARO_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto baro_loop;
 		}
 	}
 	/* report data to input device */
-	/*pr_no_debug("new baro work run....\n"); */
-	/*pr_no_debug("baro data[%d].\n", cxt->drv_data.baro_data.values[0]); */
+	/*pr_debug("new baro work run....\n"); */
+	/*pr_debug("baro data[%d].\n", cxt->drv_data.baro_data.values[0]); */
 
 	while ((cur_ns - pre_ns) >= delay_ms * 1800000LL) {
 		pre_ns += delay_ms * 1000000LL;
@@ -143,7 +143,7 @@ static struct baro_context *baro_context_alloc_object(void)
 
 	struct baro_context *obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	if (!obj) {
 		pr_err("Alloc baro object error!\n");
 		return NULL;
@@ -167,7 +167,7 @@ static struct baro_context *baro_context_alloc_object(void)
 	obj->delay_ns = -1;
 	obj->latency_ns = -1;
 
-	pr_no_debug("%s end\n", __func__);
+	pr_debug("%s end\n", __func__);
 	return obj;
 }
 #if !defined(CONFIG_NANOHUB) || !defined(CONFIG_MTK_BAROHUB)
@@ -178,7 +178,7 @@ static int baro_enable_and_batch(void)
 
 	/* power on -> power off */
 	if (cxt->power == 1 && cxt->enable == 0) {
-		pr_no_debug("BARO disable\n");
+		pr_debug("BARO disable\n");
 		/* stop polling firstly, if needed */
 		if (cxt->baro_ctl.is_report_input_direct == false &&
 		    cxt->is_polling_run == true) {
@@ -188,7 +188,7 @@ static int baro_enable_and_batch(void)
 			cancel_work_sync(&cxt->report);
 			cxt->drv_data.baro_data.values[0] = BARO_INVALID_VALUE;
 			cxt->is_polling_run = false;
-			pr_no_debug("baro stop polling done\n");
+			pr_debug("baro stop polling done\n");
 		}
 		/* turn off the power */
 		err = cxt->baro_ctl.enable_nodata(0);
@@ -196,29 +196,29 @@ static int baro_enable_and_batch(void)
 			pr_err("baro turn off power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("baro turn off power done\n");
+		pr_debug("baro turn off power done\n");
 
 		cxt->power = 0;
 		cxt->delay_ns = -1;
-		pr_no_debug("BARO disable done\n");
+		pr_debug("BARO disable done\n");
 		return 0;
 	}
 	/* power off -> power on */
 	if (cxt->power == 0 && cxt->enable == 1) {
-		pr_no_debug("BARO power on\n");
+		pr_debug("BARO power on\n");
 		err = cxt->baro_ctl.enable_nodata(1);
 		if (err) {
 			pr_err("baro turn on power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("baro turn on power done\n");
+		pr_debug("baro turn on power done\n");
 
 		cxt->power = 1;
-		pr_no_debug("BARO power on done\n");
+		pr_debug("BARO power on done\n");
 	}
 	/* rate change */
 	if (cxt->power == 1 && cxt->delay_ns >= 0) {
-		pr_no_debug("BARO set batch\n");
+		pr_debug("BARO set batch\n");
 		/* set ODR, fifo timeout latency */
 		if (cxt->baro_ctl.is_support_batch)
 			err = cxt->baro_ctl.batch(0, cxt->delay_ns,
@@ -229,7 +229,7 @@ static int baro_enable_and_batch(void)
 			pr_err("baro set batch(ODR) err %d\n", err);
 			return -1;
 		}
-		pr_no_debug("baro set ODR, fifo latency done\n");
+		pr_debug("baro set ODR, fifo latency done\n");
 		/* start polling, if needed */
 		if (cxt->baro_ctl.is_report_input_direct == false) {
 			uint64_t mdelay = cxt->delay_ns;
@@ -243,10 +243,10 @@ static int baro_enable_and_batch(void)
 				startTimer(&cxt->hrTimer,
 					   atomic_read(&cxt->delay), true);
 			}
-			pr_no_debug("baro set polling delay %d ms\n",
+			pr_debug("baro set polling delay %d ms\n",
 				 atomic_read(&cxt->delay));
 		}
-		pr_no_debug("BARO batch done\n");
+		pr_debug("BARO batch done\n");
 	}
 	return 0;
 }
@@ -258,7 +258,7 @@ static ssize_t baroactive_store(struct device *dev,
 	struct baro_context *cxt = baro_context_obj;
 	int err = 0;
 
-	pr_no_debug("%s buf=%s\n", __func__, buf);
+	pr_debug("%s buf=%s\n", __func__, buf);
 	mutex_lock(&baro_context_obj->baro_op_mutex);
 	if (!strncmp(buf, "1", 1))
 		cxt->enable = 1;
@@ -280,7 +280,7 @@ static ssize_t baroactive_store(struct device *dev,
 #endif
 err_out:
 	mutex_unlock(&baro_context_obj->baro_op_mutex);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	if (err)
 		return err;
 	else
@@ -297,7 +297,7 @@ static ssize_t baroactive_show(struct device *dev,
 	cxt = baro_context_obj;
 	div = cxt->baro_data.vender_div;
 
-	pr_no_debug("baro vender_div value: %d\n", div);
+	pr_debug("baro vender_div value: %d\n", div);
 	return snprintf(buf, PAGE_SIZE, "%d\n", div);
 }
 
@@ -327,7 +327,7 @@ static ssize_t barobatch_store(struct device *dev,
 	err = baro_enable_and_batch();
 #endif
 	mutex_unlock(&baro_context_obj->baro_op_mutex);
-	pr_no_debug("%s done: %d\n", __func__, cxt->is_batch_enable);
+	pr_debug("%s done: %d\n", __func__, cxt->is_batch_enable);
 	if (err)
 		return err;
 	else
@@ -351,7 +351,7 @@ static ssize_t baroflush_store(struct device *dev,
 	if (err != 0)
 		pr_err("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&baro_context_obj->baro_op_mutex);
 	cxt = baro_context_obj;
@@ -383,13 +383,13 @@ static ssize_t barodevnum_show(struct device *dev,
 
 static int barometer_remove(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
 static int barometer_probe(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
@@ -418,15 +418,15 @@ static int baro_real_driver_init(void)
 	int i = 0;
 	int err = 0;
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	for (i = 0; i < MAX_CHOOSE_BARO_NUM; i++) {
-		pr_no_debug(" i=%d\n", i);
+		pr_debug(" i=%d\n", i);
 		if (barometer_init_list[i] != 0) {
-			pr_no_debug(" baro try to init driver %s\n",
+			pr_debug(" baro try to init driver %s\n",
 				 barometer_init_list[i]->name);
 			err = barometer_init_list[i]->init();
 			if (err == 0) {
-				pr_no_debug(" baro real driver %s probe ok\n",
+				pr_debug(" baro real driver %s probe ok\n",
 					 barometer_init_list[i]->name);
 				break;
 			}
@@ -434,7 +434,7 @@ static int baro_real_driver_init(void)
 	}
 
 	if (i == MAX_CHOOSE_BARO_NUM) {
-		pr_no_debug("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 		err = -1;
 	}
 	return err;
@@ -445,7 +445,7 @@ int baro_driver_add(struct baro_init_info *obj)
 	int err = 0;
 	int i = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	if (!obj) {
 		pr_err("BARO driver add fail, baro_init_info is NULL\n");
 		return -1;
@@ -453,7 +453,7 @@ int baro_driver_add(struct baro_init_info *obj)
 
 	for (i = 0; i < MAX_CHOOSE_BARO_NUM; i++) {
 		if (i == 0) {
-			pr_no_debug(
+			pr_debug(
 				"register barometer driver for the first time\n");
 			if (platform_driver_register(&barometer_driver))
 				pr_err(
@@ -544,10 +544,10 @@ int baro_register_data_path(struct baro_data_path *data)
 	cxt->baro_data.get_data = data->get_data;
 	cxt->baro_data.vender_div = data->vender_div;
 	cxt->baro_data.get_raw_data = data->get_raw_data;
-	pr_no_debug("baro register data path vender_div: %d\n",
+	pr_debug("baro register data path vender_div: %d\n",
 		 cxt->baro_data.vender_div);
 	if (cxt->baro_data.get_data == NULL) {
-		pr_no_debug("baro register data path fail\n");
+		pr_debug("baro register data path fail\n");
 		return -1;
 	}
 	return 0;
@@ -572,7 +572,7 @@ int baro_register_control_path(struct baro_control_path *ctl)
 	if (cxt->baro_ctl.set_delay == NULL ||
 	    cxt->baro_ctl.open_report_data == NULL ||
 	    cxt->baro_ctl.enable_nodata == NULL) {
-		pr_no_debug("baro register control path fail\n");
+		pr_debug("baro register control path fail\n");
 		return -1;
 	}
 
@@ -617,7 +617,7 @@ int baro_flush_report(void)
 
 	memset(&event, 0, sizeof(struct sensor_event));
 
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(baro_context_obj->mdev.minor, &event);
 	return err;
@@ -627,7 +627,7 @@ static int baro_probe(void)
 {
 	int err;
 
-	pr_no_debug("%s+++!!\n", __func__);
+	pr_debug("%s+++!!\n", __func__);
 
 	baro_context_obj = baro_context_alloc_object();
 	if (!baro_context_obj) {
@@ -643,7 +643,7 @@ static int baro_probe(void)
 		goto real_driver_init_fail;
 	}
 
-	pr_no_debug("%s--- OK !!\n", __func__);
+	pr_debug("%s--- OK !!\n", __func__);
 	return 0;
 
 real_driver_init_fail:
@@ -651,7 +651,7 @@ real_driver_init_fail:
 	baro_context_obj = NULL;
 exit_alloc_data_failed:
 
-	pr_no_debug("%s----fail !!!\n", __func__);
+	pr_debug("%s----fail !!!\n", __func__);
 	return err;
 }
 
@@ -659,7 +659,7 @@ static int baro_remove(void)
 {
 	int err = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	sysfs_remove_group(&baro_context_obj->mdev.this_device->kobj,
 			   &baro_attribute_group);
@@ -676,7 +676,7 @@ static int baro_remove(void)
 
 static int __init baro_init(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (baro_probe()) {
 		pr_err("failed to register baro driver\n");

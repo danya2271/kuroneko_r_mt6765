@@ -48,7 +48,7 @@
 /***********************   Modify end    **************************************/
 
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 /******************************************************************************
  * Proifling

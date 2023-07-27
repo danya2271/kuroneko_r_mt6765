@@ -119,7 +119,7 @@ struct DPE_CLK_STRUCT dpe_clk;
 #define MyTag "[DPE]"
 #define IRQTag "KEEPER"
 
-#define LOG_VRB(format, args...) pr_no_debug(MyTag format, ##args)
+#define LOG_VRB(format, args...) pr_debug(MyTag format, ##args)
 
 /* #define DPE_DEBUG_USE */
 #ifdef DPE_DEBUG_USE
@@ -3731,7 +3731,7 @@ int DPE_pm_resume(struct device *device)
 #endif
 int DPE_pm_restore_noirq(struct device *device)
 {
-	pr_no_debug("calling %s()\n", __func__);
+	pr_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 /*	mt_irq_set_sens(DPE_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);*/
 /*	mt_irq_set_polarity(DPE_IRQ_BIT_ID, MT_POLARITY_LOW);*/

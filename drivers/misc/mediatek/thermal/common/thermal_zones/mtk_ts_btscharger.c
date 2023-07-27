@@ -42,7 +42,7 @@ IMM_GetOneChannelValue(int dwChannel, int data[4], int *rawdata)
 #define mtktscharger_dprintk(fmt, args...) \
 do { \
 	if (mtktscharger_debug_log) \
-		pr_no_debug("[Thermal/tzcharger]" fmt, ##args); \
+		pr_debug("[Thermal/tzcharger]" fmt, ##args); \
 } while (0)
 
 #define mtktscharger_dprintk_always(fmt, args...) \

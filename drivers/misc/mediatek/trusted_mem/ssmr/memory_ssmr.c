@@ -474,7 +474,7 @@ static int set_memory_mapping(unsigned long start, phys_addr_t size, int map)
 		return -1;
 	}
 
-	pr_no_debug("start=0x%lx, size=%pa, address=0x%p, map=%d\n", start, &size,
+	pr_debug("start=0x%lx, size=%pa, address=0x%p, map=%d\n", start, &size,
 		 (void *)address, map);
 
 	/* flush dcache when unmap */
@@ -532,7 +532,7 @@ fail:
 static inline int set_memory_mapping(unsigned long start, phys_addr_t size,
 				     int map)
 {
-	pr_no_debug("start=0x%lx, size=%pa, map=%d\n", start, &size, map);
+	pr_debug("start=0x%lx, size=%pa, map=%d\n", start, &size, map);
 	if (!map) {
 		pr_info("Flush kmap page table\n");
 		kmap_flush_unused();

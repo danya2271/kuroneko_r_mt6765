@@ -75,7 +75,7 @@ int scp_awake_lock(enum scp_core_id scp_id)
 	}
 
 	/*set a direct IPI to awake SCP */
-	/*pr_no_debug("scp_awake_lock: try to awake %s\n", core_id);*/
+	/*pr_debug("scp_awake_lock: try to awake %s\n", core_id);*/
 	writel(0xA0 | (1 << AP_AWAKE_LOCK), INFRA_IRQ_SET);
 
 	count = 0;
@@ -158,7 +158,7 @@ int scp_awake_unlock(enum scp_core_id scp_id)
 	}
 
 	/* WE1: set a direct IPI to release awake SCP */
-	/*pr_no_debug("scp_awake_lock: try to awake %s\n", core_id);*/
+	/*pr_debug("scp_awake_lock: try to awake %s\n", core_id);*/
 	writel(0xA0 | (1 << AP_AWAKE_UNLOCK), INFRA_IRQ_SET);
 
 	count = 0;

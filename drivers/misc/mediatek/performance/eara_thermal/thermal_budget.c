@@ -70,7 +70,7 @@
 #define EARA_THRM_LOGI(fmt, args...)				\
 	do {							\
 		if (enable_debug_log) {				\
-			pr_no_debug(EARA_THRM_TAG fmt, ##args);	\
+			pr_debug(EARA_THRM_TAG fmt, ##args);	\
 		}						\
 	} while (0)
 
@@ -79,10 +79,10 @@
 		static int count;				\
 								\
 		if (enable_debug_log)				\
-			pr_no_debug(EARA_THRM_TAG fmt, ##args);	\
+			pr_debug(EARA_THRM_TAG fmt, ##args);	\
 		else {						\
 			if (count > 100) {			\
-				pr_no_debug(EARA_THRM_TAG fmt, ##args); \
+				pr_debug(EARA_THRM_TAG fmt, ##args); \
 				count = 0;			\
 			} else					\
 				count++;			\
@@ -92,7 +92,7 @@
 
 #define EARA_THRM_LOGD(fmt, args...)				\
 	do {							\
-		pr_no_debug(EARA_THRM_TAG fmt, ##args);		\
+		pr_debug(EARA_THRM_TAG fmt, ##args);		\
 		eara_thrm_tracelog(fmt, ##args);		\
 	} while (0)
 

@@ -48,7 +48,7 @@ unsigned int acquire_bwl_ctrl(void __iomem *LAST_EMI_BASE)
 		mdelay(1);
 		if ((timeout % 100) == 0) {
 			mt_reg_sync_writel(decs_status, LAST_EMI_DECS_CTRL);
-			pr_no_debug("[BWL] switch scenario timeout\n");
+			pr_debug("[BWL] switch scenario timeout\n");
 			return -1;
 		}
 	}

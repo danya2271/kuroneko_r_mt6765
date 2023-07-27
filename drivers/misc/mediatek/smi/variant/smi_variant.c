@@ -344,7 +344,7 @@ static int smi_larb_init(unsigned int larb)
 	/* regval2 = M4U_ReadReg32(larb_base , SMI_LARB_MON_BUS_REQ1); */
 
 	if (regval == 0) {
-		pr_no_debug("Init OSTD for larb_base: 0x%lx\n", larb_base);
+		pr_debug("Init OSTD for larb_base: 0x%lx\n", larb_base);
 		M4U_WriteReg32(larb_base, SMI_LARB_OSTDL_SOFT_EN, 0xffffffff);
 	} else {
 		pr_warn("Larb: 0x%lx is busy : 0x%x , port:0x%x,0x%x ,fail to set OSTD\n",
@@ -379,8 +379,8 @@ int larb_reg_restore(int larb)
 
 	pReg = pLarbRegBackUp[larb];
 
-	pr_no_debug("+%s, larb_idx=%d\n", __func__, larb);
-	pr_no_debug("m4u part restore, larb_idx=%d\n", larb);
+	pr_debug("+%s, larb_idx=%d\n", __func__, larb);
+	pr_debug("m4u part restore, larb_idx=%d\n", larb);
 	/*warning: larb_con is controlled by set/clr */
 	regval = *(pReg++);
 	M4U_WriteReg32(larb_base, SMI_LARB_CON_CLR, ~(regval));
@@ -405,10 +405,10 @@ static int fake_mode_handling(struct MTK_SMI_BWC_CONF *p_conf,
 	if (p_conf->scen == SMI_BWC_SCEN_WFD) {
 		if (p_conf->b_on) {
 			wifi_disp_transaction = 1;
-			pr_no_debug("Enable WFD in profile: %d\n", smi_profile);
+			pr_debug("Enable WFD in profile: %d\n", smi_profile);
 		} else {
 			wifi_disp_transaction = 0;
-			pr_no_debug("Disable WFD in profile: %d\n", smi_profile);
+			pr_debug("Disable WFD in profile: %d\n", smi_profile);
 		}
 		return 1;
 	} else {
@@ -433,7 +433,7 @@ static int ovl_limit_uevent(int bwc_scen, int ovl_pixel_limit)
 	if (pSmiDev != NULL) {
 		err = kobject_uevent_env(&(smiDeviceUevent->kobj),
 			KOBJ_CHANGE, envp);
-		pr_no_debug("Notify OVL limitaion=%d, SCEN=%d",
+		pr_debug("Notify OVL limitaion=%d, SCEN=%d",
 			ovl_pixel_limit, bwc_scen);
 	}
 
@@ -558,7 +558,7 @@ static int smi_bwc_config(struct MTK_SMI_BWC_CONF *p_conf,
 	/* Bandwidth Limiter */
 	switch (eFinalScen) {
 	case SMI_BWC_SCEN_VP:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VP");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VP");
 		if (smi_data->smi_priv->plat != MTK_PLAT_MT8163)
 			smicur->vp_setting(smi_data);
 		else {
@@ -572,58 +572,58 @@ static int smi_bwc_config(struct MTK_SMI_BWC_CONF *p_conf,
 		break;
 
 	case SMI_BWC_SCEN_SWDEC_VP:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_SWDEC_VP");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_SWDEC_VP");
 		smicur->vp_setting(smi_data);
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_VP;
 		break;
 
 	case SMI_BWC_SCEN_VR:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VR");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VR");
 		smicur->vr_setting(smi_data);
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_VR;
 		break;
 
 	case SMI_BWC_SCEN_VR_SLOW:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VR");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_VR");
 		smi_profile = SMI_BWC_SCEN_VR_SLOW;
 		smicur->vr_setting(smi_data);
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_VR;
 		break;
 
 	case SMI_BWC_SCEN_VENC:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_VENC");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_VENC");
 		smicur->vr_setting(smi_data);
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
 		break;
 
 	case SMI_BWC_SCEN_NORMAL:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_NORMAL");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_NORMAL");
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
 		smicur->init_setting(smi_data, &is_default_value_saved,
 				default_val_smi_l1arb, smi_data->larb_nr);
 		break;
 
 	case SMI_BWC_SCEN_MM_GPU:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_MM_GPU");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_MM_GPU");
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
 		smicur->init_setting(smi_data, &is_default_value_saved,
 				default_val_smi_l1arb, smi_data->larb_nr);
 		break;
 
 	case SMI_BWC_SCEN_HDMI:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_HDMI");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_HDMI");
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
 		smicur->hdmi_setting(smi_data);
 		break;
 
 	case SMI_BWC_SCEN_HDMI4K:
-		pr_no_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_HDMI4K");
+		pr_debug("[SMI_PROFILE] : %s\n", "SMI_BWC_SCEN_HDMI4K");
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
 		smicur->hdmi_4k_setting(smi_data);
 		break;
 
 	default:
-		pr_no_debug("[SMI_PROFILE] : %s %d\n", "initSetting", eFinalScen);
+		pr_debug("[SMI_PROFILE] : %s %d\n", "initSetting", eFinalScen);
 		smicur->init_setting(smi_data, &is_default_value_saved,
 				default_val_smi_l1arb, smi_data->larb_nr);
 		g_smi_bwc_mm_info.hw_ovl_limit = SF_HWC_PIXEL_MAX_NORMAL;
@@ -641,7 +641,7 @@ static int smi_bwc_config(struct MTK_SMI_BWC_CONF *p_conf,
 	 */
 	ovl_limit_uevent(smi_profile, g_smi_bwc_mm_info.hw_ovl_limit);
 
-	pr_no_debug("SMI_PROFILE to:%d %s,cur:%d,%d,%d,%d\n", p_conf->scen,
+	pr_debug("SMI_PROFILE to:%d %s,cur:%d,%d,%d,%d\n", p_conf->scen,
 	       (p_conf->b_on ? "on" : "off"), eFinalScen,
 	       g_SMIInfo.pu4ConcurrencyTable[SMI_BWC_SCEN_NORMAL],
 	       g_SMIInfo.pu4ConcurrencyTable[SMI_BWC_SCEN_VR],
@@ -1085,7 +1085,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
 	smi_data->larb[larbid] = dev;
 	smi_data->larb_nr++;
 
-	pr_no_debug("larb %d-cnt %d probe done\n", larbid, smi_data->larb_nr);
+	pr_debug("larb %d-cnt %d probe done\n", larbid, smi_data->larb_nr);
 
 	pm_runtime_enable(dev);
 	dev_set_drvdata(dev, larbpriv);
@@ -1202,7 +1202,7 @@ static int mtk_smi_larb_fb_suspend(void)
 		mtk_smi_larb_clock_off(i, true);
 	}
 	smi_suspend = 1;
-	pr_no_debug("mtk_smi_larb fb suspended\n");
+	pr_debug("mtk_smi_larb fb suspended\n");
 	return 0;
 }
 
@@ -1227,7 +1227,7 @@ static int mtk_smi_larb_fb_resume(void)
 	}
 
 	smi_suspend = 0;
-	pr_no_debug("mtk_smi_larb fb resume\n");
+	pr_debug("mtk_smi_larb fb resume\n");
 	return 0;
 
 }
@@ -1302,7 +1302,7 @@ static int __init smi_init(void)
 	mmdvfs_init(&g_smi_bwc_mm_info);
 #endif
 	fb_register_client(&mtk_smi_variant_event_notifier);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 
 	return 0;
 }
@@ -1316,7 +1316,7 @@ static void __exit smi_exit(void)
 static int __init smi_init_late(void)
 {
 	/*init clk/mtcmos should be late while ccf */
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	smi_common_init();
 	pm_runtime_put_sync(smi_data->smicommon);
@@ -1329,36 +1329,36 @@ static void smi_dumpCommonDebugMsg(void)
 	unsigned long u4Base;
 
 	/* SMI COMMON dump */
-	pr_no_debug("===SMI common reg dump===\n");
+	pr_debug("===SMI common reg dump===\n");
 
 	u4Base = SMI_COMMON_EXT_BASE;
-	pr_no_debug("[0x200,0x204,0x208]=[0x%x,0x%x,0x%x]\n",
+	pr_debug("[0x200,0x204,0x208]=[0x%x,0x%x,0x%x]\n",
 		M4U_ReadReg32(u4Base, 0x200),
 		M4U_ReadReg32(u4Base, 0x204),
 		M4U_ReadReg32(u4Base, 0x208));
-	pr_no_debug("[0x20C,0x210,0x214]=[0x%x,0x%x,0x%x]\n",
+	pr_debug("[0x20C,0x210,0x214]=[0x%x,0x%x,0x%x]\n",
 		M4U_ReadReg32(u4Base, 0x20C),
 		M4U_ReadReg32(u4Base, 0x210),
 		M4U_ReadReg32(u4Base, 0x214));
 	if (smi_data->smi_priv->plat == MTK_PLAT_MT8173
 		|| smi_data->smi_priv->plat == MTK_PLAT_MT8163) {
-		pr_no_debug("[0x220,0x230,0x234,0x238]=[0x%x,0x%x,0x%x,0x%x]\n",
+		pr_debug("[0x220,0x230,0x234,0x238]=[0x%x,0x%x,0x%x,0x%x]\n",
 			M4U_ReadReg32(u4Base, 0x220),
 			M4U_ReadReg32(u4Base, 0x230),
 			M4U_ReadReg32(u4Base, 0x234),
 			M4U_ReadReg32(u4Base, 0x238));
-		pr_no_debug("[0x400,0x404,0x408]=[0x%x,0x%x,0x%x]\n",
+		pr_debug("[0x400,0x404,0x408]=[0x%x,0x%x,0x%x]\n",
 			M4U_ReadReg32(u4Base, 0x400),
 			M4U_ReadReg32(u4Base, 0x404),
 			M4U_ReadReg32(u4Base, 0x408));
 	} else if (smi_data->smi_priv->plat
 		== MTK_PLAT_MT8127) {
-		pr_no_debug("[0x218,0x230,0x234,0x238]=[0x%x,0x%x,0x%x,0x%x]\n",
+		pr_debug("[0x218,0x230,0x234,0x238]=[0x%x,0x%x,0x%x,0x%x]\n",
 			M4U_ReadReg32(u4Base, 0x218),
 			M4U_ReadReg32(u4Base, 0x230),
 			M4U_ReadReg32(u4Base, 0x234),
 			M4U_ReadReg32(u4Base, 0x238));
-		pr_no_debug("[0x400,0x404,]=[0x%x,0x%x]\n",
+		pr_debug("[0x400,0x404,]=[0x%x,0x%x]\n",
 			M4U_ReadReg32(u4Base, 0x400),
 			M4U_ReadReg32(u4Base, 0x404));
 	}
@@ -1375,47 +1375,47 @@ static void smi_dumpLarbDebugMsg(unsigned int u4Index)
 	} else {
 		unsigned int u4Offset = 0;
 
-		pr_no_debug("===SMI LARB%d reg dump===\n", u4Index);
+		pr_debug("===SMI LARB%d reg dump===\n", u4Index);
 
 		if (smi_data->smi_priv->plat == MTK_PLAT_MT8173
 			|| smi_data->smi_priv->plat == MTK_PLAT_MT8163) {
-			pr_no_debug("[0x0,0x8,0x10]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0x0,0x8,0x10]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x0),
 				M4U_ReadReg32(u4Base, 0x8),
 				M4U_ReadReg32(u4Base, 0x10));
-			pr_no_debug("[0x24,0x50,0x60]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0x24,0x50,0x60]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x24),
 				M4U_ReadReg32(u4Base, 0x50),
 				M4U_ReadReg32(u4Base, 0x60));
-			pr_no_debug("[0xa0,0xa4,0xa8]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0xa0,0xa4,0xa8]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0xa0),
 				M4U_ReadReg32(u4Base, 0xa4),
 				M4U_ReadReg32(u4Base, 0xa8));
-			pr_no_debug("[0xac,0xb0,0xb4]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0xac,0xb0,0xb4]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0xac),
 				M4U_ReadReg32(u4Base, 0xb0),
 				M4U_ReadReg32(u4Base, 0xb4));
-			pr_no_debug("[0xb8,0xbc,0xc0]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0xb8,0xbc,0xc0]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0xb8),
 				M4U_ReadReg32(u4Base, 0xbc),
 				M4U_ReadReg32(u4Base, 0xc0));
-			pr_no_debug("[0xc8,0xcc]=[0x%x,0x%x]\n",
+			pr_debug("[0xc8,0xcc]=[0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0xc8),
 				M4U_ReadReg32(u4Base, 0xcc));
 		} else if (smi_data->smi_priv->plat == MTK_PLAT_MT8127) {
-			pr_no_debug("[0x0,0x10,0x60]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0x0,0x10,0x60]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x0),
 				M4U_ReadReg32(u4Base, 0x10),
 				M4U_ReadReg32(u4Base, 0x60));
-			pr_no_debug("[0x64,0x8c,0x450]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0x64,0x8c,0x450]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x64),
 			    M4U_ReadReg32(u4Base, 0x8c),
 			    M4U_ReadReg32(u4Base, 0x450));
-			pr_no_debug("[0x454,0x600,0x604]=[0x%x,0x%x,0x%x]\n",
+			pr_debug("[0x454,0x600,0x604]=[0x%x,0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x454),
 			    M4U_ReadReg32(u4Base, 0x600),
 			    M4U_ReadReg32(u4Base, 0x604));
-			pr_no_debug("[0x610,0x614]=[0x%x,0x%x]\n",
+			pr_debug("[0x610,0x614]=[0x%x,0x%x]\n",
 				M4U_ReadReg32(u4Base, 0x610),
 			    M4U_ReadReg32(u4Base, 0x614));
 		}
@@ -1423,7 +1423,7 @@ static void smi_dumpLarbDebugMsg(unsigned int u4Index)
 		for (u4Offset = 0x200;
 			u4Offset <= 0x200 + smi_data->larb_nr * 4;
 			u4Offset += 4)
-			pr_no_debug("[0x%x = 0x%x ]\n",
+			pr_debug("[0x%x = 0x%x ]\n",
 				u4Offset, M4U_ReadReg32(u4Base, u4Offset));
 	}
 }
@@ -1607,7 +1607,7 @@ long MTK_SMI_COMPAT_ioctl(struct file *filp,
 		{
 			if (COMPAT_MTK_IOC_SMI_BWC_CONFIG
 				== MTK_IOC_SMI_BWC_CONF) {
-				pr_no_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_CONF");
+				pr_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_CONF");
 				return filp->f_op->unlocked_ioctl(filp, cmd,
 					(unsigned long)compat_ptr(arg));
 			} else {
@@ -1640,7 +1640,7 @@ long MTK_SMI_COMPAT_ioctl(struct file *filp,
 
 			if (COMPAT_MTK_IOC_SMI_BWC_INFO_SET
 				== MTK_IOC_SMI_BWC_INFO_SET) {
-				pr_no_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_INFO_SET");
+				pr_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_INFO_SET");
 				return filp->f_op->unlocked_ioctl(filp, cmd,
 					(unsigned long)compat_ptr(arg));
 			} else {
@@ -1672,7 +1672,7 @@ long MTK_SMI_COMPAT_ioctl(struct file *filp,
 		{
 			if (COMPAT_MTK_IOC_SMI_BWC_INFO_GET
 				== MTK_IOC_SMI_BWC_INFO_GET) {
-				pr_no_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_INFO_GET");
+				pr_debug("Optimized compct IOCTL: COMPAT_MTK_IOC_SMI_BWC_INFO_GET");
 				return filp->f_op->unlocked_ioctl(filp, cmd,
 					(unsigned long)compat_ptr(arg));
 			} else {

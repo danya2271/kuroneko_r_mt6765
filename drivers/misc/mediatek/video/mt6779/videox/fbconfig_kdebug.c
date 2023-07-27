@@ -182,7 +182,7 @@ void Panel_Master_DDIC_config(void)
 			SET_RESET_PIN(node->record.ins_array[0]);
 			break;
 		default:
-			pr_no_debug("sxk=>No such Type!!!!!\n");
+			pr_debug("sxk=>No such Type!!!!!\n");
 			break;
 		}
 	}
@@ -200,9 +200,9 @@ static void free_list_memory(void)
 	}
 	/* test here : head->next == head ?? */
 	if (list_empty(&head_list.list))
-		pr_no_debug("*****list is empty!!\n");
+		pr_debug("*****list is empty!!\n");
 	else
-		pr_no_debug("*****list is NOT empty!!\n");
+		pr_debug("*****list is NOT empty!!\n");
 }
 
 static int fbconfig_open(struct inode *inode, struct file *file)
@@ -212,7 +212,7 @@ static int fbconfig_open(struct inode *inode, struct file *file)
 	file->private_data = inode->i_private;
 	pm_params = (struct PM_TOOL_S *)pm_get_handle();
 	if (pm_params == NULL) {
-		pr_no_debug("%s=>pm_params is empty!!\n", __func__);
+		pr_debug("%s=>pm_params is empty!!\n", __func__);
 		return -EFAULT;
 	}
 	PanelMaster_set_PM_enable(1);
@@ -274,7 +274,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (arg > PM_DSI_DUAL)
 			return -EINVAL;
 		pm->dsi_id = arg;
-		pr_no_debug("fbconfig=>SET_DSI_ID:%d\n", dsi_id);
+		pr_debug("fbconfig=>SET_DSI_ID:%d\n", dsi_id);
 
 		return 0;
 	}
@@ -286,7 +286,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 		lcm_fb.clock = pLcm_params->dsi.PLL_CLOCK;
 		lcm_fb.lcm_type = pLcm_params->dsi.mode;
 
-		pr_no_debug("fbconfig=>LCM_TEST_DSI_CLK:%d\n", ret);
+		pr_debug("fbconfig=>LCM_TEST_DSI_CLK:%d\n", ret);
 		return copy_to_user(argp, &lcm_fb,
 			sizeof(lcm_fb)) ? -EFAULT : 0;
 	}
@@ -308,7 +308,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&record_tmp_list->record, (void __user *)arg,
 				   sizeof(struct CONFIG_RECORD))) {
-			pr_no_debug("list_add: copy_from_user failed! line:%d\n",
+			pr_debug("list_add: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			kfree(record_tmp_list);
 			record_tmp_list = NULL;
@@ -330,7 +330,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 		uint32_t enable = 0;
 
 		if (get_user(enable, (uint32_t __user *) argp)) {
-			pr_no_debug("[MIPI_SET_CC]: copy_from_user failed! line:%d\n",
+			pr_debug("[MIPI_SET_CC]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
@@ -342,7 +342,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 	{
 		uint32_t ret = PanelMaster_get_CC(dsi_id);
 		/* need to improve ,0 now means nothing but one parameter. */
-		pr_no_debug("LCM_GET_DSI_CONTINU=>DSI: %d\n", ret);
+		pr_debug("LCM_GET_DSI_CONTINU=>DSI: %d\n", ret);
 		return put_user(ret, (unsigned long *)argp);
 	}
 	case MIPI_SET_CLK:
@@ -350,12 +350,12 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 		uint32_t clk = 0;
 
 		if (get_user(clk, (uint32_t __user *) argp)) {
-			pr_no_debug("[MIPI_SET_CLK]: copy_from_user failed! line:%d\n",
+			pr_debug("[MIPI_SET_CLK]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
 
-		pr_no_debug("LCM_GET_DSI_CLK=>dsi:%d\n", clk);
+		pr_debug("LCM_GET_DSI_CLK=>dsi:%d\n", clk);
 		Panel_Master_dsi_config_entry("PM_CLK", &clk);
 		return 0;
 	}
@@ -363,7 +363,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 	{
 		uint32_t clk = pParams->PLL_CLOCK;
 
-		pr_no_debug("LCM_GET_DSI_CLK=>dsi:%d\n", clk);
+		pr_debug("LCM_GET_DSI_CLK=>dsi:%d\n", clk);
 		return put_user(clk, (unsigned long *)argp);
 	}
 	case MIPI_SET_SSC:
@@ -372,12 +372,12 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&dsi_ssc, (void __user *)argp,
 			sizeof(dsi_ssc))) {
-			pr_no_debug("[MIPI_SET_SSC]: copy_from_user failed! line:%d\n",
+			pr_debug("[MIPI_SET_SSC]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
 
-		pr_no_debug("Pmaster:set mipi ssc line:%d\n", __LINE__);
+		pr_debug("Pmaster:set mipi ssc line:%d\n", __LINE__);
 		Panel_Master_dsi_config_entry("PM_SSC", &dsi_ssc);
 		return 0;
 	}
@@ -393,7 +393,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 	{
 		uint32_t lane_num = pParams->LANE_NUM;
 
-		pr_no_debug("Panel Master=>LCM_GET_DSI_Lane_num=>dsi:%d\r\n",
+		pr_debug("Panel Master=>LCM_GET_DSI_Lane_num=>dsi:%d\r\n",
 			 lane_num);
 		return put_user(lane_num, (unsigned long *)argp);
 	}
@@ -402,7 +402,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 		int ret;
 
 		ret = PanelMaster_get_TE_status(dsi_id);
-		pr_no_debug("fbconfig=>LCM_GET_DSI_TE:%d\n", ret);
+		pr_debug("fbconfig=>LCM_GET_DSI_TE:%d\n", ret);
 		return put_user(ret, (unsigned long *)argp);
 	}
 	case LCM_GET_DSI_TIMING:
@@ -412,12 +412,12 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&timing, (void __user *)argp,
 				   sizeof(timing))) {
-			pr_no_debug("[MIPI_GET_TIMING]: copy_from_user failed! line:%d\n",
+			pr_debug("[MIPI_GET_TIMING]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
 		ret = PanelMaster_get_dsi_timing(dsi_id, timing.type);
-		pr_no_debug("fbconfig=>LCM_GET_DSI_TIMING:%d\n", ret);
+		pr_debug("fbconfig=>LCM_GET_DSI_TIMING:%d\n", ret);
 		timing.value = ret;
 		return copy_to_user(argp, &timing,
 				    sizeof(timing)) ? -EFAULT : 0;
@@ -430,7 +430,7 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 		if (copy_from_user(&timing, (void __user *)argp,
 				   sizeof(timing))) {
-			pr_no_debug("[MIPI_SET_TIMING]: copy_from_user failed! line:%d\n",
+			pr_debug("[MIPI_SET_TIMING]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
@@ -440,18 +440,18 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 	}
 	case FB_LAYER_GET_EN:
 	{
-		pr_no_debug("[FB_LAYER_GET_EN] not support any more\n");
+		pr_debug("[FB_LAYER_GET_EN] not support any more\n");
 		return 0;
 	}
 	case FB_LAYER_GET_INFO:
 	{
-		pr_no_debug("[FB_LAYER_GET_INFO] not support any more\n");
+		pr_debug("[FB_LAYER_GET_INFO] not support any more\n");
 		return  0;
 	}
 
 	case FB_LAYER_DUMP:
 	{
-		pr_no_debug("[FB_LAYER_DUMP] not support any more\n");
+		pr_debug("[FB_LAYER_DUMP] not support any more\n");
 		return  0;
 	}
 
@@ -462,13 +462,13 @@ static long fbconfig_ioctl(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&esd_para, (void __user *)arg,
 				   sizeof(esd_para))) {
-			pr_no_debug("[LCM_GET_ESD]: copy_from_user failed! line:%d\n",
+			pr_debug("[LCM_GET_ESD]: copy_from_user failed! line:%d\n",
 				 __LINE__);
 			return -EFAULT;
 		}
 
 		if (esd_para.para_num < 0 || esd_para.para_num > 0x30) {
-			pr_no_debug("Wrong esd_para.para_num= %d! line:%d\n",
+			pr_debug("Wrong esd_para.para_num= %d! line:%d\n",
 					esd_para.para_num, __LINE__);
 			return -EFAULT;
 		}

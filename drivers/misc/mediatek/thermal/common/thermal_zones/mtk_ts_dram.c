@@ -60,7 +60,7 @@ static char g_bind9[20] = "";
 #define mtktsdram_dprintk(fmt, args...)			\
 do {								\
 	if (mtktsdram_debug_log)					\
-		pr_no_debug("[Thermal/TZ/DRAM]" fmt, ##args);	\
+		pr_debug("[Thermal/TZ/DRAM]" fmt, ##args);	\
 } while (0)
 
 static int mtktsdram_get_temp(
@@ -234,10 +234,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 						cl_dev_sysrst_state);
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		pr_no_debug("Power/dram_Thermal: reset, reset, reset!!!");
-		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		pr_no_debug("*****************************************");
-		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_debug("Power/dram_Thermal: reset, reset, reset!!!");
+		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_debug("*****************************************");
+		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.

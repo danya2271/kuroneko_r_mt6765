@@ -128,7 +128,7 @@ struct FDVT_CLK_STRUCT fdvt_clk;
 #define IRQTag "KEEPER"
 
 #define log_vrb(format, args...) \
-pr_no_debug(MyTag "[%s] " format, __func__, ##args)
+pr_debug(MyTag "[%s] " format, __func__, ##args)
 
 #ifdef FDVT_DEBUG_USE
 #define log_dbg(format, args...) \
@@ -146,7 +146,7 @@ pr_info(MyTag "[%s] " format, __func__, ##args)
 #define log_err(format, args...) \
 pr_info(MyTag "[%s] " format, __func__, ##args)
 #define log_ast(format, args...) \
-pr_no_debug(MyTag "[%s] " format, __func__, ##args)
+pr_debug(MyTag "[%s] " format, __func__, ##args)
 
 /*****************************************************************************
  *
@@ -498,7 +498,7 @@ static struct SV_LOG_STR gSvLog[FDVT_IRQ_TYPE_AMOUNT];
 } while (0)
 #else
 #define IRQ_LOG_KEEPER(irq, ppb, logT, fmt, args...) \
-pr_no_debug(IRQTag fmt,  ##args)
+pr_debug(IRQTag fmt,  ##args)
 #endif
 
 #ifdef LOG_MACRO
@@ -3666,7 +3666,7 @@ int FDVT_pm_suspend(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/* pr_no_debug("calling %s()\n", __func__); */
+	/* pr_debug("calling %s()\n", __func__); */
 	log_inf("FDVT suspend g_u4EnableClockCount: %d, g_u4FdvtCnt: %d",
 		g_u4EnableClockCount, g_u4FdvtCnt);
 
@@ -3679,7 +3679,7 @@ int FDVT_pm_resume(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/* pr_no_debug("calling %s()\n", __func__); */
+	/* pr_debug("calling %s()\n", __func__); */
 	log_inf("FDVT resume g_u4EnableClockCount: %d, g_u4FdvtCnt: %d",
 		g_u4EnableClockCount, g_u4FdvtCnt);
 
@@ -3691,7 +3691,7 @@ int FDVT_pm_resume(struct device *device)
 #endif
 int FDVT_pm_restore_noirq(struct device *device)
 {
-	pr_no_debug("calling %s()\n", __func__);
+	pr_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 /*	mt_irq_set_sens(FDVT_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);*/
 /*	mt_irq_set_polarity(FDVT_IRQ_BIT_ID, MT_POLARITY_LOW);*/

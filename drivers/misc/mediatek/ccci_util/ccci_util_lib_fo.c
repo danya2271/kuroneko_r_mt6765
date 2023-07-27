@@ -904,7 +904,7 @@ static int md3_raw_img_size;
 void __weak *vmap_reserved_mem(phys_addr_t start,
 		phys_addr_t size, pgprot_t prot)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return NULL;
 }
 
@@ -1143,7 +1143,7 @@ static void parse_mpu_setting(void)
 
 int __weak free_reserved_memory(phys_addr_t start_phys, phys_addr_t end_phys)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 

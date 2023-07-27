@@ -480,7 +480,7 @@ static ssize_t mt6359vgpu_write
 static void mt6359vgpu_cancel_thermal_timer(void)
 {
 	/* cancel timer */
-	/* pr_no_debug("mtkts_pmic_cancel_thermal_timer\n"); */
+	/* pr_debug("mtkts_pmic_cancel_thermal_timer\n"); */
 
 	/* stop thermal framework polling when entering deep idle */
 	if (down_trylock(&sem_mutex))
@@ -496,7 +496,7 @@ static void mt6359vgpu_cancel_thermal_timer(void)
 
 static void mt6359vgpu_start_thermal_timer(void)
 {
-	/* pr_no_debug("mtkts_pmic_start_thermal_timer\n"); */
+	/* pr_debug("mtkts_pmic_start_thermal_timer\n"); */
 	/* resume thermal framework polling when leaving deep idle */
 
 	if (!isTimerCancelled)

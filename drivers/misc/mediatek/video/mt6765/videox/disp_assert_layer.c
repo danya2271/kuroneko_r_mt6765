@@ -139,7 +139,7 @@ EXPORT_SYMBOL(DAL_SetScreenColor);
 
 enum DAL_STATUS DAL_Init(unsigned long layerVA, unsigned long layerPA)
 {
-	pr_no_debug("%s, layerVA=0x%lx, layerPA=0x%lx\n",
+	pr_debug("%s, layerVA=0x%lx, layerPA=0x%lx\n",
 		__func__, layerVA, layerPA);
 
 	dal_fb_addr = (void *)layerVA;

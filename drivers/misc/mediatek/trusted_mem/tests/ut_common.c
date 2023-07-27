@@ -554,7 +554,7 @@ static int mem_thread_alloc_test(void *data)
 
 	complete(&param->comp);
 
-	pr_no_debug("[UT_TEST]mem%d_thread_%d is done\n", mem_type,
+	pr_debug("[UT_TEST]mem%d_thread_%d is done\n", mem_type,
 		 param->thread_id);
 	return UT_STATE_PASS;
 }
@@ -611,13 +611,13 @@ static enum UT_RET_STATE mem_wait_run_thread(enum TRUSTED_MEM_TYPE mem_type)
 	/* wait for thread to complete */
 	for (idx = 0; idx < MEM_SPAWN_THREAD_COUNT; idx++) {
 		if (thread_param[mem_type][idx].running) {
-			pr_no_debug("[UT_TEST]waiting for mem%d_thread_%d...\n",
+			pr_debug("[UT_TEST]waiting for mem%d_thread_%d...\n",
 				 mem_type, idx);
 			ret = wait_for_completion_timeout(
 				&thread_param[mem_type][idx].comp,
 				msecs_to_jiffies(wait_timeout_ms));
 			ASSERT_NE(0, ret, "kthread timeout check");
-			pr_no_debug("[UT_TEST]mem%d_thread_%d is finished!\n",
+			pr_debug("[UT_TEST]mem%d_thread_%d is finished!\n",
 				 mem_type, idx);
 		} else {
 			pr_err("[UT_TEST]mem%d_thread_%d is not started!\n",

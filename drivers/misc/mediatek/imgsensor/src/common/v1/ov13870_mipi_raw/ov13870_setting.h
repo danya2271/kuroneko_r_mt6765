@@ -11,7 +11,7 @@
  *******************************************************************************/
 #define PFX "OV13870"
 #define LOG_INF_NEW(format, args...)                                           \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 #define LOG_INF LOG_INF_NEW
 #define LOG_1 LOG_INF("OV13870,MIPI 4LANE\n")
 #define SENSORDB LOG_INF

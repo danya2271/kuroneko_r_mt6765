@@ -1684,7 +1684,7 @@ void musb_ep_restart(struct musb *musb, struct musb_request *req)
 	static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 	if (__ratelimit(&ratelimit))
-		pr_no_debug("<ratelimit> <== %s request %p len %u on hw_ep%d"
+		pr_debug("<ratelimit> <== %s request %p len %u on hw_ep%d"
 			, req->tx ? "TX/IN" : "RX/OUT"
 			, &req->request
 			, req->request.length

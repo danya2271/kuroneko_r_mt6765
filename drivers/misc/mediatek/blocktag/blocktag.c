@@ -1055,7 +1055,7 @@ static int __init mtk_btag_early_memory_info(void)
 	start = memblock_start_of_DRAM();
 	end = memblock_end_of_DRAM();
 	mtk_btag_system_dram_size = (unsigned long long)(end - start);
-	pr_no_debug("[BLOCK_TAG] DRAM: %pa - %pa, size: 0x%llx\n", &start,
+	pr_debug("[BLOCK_TAG] DRAM: %pa - %pa, size: 0x%llx\n", &start,
 		&end, (unsigned long long)(end - start));
 	return 0;
 }

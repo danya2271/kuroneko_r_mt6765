@@ -288,7 +288,7 @@ void mtk_audit_hook(char *data)
 	/*check scontext is in warning list */
 	ret = mtk_check_filter(scontext);
 	if (ret >= 0) {
-		pr_no_debug("[%s], In AEE Warning List scontext: %s\n",
+		pr_debug("[%s], In AEE Warning List scontext: %s\n",
 			MOD, scontext);
 
 		if (!IS_ENABLED(CONFIG_MTK_AEE_FEATURE))
@@ -311,12 +311,12 @@ void mtk_audit_hook(char *data)
 				int err = kstrtol(selinux_ne, 10, &ne_option);
 
 				if (err || (ne_option != 1)) {
-					pr_no_debug("[%s] ne_opt:%ld, err:%d\n",
+					pr_debug("[%s] ne_opt:%ld, err:%d\n",
 						MOD, ne_option, err);
 					return;
 				}
 			} else {
-				pr_no_debug("[%s] ne option is null\n", MOD);
+				pr_debug("[%s] ne option is null\n", MOD);
 				return;
 			}
 
@@ -347,12 +347,12 @@ void mtk_audit_hook(char *data)
 				rcu_read_unlock();
 
 				if (task == NULL) {
-					pr_no_debug("[%s] pid: %d exist.\n",
+					pr_debug("[%s] pid: %d exist.\n",
 						 MOD, pid);
 					break;  /* pid exit, safe to return */
 				}
 				/* wait two more seconds */
-				pr_no_debug("[%s] pid: %d, tgid: %d, wait(%ds)\n",
+				pr_debug("[%s] pid: %d, tgid: %d, wait(%ds)\n",
 					MOD, pid, tgid, count);
 				msleep(2000);
 				count++;

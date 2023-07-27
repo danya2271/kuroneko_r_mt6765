@@ -145,11 +145,11 @@ struct gbe_runtime {
 };
 
 #ifdef FPSGO_DEBUG
-#define FPSGO_LOGI(...)	pr_no_debug("FPSGO:" __VA_ARGS__)
+#define FPSGO_LOGI(...)	pr_debug("FPSGO:" __VA_ARGS__)
 #else
 #define FPSGO_LOGI(...)
 #endif
-#define FPSGO_LOGE(...)	pr_no_debug("FPSGO:" __VA_ARGS__)
+#define FPSGO_LOGE(...)	pr_debug("FPSGO:" __VA_ARGS__)
 #define FPSGO_CONTAINER_OF(ptr, type, member) \
 	((type *)(((char *)ptr) - offsetof(type, member)))
 

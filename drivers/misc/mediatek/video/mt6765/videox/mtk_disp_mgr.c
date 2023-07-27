@@ -1927,7 +1927,7 @@ static int mtk_disp_mgr_probe(struct platform_device *pdev)
 	struct class_device *class_dev = NULL;
 	int ret;
 
-	pr_no_debug("mtk_disp_mgr_probe called!\n");
+	pr_debug("mtk_disp_mgr_probe called!\n");
 
 	if (alloc_chrdev_region(&mtk_disp_mgr_devno, 0, 1,
 		DISP_SESSION_DEVICE))
@@ -2008,7 +2008,7 @@ static struct platform_device mtk_disp_mgr_device = {
 
 static int __init mtk_disp_mgr_init(void)
 {
-	pr_no_debug("mtk_disp_mgr_init\n");
+	pr_debug("mtk_disp_mgr_init\n");
 	if (platform_device_register(&mtk_disp_mgr_device))
 		return -ENODEV;
 

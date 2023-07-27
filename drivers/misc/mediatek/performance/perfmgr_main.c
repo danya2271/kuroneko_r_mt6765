@@ -76,7 +76,7 @@ static int __init init_perfmgr(void)
 		return ret;
 
 	perfmgr_root = proc_mkdir("perfmgr", NULL);
-	pr_no_debug("MTK_TOUCH_BOOST function init_perfmgr_touch\n");
+	pr_debug("MTK_TOUCH_BOOST function init_perfmgr_touch\n");
 
 	init_boostctrl(perfmgr_root);
 	init_tchbst(perfmgr_root);

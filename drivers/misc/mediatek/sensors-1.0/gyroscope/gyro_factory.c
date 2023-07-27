@@ -61,7 +61,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				pr_err("GYROSCOPE_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug(
+			pr_debug(
 				"GYROSCOPE_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 5);
 		} else {
@@ -89,7 +89,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if (len <= 0)
 				return -EINVAL;
 
-			pr_no_debug(
+			pr_debug(
 				"GYROSCOPE_IOCTL_READ_SENSORDATA read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
@@ -114,7 +114,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if (len <= 0)
 				return -EINVAL;
 
-			pr_no_debug(
+			pr_debug(
 				"GYROSCOPE_IOCTL_READ_SENSORDATA_RAW read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
@@ -131,7 +131,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		data_buf[0] = sensor_data.x;
 		data_buf[1] = sensor_data.y;
 		data_buf[2] = sensor_data.z;
-		pr_no_debug("GYROSCOPE_IOCTL_SET_CALI: (%d, %d, %d)!\n",
+		pr_debug("GYROSCOPE_IOCTL_SET_CALI: (%d, %d, %d)!\n",
 			 data_buf[0], data_buf[1], data_buf[2]);
 		if (gyro_factory.fops != NULL &&
 		    gyro_factory.fops->set_cali != NULL) {
@@ -170,7 +170,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			pr_err("GYROSCOPE_IOCTL_GET_CALI NULL\n");
 			return -EINVAL;
 		}
-		pr_no_debug("GYROSCOPE_IOCTL_GET_CALI: (%d, %d, %d)!\n",
+		pr_debug("GYROSCOPE_IOCTL_GET_CALI: (%d, %d, %d)!\n",
 			 data_buf[0], data_buf[1], data_buf[2]);
 		sensor_data.x = data_buf[0];
 		sensor_data.y = data_buf[1];
@@ -236,7 +236,7 @@ static long compat_gyro_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_GYROSCOPE_IOCTL_GET_CALI:
 	case COMPAT_GYROSCOPE_IOCTL_ENABLE_CALI:
 	case COMPAT_GYROSCOPE_IOCTL_SELF_TEST:
-		pr_no_debug(
+		pr_debug(
 			"compat_ion_ioctl : GYROSCOPE_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(

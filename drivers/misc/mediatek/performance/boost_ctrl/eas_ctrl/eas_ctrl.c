@@ -245,7 +245,7 @@ int eas_ctrl_init(struct proc_dir_entry *parent)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					parent, entries[i].fops)) {
-			pr_no_debug("%s(), create /eas_ctrl%s failed\n",
+			pr_debug("%s(), create /eas_ctrl%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			goto out;

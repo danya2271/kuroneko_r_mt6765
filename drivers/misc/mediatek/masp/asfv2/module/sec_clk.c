@@ -15,7 +15,7 @@
 
 int sec_clk_enable(struct platform_device *dev)
 {
-	pr_no_debug("[sec] Need not to get hacc clock\n");
+	pr_debug("[sec] Need not to get hacc clock\n");
 	return 0;
 }
 

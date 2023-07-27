@@ -29,7 +29,7 @@
 
 
 /*
- * #define LOG_INF(format, args...) pr_no_debug(\
+ * #define LOG_INF(format, args...) pr_debug(\
  * PFX "[%s] " format, __func__, ##args)
  */
 
@@ -430,13 +430,13 @@ static kal_uint32 imx230_ATR(UINT16 DarkLimit, UINT16 OverExp)
 	write_cmos_sensor(0x9e27, 0x94);
 	write_cmos_sensor(0x9e28, 0x00);
 	write_cmos_sensor(0x9e29, 0x96);
-	pr_no_debug("DarkLimit 0x6e50(0x%x), 0x6e51(0x%x)\n",
+	pr_debug("DarkLimit 0x6e50(0x%x), 0x6e51(0x%x)\n",
 		sensorATR_Info[DarkLimit].DarkLimit_H,
 		sensorATR_Info[DarkLimit].DarkLimit_L);
-	pr_no_debug("OverExpMin 0x9340(0x%x), 0x9341(0x%x)\n",
+	pr_debug("OverExpMin 0x9340(0x%x), 0x9341(0x%x)\n",
 		sensorATR_Info[OverExp].OverExp_Min_H,
 		sensorATR_Info[OverExp].OverExp_Min_L);
-	pr_no_debug("OverExpMin 0x9342(0x%x), 0x9343(0x%x)\n",
+	pr_debug("OverExpMin 0x9342(0x%x), 0x9343(0x%x)\n",
 		sensorATR_Info[OverExp].OverExp_Max_H,
 		sensorATR_Info[OverExp].OverExp_Max_L);
 	return ERROR_NONE;
@@ -453,7 +453,7 @@ static void imx230_set_pd_focus_area(MUINT32 startpos, MUINT32 size)
 	UINT16 focus_width, focus_height;
 
 	if ((cur_startpos == startpos) && (cur_size == size)) {
-		pr_no_debug("Not to need update focus area!\n");
+		pr_debug("Not to need update focus area!\n");
 		return;
 	}
 	cur_startpos = startpos;
@@ -469,7 +469,7 @@ static void imx230_set_pd_focus_area(MUINT32 startpos, MUINT32 size)
 	end_y_pos = start_y_pos + focus_height;
 
 	if (imgsensor.pdaf_mode == 1) {
-		pr_no_debug("GC pre PDAF\n");
+		pr_debug("GC pre PDAF\n");
 		 /*PDAF*/
 		    /*PD_CAL_ENALBE */
 		    write_cmos_sensor(0x3121, 0x01);
@@ -494,7 +494,7 @@ static void imx230_set_pd_focus_area(MUINT32 startpos, MUINT32 size)
 	}
 
 
-	pr_no_debug(
+	pr_debug(
 	"start_x_pos:%d, start_y_pos:%d, focus_width:%d, focus_height:%d, end_x_pos:%d, end_y_pos:%d\n",
 	     start_x_pos,
 	     start_y_pos,
@@ -513,7 +513,7 @@ static void imx230_get_pdaf_reg_setting(MUINT32 regNum, kal_uint16 *regDa)
 	for (i = 0; i < regNum; i++) {
 		idx = 2 * i;
 		regDa[idx + 1] = read_cmos_sensor(regDa[idx]);
-		/* pr_no_debug("%x %x", regDa[idx], regDa[idx+1]); */
+		/* pr_debug("%x %x", regDa[idx], regDa[idx+1]); */
 	}
 }
 
@@ -524,7 +524,7 @@ static void imx230_set_pdaf_reg_setting(MUINT32 regNum, kal_uint16 *regDa)
 	for (i = 0; i < regNum; i++) {
 		idx = 2 * i;
 		write_cmos_sensor(regDa[idx], regDa[idx + 1]);
-		/* pr_no_debug("%x %x", regDa[idx], regDa[idx+1]); */
+		/* pr_debug("%x %x", regDa[idx], regDa[idx+1]); */
 	}
 }
 
@@ -558,7 +558,7 @@ static void imx230_apply_SPC(void)
 
 static void set_dummy(void)
 {
-	pr_no_debug("dummyline = %d, dummypixels = %d\n",
+	pr_debug("dummyline = %d, dummypixels = %d\n",
 		imgsensor.dummy_line, imgsensor.dummy_pixel);
 
 	/* you can set dummy by imgsensor.dummy_line and imgsensor.dummy_pixel,
@@ -644,7 +644,7 @@ static void set_shutter(kal_uint32 shutter)
 	kal_uint16 realtime_fps = 0;
 	kal_uint16 l_shift = 1;
 
-	pr_no_debug("Enter! shutter =%d, framelength =%d\n",
+	pr_debug("Enter! shutter =%d, framelength =%d\n",
 		shutter,
 		imgsensor.frame_length);
 
@@ -678,7 +678,7 @@ static void set_shutter(kal_uint32 shutter)
 				break;
 		}
 		if (l_shift > MAX_CIT_LSHIFT) {
-			pr_no_debug(
+			pr_debug(
 			    "Unable to set such a long exposure %d, set to max\n",
 			    shutter);
 
@@ -686,7 +686,7 @@ static void set_shutter(kal_uint32 shutter)
 		}
 		shutter = shutter >> l_shift;
 		imgsensor.frame_length = shutter + imgsensor_info.margin;
-		/* pr_no_debug(
+		/* pr_debug(
 		 *  "0x3028 0x%x l_shift %d l_shift&0x3 %d\n",
 		 *  read_cmos_sensor(0x3028),
 		 *  l_shift,
@@ -696,7 +696,7 @@ static void set_shutter(kal_uint32 shutter)
 		write_cmos_sensor(0x3028,
 		    (read_cmos_sensor(0x3028) & 0xf8) | (l_shift & 0x7));
 
-		/* pr_no_debug("0x3028 0x%x\n", read_cmos_sensor(0x3028)); */
+		/* pr_debug("0x3028 0x%x\n", read_cmos_sensor(0x3028)); */
 
 		/* Frame exposure mode customization for LE*/
 		imgsensor.ae_frm_mode.frame_mode_1 = IMGSENSOR_AE_MODE_SE;
@@ -743,7 +743,7 @@ static void set_shutter(kal_uint32 shutter)
 	write_cmos_sensor(0x0202, (shutter >> 8) & 0xFF);
 	write_cmos_sensor(0x0203, shutter & 0xFF);
 	write_cmos_sensor(0x0104, 0x00);
-	pr_no_debug(
+	pr_debug(
 	    "Exit! shutter =%d, framelength =%d\n",
 	    shutter,
 	    imgsensor.frame_length);
@@ -960,7 +960,7 @@ static void hdr_write_shutter(kal_uint16 le, kal_uint16 se)
 #if 0
 static void set_mirror_flip(kal_uint8 image_mirror)
 {
-	pr_no_debug("image_mirror = %d\n", image_mirror);
+	pr_debug("image_mirror = %d\n", image_mirror);
 
     /********************************************************
      *
@@ -1020,7 +1020,7 @@ static void set_mirror_flip(kal_uint8 image_mirror)
 		write_cmos_sensor(0x3A2E, 0x00);
 		break;
 	default:
-		pr_no_debug("Error image_mirror setting\n");
+		pr_debug("Error image_mirror setting\n");
 	}
 
 }
@@ -1564,7 +1564,7 @@ kal_uint16 addr_data_pair_init_imx230[] = {
 };
 static void sensor_init(void)
 {
-	pr_no_debug("E\n");
+	pr_debug("E\n");
 
 	imx230_table_write_cmos_sensor(addr_data_pair_init_imx230,
 		sizeof(addr_data_pair_init_imx230)/sizeof(kal_uint16));
@@ -3319,7 +3319,7 @@ static kal_uint32 get_info(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 			   MSDK_SENSOR_INFO_STRUCT *sensor_info,
 			   MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-	/*pr_no_debug("scenario_id = %d\n", scenario_id);*/
+	/*pr_debug("scenario_id = %d\n", scenario_id);*/
 
 	sensor_info->SensorClockPolarity = SENSOR_CLOCK_POLARITY_LOW;
 	/* not use */
@@ -3658,7 +3658,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 static kal_uint32 get_default_framerate_by_scenario(
 		enum MSDK_SCENARIO_ID_ENUM scenario_id, MUINT32 *framerate)
 {
-	/*pr_no_debug("scenario_id = %d\n", scenario_id);*/
+	/*pr_debug("scenario_id = %d\n", scenario_id);*/
 
 	switch (scenario_id) {
 	case MSDK_SCENARIO_ID_CAMERA_PREVIEW:
@@ -3781,7 +3781,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 	MSDK_SENSOR_REG_INFO_STRUCT *sensor_reg_data =
 		(MSDK_SENSOR_REG_INFO_STRUCT *) feature_para;
 
-	/*pr_no_debug("feature_id = %d\n", feature_id);*/
+	/*pr_debug("feature_id = %d\n", feature_id);*/
 	switch (feature_id) {
 	case SENSOR_FEATURE_GET_PERIOD:
 		*feature_return_para_16++ = imgsensor.line_length;
@@ -3864,7 +3864,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		*feature_para_len = 4;
 		break;
 	case SENSOR_FEATURE_SET_FRAMERATE:
-		pr_no_debug("current fps :%d\n", *feature_data_32);
+		pr_debug("current fps :%d\n", *feature_data_32);
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.current_fps = (UINT16)*feature_data_32;
 		spin_unlock(&imgsensor_drv_lock);
@@ -3906,7 +3906,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		break;
 		/*HDR CMD */
 	case SENSOR_FEATURE_SET_HDR:
-		pr_no_debug("hdr enable :%d\n", *feature_data_32);
+		pr_debug("hdr enable :%d\n", *feature_data_32);
 		spin_lock(&imgsensor_drv_lock);
 		imgsensor.ihdr_mode = (UINT8)*feature_data_32;
 		spin_unlock(&imgsensor_drv_lock);

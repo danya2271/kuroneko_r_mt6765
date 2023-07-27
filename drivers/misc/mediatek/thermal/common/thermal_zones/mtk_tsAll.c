@@ -65,7 +65,7 @@ static int tsallts_debug_log;
 #define tsallts_dprintk(fmt, args...)   \
 	do {                                    \
 		if (tsallts_debug_log) {                \
-			pr_no_debug("[Thermal/TZ/CPUALL]" fmt, ##args);\
+			pr_debug("[Thermal/TZ/CPUALL]" fmt, ##args);\
 		}                                   \
 	} while (0)
 
@@ -73,13 +73,13 @@ static int tsallts_debug_log;
 #define clnothings_dprintk(fmt, args...)   \
 	do {                                    \
 		if (tsallts_debug_log) {                \
-			pr_no_debug("[Thermal/TZ/CLNOTHINGS]" fmt, ##args);\
+			pr_debug("[Thermal/TZ/CLNOTHINGS]" fmt, ##args);\
 		}                                   \
 	} while (0)
 #endif
 
 #define tsallts_printk(fmt, args...)   \
-	pr_no_debug("[Thermal/TZ/CPUALL]" fmt, ##args)
+	pr_debug("[Thermal/TZ/CPUALL]" fmt, ##args)
 
 static void tsX_register(int index);
 static void tsX_unregister(int index);

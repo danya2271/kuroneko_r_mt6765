@@ -284,7 +284,7 @@ static int tee_sanity_probe(struct platform_device *pdev)
 
 #if defined(CONFIG_MTK_GIC_V3_EXT)
 	tee_sanity_hwirq = virq_to_hwirq(tee_sanity_irq);
-	pr_no_debug(PFX "tee_sanity_irq: 0x%x, hwirq: 0x%x\n",
+	pr_debug(PFX "tee_sanity_irq: 0x%x, hwirq: 0x%x\n",
 			tee_sanity_irq, tee_sanity_hwirq);
 #else
 	pr_err(PFX "MTK_GIC_V3_EXT is not supported\n");

@@ -207,13 +207,13 @@ static void process_dbg_opt(const char *opt)
 	else if (strncmp(opt, "I2S1:", 5) == 0) {
 #ifdef GPIO_MHL_I2S_OUT_WS_PIN
 		if (strncmp(opt + 5, "on", 2) == 0) {
-			pr_no_debug("[hdmi][Debug] Enable I2S1\n");
+			pr_debug("[hdmi][Debug] Enable I2S1\n");
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_WS_PIN, GPIO_MODE_01);
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_CK_PIN, GPIO_MODE_01);
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_DAT_PIN,
 					 GPIO_MODE_01);
 		} else if (strncmp(opt + 5, "off", 3) == 0) {
-			pr_no_debug("[hdmi][Debug] Disable I2S1\n");
+			pr_debug("[hdmi][Debug] Disable I2S1\n");
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_WS_PIN, GPIO_MODE_02);
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_CK_PIN, GPIO_MODE_01);
 			mt_set_gpio_mode(GPIO_MHL_I2S_OUT_DAT_PIN,

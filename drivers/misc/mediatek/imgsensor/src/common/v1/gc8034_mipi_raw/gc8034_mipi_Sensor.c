@@ -49,7 +49,7 @@
 /****************************   Modify end    *******************************************/
 #define GC8034_DEBUG
 #if defined(GC8034_DEBUG)
-#define LOG_INF(format, args...)    pr_no_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...)    pr_debug(PFX "[%s] " format, __func__, ##args)
 #else
 #define LOG_INF(format, args...)
 #endif

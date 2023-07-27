@@ -100,7 +100,7 @@ bool mt_get_irq_gic_targets(struct irq_data *d, cpumask_t *mask)
 	/* if target all, target_mask should indicate all CPU */
 	if (routing_val & GICD_IROUTER_SPI_MODE_ANY) {
 		target_mask = (1<<num_possible_cpus())-1;
-		pr_no_debug("%s:%d: irq(%d) targets all\n",
+		pr_debug("%s:%d: irq(%d) targets all\n",
 				__func__, __LINE__, gic_irq(d));
 	} else {
 		/* if not target all,
@@ -114,7 +114,7 @@ bool mt_get_irq_gic_targets(struct irq_data *d, cpumask_t *mask)
 		 */
 		target_mask = 1<<(cluster*4 + cpu);
 
-		pr_no_debug("%s:%d: irq(%d) target_mask(0x%llx)\n",
+		pr_debug("%s:%d: irq(%d) target_mask(0x%llx)\n",
 				__func__, __LINE__, gic_irq(d), target_mask);
 	}
 

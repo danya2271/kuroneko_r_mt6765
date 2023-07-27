@@ -135,8 +135,8 @@ static struct i2c_driver _lcm_i2c_driver = {
 static int _lcm_i2c_probe(struct i2c_client *client,
 	const struct i2c_device_id *id)
 {
-	pr_no_debug("[LCM][I2C] %s\n", __func__);
-	pr_no_debug("[LCM][I2C] NT: info==>name=%s addr=0x%x\n",
+	pr_debug("[LCM][I2C] %s\n", __func__);
+	pr_debug("[LCM][I2C] NT: info==>name=%s addr=0x%x\n",
 		client->name, client->addr);
 	_lcm_i2c_client = client;
 	return 0;
@@ -145,7 +145,7 @@ static int _lcm_i2c_probe(struct i2c_client *client,
 
 static int _lcm_i2c_remove(struct i2c_client *client)
 {
-	pr_no_debug("[LCM][I2C] %s\n", __func__);
+	pr_debug("[LCM][I2C] %s\n", __func__);
 	_lcm_i2c_client = NULL;
 	i2c_unregister_device(client);
 	return 0;
@@ -159,7 +159,7 @@ static int _lcm_i2c_write_bytes(unsigned char addr, unsigned char value)
 	char write_data[2] = { 0 };
 
 	if (client == NULL) {
-		pr_no_debug("ERROR!! _lcm_i2c_client is null\n");
+		pr_debug("ERROR!! _lcm_i2c_client is null\n");
 		return 0;
 	}
 
@@ -178,13 +178,13 @@ static int _lcm_i2c_write_bytes(unsigned char addr, unsigned char value)
  */
 static int __init _lcm_i2c_init(void)
 {
-	pr_no_debug("[LCM][I2C] %s\n", __func__);
+	pr_debug("[LCM][I2C] %s\n", __func__);
 #ifdef CONFIG_MTK_LEGACY
 	i2c_register_board_info(LCM_I2C_BUSNUM, &_lcm_i2c_board_info, 1);
-	pr_no_debug("[LCM][I2C] _lcm_i2c_init2\n");
+	pr_debug("[LCM][I2C] _lcm_i2c_init2\n");
 #endif
 	i2c_add_driver(&_lcm_i2c_driver);
-	pr_no_debug("[LCM][I2C] %s success\n", __func__);
+	pr_debug("[LCM][I2C] %s success\n", __func__);
 
 	return 0;
 }
@@ -192,7 +192,7 @@ static int __init _lcm_i2c_init(void)
 
 static void __exit _lcm_i2c_exit(void)
 {
-	pr_no_debug("[LCM][I2C] %s\n", __func__);
+	pr_debug("[LCM][I2C] %s\n", __func__);
 	i2c_del_driver(&_lcm_i2c_driver);
 }
 
@@ -233,7 +233,7 @@ enum LCM_STATUS lcm_i2c_set_data(char type, const struct LCM_DATA_T2 *t2)
 	if (_lcm_i2c_check_data(type, t2) == LCM_STATUS_OK) {
 		switch (type) {
 		case LCM_I2C_WRITE:
-			pr_no_debug("[LCM][I2C] %s/%d: %d, 0x%x, 0x%x\n",
+			pr_debug("[LCM][I2C] %s/%d: %d, 0x%x, 0x%x\n",
 				__func__, __LINE__, type, t2->cmd, t2->data);
 			ret_code =
 			    _lcm_i2c_write_bytes((unsigned char)t2->cmd,

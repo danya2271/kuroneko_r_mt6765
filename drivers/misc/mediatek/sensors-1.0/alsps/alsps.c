@@ -26,7 +26,7 @@ int als_data_report_t(int value, int status, int64_t time_stamp)
 
 	cxt = alsps_context_obj;
 	event.time_stamp = time_stamp;
-	/* pr_no_debug(" +als_data_report! %d, %d\n", value, status); */
+	/* pr_debug(" +als_data_report! %d, %d\n", value, status); */
 	/* force trigger data update after sensor enable. */
 	if (cxt->is_get_valid_als_data_after_enable == false) {
 		event.handle = ID_LIGHT;
@@ -73,7 +73,7 @@ int als_flush_report(void)
 	event.handle = ID_LIGHT;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(alsps_context_obj->als_mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 
@@ -109,7 +109,7 @@ int rgbw_flush_report(void)
 	event.handle = ID_RGBW;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(alsps_context_obj->als_mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 
@@ -155,7 +155,7 @@ int ps_flush_report(void)
 
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(alsps_context_obj->ps_mdev.minor, &event);
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	return err;
 }
 static void als_work_func(struct work_struct *work)
@@ -190,11 +190,11 @@ static void als_work_func(struct work_struct *work)
 		cxt->is_als_first_data_after_enable = false;
 		/* filter -1 value */
 		if (cxt->drv_data.als_data.values[0] == ALSPS_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto als_loop;
 		}
 	}
-	/* pr_no_debug(" als data[%d]\n" , cxt->drv_data.als_data.values[0]); */
+	/* pr_debug(" als data[%d]\n" , cxt->drv_data.als_data.values[0]); */
 	als_data_report(cxt->drv_data.als_data.values[0],
 			cxt->drv_data.als_data.status);
 
@@ -238,7 +238,7 @@ static void ps_work_func(struct work_struct *work)
 		cxt->is_ps_first_data_after_enable = false;
 		/* filter -1 value */
 		if (cxt->drv_data.ps_data.values[0] == ALSPS_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto ps_loop;
 		}
 	}
@@ -282,7 +282,7 @@ static struct alsps_context *alsps_context_alloc_object(void)
 {
 	struct alsps_context *obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	if (!obj) {
 		pr_err("Alloc alsps object error!\n");
 		return NULL;
@@ -318,7 +318,7 @@ static struct alsps_context *alsps_context_alloc_object(void)
 	obj->ps_delay_ns = -1;
 	obj->ps_latency_ns = -1;
 
-	pr_no_debug("%s end\n", __func__);
+	pr_debug("%s end\n", __func__);
 	return obj;
 }
 
@@ -330,7 +330,7 @@ static int als_enable_and_batch(void)
 
 	/* als_power on -> power off */
 	if (cxt->als_power == 1 && cxt->als_enable == 0) {
-		pr_no_debug("ALSPS disable\n");
+		pr_debug("ALSPS disable\n");
 		/* stop polling firstly, if needed */
 		if (cxt->als_ctl.is_report_input_direct == false &&
 		    cxt->is_als_polling_run == true) {
@@ -340,7 +340,7 @@ static int als_enable_and_batch(void)
 			cancel_work_sync(&cxt->report_als);
 			cxt->drv_data.als_data.values[0] = ALSPS_INVALID_VALUE;
 			cxt->is_als_polling_run = false;
-			pr_no_debug("als stop polling done\n");
+			pr_debug("als stop polling done\n");
 		}
 		/* turn off the als_power */
 		err = cxt->als_ctl.enable_nodata(0);
@@ -348,29 +348,29 @@ static int als_enable_and_batch(void)
 			pr_err("als turn off als_power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("als turn off als_power done\n");
+		pr_debug("als turn off als_power done\n");
 
 		cxt->als_power = 0;
 		cxt->als_delay_ns = -1;
-		pr_no_debug("ALSPS disable done\n");
+		pr_debug("ALSPS disable done\n");
 		return 0;
 	}
 	/* als_power off -> power on */
 	if (cxt->als_power == 0 && cxt->als_enable == 1) {
-		pr_no_debug("ALSPS als_power on\n");
+		pr_debug("ALSPS als_power on\n");
 		err = cxt->als_ctl.enable_nodata(1);
 		if (err) {
 			pr_err("als turn on als_power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("als turn on als_power done\n");
+		pr_debug("als turn on als_power done\n");
 
 		cxt->als_power = 1;
-		pr_no_debug("ALSPS als_power on done\n");
+		pr_debug("ALSPS als_power on done\n");
 	}
 	/* rate change */
 	if (cxt->als_power == 1 && cxt->als_delay_ns >= 0) {
-		pr_no_debug("ALSPS set batch\n");
+		pr_debug("ALSPS set batch\n");
 		/* set ODR, fifo timeout latency */
 		if (cxt->als_ctl.is_support_batch)
 			err = cxt->als_ctl.batch(0, cxt->als_delay_ns,
@@ -381,7 +381,7 @@ static int als_enable_and_batch(void)
 			pr_err("als set batch(ODR) err %d\n", err);
 			return -1;
 		}
-		pr_no_debug("als set ODR, fifo latency done\n");
+		pr_debug("als set ODR, fifo latency done\n");
 		/* start polling, if needed */
 		if (cxt->als_ctl.is_report_input_direct == false) {
 			uint64_t mdelay = cxt->als_delay_ns;
@@ -400,10 +400,10 @@ static int als_enable_and_batch(void)
 				cxt->is_als_polling_run = true;
 				cxt->is_als_first_data_after_enable = true;
 			}
-			pr_no_debug("als set polling delay %d ms\n",
+			pr_debug("als set polling delay %d ms\n",
 				  atomic_read(&cxt->delay_als));
 		}
-		pr_no_debug("ALSPS batch done\n");
+		pr_debug("ALSPS batch done\n");
 	}
 	return 0;
 }
@@ -422,7 +422,7 @@ static ssize_t alsactive_store(struct device *dev,
 		return err;
 	}
 
-	pr_no_debug("%s buf=%s\n", __func__, buf);
+	pr_debug("%s buf=%s\n", __func__, buf);
 	mutex_lock(&alsps_context_obj->alsps_op_mutex);
 	if (handle == ID_LIGHT) {
 		if (en) {
@@ -481,7 +481,7 @@ static ssize_t alsactive_store(struct device *dev,
 
 err_out:
 	mutex_unlock(&alsps_context_obj->alsps_op_mutex);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	if (err)
 		return err;
 	else
@@ -496,7 +496,7 @@ static ssize_t alsactive_show(struct device *dev,
 
 	cxt = alsps_context_obj;
 	div = cxt->als_data.vender_div;
-	pr_no_debug("als vender_div value: %d\n", div);
+	pr_debug("als vender_div value: %d\n", div);
 	return snprintf(buf, PAGE_SIZE, "%d\n", div);
 }
 
@@ -509,7 +509,7 @@ static ssize_t alsbatch_store(struct device *dev,
 	int64_t delay_ns = 0;
 	int64_t latency_ns = 0;
 
-	pr_no_debug("%s %s\n", __func__, buf);
+	pr_debug("%s %s\n", __func__, buf);
 	err = sscanf(buf, "%d,%d,%lld,%lld", &handle, &flag, &cxt->als_delay_ns,
 		     &cxt->als_latency_ns);
 	if (err != 4) {
@@ -540,7 +540,7 @@ static ssize_t alsbatch_store(struct device *dev,
 #endif
 	}
 	mutex_unlock(&alsps_context_obj->alsps_op_mutex);
-	pr_no_debug("%s done: %d\n", __func__, cxt->is_als_batch_enable);
+	pr_debug("%s done: %d\n", __func__, cxt->is_als_batch_enable);
 	if (err)
 		return err;
 	else
@@ -564,7 +564,7 @@ static ssize_t alsflush_store(struct device *dev,
 	if (err != 0)
 		pr_err("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&alsps_context_obj->alsps_op_mutex);
 	cxt = alsps_context_obj;
@@ -632,7 +632,7 @@ static int ps_enable_and_batch(void)
 
 	/* ps_power on -> power off */
 	if (cxt->ps_power == 1 && cxt->ps_enable == 0) {
-		pr_no_debug("PS disable\n");
+		pr_debug("PS disable\n");
 /* stop polling firstly, if needed */
 /*
  *		if (cxt->ps_ctl.is_report_input_direct == false
@@ -643,7 +643,7 @@ static int ps_enable_and_batch(void)
  *			cancel_work_sync(&cxt->report_ps);
  *			cxt->drv_data.ps_data.values[0] = ALSPS_INVALID_VALUE;
  *			cxt->is_ps_polling_run = false;
- *			pr_no_debug("ps stop polling done\n");
+ *			pr_debug("ps stop polling done\n");
  *		}
  */
 		/* turn off the ps_power */
@@ -652,29 +652,29 @@ static int ps_enable_and_batch(void)
 			pr_err("ps turn off ps_power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("ps turn off ps_power done\n");
+		pr_debug("ps turn off ps_power done\n");
 
 		cxt->ps_power = 0;
 		cxt->ps_delay_ns = -1;
-		pr_no_debug("PS disable done\n");
+		pr_debug("PS disable done\n");
 		return 0;
 	}
 	/* ps_power off -> power on */
 	if (cxt->ps_power == 0 && cxt->ps_enable == 1) {
-		pr_no_debug("PS ps_power on\n");
+		pr_debug("PS ps_power on\n");
 		err = cxt->ps_ctl.enable_nodata(1);
 		if (err) {
 			pr_err("ps turn on ps_power err = %d\n", err);
 			return -1;
 		}
-		pr_no_debug("ps turn on ps_power done\n");
+		pr_debug("ps turn on ps_power done\n");
 
 		cxt->ps_power = 1;
-		pr_no_debug("PS ps_power on done\n");
+		pr_debug("PS ps_power on done\n");
 	}
 	/* rate change */
 	if (cxt->ps_power == 1 && cxt->ps_delay_ns >= 0) {
-		pr_no_debug("PS set batch\n");
+		pr_debug("PS set batch\n");
 		/* set ODR, fifo timeout latency */
 		if (cxt->ps_ctl.is_support_batch)
 			err = cxt->ps_ctl.batch(0, cxt->ps_delay_ns,
@@ -685,7 +685,7 @@ static int ps_enable_and_batch(void)
 			pr_err("ps set batch(ODR) err %d\n", err);
 			return -1;
 		}
-		pr_no_debug("ps set ODR, fifo latency done\n");
+		pr_debug("ps set ODR, fifo latency done\n");
 /* start polling, if needed */
 /*		if (cxt->ps_ctl.is_report_input_direct == false) {
  *			int mdelay = cxt->ps_delay_ns;
@@ -698,12 +698,12 @@ static int ps_enable_and_batch(void)
  *				cxt->is_ps_polling_run = true;
  *				cxt->is_ps_first_data_after_enable = true;
  *			}
- *		pr_no_debug("ps delay %d ms\n", atomic_read(&cxt->delay_ps));
+ *		pr_debug("ps delay %d ms\n", atomic_read(&cxt->delay_ps));
  *		} else {
  *			ps_data_report(1, 3);
  *		}
  */
-		pr_no_debug("PS batch done\n");
+		pr_debug("PS batch done\n");
 	}
 	return 0;
 }
@@ -715,7 +715,7 @@ static ssize_t psactive_store(struct device *dev,
 	struct alsps_context *cxt = alsps_context_obj;
 	int err = 0;
 
-	pr_no_debug("%s buf=%s\n", __func__, buf);
+	pr_debug("%s buf=%s\n", __func__, buf);
 	mutex_lock(&alsps_context_obj->alsps_op_mutex);
 
 	if (!strncmp(buf, "1", 1))
@@ -734,7 +734,7 @@ static ssize_t psactive_store(struct device *dev,
 #endif
 err_out:
 	mutex_unlock(&alsps_context_obj->alsps_op_mutex);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	if (err)
 		return err;
 	else
@@ -749,7 +749,7 @@ static ssize_t psactive_show(struct device *dev, struct device_attribute *attr,
 
 	cxt = alsps_context_obj;
 	div = cxt->ps_data.vender_div;
-	pr_no_debug("ps vender_div value: %d\n", div);
+	pr_debug("ps vender_div value: %d\n", div);
 	return snprintf(buf, PAGE_SIZE, "%d\n", div);
 }
 
@@ -759,7 +759,7 @@ static ssize_t psbatch_store(struct device *dev, struct device_attribute *attr,
 	struct alsps_context *cxt = alsps_context_obj;
 	int handle = 0, flag = 0, err = 0;
 
-	pr_no_debug("%s %s\n", __func__, buf);
+	pr_debug("%s %s\n", __func__, buf);
 	err = sscanf(buf, "%d,%d,%lld,%lld", &handle, &flag, &cxt->ps_delay_ns,
 		     &cxt->ps_latency_ns);
 	if (err != 4) {
@@ -778,7 +778,7 @@ static ssize_t psbatch_store(struct device *dev, struct device_attribute *attr,
 	err = ps_enable_and_batch();
 #endif
 	mutex_unlock(&alsps_context_obj->alsps_op_mutex);
-	pr_no_debug("%s done: %d\n", __func__, cxt->is_ps_batch_enable);
+	pr_debug("%s done: %d\n", __func__, cxt->is_ps_batch_enable);
 	if (err)
 		return err;
 	else
@@ -801,7 +801,7 @@ static ssize_t psflush_store(struct device *dev, struct device_attribute *attr,
 	if (err != 0)
 		pr_err("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&alsps_context_obj->alsps_op_mutex);
 	cxt = alsps_context_obj;
@@ -853,13 +853,13 @@ static ssize_t pscali_store(struct device *dev, struct device_attribute *attr,
 
 static int als_ps_remove(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
 static int als_ps_probe(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	pltfm_dev = pdev;
 	return 0;
 }
@@ -890,15 +890,15 @@ static int alsps_real_driver_init(void)
 	int i = 0;
 	int err = 0;
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	for (i = 0; i < MAX_CHOOSE_ALSPS_NUM; i++) {
-		pr_no_debug("%s i=%d\n", __func__, i);
+		pr_debug("%s i=%d\n", __func__, i);
 		if (alsps_init_list[i] != 0) {
-			pr_no_debug(" alsps try to init driver %s\n",
+			pr_debug(" alsps try to init driver %s\n",
 				  alsps_init_list[i]->name);
 			err = alsps_init_list[i]->init();
 			if (err == 0) {
-				pr_no_debug(" alsps real driver %s probe ok\n",
+				pr_debug(" alsps real driver %s probe ok\n",
 					  alsps_init_list[i]->name);
 				break;
 			}
@@ -906,7 +906,7 @@ static int alsps_real_driver_init(void)
 	}
 
 	if (i == MAX_CHOOSE_ALSPS_NUM) {
-		pr_no_debug("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 		err = -1;
 	}
 
@@ -918,7 +918,7 @@ int alsps_driver_add(struct alsps_init_info *obj)
 	int err = 0;
 	int i = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (!obj) {
 		pr_err(
@@ -928,7 +928,7 @@ int alsps_driver_add(struct alsps_init_info *obj)
 
 	for (i = 0; i < MAX_CHOOSE_ALSPS_NUM; i++) {
 		if ((i == 0) && (alsps_init_list[0] == NULL)) {
-			pr_no_debug("register alsps driver for the first time\n");
+			pr_debug("register alsps driver for the first time\n");
 			if (platform_driver_register(&als_ps_driver))
 				pr_err(
 					"failed to register alsps driver already exist\n");
@@ -1105,10 +1105,10 @@ int als_register_data_path(struct als_data_path *data)
 	cxt->als_data.get_data = data->get_data;
 	cxt->als_data.vender_div = data->vender_div;
 	cxt->als_data.als_get_raw_data = data->als_get_raw_data;
-	pr_no_debug("alsps register data path vender_div: %d\n",
+	pr_debug("alsps register data path vender_div: %d\n",
 		  cxt->als_data.vender_div);
 	if (cxt->als_data.get_data == NULL) {
-		pr_no_debug("als register data path fail\n");
+		pr_debug("als register data path fail\n");
 		return -1;
 	}
 	return 0;
@@ -1122,10 +1122,10 @@ int ps_register_data_path(struct ps_data_path *data)
 	cxt->ps_data.get_data = data->get_data;
 	cxt->ps_data.vender_div = data->vender_div;
 	cxt->ps_data.ps_get_raw_data = data->ps_get_raw_data;
-	pr_no_debug("alsps register data path vender_div: %d\n",
+	pr_debug("alsps register data path vender_div: %d\n",
 		  cxt->ps_data.vender_div);
 	if (cxt->ps_data.get_data == NULL) {
-		pr_no_debug("ps register data path fail\n");
+		pr_debug("ps register data path fail\n");
 		return -1;
 	}
 	return 0;
@@ -1152,7 +1152,7 @@ int als_register_control_path(struct als_control_path *ctl)
 
 	if (cxt->als_ctl.enable_nodata == NULL || cxt->als_ctl.batch == NULL ||
 	    cxt->als_ctl.flush == NULL) {
-		pr_no_debug("als register control path fail\n");
+		pr_debug("als register control path fail\n");
 		return -1;
 	}
 
@@ -1193,7 +1193,7 @@ int ps_register_control_path(struct ps_control_path *ctl)
 
 	if (cxt->ps_ctl.enable_nodata == NULL || cxt->ps_ctl.batch == NULL ||
 	    cxt->ps_ctl.flush == NULL) {
-		pr_no_debug("ps register control path fail\n");
+		pr_debug("ps register control path fail\n");
 		return -1;
 	}
 
@@ -1233,7 +1233,7 @@ static int alsps_probe(void)
 {
 	int err;
 
-	pr_no_debug("%s start!!\n", __func__);
+	pr_debug("%s start!!\n", __func__);
 	alsps_context_obj = alsps_context_alloc_object();
 	if (!alsps_context_obj) {
 		err = -ENOMEM;
@@ -1246,7 +1246,7 @@ static int alsps_probe(void)
 		pr_err("alsps real driver init fail\n");
 		goto real_driver_init_fail;
 	}
-	pr_no_debug("%s OK !!\n", __func__);
+	pr_debug("%s OK !!\n", __func__);
 	return 0;
 
 real_driver_init_fail:
@@ -1261,7 +1261,7 @@ static int alsps_remove(void)
 {
 	int err = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	sysfs_remove_group(&alsps_context_obj->als_mdev.this_device->kobj,
 			   &als_attribute_group);
 	sysfs_remove_group(&alsps_context_obj->ps_mdev.this_device->kobj,
@@ -1280,7 +1280,7 @@ static int alsps_remove(void)
 
 static int __init alsps_init(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (alsps_probe()) {
 		pr_err("failed to register alsps driver\n");

@@ -42,7 +42,7 @@ MODULE_PARM_DESC(lks, "A device lks parameter under sysfs (0=NL, 1=L, 2=NA)");
  **************************************************************************/
 void sec_core_exit(void)
 {
-	pr_no_debug("[%s] version '%s%s', exit.\n", MOD, BUILD_TIME, BUILD_BRANCH);
+	pr_debug("[%s] version '%s%s', exit.\n", MOD, BUILD_TIME, BUILD_BRANCH);
 }
 
 /* extern void osal_msleep(unsigned int msec); */
@@ -81,7 +81,7 @@ long sec_core_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	/* get random id                      */
 	/* ---------------------------------- */
 	case SEC_GET_RANDOM_ID:
-		pr_no_debug("[%s] CMD - SEC_GET_RANDOM_ID\n", MOD);
+		pr_debug("[%s] CMD - SEC_GET_RANDOM_ID\n", MOD);
 		sec_get_random_id(&rid[0]);
 		ret =
 			osal_copy_to_user((void __user *)arg, (void *)&rid[0],
@@ -92,7 +92,7 @@ long sec_core_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	/* init boot info                     */
 	/* ---------------------------------- */
 	case SEC_BOOT_INIT:
-		pr_no_debug("[%s] CMD - SEC_BOOT_INIT\n", MOD);
+		pr_debug("[%s] CMD - SEC_BOOT_INIT\n", MOD);
 		ret = masp_boot_init();
 		ret = osal_copy_to_user((void __user *)arg,
 					(void *)&ret,
@@ -103,7 +103,7 @@ long sec_core_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	/* check if secure usbdl is enbaled   */
 	/* ---------------------------------- */
 	case SEC_USBDL_IS_ENABLED:
-		pr_no_debug("[%s] CMD - SEC_USBDL_IS_ENABLED\n", MOD);
+		pr_debug("[%s] CMD - SEC_USBDL_IS_ENABLED\n", MOD);
 		ret = sec_usbdl_enabled();
 		ret = osal_copy_to_user((void __user *)arg,
 					(void *)&ret,
@@ -114,7 +114,7 @@ long sec_core_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	/* check if secure boot is enbaled    */
 	/* ---------------------------------- */
 	case SEC_BOOT_IS_ENABLED:
-		pr_no_debug("[%s] CMD - SEC_BOOT_IS_ENABLED\n", MOD);
+		pr_debug("[%s] CMD - SEC_BOOT_IS_ENABLED\n", MOD);
 		ret = sec_boot_enabled();
 		ret = osal_copy_to_user((void __user *)arg,
 					(void *)&ret,

@@ -47,7 +47,7 @@ void lcm_common_parse_dts(const struct LCM_DTS *DTS, unsigned char force_update)
 
 
 	if ((_LCM_DTS.parsing != 0) && (force_update == 0)) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS has been parsed or non-force update: %d, %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS has been parsed or non-force update: %d, %d\n",
 			__func__, __LINE__, _LCM_DTS.parsing, force_update);
 		return;
 	}
@@ -84,50 +84,50 @@ void lcm_common_parse_dts(const struct LCM_DTS *DTS, unsigned char force_update)
 	if (memcmp((unsigned char *)dts_params,
 	    (unsigned char *)(&(DTS->params)),
 	     sizeof(struct LCM_PARAMS)) != 0x0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS compare error\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS compare error\n",
 			__func__, __LINE__);
 
-		pr_no_debug("[LCM][ERROR] dts_params:\n");
+		pr_debug("[LCM][ERROR] dts_params:\n");
 		tmp = (unsigned char *)dts_params;
 		tmp2 = (unsigned char *)(&(DTS->params));
 		for (i = 0; i < sizeof(struct LCM_PARAMS); i += 8) {
 			if (*(tmp + i) != *(tmp2 + i))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i), *(tmp2 + i), i);
 			if (*(tmp + i + 1) != *(tmp2 + i + 1))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 1),
 					*(tmp2 + i + 1), i + 1);
 			if (*(tmp + i + 2) != *(tmp2 + i + 2))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 2),
 					*(tmp2 + i + 2), i + 2);
 			if (*(tmp + i + 3) != *(tmp2 + i + 3))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 3),
 					*(tmp2 + i + 3), i + 3);
 			if (*(tmp + i + 4) != *(tmp2 + i + 4))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 4),
 					*(tmp2 + i + 4), i + 4);
 			if (*(tmp + i + 5) != *(tmp2 + i + 5))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 5),
 					*(tmp2 + i + 5), i + 5);
 			if (*(tmp + i + 6) != *(tmp2 + i + 6))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 6),
 					*(tmp2 + i + 6), i + 6);
 			if (*(tmp + i + 7) != *(tmp2 + i + 7))
-				pr_no_debug("data: 0x%x 0x%x, index: %d\n",
+				pr_debug("data: 0x%x 0x%x, index: %d\n",
 					*(tmp + i + 7),
 					*(tmp2 + i + 7), i + 7);
 		}
 
-		pr_no_debug("[LCM][ERROR] DTS->params:\n");
+		pr_debug("[LCM][ERROR] DTS->params:\n");
 		tmp = (unsigned char *)(&(DTS->params));
 		for (i = 0; i < sizeof(struct LCM_PARAMS); i += 8) {
-			pr_no_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+			pr_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 				*(tmp + i),	*(tmp + i + 1), *(tmp + i + 2),
 				*(tmp + i + 3), *(tmp + i + 4),
 				*(tmp + i + 5), *(tmp + i + 6),
@@ -621,23 +621,23 @@ void lcm_common_parse_dts(const struct LCM_DTS *DTS, unsigned char force_update)
 	if (memcmp((unsigned char *)dts_init,
 		(unsigned char *)(&(DTS->init[0])), sizeof(struct LCM_DATA))
 	    != 0x0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS compare error\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS compare error\n",
 			__func__, __LINE__);
 
-		pr_no_debug("[LCM][ERROR] dts_init:\n");
+		pr_debug("[LCM][ERROR] dts_init:\n");
 		tmp = (unsigned char *)dts_init;
 		for (i = 0; i < _LCM_DTS.init_size; i++) {
-			pr_no_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+			pr_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 				*(tmp), *(tmp + 1),	*(tmp + 2), *(tmp + 3),
 				*(tmp + 4), *(tmp + 5), *(tmp + 6),
 				*(tmp + 7));
 			tmp = tmp + sizeof(struct LCM_DATA);
 		}
 
-		pr_no_debug("[LCM][ERROR] DTS->init:\n");
+		pr_debug("[LCM][ERROR] DTS->init:\n");
 		tmp = (unsigned char *)(&(DTS->init[0]));
 		for (i = 0; i < DTS->init_size; i++) {
-			pr_no_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
+			pr_debug("0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x 0x%x\n",
 				*(tmp), *(tmp + 1),	*(tmp + 2), *(tmp + 3),
 				*(tmp + 4), *(tmp + 5), *(tmp + 6),
 				*(tmp + 7));
@@ -759,7 +759,7 @@ void lcm_common_set_util_funcs(const struct LCM_UTIL_FUNCS *util)
 void lcm_common_get_params(struct LCM_PARAMS *params)
 {
 	if (params == NULL) {
-		pr_no_debug("[LCM][ERROR] %s/%d: NULL parameter\n",
+		pr_debug("[LCM][ERROR] %s/%d: NULL parameter\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -768,7 +768,7 @@ void lcm_common_get_params(struct LCM_PARAMS *params)
 		memset(params, 0, sizeof(struct LCM_PARAMS));
 		memcpy(params, &(_LCM_DTS.params), sizeof(struct LCM_PARAMS));
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -781,13 +781,13 @@ void lcm_common_init(void)
 	struct LCM_DATA *init;
 
 	if (_LCM_DTS.init_size > INIT_SIZE) {
-		pr_no_debug("[LCM][ERROR] %s/%d: Init table overflow %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: Init table overflow %d\n",
 			__func__, __LINE__, _LCM_DTS.init_size);
 		return;
 	}
 
 	if (_LCM_DTS.parsing == 0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -821,14 +821,14 @@ void lcm_common_init(void)
 				break;
 
 			default:
-				pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+				pr_debug("[LCM][ERROR] %s/%d: %d\n",
 					__func__, __LINE__, init->type);
 				return;
 			}
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__, init->func);
 			return;
 		}
@@ -842,13 +842,13 @@ void lcm_common_suspend(void)
 	struct LCM_DATA *suspend;
 
 	if (_LCM_DTS.suspend_size > SUSPEND_SIZE) {
-		pr_no_debug("[LCM][ERROR] %s/%d: Suspend table overflow %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: Suspend table overflow %d\n",
 			__func__, __LINE__, _LCM_DTS.suspend_size);
 		return;
 	}
 
 	if (_LCM_DTS.parsing == 0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -882,14 +882,14 @@ void lcm_common_suspend(void)
 				break;
 
 			default:
-				pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+				pr_debug("[LCM][ERROR] %s/%d: %d\n",
 					__func__, __LINE__, suspend->type);
 				return;
 			}
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__, suspend->func);
 			return;
 		}
@@ -1048,13 +1048,13 @@ void lcm_common_setbacklight(unsigned int level)
 		mapped_level = 0;
 
 	if (_LCM_DTS.backlight_size > BACKLIGHT_SIZE) {
-		pr_no_debug("[LCM][ERROR] %s/%d: Backlight table overflow %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: Backlight table overflow %d\n",
 			__func__, __LINE__, _LCM_DTS.backlight_size);
 		return;
 	}
 
 	if (_LCM_DTS.parsing == 0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -1094,7 +1094,7 @@ void lcm_common_setbacklight(unsigned int level)
 				break;
 
 			default:
-				pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+				pr_debug("[LCM][ERROR] %s/%d: %d\n",
 					__func__, __LINE__,
 					(unsigned int)backlight->type);
 				return;
@@ -1102,7 +1102,7 @@ void lcm_common_setbacklight(unsigned int level)
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__,
 				(unsigned int)backlight->func);
 			return;
@@ -1119,13 +1119,13 @@ unsigned int lcm_common_compare_id(void)
 	struct LCM_DATA *compare_id;
 
 	if (_LCM_DTS.compare_id_size > COMPARE_ID_SIZE) {
-		pr_no_debug("[LCM][ERROR] %s/%d: Compare table overflow %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: Compare table overflow %d\n",
 			__func__, __LINE__, _LCM_DTS.compare_id_size);
 		return 0;
 	}
 
 	if (_LCM_DTS.parsing == 0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return 0;
 	}
@@ -1166,14 +1166,14 @@ unsigned int lcm_common_compare_id(void)
 				break;
 
 			default:
-				pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+				pr_debug("[LCM][ERROR] %s/%d: %d\n",
 					__func__, __LINE__, compare_id->type);
 				return 0;
 			}
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__, compare_id->func);
 			return 0;
 		}
@@ -1198,13 +1198,13 @@ void lcm_common_setbacklight_cmdq(void *handle, unsigned int level)
 	struct LCM_DATA_T3 *backlight_cmdq_data_t3;
 
 	if (_LCM_DTS.backlight_cmdq_size > BACKLIGHT_CMDQ_SIZE) {
-		pr_no_debug("[LCM][ERROR] %s/%d: Backlight cmdq table overflow %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: Backlight cmdq table overflow %d\n",
 			__func__, __LINE__, _LCM_DTS.backlight_cmdq_size);
 		return;
 	}
 
 	if (_LCM_DTS.parsing == 0) {
-		pr_no_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
+		pr_debug("[LCM][ERROR] %s/%d: DTS is not parsed\n",
 			__func__, __LINE__);
 		return;
 	}
@@ -1241,7 +1241,7 @@ void lcm_common_setbacklight_cmdq(void *handle, unsigned int level)
 				break;
 
 			default:
-				pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+				pr_debug("[LCM][ERROR] %s/%d: %d\n",
 					__func__, __LINE__,
 					(unsigned int)backlight_cmdq->type);
 				return;
@@ -1249,7 +1249,7 @@ void lcm_common_setbacklight_cmdq(void *handle, unsigned int level)
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__,
 				(unsigned int)backlight_cmdq->func);
 			return;
@@ -1446,7 +1446,7 @@ static void r63419_lcm_validate_roi(int *x, int *y, int *width, int *height)
 		}
 		h = y2 - y1 + 1;
 	}
-	/* pr_no_debug("roi(%d,%d,%d,%d) to (%d,%d,%d,%d)\n",*/
+	/* pr_debug("roi(%d,%d,%d,%d) to (%d,%d,%d,%d)\n",*/
 	/* *x, *y, *width, *height, x1, y1, w, h);	 */
 	*x = x1;
 	*y = y1;

@@ -38,7 +38,7 @@ static int tmem_ssmr_get(u64 *pa, u32 *size, u32 feat, void *dev_desc)
 		return TMEM_INVALID_ADDR_OR_SIZE;
 	}
 
-	pr_no_debug("ssmr offline passed! feat:%d, pa: 0x%llx, sz: 0x%x\n", feat,
+	pr_debug("ssmr offline passed! feat:%d, pa: 0x%llx, sz: 0x%x\n", feat,
 		 *pa, *size);
 	return TMEM_OK;
 }
@@ -52,7 +52,7 @@ static int tmem_ssmr_put(u32 feat, void *dev_desc)
 		return TMEM_SSMR_ONLINE_FAILED;
 	}
 
-	pr_no_debug("ssmr online passed!\n");
+	pr_debug("ssmr online passed!\n");
 	return TMEM_OK;
 }
 

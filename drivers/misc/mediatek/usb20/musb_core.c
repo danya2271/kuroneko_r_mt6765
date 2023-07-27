@@ -1220,7 +1220,7 @@ b_host:
 			 */
 			if (ep->dwWaitFrame >= frame) {
 				ep->dwWaitFrame = 0;
-				pr_no_debug("SOF --> periodic TX%s on %d\n",
+				pr_debug("SOF --> periodic TX%s on %d\n",
 					 ep->tx_channel ? " DMA" : "", epnum);
 				if (!ep->tx_channel)
 					musb_h_tx_start(musb, epnum);
@@ -1496,7 +1496,7 @@ static void musb_shutdown(struct platform_device *pdev)
 	#endif
 
 	DBG(0, "shut down\n");
-	pr_no_debug("%s, start to shut down\n", __func__);
+	pr_debug("%s, start to shut down\n", __func__);
 	pm_runtime_get_sync(musb->controller);
 
 	musb_platform_prepare_clk(musb);
@@ -1823,7 +1823,7 @@ static int ep_config_from_hw(struct musb *musb)
 	}
 
 	if (!musb->bulk_ep) {
-		pr_no_debug("%s: missing bulk\n", musb_driver_name);
+		pr_debug("%s: missing bulk\n", musb_driver_name);
 		return -EINVAL;
 	}
 
@@ -1897,7 +1897,7 @@ static int musb_core_init(u16 musb_type, struct musb *musb)
 	if (ret < 0)
 		return -EINVAL;
 
-	pr_no_debug("%s: %sHDRC RTL version %s %s\n"
+	pr_debug("%s: %sHDRC RTL version %s %s\n"
 		, musb_driver_name, type, aRevision, aDate);
 
 	/* configure ep0 */
@@ -2484,16 +2484,16 @@ static int musb_init_controller
 	vbus_polling_tsk =
 		kthread_create(polling_vbus_value, NULL, "polling_vbus_thread");
 	if (IS_ERR(vbus_polling_tsk)) {
-		pr_no_debug("create polling vbus thread failed!\n");
+		pr_debug("create polling vbus thread failed!\n");
 		vbus_polling_tsk = NULL;
 	} else {
-		pr_no_debug("create polling vbus thread OK!\n");
+		pr_debug("create polling vbus thread OK!\n");
 	}
 #endif
 
 	/* Init IRQ workqueue before request_irq */
 	INIT_WORK(&musb->irq_work, musb_irq_work);
-	pr_no_debug("musb irq number: %d", musb->nIrq);
+	pr_debug("musb irq number: %d", musb->nIrq);
 
 #if defined(CONFIG_USBIF_COMPLIANCE)
 	INIT_WORK(&musb->otg_notifier_work, musb_otg_notifier_work);

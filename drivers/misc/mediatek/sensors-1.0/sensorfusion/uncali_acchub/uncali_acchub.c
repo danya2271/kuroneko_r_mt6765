@@ -119,7 +119,7 @@ static int __init uncali_acchub_init(void)
 
 static void __exit uncali_acchub_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(uncali_acchub_init);

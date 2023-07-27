@@ -115,12 +115,12 @@ static void gyro_work_func(struct work_struct *work)
 		if (cxt->drv_data.x == GYRO_INVALID_VALUE ||
 		    cxt->drv_data.y == GYRO_INVALID_VALUE ||
 		    cxt->drv_data.z == GYRO_INVALID_VALUE) {
-			pr_no_debug(" read invalid data\n");
+			pr_debug(" read invalid data\n");
 			goto gyro_loop;
 		}
 	}
 
-	/* pr_no_debug("gyro data[%d,%d,%d]\n" ,cxt->drv_data.gyro_data.values[0],
+	/* pr_debug("gyro data[%d,%d,%d]\n" ,cxt->drv_data.gyro_data.values[0],
 	 */
 	/* cxt->drv_data.gyro_data.values[1],cxt->drv_data.gyro_data.values[2]);
 	 */
@@ -147,7 +147,7 @@ enum hrtimer_restart gyro_poll(struct hrtimer *timer)
 
 	queue_work(obj->gyro_workqueue, &obj->report);
 
-	/* pr_no_debug("cur_nt = %lld\n", getCurNT()); */
+	/* pr_debug("cur_nt = %lld\n", getCurNT()); */
 
 	return HRTIMER_NORESTART;
 }
@@ -157,7 +157,7 @@ static struct gyro_context *gyro_context_alloc_object(void)
 
 	struct gyro_context *obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	if (!obj) {
 		pr_err("Alloc gyro object error!\n");
 		return NULL;
@@ -185,7 +185,7 @@ static struct gyro_context *gyro_context_alloc_object(void)
 	obj->delay_ns = -1;
 	obj->latency_ns = -1;
 	mutex_init(&obj->gyro_op_mutex);
-	pr_no_debug("%s end\n", __func__);
+	pr_debug("%s end\n", __func__);
 	return obj;
 }
 
@@ -197,7 +197,7 @@ static int gyro_enable_and_batch(void)
 
 	/* power on -> power off */
 	if (cxt->power == 1 && cxt->enable == 0) {
-		pr_no_debug("GYRO disable\n");
+		pr_debug("GYRO disable\n");
 		/* stop polling firstly, if needed */
 		if (cxt->is_active_data == false &&
 		    cxt->gyro_ctl.is_report_input_direct == false &&
@@ -211,7 +211,7 @@ static int gyro_enable_and_batch(void)
 			cxt->drv_data.z = GYRO_INVALID_VALUE;
 			cxt->drv_data.temperature = 0;
 			cxt->is_polling_run = false;
-			pr_no_debug("gyro stop polling done\n");
+			pr_debug("gyro stop polling done\n");
 		}
 		/* turn off the power */
 		if (cxt->is_active_data == false &&
@@ -222,17 +222,17 @@ static int gyro_enable_and_batch(void)
 					    err);
 				return -1;
 			}
-			pr_no_debug("gyro turn off power done\n");
+			pr_debug("gyro turn off power done\n");
 		}
 
 		cxt->power = 0;
 		cxt->delay_ns = -1;
-		pr_no_debug("GYRO disable done\n");
+		pr_debug("GYRO disable done\n");
 		return 0;
 	}
 	/* power off -> power on */
 	if (cxt->power == 0 && cxt->enable == 1) {
-		pr_no_debug("GYRO enable\n");
+		pr_debug("GYRO enable\n");
 		if (true == cxt->is_active_data ||
 		    true == cxt->is_active_nodata) {
 			err = cxt->gyro_ctl.enable_nodata(1);
@@ -241,14 +241,14 @@ static int gyro_enable_and_batch(void)
 					    err);
 				return -1;
 			}
-			pr_no_debug("gyro turn on power done\n");
+			pr_debug("gyro turn on power done\n");
 		}
 		cxt->power = 1;
-		pr_no_debug("GYRO enable done\n");
+		pr_debug("GYRO enable done\n");
 	}
 	/* rate change */
 	if (cxt->power == 1 && cxt->delay_ns >= 0) {
-		pr_no_debug("GYRO set batch\n");
+		pr_debug("GYRO set batch\n");
 		/* set ODR, fifo timeout latency */
 		if (cxt->gyro_ctl.is_support_batch)
 			err = cxt->gyro_ctl.batch(0, cxt->delay_ns,
@@ -259,7 +259,7 @@ static int gyro_enable_and_batch(void)
 			pr_err("gyro set batch(ODR) err %d\n", err);
 			return -1;
 		}
-		pr_no_debug("gyro set ODR, fifo latency done\n");
+		pr_debug("gyro set ODR, fifo latency done\n");
 		/* start polling, if needed */
 		if (cxt->is_active_data == true &&
 		    cxt->gyro_ctl.is_report_input_direct == false) {
@@ -274,10 +274,10 @@ static int gyro_enable_and_batch(void)
 				startTimer(&cxt->hrTimer,
 					   atomic_read(&cxt->delay), true);
 			}
-			pr_no_debug("gyro set polling delay %d ms\n",
+			pr_debug("gyro set polling delay %d ms\n",
 				 atomic_read(&cxt->delay));
 		}
-		pr_no_debug("GYRO batch done\n");
+		pr_debug("GYRO batch done\n");
 	}
 	return 0;
 }
@@ -287,7 +287,7 @@ static ssize_t gyroenablenodata_show(struct device *dev,
 {
 	int len = 0;
 
-	pr_no_debug(" not support now\n");
+	pr_debug(" not support now\n");
 	return len;
 }
 
@@ -298,7 +298,7 @@ static ssize_t gyroenablenodata_store(struct device *dev,
 	struct gyro_context *cxt = gyro_context_obj;
 	int err = 0;
 
-	pr_no_debug("gyro_store_enable nodata buf=%s\n", buf);
+	pr_debug("gyro_store_enable nodata buf=%s\n", buf);
 	mutex_lock(&gyro_context_obj->gyro_op_mutex);
 	if (!strncmp(buf, "1", 1)) {
 		cxt->enable = 1;
@@ -318,14 +318,14 @@ static ssize_t gyroenablenodata_store(struct device *dev,
 			pr_err("gyro turn on power err = %d\n", err);
 			goto err_out;
 		}
-		pr_no_debug("gyro turn on power done\n");
+		pr_debug("gyro turn on power done\n");
 	} else {
 		err = cxt->gyro_ctl.enable_nodata(0);
 		if (err) {
 			pr_err("gyro turn off power err = %d\n", err);
 			goto err_out;
 		}
-		pr_no_debug("gyro turn off power done\n");
+		pr_debug("gyro turn off power done\n");
 	}
 #else
 	err = gyro_enable_and_batch();
@@ -346,7 +346,7 @@ static ssize_t gyroactive_store(struct device *dev,
 	struct gyro_context *cxt = gyro_context_obj;
 	int err = 0;
 
-	pr_no_debug("%s buf=%s\n", __func__, buf);
+	pr_debug("%s buf=%s\n", __func__, buf);
 	mutex_lock(&gyro_context_obj->gyro_op_mutex);
 	if (!strncmp(buf, "1", 1)) {
 		cxt->enable = 1;
@@ -366,21 +366,21 @@ static ssize_t gyroactive_store(struct device *dev,
 			pr_err("gyro turn on power err = %d\n", err);
 			goto err_out;
 		}
-		pr_no_debug("gyro turn on power done\n");
+		pr_debug("gyro turn on power done\n");
 	} else {
 		err = cxt->gyro_ctl.enable_nodata(0);
 		if (err) {
 			pr_err("gyro turn off power err = %d\n", err);
 			goto err_out;
 		}
-		pr_no_debug("gyro turn off power done\n");
+		pr_debug("gyro turn off power done\n");
 	}
 #else
 	err = gyro_enable_and_batch();
 #endif
 err_out:
 	mutex_unlock(&gyro_context_obj->gyro_op_mutex);
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 	if (err)
 		return err;
 	else
@@ -395,9 +395,9 @@ static ssize_t gyroactive_show(struct device *dev,
 
 	cxt = gyro_context_obj;
 
-	pr_no_debug("gyro show active not support now\n");
+	pr_debug("gyro show active not support now\n");
 	div = cxt->gyro_data.vender_div;
-	pr_no_debug("gyro vender_div value: %d\n", div);
+	pr_debug("gyro vender_div value: %d\n", div);
 	return snprintf(buf, PAGE_SIZE, "%d\n", div);
 }
 
@@ -408,7 +408,7 @@ static ssize_t gyrobatch_store(struct device *dev,
 	struct gyro_context *cxt = gyro_context_obj;
 	int handle = 0, flag = 0, err = 0;
 
-	pr_no_debug("%s %s\n", __func__, buf);
+	pr_debug("%s %s\n", __func__, buf);
 	err = sscanf(buf, "%d,%d,%lld,%lld", &handle, &flag, &cxt->delay_ns,
 		     &cxt->latency_ns);
 	if (err != 4) {
@@ -451,7 +451,7 @@ static ssize_t gyroflush_store(struct device *dev,
 	if (err != 0)
 		pr_info("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&gyro_context_obj->gyro_op_mutex);
 	cxt = gyro_context_obj;
@@ -515,13 +515,13 @@ static ssize_t gyrodevnum_show(struct device *dev,
 }
 static int gyroscope_remove(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	return 0;
 }
 
 static int gyroscope_probe(struct platform_device *pdev)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	pltfm_dev = pdev;
 	return 0;
 }
@@ -551,15 +551,15 @@ static int gyro_real_driver_init(struct platform_device *pdev)
 	int i = 0;
 	int err = 0;
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	for (i = 0; i < MAX_CHOOSE_GYRO_NUM; i++) {
-		pr_no_debug("i=%d\n", i);
+		pr_debug("i=%d\n", i);
 		if (gyroscope_init_list[i] != 0) {
-			pr_no_debug("gyro try to init driver %s\n",
+			pr_debug("gyro try to init driver %s\n",
 				 gyroscope_init_list[i]->name);
 			err = gyroscope_init_list[i]->init(pdev);
 			if (err == 0) {
-				pr_no_debug("gyro real driver %s probe ok\n",
+				pr_debug("gyro real driver %s probe ok\n",
 					 gyroscope_init_list[i]->name);
 				break;
 			}
@@ -567,7 +567,7 @@ static int gyro_real_driver_init(struct platform_device *pdev)
 	}
 
 	if (i == MAX_CHOOSE_GYRO_NUM) {
-		pr_no_debug("%s fail\n", __func__);
+		pr_debug("%s fail\n", __func__);
 		err = -1;
 	}
 	return err;
@@ -585,7 +585,7 @@ int gyro_driver_add(struct gyro_init_info *obj)
 
 	for (i = 0; i < MAX_CHOOSE_GYRO_NUM; i++) {
 		if ((i == 0) && (gyroscope_init_list[0] == NULL)) {
-			pr_no_debug("register gyro driver for the first time\n");
+			pr_debug("register gyro driver for the first time\n");
 			if (platform_driver_register(&gyroscope_driver))
 				pr_err(
 					"failed to register gyro driver already exist\n");
@@ -678,14 +678,14 @@ int gyro_register_data_path(struct gyro_data_path *data)
 	cxt->gyro_data.get_temperature = data->get_temperature;
 	cxt->gyro_data.vender_div = data->vender_div;
 	cxt->gyro_data.get_raw_data = data->get_raw_data;
-	pr_no_debug("gyro register data path vender_div: %d\n",
+	pr_debug("gyro register data path vender_div: %d\n",
 		 cxt->gyro_data.vender_div);
 	if (cxt->gyro_data.get_data == NULL) {
-		pr_no_debug("gyro register data path fail\n");
+		pr_debug("gyro register data path fail\n");
 		return -1;
 	}
 	if (cxt->gyro_data.get_temperature == NULL)
-		pr_no_debug("gyro not register temperature path\n");
+		pr_debug("gyro not register temperature path\n");
 	return 0;
 }
 
@@ -707,7 +707,7 @@ int gyro_register_control_path(struct gyro_control_path *ctl)
 	if (cxt->gyro_ctl.batch == NULL ||
 	    cxt->gyro_ctl.open_report_data == NULL ||
 	    cxt->gyro_ctl.enable_nodata == NULL) {
-		pr_no_debug("gyro register control path fail\n");
+		pr_debug("gyro register control path fail\n");
 		return -1;
 	}
 
@@ -835,7 +835,7 @@ int gyro_flush_report(void)
 
 	memset(&event, 0, sizeof(struct sensor_event));
 
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(gyro_context_obj->mdev.minor, &event);
 	return err;
@@ -846,7 +846,7 @@ static int gyro_probe(void)
 
 	int err;
 
-	pr_no_debug("%s +++!!\n", __func__);
+	pr_debug("%s +++!!\n", __func__);
 
 	gyro_context_obj = gyro_context_alloc_object();
 	if (!gyro_context_obj) {
@@ -861,7 +861,7 @@ static int gyro_probe(void)
 		pr_err("gyro real driver init fail\n");
 		goto real_driver_init_fail;
 	}
-	pr_no_debug("%s OK !!\n", __func__);
+	pr_debug("%s OK !!\n", __func__);
 	return 0;
 
 real_driver_init_fail:
@@ -891,7 +891,7 @@ static int gyro_remove(void)
 
 static int __init gyro_init(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (gyro_probe()) {
 		pr_err("failed to register gyro driver\n");

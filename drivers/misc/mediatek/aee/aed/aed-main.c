@@ -152,7 +152,7 @@ void msg_show(const char *prefix, struct AE_Msg *msg)
 		break;
 	}
 
-	pr_no_debug("%s: cmdType=%s[%d] cmdId=%s[%d] seq=%d arg=%x len=%d\n",
+	pr_debug("%s: cmdType=%s[%d] cmdId=%s[%d] seq=%d arg=%x len=%d\n",
 		prefix,
 		cmd_type, msg->cmdType, cmd_id, msg->cmdId, msg->seq, msg->arg,
 		msg->len);
@@ -448,13 +448,13 @@ static void ke_gen_userbacktrace_msg(void)
 	rep_msg->cmdId = AE_REQ_USERSPACEBACKTRACE;
 
 	rep_msg->len = userinfo_len;
-	pr_no_debug("%s rep_msg->len:%lx,\n", __func__, (long)rep_msg->len);
+	pr_debug("%s rep_msg->len:%lx,\n", __func__, (long)rep_msg->len);
 
 	memcpy(data, (char *) &(aed_dev.kerec.lastlog->userthread_stack),
 			sizeof(pid_t) + sizeof(int));
-	pr_no_debug("len(pid+int):%lx\n", (long)(sizeof(pid_t)+sizeof(int)));
-	pr_no_debug("des :%lx\n", (long)(data + sizeof(pid_t)+sizeof(int)));
-	pr_no_debug("src addr :%lx\n", (long)((char *)
+	pr_debug("len(pid+int):%lx\n", (long)(sizeof(pid_t)+sizeof(int)));
+	pr_debug("des :%lx\n", (long)(data + sizeof(pid_t)+sizeof(int)));
+	pr_debug("src addr :%lx\n", (long)((char *)
 		(aed_dev.kerec.lastlog->userthread_stack.Userthread_Stack)));
 
 	memcpy((data + sizeof(pid_t)+sizeof(int)), (char *)
@@ -481,13 +481,13 @@ static void ke_gen_usermaps_msg(void)
 	rep_msg->cmdId = AE_REQ_USER_MAPS;
 
 	rep_msg->len = userinfo_len;
-	pr_no_debug("%s rep_msg->len:%lx,\n", __func__, (long)rep_msg->len);
+	pr_debug("%s rep_msg->len:%lx,\n", __func__, (long)rep_msg->len);
 
 	memcpy(data, (char *) &(aed_dev.kerec.lastlog->userthread_maps),
 			sizeof(pid_t) + sizeof(int));
-	pr_no_debug("len(pid+int):%lx\n", (long)(sizeof(pid_t)+sizeof(int)));
-	pr_no_debug("des :%lx\n", (long)(data + sizeof(pid_t)+sizeof(int)));
-	pr_no_debug("src addr :%lx\n", (long)((char *)
+	pr_debug("len(pid+int):%lx\n", (long)(sizeof(pid_t)+sizeof(int)));
+	pr_debug("des :%lx\n", (long)(data + sizeof(pid_t)+sizeof(int)));
+	pr_debug("src addr :%lx\n", (long)((char *)
 		(aed_dev.kerec.lastlog->userthread_maps.Userthread_maps)));
 
 	memcpy((data + sizeof(pid_t)+sizeof(int)), (char *)
@@ -945,7 +945,7 @@ static void ee_queue_request(struct aed_eerec *eerec)
 	list_add_tail(&eerec->list, &ee_queue.list);
 	spin_unlock_irqrestore(&ee_queue.lock, flags);
 	ret = queue_work(system_wq, &ee_work);
-	pr_no_debug("%s: add new ee work, status %d\n", __func__, ret);
+	pr_debug("%s: add new ee work, status %d\n", __func__, ret);
 }
 
 static void ee_worker(struct work_struct *work)
@@ -974,14 +974,14 @@ static int aed_ee_open(struct inode *inode, struct file *filp)
 {
 	if (strncmp(current->comm, "aee_aed", 7))
 		return -1;
-	pr_no_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
+	pr_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
 						MINOR(inode->i_rdev));
 	return 0;
 }
 
 static int aed_ee_release(struct inode *inode, struct file *filp)
 {
-	pr_no_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
+	pr_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
 						MINOR(inode->i_rdev));
 	return 0;
 }
@@ -1098,13 +1098,13 @@ static int aed_ke_open(struct inode *inode, struct file *filp)
 	major = MAJOR(inode->i_rdev);
 	minor = MINOR(inode->i_rdev);
 	devname = filp->f_path.dentry->d_iname;
-	pr_no_debug("%s:(%s)%d:%d\n", __func__, devname, major, minor);
+	pr_debug("%s:(%s)%d:%d\n", __func__, devname, major, minor);
 	return 0;
 }
 
 static int aed_ke_release(struct inode *inode, struct file *filp)
 {
-	pr_no_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
+	pr_debug("%s:%d:%d\n", __func__, MAJOR(inode->i_rdev),
 			MINOR(inode->i_rdev));
 	return 0;
 }
@@ -1537,7 +1537,7 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			goto EXIT;
 		}
 
-		pr_no_debug("set aee mode = %d\n", aee_mode);
+		pr_debug("set aee mode = %d\n", aee_mode);
 		break;
 	case AEEIOCTL_SET_AEE_FORCE_EXP:
 		if (copy_from_user(&aee_force_exp_tmp,
@@ -1555,7 +1555,7 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			goto EXIT;
 		}
 
-		pr_no_debug("set aee force_exp = %d\n", aee_force_exp);
+		pr_debug("set aee force_exp = %d\n", aee_force_exp);
 		break;
 	case AEEIOCTL_DAL_SHOW:
 		/* It's troublesome to allocate more than
@@ -1583,7 +1583,7 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		/* Try to prevent overrun */
 		dal_show->msg[sizeof(dal_show->msg) - 1] = 0;
 #if IS_ENABLED(CONFIG_MTK_LCM)
-		pr_no_debug("AEE CALL DAL_Printf now\n");
+		pr_debug("AEE CALL DAL_Printf now\n");
 		DAL_Printf("%s", dal_show->msg);
 #endif
 
@@ -1599,10 +1599,10 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		dal_setcolor.background = 0xff0000;	/*red */
 
 #if IS_ENABLED(CONFIG_MTK_LCM)
-		pr_no_debug("AEE CALL DAL_SetColor now\n");
+		pr_debug("AEE CALL DAL_SetColor now\n");
 		DAL_SetColor(dal_setcolor.foreground,
 				dal_setcolor.background);
-		pr_no_debug("AEE CALL DAL_Clean now\n");
+		pr_debug("AEE CALL DAL_Clean now\n");
 		DAL_Clean();
 #endif
 		break;
@@ -1620,15 +1620,15 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			goto EXIT;
 		}
 #if IS_ENABLED(CONFIG_MTK_LCM)
-		pr_no_debug("AEE CALL DAL_SetColor now\n");
+		pr_debug("AEE CALL DAL_SetColor now\n");
 		DAL_SetColor(dal_setcolor.foreground,
 				dal_setcolor.background);
-		pr_no_debug("AEE CALL DAL_SetScreenColor now\n");
+		pr_debug("AEE CALL DAL_SetScreenColor now\n");
 		DAL_SetScreenColor(dal_setcolor.screencolor);
 #endif
 		break;
 	case AEEIOCTL_GET_THREAD_REG:
-		pr_no_debug("%s: get thread registers ioctl\n", __func__);
+		pr_debug("%s: get thread registers ioctl\n", __func__);
 
 		tmp = kzalloc(sizeof(struct aee_thread_reg),
 				GFP_KERNEL);
@@ -1914,7 +1914,7 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		/* get current user space reg when call
 		 * aee_kernel_warning_api
 		 */
-		pr_no_debug("%s: AEEIOCTL_USER_IOCTL_TO_KERNEL_WANING,call kthread create ,is ok\n"
+		pr_debug("%s: AEEIOCTL_USER_IOCTL_TO_KERNEL_WANING,call kthread create ,is ok\n"
 			, __func__);
 
 		aee_kernel_warning_api(__FILE__, __LINE__,
@@ -1923,7 +1923,7 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				"Trigger Kernel warning");
 		break;
 	case AEEIOCTL_CHECK_SUID_DUMPABLE:
-		pr_no_debug("%s: check suid dumpable ioctl\n", __func__);
+		pr_debug("%s: check suid dumpable ioctl\n", __func__);
 
 		if (copy_from_user(&pid, (void __user *)arg, sizeof(int))) {
 			ret = -EFAULT;
@@ -1981,10 +1981,10 @@ static long aed_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			ret = -EFAULT;
 			goto EXIT;
 		}
-		pr_no_debug("force aee red screen = %d\n", force_red_screen);
+		pr_debug("force aee red screen = %d\n", force_red_screen);
 		break;
 	case AEEIOCTL_GET_AEE_SIGINFO:
-		pr_no_debug("%s: get aee_siginfo ioctl\n", __func__);
+		pr_debug("%s: get aee_siginfo ioctl\n", __func__);
 
 		if (copy_from_user(&aee_si,
 				(struct aee_siginfo __user *)arg,
@@ -2104,7 +2104,7 @@ int DumpThreadNativeInfo(struct aee_oops *oops)
 	oops->userthread_maps.tid = current_task->tgid;
 
 	memcpy(&oops->userthread_reg.regs, user_ret, sizeof(struct pt_regs));
-	pr_no_debug(" pid:%d /// tgid:%d, stack:0x%08lx\n",
+	pr_debug(" pid:%d /// tgid:%d, stack:0x%08lx\n",
 			current_task->pid, current_task->tgid,
 			(long)oops->userthread_stack.Userthread_Stack);
 	if (!user_mode(user_ret))
@@ -2305,7 +2305,7 @@ static void kernel_reportAPI(const enum AE_DEFECT_ATTR attr, const int db_opt,
 			DumpThreadNativeInfo(oops);
 
 		}
-		pr_no_debug("%s,%s,%s,0x%x\n", __func__, module, msg, db_opt);
+		pr_debug("%s,%s,%s,0x%x\n", __func__, module, msg, db_opt);
 		ke_queue_request(oops);
 	}
 }
@@ -2370,7 +2370,7 @@ static void external_exception(const char *assert_type, const int *log,
 #else
 	strncpy(eerec->exp_filename, detail, sizeof(eerec->exp_filename) - 1);
 #endif
-	pr_no_debug("EE %s\n", eerec->assert_type);
+	pr_debug("EE %s\n", eerec->assert_type);
 
 	eerec->exp_linenum = 0;
 	eerec->fatal1 = 0;
@@ -2403,7 +2403,7 @@ static void external_exception(const char *assert_type, const int *log,
 	}
 	eerec->db_opt = db_opt;
 	ee_queue_request(eerec);
-	pr_no_debug("%s out\n", __func__);
+	pr_debug("%s out\n", __func__);
 }
 
 static bool rr_reported;

@@ -105,57 +105,57 @@ EXPORT_SYMBOL(aee_kernel_reminding_api);
 void aed_md_exception_api(const int *log, int log_size, const int *phy,
 			int phy_size, const char *detail, const int db_opt)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	if (g_aee_api) {
 		if (g_aee_api->md_exception) {
 			g_aee_api->md_exception("modem", log, log_size, phy,
 					phy_size, detail, db_opt);
 		} else {
-			pr_no_debug("g_aee_api->md_exception = 0x%p\n",
+			pr_debug("g_aee_api->md_exception = 0x%p\n",
 					g_aee_api->md_exception);
 		}
 	} else {
-		pr_no_debug("g_aee_api is null\n");
+		pr_debug("g_aee_api is null\n");
 	}
-	pr_no_debug("%s out\n", __func__);
+	pr_debug("%s out\n", __func__);
 }
 EXPORT_SYMBOL(aed_md_exception_api);
 
 void aed_md32_exception_api(const int *log, int log_size, const int *phy,
 			int phy_size, const char *detail, const int db_opt)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	if (g_aee_api) {
 		if (g_aee_api->md_exception) {
 			g_aee_api->md_exception("md32", log, log_size, phy,
 					phy_size, detail, db_opt);
 		} else {
-			pr_no_debug("g_aee_api->md32_exception = 0x%p\n",
+			pr_debug("g_aee_api->md32_exception = 0x%p\n",
 					g_aee_api->md32_exception);
 		}
 	} else {
-		pr_no_debug("g_aee_api is null\n");
+		pr_debug("g_aee_api is null\n");
 	}
-	pr_no_debug("%s out\n", __func__);
+	pr_debug("%s out\n", __func__);
 }
 EXPORT_SYMBOL(aed_md32_exception_api);
 
 void aed_scp_exception_api(const int *log, int log_size, const int *phy,
 			int phy_size, const char *detail, const int db_opt)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	if (g_aee_api) {
 		if (g_aee_api->md_exception) {
 			g_aee_api->md_exception("scp", log, log_size, phy,
 					phy_size, detail, db_opt);
 		} else {
-			pr_no_debug("g_aee_api->scp_exception = 0x%p\n",
+			pr_debug("g_aee_api->scp_exception = 0x%p\n",
 					g_aee_api->scp_exception);
 		}
 	} else {
-		pr_no_debug("g_aee_api is null\n");
+		pr_debug("g_aee_api is null\n");
 	}
-	pr_no_debug("%s out\n", __func__);
+	pr_debug("%s out\n", __func__);
 }
 EXPORT_SYMBOL(aed_scp_exception_api);
 
@@ -163,19 +163,19 @@ EXPORT_SYMBOL(aed_scp_exception_api);
 void aed_combo_exception_api(const int *log, int log_size, const int *phy,
 			int phy_size, const char *detail, const int db_opt)
 {
-	pr_no_debug("aed_combo_exception\n");
+	pr_debug("aed_combo_exception\n");
 	if (g_aee_api) {
 		if (g_aee_api->combo_exception) {
 			g_aee_api->combo_exception("combo", log, log_size, phy,
 					phy_size, detail, db_opt);
 		} else {
-			pr_no_debug("g_aee_api->combo_exception = 0x%p\n",
+			pr_debug("g_aee_api->combo_exception = 0x%p\n",
 					g_aee_api->combo_exception);
 		}
 	} else {
-		pr_no_debug("g_aee_api is null\n");
+		pr_debug("g_aee_api is null\n");
 	}
-	pr_no_debug("aed_combo_exception out\n");
+	pr_debug("aed_combo_exception out\n");
 }
 EXPORT_SYMBOL(aed_combo_exception_api);
 
@@ -183,18 +183,18 @@ void aed_common_exception_api(const char *assert_type, const int *log,
 			int log_size, const int *phy, int phy_size,
 			const char *detail, const int db_opt)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	if (g_aee_api) {
 		if (g_aee_api->common_exception) {
 			g_aee_api->common_exception(assert_type, log, log_size,
 					phy, phy_size, detail, db_opt);
 		} else {
-			pr_no_debug("g_aee_api->common_exception = 0x%p\n",
+			pr_debug("g_aee_api->common_exception = 0x%p\n",
 					g_aee_api->common_exception);
 		}
 	} else {
-		pr_no_debug("g_aee_api is null\n");
+		pr_debug("g_aee_api is null\n");
 	}
-	pr_no_debug("%s out\n", __func__);
+	pr_debug("%s out\n", __func__);
 }
 EXPORT_SYMBOL(aed_common_exception_api);

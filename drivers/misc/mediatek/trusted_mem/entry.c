@@ -134,7 +134,7 @@ static int min_chunk_size_check(enum TRUSTED_MEM_TYPE mem_type, u32 *size,
 		/* adjust size to multiple of minimal_chunk_size */
 		u32 adjust_size = (((*size - 1) / cfg->minimal_chunk_size) + 1)
 				  * cfg->minimal_chunk_size;
-		pr_no_debug("change size from 0x%x to 0x%x\n", *size, adjust_size);
+		pr_debug("change size from 0x%x to 0x%x\n", *size, adjust_size);
 		*size = adjust_size;
 	} else if (*size < cfg->minimal_chunk_size) {
 		pr_err("wrong minimal dev size: 0x%x, expected sz:0x%x\n",
@@ -173,7 +173,7 @@ static inline void alignment_update(enum TRUSTED_MEM_TYPE mem_type,
 {
 	int ordered_size = get_ordered_size(mem_type, size, cfg);
 
-	pr_no_debug("change alignment from 0x%x to 0x%x\n", *alignment,
+	pr_debug("change alignment from 0x%x to 0x%x\n", *alignment,
 		 ordered_size);
 	*alignment = ordered_size;
 }
@@ -240,7 +240,7 @@ static int tmem_core_alloc_chunk_internal(enum TRUSTED_MEM_TYPE mem_type,
 		return TMEM_GENERAL_ERROR;
 	}
 
-	pr_no_debug("[%d] alloc sz req is %d (0x%x), align 0x%x, clean: %d\n",
+	pr_debug("[%d] alloc sz req is %d (0x%x), align 0x%x, clean: %d\n",
 		 mem_type, size, size, alignment, clean);
 
 	if (likely(do_alignment_check)) {
@@ -266,7 +266,7 @@ static int tmem_core_alloc_chunk_internal(enum TRUSTED_MEM_TYPE mem_type,
 		return ret;
 	}
 
-	pr_no_debug("[%d] allocated handle is 0x%x\n", mem_type, *sec_handle);
+	pr_debug("[%d] allocated handle is 0x%x\n", mem_type, *sec_handle);
 	regmgr_region_ref_inc(mem_device->reg_mgr, mem_device->mem_type);
 	return TMEM_OK;
 }
@@ -302,7 +302,7 @@ int tmem_core_unref_chunk(enum TRUSTED_MEM_TYPE mem_type, u32 sec_handle,
 		return TMEM_OPERATION_NOT_REGISTERED;
 	}
 
-	pr_no_debug("[%d] free handle is 0x%x\n", mem_type, sec_handle);
+	pr_debug("[%d] free handle is 0x%x\n", mem_type, sec_handle);
 
 	if (unlikely(!is_regmgr_region_on(mem_device->reg_mgr))) {
 		pr_err("[%d] regmgr region is still not online!\n", mem_type);
@@ -335,7 +335,7 @@ bool tmem_core_is_regmgr_region_on(enum TRUSTED_MEM_TYPE mem_type)
 	is_phy_region_on = is_regmgr_region_on(mem_device->reg_mgr);
 	is_dev_busy = get_device_busy_status(mem_device);
 
-	pr_no_debug("device:%d is %s(%d) (phys state:%d, active mem:%d)\n",
+	pr_debug("device:%d is %s(%d) (phys state:%d, active mem:%d)\n",
 		 mem_type, is_dev_busy ? "busy" : "not busy", is_dev_busy,
 		 is_phy_region_on, mem_device->reg_mgr->active_mem_type);
 	return is_dev_busy;
@@ -458,7 +458,7 @@ bool tmem_core_get_region_info(enum TRUSTED_MEM_TYPE mem_type, u64 *pa,
 	*pa = mem_device->peer_mgr->peer_mgr_data.mem_pa_start;
 	*size = mem_device->peer_mgr->peer_mgr_data.mem_size;
 
-	pr_no_debug("[%d] region pa: 0x%llx, sz: 0x%x\n", mem_type, *pa, *size);
+	pr_debug("[%d] region pa: 0x%llx, sz: 0x%x\n", mem_type, *pa, *size);
 	return true;
 }
 

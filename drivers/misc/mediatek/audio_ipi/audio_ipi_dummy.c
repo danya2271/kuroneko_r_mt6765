@@ -61,7 +61,7 @@
 static long audio_ipi_driver_ioctl(
 	struct file *file, unsigned int cmd, unsigned long arg)
 {
-	pr_no_debug("%s not support!!\n", __func__);
+	pr_debug("%s not support!!\n", __func__);
 	return 0;
 }
 
@@ -70,7 +70,7 @@ static long audio_ipi_driver_compat_ioctl(
 	struct file *file, unsigned int cmd, unsigned long arg)
 {
 	if (!file->f_op || !file->f_op->unlocked_ioctl) {
-		pr_no_debug("op null\n");
+		pr_debug("op null\n");
 		return -ENOTTY;
 	}
 	return file->f_op->unlocked_ioctl(file, cmd, arg);
@@ -81,7 +81,7 @@ static long audio_ipi_driver_compat_ioctl(
 static ssize_t audio_ipi_driver_read(
 	struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
-	pr_no_debug("%s not support!!\n", __func__);
+	pr_debug("%s not support!!\n", __func__);
 	return 0;
 }
 
@@ -110,7 +110,7 @@ static int __init audio_ipi_driver_init(void)
 
 	ret = misc_register(&audio_ipi_device);
 	if (unlikely(ret != 0)) {
-		pr_no_debug("[SCP] misc register failed\n");
+		pr_debug("[SCP] misc register failed\n");
 		return ret;
 	}
 

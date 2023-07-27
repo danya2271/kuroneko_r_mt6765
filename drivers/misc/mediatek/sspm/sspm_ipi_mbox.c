@@ -85,7 +85,7 @@ static inline int check_table_tag(int mcnt)
 			spin = &(send_pintable[j]);
 			data = 1;
 		} else {
-			pr_no_debug("Error: mbox %d has unsupported mode=%d\n",
+			pr_debug("Error: mbox %d has unsupported mode=%d\n",
 				i, mbox_table[i].mode);
 			return -2;
 		}
@@ -114,7 +114,7 @@ static inline int check_table_tag(int mcnt)
 			while (n) {
 				sspm_mbox_read(i, k, &check, 1);
 				if (check != data) {
-					pr_no_debug("Error: IPI Dismatch!! mbox:%d pin:%d slot=%d should be %08X but now %08X\n",
+					pr_debug("Error: IPI Dismatch!! mbox:%d pin:%d slot=%d should be %08X but now %08X\n",
 						   i, j, k, data, check);
 					return -3;
 				}

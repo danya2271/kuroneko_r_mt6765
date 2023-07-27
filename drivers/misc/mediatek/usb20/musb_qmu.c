@@ -111,7 +111,7 @@ static void low_power_timer_wakeup_func(struct timer_list *timer)
 		static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 1);
 
 		if (__ratelimit(&ratelimit))
-			pr_no_debug("<ratelimit> avg sleep(%lu/%d, %lu)us,
+			pr_debug("<ratelimit> avg sleep(%lu/%d, %lu)us,
 			avg wake(%lu/%d, %lu)us, mode<%d,%d>,
 			local balanced<%d,%d>\n"
 				, low_power_timer_total_sleep,

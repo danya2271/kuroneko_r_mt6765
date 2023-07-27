@@ -24,7 +24,7 @@
 
 #define TAG_NAME "[flashligh_sywt78_drv]"
 #define PK_DBG_NONE(fmt, arg...)  do {} while (0)
-#define PK_DBG_FUNC(fmt, arg...)  pr_no_debug(TAG_NAME "%s: " fmt, __func__, ##arg)
+#define PK_DBG_FUNC(fmt, arg...)  pr_debug(TAG_NAME "%s: " fmt, __func__, ##arg)
 #define PK_ERR(fmt, arg...)       pr_info(TAG_NAME "%s: " fmt, __func__, ##arg)
 
 #define DEBUG_LEDS_STROBE

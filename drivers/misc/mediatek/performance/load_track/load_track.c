@@ -230,7 +230,7 @@ int reg_loading_tracking_sp(void (*fn)(int loading), unsigned long polling_ms,
 	queue_delayed_work(ps_lk_wq, &new_work->s_work,
 		msecs_to_jiffies(new_user->polling_ms));
 
-	pr_no_debug(TAG"%s %s success\n", __func__, caller);
+	pr_debug(TAG"%s %s success\n", __func__, caller);
 
 	goto reg_loading_tracking_out;
 
@@ -266,7 +266,7 @@ int unreg_loading_tracking_sp(void (*fn)(int loading), const char *caller)
 	}
 
 	free_lt_user(ltiter);
-	pr_no_debug(TAG"%s %s success\n", __func__, caller);
+	pr_debug(TAG"%s %s success\n", __func__, caller);
 
 unreg_loading_tracking_out:
 	lt_unlock(__func__);
@@ -280,7 +280,7 @@ static int __init load_track_init(void)
 	ps_lk_wq = create_workqueue("lt_wq");
 	if (!ps_lk_wq) {
 		return -EFAULT;
-		pr_no_debug(TAG"%s OOM\n", __func__);
+		pr_debug(TAG"%s OOM\n", __func__);
 	}
 
 	return 0;

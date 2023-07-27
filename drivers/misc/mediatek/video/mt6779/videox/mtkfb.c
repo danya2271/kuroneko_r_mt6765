@@ -248,7 +248,7 @@ static int mtkfb_release(struct fb_info *info, int user)
 	(CONFIG_MTK_DUAL_DISPLAY_SUPPORT == 2)
 static int mtkfb1_blank(int blank_mode, struct fb_info *info)
 {
-	pr_no_debug("%s blank mode :%d\n", __func__, blank_mode);
+	pr_debug("%s blank mode :%d\n", __func__, blank_mode);
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 	case FB_BLANK_NORMAL:
@@ -2773,7 +2773,7 @@ static void mtkfb_late_resume(void)
 
 int mtkfb_pm_suspend(struct device *device)
 {
-	/* pr_no_debug("calling %s()\n", __func__); */
+	/* pr_debug("calling %s()\n", __func__); */
 
 	struct platform_device *pdev = to_platform_device(device);
 
@@ -2787,7 +2787,7 @@ int mtkfb_pm_suspend(struct device *device)
 
 int mtkfb_pm_resume(struct device *device)
 {
-	/* pr_no_debug("calling %s()\n", __func__); */
+	/* pr_debug("calling %s()\n", __func__); */
 
 	struct platform_device *pdev = to_platform_device(device);
 

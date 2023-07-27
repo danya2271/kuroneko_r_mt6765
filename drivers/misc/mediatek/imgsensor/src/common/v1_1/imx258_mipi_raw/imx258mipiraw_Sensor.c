@@ -45,7 +45,7 @@
 #define LOG_1 LOG_INF("IMX258,MIPI 4LANE\n")
 /***********************   Modify end    **************************************/
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
@@ -2494,7 +2494,7 @@ static kal_uint32 get_imgsensor_id(UINT32 *sensor_id)
 				return ERROR_NONE;
 			}
 
-		      pr_no_debug("Read sensor id fail, write id: 0x%x, id:0x%x\n",
+		      pr_debug("Read sensor id fail, write id: 0x%x, id:0x%x\n",
 				imgsensor.i2c_write_id, *sensor_id);
 
 			retry_cnt--;
@@ -2552,12 +2552,12 @@ static kal_uint32 open(void)
 		do {
 			sensor_id = return_sensor_id();
 			if (sensor_id == imgsensor_info.sensor_id) {
-				pr_no_debug("i2c write id: 0x%x, sensor id:0x%x\n",
+				pr_debug("i2c write id: 0x%x, sensor id:0x%x\n",
 					imgsensor.i2c_write_id, sensor_id);
 				break;
 			}
 
-		      pr_no_debug("Read sensor id fail, write id: 0x%x, id:0x%x\n",
+		      pr_debug("Read sensor id fail, write id: 0x%x, id:0x%x\n",
 				imgsensor.i2c_write_id, sensor_id);
 
 			retry--;
@@ -3014,7 +3014,7 @@ static kal_uint32 control(enum MSDK_SCENARIO_ID_ENUM scenario_id,
 			  MSDK_SENSOR_EXPOSURE_WINDOW_STRUCT *image_window,
 			  MSDK_SENSOR_CONFIG_STRUCT *sensor_config_data)
 {
-	pr_no_debug("scenario_id = %d\n", scenario_id);
+	pr_debug("scenario_id = %d\n", scenario_id);
 	spin_lock(&imgsensor_drv_lock);
 	imgsensor.current_scenario_id = scenario_id;
 	spin_unlock(&imgsensor_drv_lock);
@@ -3142,7 +3142,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 		spin_unlock(&imgsensor_drv_lock);
 	} else {
 		if (imgsensor.current_fps != imgsensor_info.cap.max_framerate)
-			pr_no_debug(
+			pr_debug(
 			    "current_fps %d fps is not support, so use cap's setting: %d fps!\n",
 			    framerate,
 			    imgsensor_info.cap.max_framerate / 10);
@@ -3426,7 +3426,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		break;
 
 	case SENSOR_FEATURE_GET_PDAF_DATA:
-		pr_no_debug("SENSOR_FEATURE_GET_PDAF_DATA\n");
+		pr_debug("SENSOR_FEATURE_GET_PDAF_DATA\n");
 		read_imx258_pdaf((kal_uint16) (*feature_data),
 				 (char *)(uintptr_t) (*(feature_data + 1)),
 				 (kal_uint32) (*(feature_data + 2)));

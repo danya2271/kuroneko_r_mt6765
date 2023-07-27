@@ -134,7 +134,7 @@ enum MLD_CHECK_STATUS mld_stamp_check(size_t previous_stamped_size)
 	MLD_UNLOCK();
 
 	if (previous_stamped_size == current_size) {
-		pr_no_debug("[MLD_CHECK] pass: 0x%zx\n", current_size);
+		pr_debug("[MLD_CHECK] pass: 0x%zx\n", current_size);
 		return MLD_CHECK_PASS;
 	}
 

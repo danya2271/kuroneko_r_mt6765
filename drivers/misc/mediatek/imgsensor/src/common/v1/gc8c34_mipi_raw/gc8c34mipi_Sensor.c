@@ -48,7 +48,7 @@
 #define PFX "gc8C34_camera_sensor"
 #define LOG_1 LOG_INF("GC8C34, MIPI 2LANE\n")
 /****************************   Modify end    *******************************************/
-#define LOG_INF(format, args...)    pr_no_debug(PFX "[%s] " format, __FUNCTION__, ##args)
+#define LOG_INF(format, args...)    pr_debug(PFX "[%s] " format, __FUNCTION__, ##args)
 
 #ifdef CONFIG_IMPROVE_CAMERA_PERFORMANCE
 static int otp_read_success;

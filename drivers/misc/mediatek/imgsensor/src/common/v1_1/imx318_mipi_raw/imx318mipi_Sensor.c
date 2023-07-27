@@ -50,7 +50,7 @@
 /***********************   Modify end    **************************************/
 
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 #define BYTE               unsigned char
 
@@ -594,7 +594,7 @@ static void imx318_apply_SPC(void)
 
 static void set_dummy(void)
 {
-	pr_no_debug("dummyline = %d, dummypixels = %d\n",
+	pr_debug("dummyline = %d, dummypixels = %d\n",
 		imgsensor.dummy_line, imgsensor.dummy_pixel);
 /*
  * you can set dummy by imgsensor.dummy_line and imgsensor.dummy_pixel,
@@ -3110,7 +3110,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 	} else {
 
 		if (imgsensor.current_fps != imgsensor_info.cap.max_framerate) {
-			pr_no_debug(
+			pr_debug(
 	  "current_fps %d fps is not support, so use cap's setting: %d fps!\n",
 			     framerate, imgsensor_info.cap.max_framerate / 10);
 		}
@@ -3430,7 +3430,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		break;
 
 	case SENSOR_FEATURE_SET_IHDR_SHUTTER_GAIN:
-		pr_no_debug("SENSOR_SET_SENSOR_IHDR LE=%d, SE=%d, Gain=%d\n",
+		pr_debug("SENSOR_SET_SENSOR_IHDR LE=%d, SE=%d, Gain=%d\n",
 			(UINT16) *feature_data,
 			(UINT16) *(feature_data + 1),
 			(UINT16) *(feature_data + 2));
@@ -3440,7 +3440,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 		break;
 
 	case SENSOR_FEATURE_GET_VC_INFO:
-		pr_no_debug("SENSOR_FEATURE_GET_VC_INFO %d\n",
+		pr_debug("SENSOR_FEATURE_GET_VC_INFO %d\n",
 			(UINT16) *feature_data);
 
 		pvcinfo =

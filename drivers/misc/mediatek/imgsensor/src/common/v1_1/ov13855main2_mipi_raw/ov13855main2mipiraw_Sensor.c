@@ -45,7 +45,7 @@
 	"preview 2096*1552@30fps; video 4192*3104@30fps; capture 13M@30fps\n")
 /**********   Modify end    ***************************/
 
-#define LOG_INF(fmt, args...)   pr_no_debug(PFX "[%s] " fmt, __func__, ##args)
+#define LOG_INF(fmt, args...)   pr_debug(PFX "[%s] " fmt, __func__, ##args)
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 

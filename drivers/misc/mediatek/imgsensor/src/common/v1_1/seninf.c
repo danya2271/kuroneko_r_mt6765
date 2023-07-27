@@ -107,7 +107,7 @@ static int seninf_dfs_ctrl(struct seninf_dfs_ctx *ctx,
 		opp = dev_pm_opp_find_freq_ceil(ctx->dev, &freq);
 		volt = dev_pm_opp_get_voltage(opp);
 		dev_pm_opp_put(opp);
-		pr_no_debug("%s: freq=%ld volt=%ld\n", __func__, freq, volt);
+		pr_debug("%s: freq=%ld volt=%ld\n", __func__, freq, volt);
 		regulator_set_voltage(ctx->reg, volt, ctx->volts[ctx->cnt-1]);
 	}
 		break;
@@ -701,7 +701,7 @@ static inline MINT32 seninf_reg_of_dev(struct SENINF *pseninf)
 			i + 1);
 			return -ENODEV;
 		}
-		pr_no_debug(
+		pr_debug(
 			"SENINF%d_BASE: %p\n", i + 1, pseninf->pseninf_base[i]);
 	}
 

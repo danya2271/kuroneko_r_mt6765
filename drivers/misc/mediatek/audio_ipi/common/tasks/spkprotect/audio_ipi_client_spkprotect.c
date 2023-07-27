@@ -168,14 +168,14 @@ int spkprotect_open_dump_file(void)
 
 	sprintf(path_decode_pcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_decode_pcm);
-	pr_no_debug("%s(), path_decode_pcm= %s\n", __func__, path_decode_pcm);
+	pr_debug("%s(), path_decode_pcm= %s\n", __func__, path_decode_pcm);
 	sprintf(path_decode_ivpcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_iv_pcm);
-	pr_no_debug("%s(), path_decode_iv_pcm= %s\n",
+	pr_debug("%s(), path_decode_iv_pcm= %s\n",
 		 __func__, path_decode_ivpcm);
 	sprintf(path_decode_debugpcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_debug_pcm);
-	pr_no_debug("%s(), path_decode_debug_pcm= %s\n", __func__,
+	pr_debug("%s(), path_decode_debug_pcm= %s\n", __func__,
 		 path_decode_debugpcm);
 
 	file_spk_pcm = filp_open(path_decode_pcm, O_CREAT | O_WRONLY, 0644);
@@ -231,13 +231,13 @@ void spkprotect_close_dump_file(void)
 
 	b_enable_dump = false;
 
-	pr_no_debug("%s(), pass: %d\n", __func__, dump_data_routine_cnt_pass);
+	pr_debug("%s(), pass: %d\n", __func__, dump_data_routine_cnt_pass);
 
 	if (speaker_dump_task) {
 		kthread_stop(speaker_dump_task);
 		speaker_dump_task = NULL;
 	}
-	pr_no_debug("dump_queue = %p\n", dump_queue);
+	pr_debug("dump_queue = %p\n", dump_queue);
 	kfree(dump_queue);
 	dump_queue = NULL;
 
@@ -568,7 +568,7 @@ static int spkprotect_dump_kthread(void *data)
 
 	sched_setscheduler(current, SCHED_RR, &param);
 
-	/* pr_no_debug("dump_queue = %p\n", dump_queue); */
+	/* pr_debug("dump_queue = %p\n", dump_queue); */
 
 	while (b_enable_dump && !kthread_should_stop()) {
 		spin_lock_irqsave(&dump_queue_lock, flags);
@@ -604,7 +604,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_no_debug("pcm_dump = %p writedata = %d,
+				/* pr_debug("pcm_dump = %p writedata = %d,
 				 *          current_idx = %d\n",
 				 *          pcm_dump, writedata, current_idx);
 				 */
@@ -631,7 +631,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_no_debug("pcm_dump = %p writedata = %d\n",
+				/* pr_debug("pcm_dump = %p writedata = %d\n",
 				 *          pcm_dump, writedata);
 				 */
 				if (!IS_ERR(file_spk_iv)) {
@@ -657,7 +657,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_no_debug("pcm_dump = %p writedata = %d\n",
+				/* pr_debug("pcm_dump = %p writedata = %d\n",
 				 *          pcm_dump, writedata);
 				 */
 				if (!IS_ERR(file_spk_debug)) {
@@ -684,7 +684,7 @@ static int spkprotect_dump_kthread(void *data)
 		}
 		}
 	}
-	/* pr_no_debug("%s exit\n", __func__); */
+	/* pr_debug("%s exit\n", __func__); */
 	return 0;
 }
 

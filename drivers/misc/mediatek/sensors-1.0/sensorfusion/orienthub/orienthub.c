@@ -147,7 +147,7 @@ static int __init orienthub_init(void)
 
 static void __exit orienthub_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(orienthub_init);

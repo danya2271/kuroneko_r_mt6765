@@ -46,11 +46,11 @@ int sec_get_random_id(unsigned int *rid)
 int sec_schip_enabled(void)
 {
 	if (true == masp_hal_sbc_enabled()) {
-		pr_no_debug("SC\n");
+		pr_debug("SC\n");
 		return 1;
 	}
 
-	pr_no_debug("NSC\n");
+	pr_debug("NSC\n");
 
 	return 0;
 }
@@ -63,24 +63,24 @@ int sec_usbdl_enabled(void)
 {
 	switch (g_rom_info_sdl_attr) {
 	case ATTR_SUSBDL_ENABLE:
-		pr_no_debug("[%s] SUSBDL is enabled\n", MOD);
-		pr_no_debug("0x%x, SD-FORCE\n", ATTR_SUSBDL_ENABLE);
+		pr_debug("[%s] SUSBDL is enabled\n", MOD);
+		pr_debug("0x%x, SD-FORCE\n", ATTR_SUSBDL_ENABLE);
 		return 1;
 
 	/* SUSBDL can't be disabled on security chip */
 	case ATTR_SUSBDL_DISABLE:
 	case ATTR_SUSBDL_ONLY_ENABLE_ON_SCHIP:
-		pr_no_debug("[%s] SUSBDL is only enabled on S-CHIP\n", MOD);
+		pr_debug("[%s] SUSBDL is only enabled on S-CHIP\n", MOD);
 		if (true == masp_hal_sbc_enabled()) {
-			pr_no_debug("0x%x, SD-SC\n",
+			pr_debug("0x%x, SD-SC\n",
 				 ATTR_SUSBDL_ONLY_ENABLE_ON_SCHIP);
 			return 1;
 		}
-		pr_no_debug("0x%x, SD-NSC\n", ATTR_SUSBDL_ONLY_ENABLE_ON_SCHIP);
+		pr_debug("0x%x, SD-NSC\n", ATTR_SUSBDL_ONLY_ENABLE_ON_SCHIP);
 		return 0;
 
 	default:
-		pr_no_debug("[%s] invalid susbdl config (SD-0x%x)\n",
+		pr_debug("[%s] invalid susbdl config (SD-0x%x)\n",
 			 MOD, g_rom_info_sdl_attr);
 		SEC_ASSERT(0);
 		return 1;
@@ -94,25 +94,25 @@ int sec_boot_enabled(void)
 {
 	switch (g_rom_info_sbc_attr) {
 	case ATTR_SBOOT_ENABLE:
-		pr_no_debug("[%s] SBOOT is enabled\n", MOD);
-		pr_no_debug("0x%x, SB-FORCE\n", ATTR_SBOOT_ENABLE);
+		pr_debug("[%s] SBOOT is enabled\n", MOD);
+		pr_debug("0x%x, SB-FORCE\n", ATTR_SBOOT_ENABLE);
 		return 1;
 
 	/* secure boot can't be disabled on security chip */
 	case ATTR_SBOOT_DISABLE:
 	case ATTR_SBOOT_ONLY_ENABLE_ON_SCHIP:
-		pr_no_debug("[%s] SBOOT is only enabled on S-CHIP\n", MOD);
+		pr_debug("[%s] SBOOT is only enabled on S-CHIP\n", MOD);
 		if (true == masp_hal_sbc_enabled()) {
-			pr_no_debug("0x%x, SB-SC\n",
+			pr_debug("0x%x, SB-SC\n",
 				 ATTR_SBOOT_ONLY_ENABLE_ON_SCHIP);
 			return 1;
 		}
 
-		pr_no_debug("0x%x, SB-NSC\n", ATTR_SBOOT_ONLY_ENABLE_ON_SCHIP);
+		pr_debug("0x%x, SB-NSC\n", ATTR_SBOOT_ONLY_ENABLE_ON_SCHIP);
 		return 0;
 
 	default:
-		pr_no_debug("[%s] invalid sboot config (SB-0x%x)\n",
+		pr_debug("[%s] invalid sboot config (SB-0x%x)\n",
 			 MOD, g_rom_info_sbc_attr);
 		SEC_ASSERT(0);
 	}
@@ -147,7 +147,7 @@ int masp_boot_init(void)
 {
 	int ret = SEC_OK;
 
-	pr_no_debug("[%s] error (0x%x)\n", MOD, ret);
+	pr_debug("[%s] error (0x%x)\n", MOD, ret);
 
 	return ret;
 }

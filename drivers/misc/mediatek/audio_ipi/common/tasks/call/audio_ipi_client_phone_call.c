@@ -50,13 +50,13 @@ void phone_call_recv_message(struct ipi_msg_t *p_ipi_msg)
 
 void phone_call_task_unloaded(void)
 {
-	pr_no_debug("%s()\n", __func__);
+	pr_debug("%s()\n", __func__);
 }
 
 
 void audio_ipi_client_phone_call_init(void)
 {
-	pr_no_debug("%s()\n", __func__);
+	pr_debug("%s()\n", __func__);
 
 	audio_task_register_callback(
 		TASK_SCENE_PHONE_CALL,
@@ -67,7 +67,7 @@ void audio_ipi_client_phone_call_init(void)
 
 void audio_ipi_client_phone_call_deinit(void)
 {
-	pr_no_debug("%s()\n", __func__);
+	pr_debug("%s()\n", __func__);
 }
 
 

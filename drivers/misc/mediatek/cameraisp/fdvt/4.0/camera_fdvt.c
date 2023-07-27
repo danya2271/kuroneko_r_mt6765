@@ -78,9 +78,9 @@ struct wakeup_source *fdvt_wake_lock;
 #define FDVT_DEVNAME     "camera-fdvt"
 
 #define LOG_VRB(format, args...) \
-pr_no_debug("FDVT [%s] " format, __func__, ##args)
+pr_debug("FDVT [%s] " format, __func__, ##args)
 #define LOG_DBG(format, args...) \
-pr_no_debug("FDVT [%s] " format, __func__, ##args)
+pr_debug("FDVT [%s] " format, __func__, ##args)
 #define LOG_INF(format, args...) \
 pr_info("FDVT [%s] " format, __func__, ##args)
 #define LOG_WRN(format, args...) \

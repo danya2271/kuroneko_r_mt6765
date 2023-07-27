@@ -58,7 +58,7 @@ static long baro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				pr_err("BAROMETER_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug(
+			pr_debug(
 				"BAROMETER_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 200);
 		} else {
@@ -122,7 +122,7 @@ static long compat_baro_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_BAROMETER_GET_PRESS_DATA:
 	case COMPAT_BAROMETER_GET_TEMP_DATA:
 	case COMPAT_BAROMETER_IOCTL_ENABLE_CALI: {
-		pr_no_debug(
+		pr_debug(
 			"compat_ion_ioctl : BAROMETER_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(

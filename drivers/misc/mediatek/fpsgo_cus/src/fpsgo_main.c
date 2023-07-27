@@ -73,7 +73,7 @@ static int __init fpsgo_init(void)
 
 	ret = xgf_ko_init();
 
-	pr_no_debug("%s %d: xgf_ko_init %d", __func__, __LINE__, ret);
+	pr_debug("%s %d: xgf_ko_init %d", __func__, __LINE__, ret);
 
 	if (ret)
 		return -1;
@@ -83,7 +83,7 @@ static int __init fpsgo_init(void)
 
 	notify_xgf_ko_ready();
 
-	pr_no_debug("%s %d: finish", __func__, __LINE__);
+	pr_debug("%s %d: finish", __func__, __LINE__);
 #endif
 
 	return 0;

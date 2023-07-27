@@ -107,11 +107,11 @@ ssize_t sspm_log_read(char __user *data, size_t len)
 	if (tmp_buf) {
 		memcpy_fromio(tmp_buf, buf, len);
 		if (copy_to_user(data, tmp_buf, len))
-			pr_no_debug("sspm logger: copy data failed !!!\n");
+			pr_debug("sspm logger: copy data failed !!!\n");
 
 		kfree(tmp_buf);
 	} else {
-		pr_no_debug("sspm logger: create log buffer failed !!!\n");
+		pr_debug("sspm logger: create log buffer failed !!!\n");
 		goto error;
 	}
 

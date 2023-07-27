@@ -2748,12 +2748,12 @@ int _btif_dump_memory(char *str, unsigned char *p_buf, unsigned int buf_len)
 {
 	unsigned int idx = 0;
 
-	pr_no_debug("%s:, length:%d\n", str, buf_len);
+	pr_debug("%s:, length:%d\n", str, buf_len);
 	for (idx = 0; idx < buf_len;) {
-		pr_no_debug("%02x ", p_buf[idx]);
+		pr_debug("%02x ", p_buf[idx]);
 		idx++;
 		if (idx % 8 == 0)
-			pr_no_debug("\n");
+			pr_debug("\n");
 	}
 	return 0;
 }
@@ -2918,14 +2918,14 @@ int btif_dump_data(const char *p_buf, int len)
 		if (7 == (idx % 8)) {
 			*p_str++ = '\n';
 			*p_str = '\0';
-			pr_no_debug("%s", str);
+			pr_debug("%s", str);
 			p_str = &str[0];
 		}
 	}
 	if (len % 8) {
 		*p_str++ = '\n';
 		*p_str = '\0';
-		pr_no_debug("%s", str);
+		pr_debug("%s", str);
 	}
 	return 0;
 }
@@ -2981,7 +2981,7 @@ int btif_log_buf_dmp_in(struct _btif_log_queue_t_ *p_log_que,
 
 /*check if log dynamic output function is enabled or not*/
 	if (output_flag) {
-		pr_no_debug("BTIF-DBG, dir:%s, %d.%ds(%lld.%.9ld) len:%d\n",
+		pr_debug("BTIF-DBG, dir:%s, %d.%ds(%lld.%.9ld) len:%d\n",
 			 dir, (int)p_timer->tv_sec, (int)p_timer->tv_usec,
 			 (long long)p_ts->tv_sec, p_ts->tv_nsec, len);
 /*output buffer content*/

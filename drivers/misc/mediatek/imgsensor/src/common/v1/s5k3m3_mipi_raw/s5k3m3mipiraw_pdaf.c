@@ -68,7 +68,7 @@ static bool _read_eeprom(kal_uint16 addr, kal_uint32 size)
 
 	for (; i < size; i++) {
 		S5K3M3_eeprom_data[i] = read_cmos_sensor_byte(addr + i);
-	/* pr_no_debug("add = 0x%x,\tvalue = 0x%x",i, S5K3M3_eeprom_data[i]); */
+	/* pr_debug("add = 0x%x,\tvalue = 0x%x",i, S5K3M3_eeprom_data[i]); */
 	}
 	return true;
 }
@@ -78,10 +78,10 @@ bool S5K3M3_read_eeprom(kal_uint16 addr, BYTE *data, kal_uint32 size)
 	addr = START_ADDR;
 	size = DATA_SIZE;
 
-	/* pr_no_debug("Read EEPROM, addr = 0x%x, size = 0d%d\n", addr, size); */
+	/* pr_debug("Read EEPROM, addr = 0x%x, size = 0d%d\n", addr, size); */
 
 	if (!_read_eeprom(addr, size)) {
-		/* pr_no_debug("error:read_eeprom fail!\n"); */
+		/* pr_debug("error:read_eeprom fail!\n"); */
 		return false;
 	}
 

@@ -594,12 +594,12 @@ static long audio_ipi_driver_ioctl(
 		break;
 	}
 	case AUDIO_IPI_IOCTL_LOAD_SCENE: {
-		pr_no_debug("AUDIO_IPI_IOCTL_LOAD_SCENE(%d)", (uint8_t)arg);
+		pr_debug("AUDIO_IPI_IOCTL_LOAD_SCENE(%d)", (uint8_t)arg);
 		audio_load_task((uint8_t)arg);
 		break;
 	}
 	case AUDIO_IPI_IOCTL_INIT_DSP: {
-		pr_no_debug("AUDIO_IPI_IOCTL_INIT_DSP");
+		pr_debug("AUDIO_IPI_IOCTL_INIT_DSP");
 #if defined(CONFIG_MTK_AUDIODSP_SUPPORT)
 		for (dsp_id = 0; dsp_id < NUM_OPENDSP_TYPE; dsp_id++) {
 			if (is_audio_use_adsp(dsp_id))

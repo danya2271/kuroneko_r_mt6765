@@ -77,7 +77,7 @@ do {\
 	if (m)\
 		seq_printf(m, x);\
 	else\
-		pr_no_debug(x);\
+		pr_debug(x);\
 } while (0)
 
 #ifdef NR_FREQ_CPU

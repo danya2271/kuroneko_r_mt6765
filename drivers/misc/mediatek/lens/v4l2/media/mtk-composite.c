@@ -91,7 +91,7 @@ static int fl_probe_complete(struct mtk_composite_v4l2_device *vpfe)
 #endif
 	}
 
-	pr_no_debug("%s -\n", __func__);
+	pr_debug("%s -\n", __func__);
 	return 0;
 
 probe_out:
@@ -152,7 +152,7 @@ mtk_get_pdata(struct platform_device *pdev,
 		pr_info("i %d, pdata %p\n", i, pdata[i]);
 			goto done;
 		}
-		pr_no_debug("rem %p, pdata[i] %p, name %s, full_name %s\n",
+		pr_debug("rem %p, pdata[i] %p, name %s, full_name %s\n",
 				rem, pdata[i], rem->name, rem->full_name);
 		pdata[i]->match_type = V4L2_ASYNC_MATCH_FWNODE;
 		pdata[i]->match.fwnode = of_fwnode_handle(rem);
@@ -196,7 +196,7 @@ static int mtk_composite_probe(struct platform_device *dev)
 	}
 
 	pfdev->asd[0] = mtk_get_pdata(dev, pfdev);
-	pr_no_debug("asd %p %p %p\n", pfdev->asd[0], pfdev->asd[1],
+	pr_debug("asd %p %p %p\n", pfdev->asd[0], pfdev->asd[1],
 		pfdev->asd[2]);
 
 
@@ -238,7 +238,7 @@ static int mtk_composite_probe(struct platform_device *dev)
 	}
 	platform_set_drvdata(dev, pfdev);
 
-	pr_no_debug("platform_set_drvdata num_subdevs %d\n",
+	pr_debug("platform_set_drvdata num_subdevs %d\n",
 		pfdev->notifier.num_subdevs);
 
 	pfdev->sd = devm_kzalloc(&dev->dev, sizeof(struct v4l2_subdev *) *
@@ -320,7 +320,7 @@ static int __init mtk_composite_init(void)
 {
 	int ret;
 
-	pr_no_debug("Init start\n");
+	pr_debug("Init start\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&mtk_composite_platform_device);
@@ -336,7 +336,7 @@ static int __init mtk_composite_init(void)
 		return ret;
 	}
 
-	pr_no_debug("Init done\n");
+	pr_debug("Init done\n");
 
 	return 0;
 }

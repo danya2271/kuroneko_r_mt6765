@@ -39,15 +39,15 @@ static bool mtkfb_fence_on;
 #define MTKFB_FENCE_LOG(fmt, arg...)				\
 	do {							\
 		if (mtkfb_fence_on)				\
-			pr_no_debug("DISP/fence " fmt, ##arg);	\
+			pr_debug("DISP/fence " fmt, ##arg);	\
 	} while (0)
 
-#define MTKFB_FENCE_LOG_D(fmt, arg...) pr_no_debug("DISP/fence " fmt, ##arg)
+#define MTKFB_FENCE_LOG_D(fmt, arg...) pr_debug("DISP/fence " fmt, ##arg)
 
 #define MTKFB_FENCE_LOG_D_IF(con, fmt, arg...)			\
 	do {							\
 		if (con)					\
-			pr_no_debug("DISP/fence " fmt, ##arg);	\
+			pr_debug("DISP/fence " fmt, ##arg);	\
 	} while (0)
 
 void mtkfb_fence_log_enable(bool enable)
@@ -63,7 +63,7 @@ void mtkfb_fence_log_enable(bool enable)
 	do {							\
 		if (expr)					\
 			break;					\
-		pr_no_debug("FENCE ASSERT FAILED %s, %d\n",	\
+		pr_debug("FENCE ASSERT FAILED %s, %d\n",	\
 			 __FILE__, __LINE__);			\
 		aee_kernel_exception("fence", "[FENCE]error:",	\
 				     __FILE__, __LINE__);	\
@@ -75,7 +75,7 @@ void mtkfb_fence_log_enable(bool enable)
 	do {							\
 		if (expr)					\
 			break;					\
-		pr_no_debug("FENCE ASSERT FAILED %s, %d\n",	\
+		pr_debug("FENCE ASSERT FAILED %s, %d\n",	\
 			 __FILE__, __LINE__);			\
 	} while (0)
 #  endif

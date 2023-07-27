@@ -29,13 +29,13 @@ int test_SecureStorageBasic(void *args)
 
 	rc = tipc_k_connect(&h, SS_UT_SRV_NAME);
 	if (rc) {
-		pr_no_debug("failed to connect to %s\n", SS_UT_SRV_NAME);
+		pr_debug("failed to connect to %s\n", SS_UT_SRV_NAME);
 		return rc;
 	}
 
 	rc = tipc_k_write(&h, cmd, sizeof(cmd), O_RDWR);
 	if (rc != sizeof(cmd)) {
-		pr_no_debug("failed to write TIPC message, rc=%d, expected=%lu\n",
+		pr_debug("failed to write TIPC message, rc=%d, expected=%lu\n",
 			 rc, sizeof(cmd));
 		tipc_k_disconnect(&h);
 		return rc;

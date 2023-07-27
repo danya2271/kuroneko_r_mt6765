@@ -20,25 +20,25 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
 		if (g_mobilelog)					\
-			pr_no_debug("[DISP]"string, ##args);		\
+			pr_debug("[DISP]"string, ##args);		\
 	} while (0)
 
 #define DISPMSG(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
-		pr_no_debug("[DISP]"string, ##args);			\
+		pr_debug("[DISP]"string, ##args);			\
 	} while (0)
 
 #define DISPCHECK(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
-		pr_no_debug("[DISP]"string, ##args);			\
+		pr_debug("[DISP]"string, ##args);			\
 	} while (0)
 
 #define DISP_ONESHOT_DUMP(string, args...)				\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_ONESHOT_DUMP, string, ##args); \
-		pr_no_debug("[DISP]"string, ##args);			\
+		pr_debug("[DISP]"string, ##args);			\
 	} while (0)
 
 #define DISP_PR_INFO(string, args...)					\
@@ -59,7 +59,7 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_FENCE, string, ##args);	\
 		if (g_mobilelog)					\
-			pr_no_debug("fence/"string, ##args);		\
+			pr_debug("fence/"string, ##args);		\
 	} while (0)
 
 #define DISPDBG(string, args...)					\
@@ -72,7 +72,7 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, "func|%s\n", __func__); \
 		if (g_mobilelog)					\
-			pr_no_debug("[DISP]func|%s\n", __func__);		\
+			pr_debug("[DISP]func|%s\n", __func__);		\
 	} while (0)
 
 #define DISPDBGFUNC() DISPFUNC()

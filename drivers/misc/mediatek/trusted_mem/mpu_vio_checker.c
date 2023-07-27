@@ -32,7 +32,7 @@ static unsigned int is_secure(unsigned long long vio_addr)
 	arm_smccc_smc(MTK_SIP_KERNEL_TMEM_CONTROL, addr_h, addr_l, 0, 0, 0, 0,
 		      0, &smc_res);
 
-	pr_no_debug("%s:%d 0x%X%X, %ld, %ld, %ld, %ld\n", __func__, __LINE__,
+	pr_debug("%s:%d 0x%X%X, %ld, %ld, %ld, %ld\n", __func__, __LINE__,
 		 addr_h, addr_l, smc_res.a0, smc_res.a1, smc_res.a2,
 		 smc_res.a3);
 

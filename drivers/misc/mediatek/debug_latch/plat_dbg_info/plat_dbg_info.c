@@ -42,7 +42,7 @@ static int __init plat_dbg_info_init(void)
 		    (plat_dbg_info_key == NULL) ||
 		    (plat_dbg_info_size == NULL) ||
 		    (plat_dbg_info_base == NULL)) {
-			pr_no_debug("[PLAT DBG INFO] cannot allocate memory\n");
+			pr_debug("[PLAT DBG INFO] cannot allocate memory\n");
 			ret = -ENOMEM;
 			goto alloc_fail;
 		}
@@ -57,7 +57,7 @@ static int __init plat_dbg_info_init(void)
 			of_chosen, "plat_dbg_info,size",
 			plat_dbg_info_size, plat_dbg_info_max);
 		if (ret != 0) {
-			pr_no_debug("[PLAT DBG INFO] cannot find property\n");
+			pr_debug("[PLAT DBG INFO] cannot find property\n");
 			ret = -ENODEV;
 			goto alloc_fail;
 		}
@@ -69,14 +69,14 @@ static int __init plat_dbg_info_init(void)
 			else
 				plat_dbg_info_base[i] = NULL;
 
-			pr_no_debug("[PLAT DBG INFO] 0x%x: 0x%x(%p), %d\n",
+			pr_debug("[PLAT DBG INFO] 0x%x: 0x%x(%p), %d\n",
 				plat_dbg_info_key[i], temp_base[i],
 				plat_dbg_info_base[i], plat_dbg_info_size[i]);
 		}
 
 		kfree(temp_base);
 	} else {
-		pr_no_debug("[PLAT DBG INFO] cannot find node \"of_chosen\"\n");
+		pr_debug("[PLAT DBG INFO] cannot find node \"of_chosen\"\n");
 		return -ENODEV;
 	}
 

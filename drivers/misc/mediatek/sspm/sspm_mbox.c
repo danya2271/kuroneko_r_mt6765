@@ -256,7 +256,7 @@ unsigned int sspm_mbox_init(unsigned int mode, unsigned int count,
 	int mbox;
 
 	if (count > SSPM_MBOX_MAX) {
-		pr_no_debug("[SSPM] %s(): count (%u) too large, set to %u\n",
+		pr_debug("[SSPM] %s(): count (%u) too large, set to %u\n",
 			__func__, count, SSPM_MBOX_MAX);
 		count = SSPM_MBOX_MAX;
 	}
@@ -273,7 +273,7 @@ unsigned int sspm_mbox_init(unsigned int mode, unsigned int count,
 
 	sspm_mbox_cnt = mbox;
 
-	pr_no_debug("[SSPM] Find %d MBOX\n", sspm_mbox_cnt);
+	pr_debug("[SSPM] Find %d MBOX\n", sspm_mbox_cnt);
 
 	return 0;
 

@@ -66,7 +66,7 @@ static enum IMGSENSOR_RETURN mclk_init(void *pinstance)
 				pinctrl_lookup_state(pinst->ppinctrl,
 							str_pinctrl_name);
 				if (IS_ERR(pinst->ppinctrl_state[i][j])) {
-					pr_no_debug("%s : pinctrl err, %s\n",
+					pr_debug("%s : pinctrl err, %s\n",
 						__func__,
 						str_pinctrl_name);
 					ret = IMGSENSOR_RETURN_ERROR;
@@ -97,7 +97,7 @@ static enum IMGSENSOR_RETURN mclk_set(
 	enum   IMGSENSOR_RETURN ret = IMGSENSOR_RETURN_SUCCESS;
 	enum MCLK_STATE state_index = MCLK_STATE_DISABLE;
 
-	/*pr_no_debug("%s : sensor_idx %d mclk_set pinctrl, PinIdx %d, Val %d\n",
+	/*pr_debug("%s : sensor_idx %d mclk_set pinctrl, PinIdx %d, Val %d\n",
 	 *__func__, sensor_idx, pin, pin_state);
 	 */
 

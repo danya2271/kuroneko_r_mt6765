@@ -1068,7 +1068,7 @@ static unsigned int g_color_dbg_en;
 		pr_info("[COLOR] %s: " fmt "\n", __func__, ##arg); \
 		} while (0)
 #define COLOR_NLOG(fmt, arg...) \
-	pr_no_debug("[COLOR] %s: " fmt "\n", __func__, ##arg)
+	pr_debug("[COLOR] %s: " fmt "\n", __func__, ##arg)
 
 static ddp_module_notify g_color_cb;
 
@@ -1307,7 +1307,7 @@ static void _color_reg_set_field(void *__cmdq, unsigned int field_mask,
 
 void DpEngine_COLORonInit(enum DISP_MODULE_ENUM module, void *__cmdq)
 {
-	/* pr_no_debug("================= init COLOR ====================="); */
+	/* pr_debug("================= init COLOR ====================="); */
 	int offset = C0_OFFSET;
 	void *cmdq = __cmdq;
 #ifndef CONFIG_FPGA_EARLY_PORTING

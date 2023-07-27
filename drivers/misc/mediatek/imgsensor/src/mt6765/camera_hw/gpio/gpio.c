@@ -178,7 +178,7 @@ static enum IMGSENSOR_RETURN gpio_set(
 			((pin - IMGSENSOR_HW_PIN_PDN) << 1) + gpio_state];
 
 	}
-	/*pr_no_debug("%s : pinctrl , state indx %d\n",
+	/*pr_debug("%s : pinctrl , state indx %d\n",
 	 *	    __func__,
 	 *	    ctrl_state_offset +
 	 *	    ((pin - IMGSENSOR_HW_PIN_PDN) << 1) + gpio_state);

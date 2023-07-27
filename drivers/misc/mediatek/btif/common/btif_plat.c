@@ -114,7 +114,7 @@ static int btif_dump_array(const char *string, const char *p_buf, int len)
 	unsigned char str[30];
 	unsigned char *p_str = NULL;
 
-	pr_no_debug("========dump %s start <length:%d>========\n", string, len);
+	pr_debug("========dump %s start <length:%d>========\n", string, len);
 	p_str = &str[0];
 	for (idx = 0; idx < len; idx++, p_buf++) {
 		if (sprintf(p_str, "%02x ", *p_buf) < 0)
@@ -123,16 +123,16 @@ static int btif_dump_array(const char *string, const char *p_buf, int len)
 		if (7 == (idx % 8)) {
 			*p_str++ = '\n';
 			*p_str = '\0';
-			pr_no_debug("%s", str);
+			pr_debug("%s", str);
 			p_str = &str[0];
 		}
 	}
 	if (len % 8) {
 		*p_str++ = '\n';
 		*p_str = '\0';
-		pr_no_debug("%s", str);
+		pr_debug("%s", str);
 	}
-	pr_no_debug("========dump %s end========\n", string);
+	pr_debug("========dump %s end========\n", string);
 	return 0;
 }
 

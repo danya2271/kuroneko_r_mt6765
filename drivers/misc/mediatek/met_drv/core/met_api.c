@@ -46,7 +46,7 @@ MET_DEFINE_PROBE(sched_switch,
 int met_reg_switch(void)
 {
 	if (MET_REGISTER_TRACE(sched_switch)) {
-		pr_no_debug("can not register callback of sched_switch\n");
+		pr_debug("can not register callback of sched_switch\n");
 		return -ENODEV;
 	} else
 		return 0;
@@ -76,11 +76,11 @@ int met_reg_event_power(void)
 {
 	do {
 		if (MET_REGISTER_TRACE(pm_qos_update_request)) {
-			pr_no_debug("can not register callback of pm_qos_update_request\n");
+			pr_debug("can not register callback of pm_qos_update_request\n");
 			return -ENODEV;
 		}
 		if (MET_REGISTER_TRACE(pm_qos_update_target)) {
-			pr_no_debug("can not register callback of pm_qos_update_target\n");
+			pr_debug("can not register callback of pm_qos_update_target\n");
 			MET_UNREGISTER_TRACE(pm_qos_update_target);
 			return -ENODEV;
 		}

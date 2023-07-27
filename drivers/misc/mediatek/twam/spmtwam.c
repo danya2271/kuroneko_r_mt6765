@@ -392,7 +392,7 @@ int spmtwam_monitor(bool enable, struct spmtwam_cfg *cfg,
 
 		for (i = 0; i < 4 ; i++)
 			if (spmtwam_channel_valid[i])
-				pr_no_debug("spmtwam: enable TWAM %u/%u (%s)\n",
+				pr_debug("spmtwam: enable TWAM %u/%u (%s)\n",
 					sig(i), id(i),
 					cfg->spmtwam_speed_mode ?
 					"32k" : "high speed");
@@ -410,7 +410,7 @@ int spmtwam_monitor(bool enable, struct spmtwam_cfg *cfg,
 
 		spin_unlock_irqrestore(&__spmtwam_lock, flags);
 
-		pr_no_debug("spmtwam: disable TWAM\n");
+		pr_debug("spmtwam: disable TWAM\n");
 	}
 
 	return 0;

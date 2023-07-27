@@ -1038,7 +1038,7 @@ int ccci_md_stop(unsigned char md_id, unsigned int stop_type)
 
 int __weak md_cd_vcore_config(unsigned int md_id, unsigned int hold_req)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 

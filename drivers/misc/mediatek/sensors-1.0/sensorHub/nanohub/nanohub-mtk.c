@@ -285,13 +285,13 @@ int __init nanohub_ipi_init(void)
 
 	ret = platform_device_register(&nanohub_ipi_pdev);
 	if (ret) {
-		pr_no_debug("nanohub_ipi_pdev fail\n");
+		pr_debug("nanohub_ipi_pdev fail\n");
 		goto _nanohub_ipi_init_exit;
 	}
 
 	ret = platform_driver_register(&nanohub_ipi_pdrv);
 	if (ret) {
-		pr_no_debug("nanohub_ipi_pdrv fail\n");
+		pr_debug("nanohub_ipi_pdrv fail\n");
 		platform_device_unregister(&nanohub_ipi_pdev);
 		goto _nanohub_ipi_init_exit;
 	}

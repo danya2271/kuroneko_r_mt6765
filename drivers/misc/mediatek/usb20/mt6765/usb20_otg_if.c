@@ -606,7 +606,7 @@ void musb_h_enumerate(void)
 	musb_h_out_status();
 
 	if (device_descriptor.idProduct == 0x1234) {
-		pr_no_debug("device pid not match!\n");
+		pr_debug("device pid not match!\n");
 		g_otg_message.msg = OTG_MSG_DEV_NOT_SUPPORT;
 		/* msleep(1000); */
 	}
@@ -1386,7 +1386,7 @@ void host_test_mode(struct musb *musb, unsigned int wIndex)
 	setup_packet.wLength = 0x40;
 	musb_otg_set_session(true);
 	msleep(200);
-	pr_no_debug("devctl = 0x%x\n", musb_readb(musb->mregs, MUSB_DEVCTL));
+	pr_debug("devctl = 0x%x\n", musb_readb(musb->mregs, MUSB_DEVCTL));
 	switch (wIndex) {
 	case HOST_CMD_TEST_SE0_NAK:
 		DBG(0, "TEST_SE0_NAK\n");
@@ -1477,7 +1477,7 @@ static int __init musb_otg_test_init(void)
 
 	np = of_find_compatible_node(NULL, NULL, "mediatek,PERICFG");
 	if (!np)
-		pr_no_debug("get PERICFG node fail");
+		pr_debug("get PERICFG node fail");
 	pericfg_base = (unsigned long)of_iomap(np, 0);
 #else
 	pericfg_base = PERICFG_BASE;

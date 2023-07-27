@@ -67,7 +67,7 @@ static void enable_touch_boost_timer(void)
 	ktime = ktime_set(0, touch_boost_duration);
 	hrtimer_start(&hrt1, ktime, HRTIMER_MODE_REL);
 	if (usrtch_debug)
-		pr_no_debug("touch_boost_duration:\t %d\n", touch_boost_duration);
+		pr_debug("touch_boost_duration:\t %d\n", touch_boost_duration);
 
 }
 
@@ -112,7 +112,7 @@ static int notify_touch(int action)
 		update_userlimit_cpu_freq(CPU_KIR_TOUCH,
 				perfmgr_clusters, target_freq);
 		if (usrtch_debug)
-			pr_no_debug("touch down\n");
+			pr_debug("touch down\n");
 		perfmgr_trace_count(1, "touch");
 		touch_event = 1;
 	}
@@ -136,7 +136,7 @@ static void notify_touch_up_timeout(struct work_struct *work)
 	perfmgr_trace_count(0, "touch");
 	touch_event = 2;
 	if (usrtch_debug)
-		pr_no_debug("touch timeout\n");
+		pr_debug("touch timeout\n");
 
 	mutex_unlock(&notify_lock);
 }
@@ -207,7 +207,7 @@ long usrtch_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	default:
-		pr_no_debug("non-game unknown cmd %u\n", cmd);
+		pr_debug("non-game unknown cmd %u\n", cmd);
 		ret = -1;
 		goto ret_ioctl;
 	}
@@ -242,7 +242,7 @@ static ssize_t mt_usrdebug_write(struct file *filp, const char *ubuf,
 	ret = kstrtoint(buf, 10, &val);
 
 	if (ret < 0) {
-		pr_no_debug("ddr_write ret < 0\n");
+		pr_debug("ddr_write ret < 0\n");
 		return ret;
 	}
 
@@ -274,7 +274,7 @@ int init_utch(struct proc_dir_entry *parent)
 	int i;
 	int ret_val = 0;
 
-	pr_no_debug("Start to init usrtch  driver\n");
+	pr_debug("Start to init usrtch  driver\n");
 
 	/*create usr touch root procfs*/
 	usrtch_root = proc_mkdir("user", parent);
@@ -300,7 +300,7 @@ int init_utch(struct proc_dir_entry *parent)
 
 	wq = create_singlethread_workqueue("mt_usrtch__work");
 	if (!wq) {
-		pr_no_debug("work create fail\n");
+		pr_debug("work create fail\n");
 		return -ENOMEM;
 	}
 
@@ -317,7 +317,7 @@ int init_utch(struct proc_dir_entry *parent)
 		ret_val = -ENOMEM;
 		goto out_chrdev;
 	}
-	pr_no_debug("init usrtch  driver done\n");
+	pr_debug("init usrtch  driver done\n");
 
 	return 0;
 

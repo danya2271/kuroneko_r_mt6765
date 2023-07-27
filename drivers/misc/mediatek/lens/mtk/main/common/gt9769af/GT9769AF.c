@@ -31,7 +31,7 @@
 
 #define AF_DEBUG
 #ifdef AF_DEBUG
-#define LOG_INF(format, args...) pr_no_debug(AF_DRVNAME " [%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(AF_DRVNAME " [%s] " format, __func__, ##args)
 #else
 #define LOG_INF(format, args...)
 #endif
@@ -98,13 +98,13 @@ static int gt9769_init(void)
 	int i4RetValue = 0;
 	char puSendCmd[3];
    
-	pr_no_debug("[GT9769AF] gt9769_init - beg\n");
+	pr_debug("[GT9769AF] gt9769_init - beg\n");
 	puSendCmd[0] = 0x02;
 	puSendCmd[1] = 0x02;
 	i4RetValue = i2c_master_send(g_pstAF_I2Cclient, puSendCmd, 2);
 	if (i4RetValue < 0)
 	{
-	   pr_no_debug("[GT9769AF] I2C send failed!! \n");
+	   pr_debug("[GT9769AF] I2C send failed!! \n");
 	}
 	mdelay(5);
 	puSendCmd[0] = 0x06;
@@ -112,14 +112,14 @@ static int gt9769_init(void)
 	i4RetValue = i2c_master_send(g_pstAF_I2Cclient, puSendCmd, 2);
 	if (i4RetValue < 0)
 	{
-	   pr_no_debug("[GT9769AF] I2C send failed!! \n");
+	   pr_debug("[GT9769AF] I2C send failed!! \n");
 	}
 	puSendCmd[0] = 0x07;
 	puSendCmd[1] = 0x3f;   //T=12ms
 	i4RetValue = i2c_master_send(g_pstAF_I2Cclient, puSendCmd, 2);
 	if (i4RetValue < 0)
 	{
-	   pr_no_debug("[GT9769AF] I2C send failed!! \n");
+	   pr_debug("[GT9769AF] I2C send failed!! \n");
 	}
 	
 
@@ -159,7 +159,7 @@ static inline int moveAF(unsigned long a_u4Position)
 	int ret = 0;
 
 	if ((a_u4Position > g_u4AF_MACRO) || (a_u4Position < g_u4AF_INF)) {
-		pr_no_debug("out of range\n");
+		pr_debug("out of range\n");
 		return -EINVAL;
 	}
 
@@ -229,7 +229,7 @@ static inline int moveAF(unsigned long a_u4Position)
 		g_u4CurrPosition = (unsigned long)g_u4TargetPosition;
 		spin_unlock(g_pAF_SpinLock);
 	} else {
-		pr_no_debug("set I2C failed when moving the motor\n");
+		pr_debug("set I2C failed when moving the motor\n");
 
 		spin_lock(g_pAF_SpinLock);
 		g_i4MotorStatus = -1;
@@ -297,7 +297,7 @@ long GT9769AF_Ioctl(struct file *a_pstFile, unsigned int a_u4Command, unsigned l
 /* Q1 : Try release multiple times. */
 int GT9769AF_Release(struct inode *a_pstInode, struct file *a_pstFile)
 {
-	pr_no_debug("Start\n");
+	pr_debug("Start\n");
 
 	if (*g_pAF_Opened == 2) {
 		

@@ -59,7 +59,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				pr_err("SAR_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug(
+			pr_debug(
 				"SAR_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 200);
 		} else {
@@ -76,7 +76,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 					"SAR_IOCTL_READ_SENSORDATA read data fail!\n");
 				return -EINVAL;
 			}
-			pr_no_debug("SAR_IOCTL_READ_SENSORDATA: (%d, %d, %d)!\n",
+			pr_debug("SAR_IOCTL_READ_SENSORDATA: (%d, %d, %d)!\n",
 				data_buf[0], data_buf[1], data_buf[2]);
 			sensor_data.x = data_buf[0];
 			sensor_data.y = data_buf[1];
@@ -116,7 +116,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			return -EINVAL;
 		}
 
-		pr_no_debug("SAR_IOCTL_GET_CALI: (%d, %d, %d)!\n",
+		pr_debug("SAR_IOCTL_GET_CALI: (%d, %d, %d)!\n",
 			data_buf[0], data_buf[1], data_buf[2]);
 		sensor_data.x = data_buf[0];
 		sensor_data.y = data_buf[1];
@@ -147,7 +147,7 @@ static long compat_sar_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_SAR_IOCTL_READ_SENSORDATA:
 	case COMPAT_SAR_IOCTL_ENABLE_CALI:
 	case COMPAT_SAR_IOCTL_GET_CALI: {
-		pr_no_debug(
+		pr_debug(
 			"compat_ion_ioctl : SAR_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(

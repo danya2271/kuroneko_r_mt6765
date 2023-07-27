@@ -4,7 +4,7 @@
  */
 
 #define PFX "S5K3M5SX_pdafotp"
-#define LOG_INF(format, args...) pr_no_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 
 
 #include <linux/videodev2.h>

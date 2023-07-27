@@ -17,7 +17,7 @@ static struct fusion_context *fusion_context_alloc_object(void)
 	int index = 0;
 	struct fusion_context *obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	if (!obj) {
 		pr_err("Alloc fusion object error!\n");
 		return NULL;
@@ -32,7 +32,7 @@ static struct fusion_context *fusion_context_alloc_object(void)
 		obj->fusion_context[index].delay_ns = -1;
 		obj->fusion_context[index].latency_ns = -1;
 	}
-	pr_no_debug("%s end\n", __func__);
+	pr_debug("%s end\n", __func__);
 	return obj;
 }
 
@@ -92,7 +92,7 @@ static int fusion_enable_and_batch(int index)
 	/* power on -> power off */
 	if (cxt->fusion_context[index].power == 1 &&
 		cxt->fusion_context[index].enable == 0) {
-		pr_no_debug("FUSION disable\n");
+		pr_debug("FUSION disable\n");
 		/* turn off the power */
 		err = cxt->fusion_context[index].fusion_ctl.enable_nodata(0);
 		if (err) {
@@ -107,7 +107,7 @@ static int fusion_enable_and_batch(int index)
 	/* power off -> power on */
 	if (cxt->fusion_context[index].power == 0 &&
 		cxt->fusion_context[index].enable == 1) {
-		pr_no_debug("FUSION power on\n");
+		pr_debug("FUSION power on\n");
 		err = cxt->fusion_context[index].fusion_ctl.enable_nodata(1);
 		if (err) {
 			pr_err("fusion turn on power err = %d\n", err);
@@ -119,7 +119,7 @@ static int fusion_enable_and_batch(int index)
 	/* rate change */
 	if (cxt->fusion_context[index].power == 1 &&
 		cxt->fusion_context[index].delay_ns >= 0) {
-		pr_no_debug("FUSION set batch\n");
+		pr_debug("FUSION set batch\n");
 		/* set ODR, fifo timeout latency */
 		if (cxt->fusion_context[index].fusion_ctl.is_support_batch)
 			err = cxt->fusion_context[index].fusion_ctl.batch(0,
@@ -148,7 +148,7 @@ static ssize_t fusionactive_store(struct device *dev,
 		pr_err("%s param error: err = %d\n", __func__, err);
 		return err;
 	}
-	pr_no_debug("%s handle=%d, en=%d\n", __func__, handle, en);
+	pr_debug("%s handle=%d, en=%d\n", __func__, handle, en);
 	index = handle_to_index(handle);
 	if (index < 0) {
 		pr_err("[%s] invalid handle\n", __func__);
@@ -188,7 +188,7 @@ static ssize_t fusionactive_store(struct device *dev,
 #else
 	err = fusion_enable_and_batch(index);
 #endif
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 err_out:
 	mutex_unlock(&fusion_context_obj->fusion_op_mutex);
 	if (err)
@@ -208,7 +208,7 @@ static ssize_t fusionactive_show(struct device *dev,
 	for (index = orientation; index < max_fusion_support; ++index) {
 		vendor_div[index] =
 			cxt->fusion_context[index].fusion_data.vender_div;
-		pr_no_debug("fusion index:%d vender_div: %d\n",
+		pr_debug("fusion index:%d vender_div: %d\n",
 			index, vendor_div[index]);
 	}
 
@@ -245,11 +245,11 @@ static ssize_t fusionbatch_store(struct device *dev,
 	}
 
 	if (cxt->fusion_context[index].fusion_ctl.batch == NULL) {
-		pr_no_debug("[%s] ctl not registered\n", __func__);
+		pr_debug("[%s] ctl not registered\n", __func__);
 		return -1;
 	}
 
-	pr_no_debug("handle %d, flag:%d, PeriodNs:%lld, LatencyNs: %lld\n",
+	pr_debug("handle %d, flag:%d, PeriodNs:%lld, LatencyNs: %lld\n",
 		handle, flag, samplingPeriodNs, maxBatchReportLatencyNs);
 
 	cxt->fusion_context[index].delay_ns = samplingPeriodNs;
@@ -274,7 +274,7 @@ static ssize_t fusionbatch_store(struct device *dev,
 #else
 	err = fusion_enable_and_batch(index);
 #endif
-	pr_no_debug("%s done\n", __func__);
+	pr_debug("%s done\n", __func__);
 err_out:
 	mutex_unlock(&fusion_context_obj->fusion_op_mutex);
 
@@ -300,7 +300,7 @@ static ssize_t fusionflush_store(struct device *dev,
 	if (err != 0)
 		pr_err("%s param error: err = %d\n", __func__, err);
 
-	pr_no_debug("%s param: handle %d\n", __func__, handle);
+	pr_debug("%s param: handle %d\n", __func__, handle);
 
 	mutex_lock(&fusion_context_obj->fusion_op_mutex);
 	cxt = fusion_context_obj;
@@ -333,15 +333,15 @@ static int fusion_real_driver_init(void)
 	int index = 0;
 	int err = -1;
 
-	pr_no_debug("%s start\n", __func__);
+	pr_debug("%s start\n", __func__);
 	for (index = 0; index < max_fusion_support; index++) {
-		pr_no_debug("index = %d\n", index);
+		pr_debug("index = %d\n", index);
 		if (fusion_init_list[index] != NULL) {
-			pr_no_debug("fusion try to init driver %s\n",
+			pr_debug("fusion try to init driver %s\n",
 				fusion_init_list[index]->name);
 			err = fusion_init_list[index]->init();
 			if (err == 0)
-				pr_no_debug("fusion real driver %s probe ok\n",
+				pr_debug("fusion real driver %s probe ok\n",
 					fusion_init_list[index]->name);
 		}
 	}
@@ -428,7 +428,7 @@ int fusion_register_data_path(struct fusion_data_path *data, int handle)
 	cxt = fusion_context_obj;
 	cxt->fusion_context[index].fusion_data.get_data = data->get_data;
 	cxt->fusion_context[index].fusion_data.vender_div = data->vender_div;
-	pr_no_debug("fusion handle:%d vender_div: %d\n",
+	pr_debug("fusion handle:%d vender_div: %d\n",
 		handle, cxt->fusion_context[index].fusion_data.vender_div);
 	return 0;
 }
@@ -473,7 +473,7 @@ int fusion_register_control_path(struct fusion_control_path *ctl,
 static int fusion_data_report(int x, int y, int z,
 	int scalar, int status, int64_t nt, int handle)
 {
-	/* pr_no_debug("+fusion_data_report! %d, %d, %d, %d\n",x,y,z,status); */
+	/* pr_debug("+fusion_data_report! %d, %d, %d, %d\n",x,y,z,status); */
 	struct sensor_event event;
 	int err = 0;
 
@@ -498,7 +498,7 @@ static int fusion_flush_report(int handle)
 	int err = 0;
 
 	memset(&event, 0, sizeof(struct sensor_event));
-	pr_no_debug("flush\n");
+	pr_debug("flush\n");
 	event.handle = handle;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(fusion_context_obj->mdev.minor, &event);
@@ -532,7 +532,7 @@ static int uncali_sensor_flush_report(int handle)
 	int err = 0;
 
 	memset(&event, 0, sizeof(struct sensor_event));
-	pr_no_debug("flush handle:%d\n", handle);
+	pr_debug("flush handle:%d\n", handle);
 	event.handle = handle;
 	event.flush_action = FLUSH_ACTION;
 	err = sensor_input_event(fusion_context_obj->mdev.minor, &event);
@@ -632,7 +632,7 @@ static int fusion_probe(void)
 {
 	int err;
 
-	pr_no_debug("%s+++!!\n", __func__);
+	pr_debug("%s+++!!\n", __func__);
 
 	fusion_context_obj = fusion_context_alloc_object();
 	if (!fusion_context_obj) {
@@ -660,13 +660,13 @@ static int fusion_probe(void)
 	}
 	kobject_uevent(&fusion_context_obj->mdev.this_device->kobj, KOBJ_ADD);
 
-	pr_no_debug("%s--- OK !!\n", __func__);
+	pr_debug("%s--- OK !!\n", __func__);
 	return 0;
 
 real_driver_init_fail:
 	kfree(fusion_context_obj);
 exit_alloc_data_failed:
-	pr_no_debug("%s---- fail !!!\n", __func__);
+	pr_debug("%s---- fail !!!\n", __func__);
 	return err;
 }
 
@@ -674,7 +674,7 @@ static int fusion_remove(void)
 {
 	int err = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	sysfs_remove_group(&fusion_context_obj->mdev.this_device->kobj,
 		&fusion_attribute_group);
@@ -691,7 +691,7 @@ int fusion_driver_add(struct fusion_init_info *obj, int handle)
 	int err = 0;
 	int index = 0;
 
-	pr_no_debug("handle:%d\n", handle);
+	pr_debug("handle:%d\n", handle);
 	if (!obj) {
 		pr_err("FUSION handle: %d, driver add fail\n", handle);
 		return -1;
@@ -712,7 +712,7 @@ int fusion_driver_add(struct fusion_init_info *obj, int handle)
 }
 static int __init fusion_init(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	if (fusion_probe()) {
 		pr_err("failed to register fusion driver\n");

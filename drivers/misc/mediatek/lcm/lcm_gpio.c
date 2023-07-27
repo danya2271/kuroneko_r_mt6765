@@ -112,7 +112,7 @@ static int _lcm_gpio_probe(struct platform_device *pdev)
 	const struct of_device_id *match;
 	struct device	*dev = &pdev->dev;
 
-	pr_no_debug("[LCM][GPIO] enter %s, %d\n", __func__, __LINE__);
+	pr_debug("[LCM][GPIO] enter %s, %d\n", __func__, __LINE__);
 
 	_lcm_gpio = devm_pinctrl_get(dev);
 	if (IS_ERR(_lcm_gpio)) {
@@ -155,7 +155,7 @@ static int _lcm_gpio_probe(struct platform_device *pdev)
 	if (ret < 0)
 		pr_info("[LCM][ERROR] Unable to request GPIO_LCD_BL_EN\n");
 
-	pr_no_debug("[LCM][GPIO] _lcm_gpio_get_info end!\n");
+	pr_debug("[LCM][GPIO] _lcm_gpio_get_info end!\n");
 #endif
 
 	return 0;
@@ -176,7 +176,7 @@ static int _lcm_gpio_remove(struct platform_device *pdev)
 /* called when loaded into kernel */
 static int __init _lcm_gpio_init(void)
 {
-	pr_no_debug("MediaTek LCM GPIO driver init\n");
+	pr_debug("MediaTek LCM GPIO driver init\n");
 	if (platform_driver_register(&_lcm_gpio_driver) != 0) {
 		pr_info("unable to register LCM GPIO driver.\n");
 		return -1;
@@ -188,7 +188,7 @@ static int __init _lcm_gpio_init(void)
 /* should never be called */
 static void __exit _lcm_gpio_exit(void)
 {
-	pr_no_debug("MediaTek LCM GPIO driver exit\n");
+	pr_debug("MediaTek LCM GPIO driver exit\n");
 	platform_driver_unregister(&_lcm_gpio_driver);
 }
 #endif
@@ -273,21 +273,21 @@ enum LCM_STATUS lcm_gpio_set_data(char type, const struct LCM_DATA_T1 *t1)
 #else
 #ifdef CONFIG_PINCTRL
 		case LCM_GPIO_MODE:
-			pr_no_debug("[LCM][GPIO] %s/%d: set mode: %d\n",
+			pr_debug("[LCM][GPIO] %s/%d: set mode: %d\n",
 				__func__, __LINE__, (unsigned int)t1->data);
 			pinctrl_select_state(_lcm_gpio,
 				_lcm_gpio_mode[(unsigned int)t1->data]);
 			break;
 
 		case LCM_GPIO_DIR:
-			pr_no_debug("[LCM][GPIO] %s/%d: set dir: %d, %d\n",
+			pr_debug("[LCM][GPIO] %s/%d: set dir: %d, %d\n",
 				__func__, __LINE__, GPIO_LCD_PWR_EN,
 				(unsigned int)t1->data);
 			gpio_direction_output(GPIO_LCD_PWR_EN, (int)t1->data);
 			break;
 
 		case LCM_GPIO_OUT:
-			pr_no_debug("[LCM][GPIO] %s/%d: set out: %d, %d\n",
+			pr_debug("[LCM][GPIO] %s/%d: set out: %d, %d\n",
 				__func__, __LINE__, GPIO_LCD_PWR_EN,
 				(unsigned int)t1->data);
 			gpio_set_value(GPIO_LCD_PWR_EN, (int)t1->data);

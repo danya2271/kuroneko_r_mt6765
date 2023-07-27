@@ -42,7 +42,7 @@
 
 #define PFX "S5K3P8SP_camera_sensor"
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 
@@ -1859,7 +1859,7 @@ static kal_uint32 set_max_framerate_by_scenario(
 		} else {
 			if (imgsensor.current_fps !=
 			imgsensor_info.cap.max_framerate)
-				pr_no_debug(
+				pr_debug(
 				"Warning: current_fps %d fps is not support,so use cap's setting: %d fps!\n",
 				framerate,
 				imgsensor_info.cap.max_framerate / 10);
@@ -2159,7 +2159,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 	/******************** PDAF START >>> *********/
 	/*
 	 * case SENSOR_FEATURE_GET_PDAF_INFO:
-	 * pr_no_debug("SENSOR_FEATURE_GET_PDAF_INFO scenarioId:%d\n",
+	 * pr_debug("SENSOR_FEATURE_GET_PDAF_INFO scenarioId:%d\n",
 	 * (UINT16)*feature_data);
 	 * PDAFinfo = (struct SET_PD_BLOCK_INFO_T *)
 	 * (uintptr_t)(*(feature_data+1));
@@ -2178,7 +2178,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 	 * }
 	 * break;
 	 * case SENSOR_FEATURE_GET_VC_INFO:
-	 * pr_no_debug("SENSOR_FEATURE_GET_VC_INFO %d\n", (UINT16)*feature_data);
+	 * pr_debug("SENSOR_FEATURE_GET_VC_INFO %d\n", (UINT16)*feature_data);
 	 * pvcinfo =
 	 * (struct SENSOR_VC_INFO_STRUCT *)(uintptr_t)(*(feature_data+1));
 	 * switch (*feature_data_32) {
@@ -2198,7 +2198,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 	 * }
 	 * break;
 	 * case SENSOR_FEATURE_GET_SENSOR_PDAF_CAPACITY:
-	 * pr_no_debug("SENSOR_FEATURE_GET_SENSOR_PDAF_CAPACITY scenarioId:%d\n",
+	 * pr_debug("SENSOR_FEATURE_GET_SENSOR_PDAF_CAPACITY scenarioId:%d\n",
 	 * (UINT16)*feature_data);
 	 * //PDAF capacity enable or not
 	 * switch (*feature_data) {
@@ -2225,14 +2225,14 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 	 * }
 	 * break;
 	 * case SENSOR_FEATURE_GET_PDAF_DATA:    //get cal data from eeprom
-	 * pr_no_debug("SENSOR_FEATURE_GET_PDAF_DATA\n");
+	 * pr_debug("SENSOR_FEATURE_GET_PDAF_DATA\n");
 	 * read_3P8_eeprom((kal_uint16 )(*feature_data),
 	 * (char*)(uintptr_t)(*(feature_data+1)),
 	 * (kal_uint32)(*(feature_data+2)));
-	 * pr_no_debug("SENSOR_FEATURE_GET_PDAF_DATA success\n");
+	 * pr_debug("SENSOR_FEATURE_GET_PDAF_DATA success\n");
 	 * break;
 	 * case SENSOR_FEATURE_SET_PDAF:
-	 * pr_no_debug("PDAF mode :%d\n", *feature_data_16);
+	 * pr_debug("PDAF mode :%d\n", *feature_data_16);
 	 * imgsensor.pdaf_mode= *feature_data_16;
 	 * break;
 	 */

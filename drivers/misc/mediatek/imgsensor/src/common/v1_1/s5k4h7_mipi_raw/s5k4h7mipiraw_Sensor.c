@@ -39,7 +39,7 @@
 #include "imgsensor_ca.h"
 
 #define PFX "s5k4h7_camera_sensor"
-#define LOG_INF(format, args...) pr_no_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 #ifndef VENDOR_EDIT
 //#define VENDOR_EDIT

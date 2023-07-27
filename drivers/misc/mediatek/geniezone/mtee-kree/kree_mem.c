@@ -29,7 +29,7 @@
 #define MAX_MARY_SIZE MAX_PA_ENTRY
 #define MAX_NUM_OF_PARAM 3
 
-#define KREE_DEBUG(fmt...) pr_no_debug("[KREE_MEM]" fmt)
+#define KREE_DEBUG(fmt...) pr_debug("[KREE_MEM]" fmt)
 #define KREE_INFO(fmt...) pr_info("[KREE_MEM]" fmt)
 #define KREE_ERR(fmt...) pr_info("[KREE_MEM][ERR]" fmt)
 

@@ -50,7 +50,7 @@ int force_md_stop(struct ccci_fsm_monitor *monitor_ctl)
 
 unsigned long __weak BAT_Get_Battery_Voltage(int polling_mode)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 

@@ -109,12 +109,12 @@ enum LCM_STATUS lcm_util_set_data(const struct LCM_UTIL_FUNCS *lcm_util,
 			break;
 
 		default:
-			pr_no_debug("[LCM][ERROR] %s/%d: %d\n",
+			pr_debug("[LCM][ERROR] %s/%d: %d\n",
 				__func__, __LINE__, type);
 			return LCM_STATUS_ERROR;
 		}
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%x, 0x%x\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%x, 0x%x\n",
 			__func__, __LINE__, type, t1->data);
 		return LCM_STATUS_ERROR;
 	}
@@ -141,7 +141,7 @@ enum LCM_STATUS lcm_util_set_write_cmd_v1(
 		lcm_util->dsi_set_cmdq(cmd, (unsigned int)t5->size,
 			force_update);
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%p, %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%p, %d\n",
 			__func__, __LINE__, t5->cmd, t5->size);
 		return LCM_STATUS_ERROR;
 	}
@@ -170,7 +170,7 @@ enum LCM_STATUS lcm_util_set_write_cmd_v11(
 			lcm_util->dsi_set_cmdq_V11(cmdq, cmd,
 				(unsigned int)t5->size, force_update);
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%p, %d\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%p, %d\n",
 			__func__, __LINE__, t5->cmd, t5->size);
 		return LCM_STATUS_ERROR;
 	}
@@ -196,7 +196,7 @@ enum LCM_STATUS lcm_util_set_write_cmd_v2(
 				(unsigned char *)t3->data, force_update);
 		}
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%p\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%p\n",
 			__func__, __LINE__, t3->cmd, t3->size, t3->data);
 		return LCM_STATUS_ERROR;
 	}
@@ -215,7 +215,7 @@ enum LCM_STATUS lcm_util_set_write_cmd_v23(
 			(unsigned char)t3->size,
 			(unsigned char *)t3->data, force_update);
 	else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%p\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%p\n",
 			__func__, __LINE__, t3->cmd, t3->size, t3->data);
 		return LCM_STATUS_ERROR;
 	}
@@ -229,7 +229,7 @@ enum LCM_STATUS lcm_util_set_read_cmd_v2(
 	unsigned int *compare)
 {
 	if (compare == NULL) {
-		pr_no_debug("[LCM][ERROR] %s/%d: NULL parameter\n",
+		pr_debug("[LCM][ERROR] %s/%d: NULL parameter\n",
 			__func__, __LINE__);
 		return LCM_STATUS_ERROR;
 	}
@@ -247,7 +247,7 @@ enum LCM_STATUS lcm_util_set_read_cmd_v2(
 			((unsigned char)t4->data))
 			*compare = 1;
 	} else {
-		pr_no_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%x\n",
+		pr_debug("[LCM][ERROR] %s/%d: 0x%x, %d, 0x%x\n",
 			__func__, __LINE__, t4->cmd, t4->location, t4->data);
 		return LCM_STATUS_ERROR;
 	}

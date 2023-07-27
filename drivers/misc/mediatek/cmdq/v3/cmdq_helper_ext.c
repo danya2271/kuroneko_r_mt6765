@@ -587,7 +587,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				"Set MASK:0x%08x\n", arg_b);
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	case CMDQ_CODE_READ:
@@ -599,7 +599,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 		reqLen = snprintf(textBuf, bufLen, "%s: ",
 			cmdq_core_parse_op(op));
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		bufLen -= reqLen;
 		textBuf += reqLen;
@@ -627,7 +627,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				arg_value);
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		bufLen -= reqLen;
 		textBuf += reqLen;
@@ -644,7 +644,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				cmdq_get_func()->parseModule(reg_addr));
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		bufLen -= reqLen;
 		textBuf += reqLen;
@@ -656,7 +656,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			use_mask = 0;
 		reqLen = snprintf(textBuf, bufLen, "use_mask:%d\n", use_mask);
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	case CMDQ_CODE_JUMP:
@@ -683,7 +683,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			}
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	case CMDQ_CODE_WFE:
@@ -712,7 +712,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				(arg_b >> 12) & 0x7, (arg_b >> 0) & 0xFFF);
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	case CMDQ_CODE_EOC:
@@ -721,7 +721,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 		} else {
 			reqLen = snprintf(textBuf, bufLen, "MARKER:");
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -741,7 +741,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			}
 		}
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	case CMDQ_CODE_LOGIC:
@@ -754,7 +754,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			reqLen = snprintf(textBuf, bufLen, "%s: ",
 				cmdq_core_parse_op(op));
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -762,7 +762,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			reqLen = snprintf(textBuf, bufLen, "Reg%d = ",
 				(arg_a & 0xFFFF));
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -771,7 +771,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				reqLen = snprintf(textBuf, bufLen, "0x%08x\n",
 					arg_b);
 				if (reqLen >= bufLen)
-					pr_no_debug("reqLen:%d over bufLen:%d\n",
+					pr_debug("reqLen:%d over bufLen:%d\n",
 						reqLen, bufLen);
 				bufLen -= reqLen;
 				textBuf += reqLen;
@@ -786,7 +786,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 					reqLen = snprintf(textBuf, bufLen,
 						"~%d\n", arg_b_i);
 				if (reqLen >= bufLen)
-					pr_no_debug("reqLen:%d over bufLen:%d\n",
+					pr_debug("reqLen:%d over bufLen:%d\n",
 						reqLen, bufLen);
 				bufLen -= reqLen;
 				textBuf += reqLen;
@@ -805,7 +805,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 						"%d ", arg_b_i);
 				}
 				if (reqLen >= bufLen)
-					pr_no_debug("reqLen:%d over bufLen:%d\n",
+					pr_debug("reqLen:%d over bufLen:%d\n",
 						reqLen, bufLen);
 				bufLen -= reqLen;
 				textBuf += reqLen;
@@ -814,7 +814,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 				reqLen = snprintf(textBuf, bufLen, "%s ",
 					cmdq_core_parse_logic_sop(s_op));
 				if (reqLen >= bufLen)
-					pr_no_debug("reqLen:%d over bufLen:%d\n",
+					pr_debug("reqLen:%d over bufLen:%d\n",
 						reqLen, bufLen);
 				bufLen -= reqLen;
 				textBuf += reqLen;
@@ -829,7 +829,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 						arg_c_i));
 				}
 				if (reqLen >= bufLen)
-					pr_no_debug("reqLen:%d over bufLen:%d\n",
+					pr_debug("reqLen:%d over bufLen:%d\n",
 						reqLen, bufLen);
 				bufLen -= reqLen;
 				textBuf += reqLen;
@@ -853,7 +853,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			reqLen = snprintf(textBuf, bufLen, "%s: if (",
 				cmdq_core_parse_op(op));
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -867,7 +867,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 					arg_b_i);
 			}
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -876,7 +876,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			reqLen = snprintf(textBuf, bufLen, "%s ",
 				cmdq_core_parse_jump_c_sop(s_op));
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -891,7 +891,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 					arg_c_i));
 			}
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -905,7 +905,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 					"+%d\n", arg_a_i);
 			}
 			if (reqLen >= bufLen)
-				pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+				pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 					__func__, __LINE__, reqLen, bufLen);
 			bufLen -= reqLen;
 			textBuf += reqLen;
@@ -916,7 +916,7 @@ s32 cmdq_core_interpret_instruction(char *textBuf, s32 bufLen,
 			"UNDEFINED (0x%02x 0x%08x%08x)\n",
 			op, arg_a, arg_b);
 		if (reqLen >= bufLen)
-			pr_no_debug("%s:%d reqLen:%d over bufLen:%d\n",
+			pr_debug("%s:%d reqLen:%d over bufLen:%d\n",
 				__func__, __LINE__, reqLen, bufLen);
 		break;
 	}
@@ -1023,7 +1023,7 @@ void cmdq_long_string(char *buf, u32 *offset, s32 *max_size,
 	buffer = buf + (*offset);
 	msg_len = vsnprintf(buffer, *max_size, string, arg_ptr);
 	if (msg_len >= *max_size)
-		pr_no_debug("%s:%d msg_len:%d over max_size:%d\n%s\n",
+		pr_debug("%s:%d msg_len:%d over max_size:%d\n%s\n",
 			__func__, __LINE__, msg_len, *max_size, buffer);
 	*max_size -= msg_len;
 	if (*max_size < 0)
@@ -1066,7 +1066,7 @@ int cmdq_core_print_record_title(char *_buf, int bufLen)
 	length = snprintf(buf, bufLen,
 		"index,pid,scn,flag,task_pri,is_sec,size,thr#,thr_pri,");
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1074,7 +1074,7 @@ int cmdq_core_print_record_title(char *_buf, int bufLen)
 	length = snprintf(buf, bufLen,
 		"submit,acq_thr,irq_time,begin_wait,exec_time,buf_alloc,buf_rec,buf_rel,total_time,start,end,jump\n");
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1150,7 +1150,7 @@ static int cmdq_core_print_record(const struct RecordStruct *pRecord,
 		pRecord->thread,
 		cmdq_get_func()->priority(pRecord->scenario));
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1162,7 +1162,7 @@ static int cmdq_core_print_record(const struct RecordStruct *pRecord,
 		pRecord->durAlloc, pRecord->durReclaim, pRecord->durRelease,
 		totalTime, unit[4]);
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1172,7 +1172,7 @@ static int cmdq_core_print_record(const struct RecordStruct *pRecord,
 		"0x%08x,0x%08x,0x%08x",
 		pRecord->start, pRecord->end, pRecord->jump);
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1186,7 +1186,7 @@ static int cmdq_core_print_record(const struct RecordStruct *pRecord,
 			pRecord->profileMarkerTag[i],
 			pRecord->profileMarkerTimeNS[i]);
 		if (length >= bufLen)
-			pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+			pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 				__func__, __LINE__, length, bufLen, buf);
 		bufLen -= length;
 		buf += length;
@@ -1194,7 +1194,7 @@ static int cmdq_core_print_record(const struct RecordStruct *pRecord,
 
 	length = snprintf(buf, bufLen, "\n");
 	if (length >= bufLen)
-		pr_no_debug("%s:%d length:%d over bufLen:%d\n%s\n",
+		pr_debug("%s:%d length:%d over bufLen:%d\n%s\n",
 			__func__, __LINE__, length, bufLen, buf);
 	bufLen -= length;
 	buf += length;
@@ -1545,7 +1545,7 @@ void cmdq_core_turnon_first_dump(const struct cmdqRecStruct *task)
 	len = snprintf(cmdq_first_err.callerName, TASK_COMM_LEN, "%s",
 		task->caller_name);
 	if (len >= TASK_COMM_LEN)
-		pr_no_debug("%s:%d len:%d over TASK_COMM_LEN:%d callerName:%s\n",
+		pr_debug("%s:%d len:%d over TASK_COMM_LEN:%d callerName:%s\n",
 			__func__, __LINE__,
 			len, TASK_COMM_LEN, task->caller_name);
 	cmdq_first_err.savetime = sched_clock();
@@ -1594,7 +1594,7 @@ s32 cmdq_core_save_first_dump(const char *string, ...)
 	buffer = cmdq_first_err.cmdqString + cmdq_first_err.cmdqCount;
 	logLen = vsnprintf(buffer, cmdq_first_err.cmdqMaxSize, string, argptr);
 	if (logLen >= cmdq_first_err.cmdqMaxSize)
-		pr_no_debug("%s:%d logLen:%d over MaxSize:%d\n",
+		pr_debug("%s:%d logLen:%d over MaxSize:%d\n",
 			__func__, __LINE__, logLen, cmdq_first_err.cmdqMaxSize);
 	cmdq_first_err.cmdqMaxSize -= logLen;
 	cmdq_first_err.cmdqCount += logLen;
@@ -1701,7 +1701,7 @@ static void cmdq_core_save_hex_first_dump(const char *prefix_str,
 		logLen = snprintf(pBuffer, cmdq_first_err.cmdqMaxSize,
 			"%s%p:%s\n", prefix_str, ptr + i, linebuf);
 		if (logLen >= cmdq_first_err.cmdqMaxSize)
-			pr_no_debug("%s:%d logLen:%d over cmdqMaxSize:%d\n",
+			pr_debug("%s:%d logLen:%d over cmdqMaxSize:%d\n",
 				__func__, __LINE__, logLen,
 				cmdq_first_err.cmdqMaxSize);
 		cmdq_first_err.cmdqMaxSize -= logLen;
@@ -2570,7 +2570,7 @@ ssize_t cmdq_core_print_log_level(struct device *dev,
 	if (buf) {
 		len = snprintf(buf, 10, "%d\n", cmdq_ctx.logLevel);
 		if (len >= 10)
-			pr_no_debug("%s:%d len:%d over 10\n",
+			pr_debug("%s:%d len:%d over 10\n",
 				__func__, __LINE__, len);
 	}
 
@@ -2619,7 +2619,7 @@ ssize_t cmdq_core_print_profile_enable(struct device *dev,
 	if (buf) {
 		len = snprintf(buf, 10, "0x%x\n", cmdq_ctx.enableProfile);
 		if (len >= 10)
-			pr_no_debug("%s:%d len:%d over 10\n",
+			pr_debug("%s:%d len:%d over 10\n",
 				__func__, __LINE__, len);
 	}
 
@@ -2764,7 +2764,7 @@ void cmdq_core_turnon_first_dump_by_handle(
 	len = snprintf(cmdq_first_err.callerName, TASK_COMM_LEN, "%s",
 		handle->caller_name);
 	if (len >= TASK_COMM_LEN)
-		pr_no_debug("%s:%d len:%d over LEN:%d caller:%s\n", __func__,
+		pr_debug("%s:%d len:%d over LEN:%d caller:%s\n", __func__,
 			__LINE__, len, TASK_COMM_LEN, handle->caller_name);
 	cmdq_first_err.savetime = sched_clock();
 	do_gettimeofday(&cmdq_first_err.savetv);

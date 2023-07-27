@@ -247,7 +247,7 @@ void set_cur_freq_wrapper(struct mt_cpu_dvfs *p, unsigned int cur_khz,
 		return;
 
 	if (do_dvfs_stress_test)
-		tag_pr_no_debug
+		tag_pr_debug
 ("%s: %s: cur_khz = %d(%d), target_khz = %d(%d), clkdiv = %d->%d\n",
 __func__, cpu_dvfs_get_name(p), cur_khz, p->idx_opp_tbl, target_khz, idx,
 cur_clkdiv, opp_tbl_m[TARGET_OPP_IDX].slot->clk_div);

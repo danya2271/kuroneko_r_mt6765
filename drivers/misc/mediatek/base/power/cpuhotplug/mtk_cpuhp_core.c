@@ -42,7 +42,7 @@ static int is_multi_cluster(void)
 
 	cn = of_find_node_by_path("/cpus");
 	if (!cn) {
-		pr_no_debug("No CPU information found in DT\n");
+		pr_debug("No CPU information found in DT\n");
 		return 0;
 	}
 
@@ -74,7 +74,7 @@ static int get_cpu_topology(int cpu, int *isalone)
 		cpumask_and(&cpumask_this_cluster,
 			    &cpumask_this_cluster, cpu_online_mask);
 
-		pr_no_debug("cluster=%d, cpumask_weight(&cpumask_this_cluster)=%d\n",
+		pr_debug("cluster=%d, cpumask_weight(&cpumask_this_cluster)=%d\n",
 			 cluster, cpumask_weight(&cpumask_this_cluster));
 
 		if (cpumask_weight(&cpumask_this_cluster))
@@ -96,7 +96,7 @@ static int cpuhp_cpu_dead(unsigned int cpu)
 
 	cluster = get_cpu_topology(cpu, &isalone);
 
-	pr_no_debug("cpu_off cluster=%d, cpu=%d, isalone=%d\n",
+	pr_debug("cpu_off cluster=%d, cpu=%d, isalone=%d\n",
 		cluster, (int)cpu, isalone);
 
 	if (cpu_report_state(cpu) == CPU_DEAD_FROZEN)
@@ -106,7 +106,7 @@ static int cpuhp_cpu_dead(unsigned int cpu)
 		rc = cpuhp_platform_cpuoff(cluster, cpu, isalone, CPU_DEAD);
 
 	if (rc)
-		pr_no_debug("cpu off error! rc: %d\n", rc);
+		pr_debug("cpu off error! rc: %d\n", rc);
 
 	return rc;
 }
@@ -119,13 +119,13 @@ static int cpuhp_cpu_up(unsigned int cpu)
 
 	cluster = get_cpu_topology(cpu, &isalone);
 
-	pr_no_debug("cpu_on cluster=%d, cpu=%d, isalone=%d\n",
+	pr_debug("cpu_on cluster=%d, cpu=%d, isalone=%d\n",
 		cluster, (int)cpu, isalone);
 
 	rc = cpuhp_platform_cpuon(cluster, cpu, isalone, CPUHP_BRINGUP_CPU);
 
 	if (rc)
-		pr_no_debug("cpu on error! rc: %d\n", rc);
+		pr_debug("cpu on error! rc: %d\n", rc);
 
 	return rc;
 }
@@ -155,7 +155,7 @@ static int __init cpuhp_init(void)
 {
 	int rc;
 
-	pr_no_debug("%s+\n", __func__);
+	pr_debug("%s+\n", __func__);
 
 	cpuhp_setup_state_nocalls(CPUHP_BP_PREPARE_DYN,
 				"hps/cpuhotplug",
@@ -166,7 +166,7 @@ static int __init cpuhp_init(void)
 	ppm_notifier();
 	rc = cpuhp_platform_init();
 
-	pr_no_debug("%s-\n", __func__);
+	pr_debug("%s-\n", __func__);
 
 	return rc;
 }

@@ -59,7 +59,7 @@ void adsp_A_ipi_handler(void)
 	len = adsp_rcv_obj[ADSP_A_ID]->len;
 
 	if (ipi_id >= ADSP_NR_IPI || ipi_id < 0)
-		pr_no_debug("[ADSP] A ipi handler id abnormal, id=%d", ipi_id);
+		pr_debug("[ADSP] A ipi handler id abnormal, id=%d", ipi_id);
 	else if (adsp_ipi_desc[ipi_id].handler) {
 		memcpy_fromio(share_buf,
 			(void *)adsp_rcv_obj[ADSP_A_ID]->share_buf, len);
@@ -89,7 +89,7 @@ void adsp_A_ipi_handler(void)
 			WARN_ON(1);
 		}
 	} else {
-		pr_no_debug("[ADSP] A ipi handler is null or abnormal, id=%d",
+		pr_debug("[ADSP] A ipi handler is null or abnormal, id=%d",
 			 ipi_id);
 	}
 
@@ -111,8 +111,8 @@ void adsp_A_ipi_init(void)
 	mutex_init(&adsp_ipi_mutex[ADSP_A_ID]);
 	adsp_rcv_obj[ADSP_A_ID] = ADSP_A_IPC_BUFFER;
 	adsp_send_obj[ADSP_A_ID] = adsp_rcv_obj[ADSP_A_ID] + 1;
-	pr_no_debug("adsp_rcv_obj[ADSP_A_ID] = 0x%p", adsp_rcv_obj[ADSP_A_ID]);
-	pr_no_debug("adsp_send_obj[ADSP_A_ID] = 0x%p", adsp_send_obj[ADSP_A_ID]);
+	pr_debug("adsp_rcv_obj[ADSP_A_ID] = 0x%p", adsp_rcv_obj[ADSP_A_ID]);
+	pr_debug("adsp_send_obj[ADSP_A_ID] = 0x%p", adsp_send_obj[ADSP_A_ID]);
 }
 
 /*
@@ -256,7 +256,7 @@ enum adsp_ipi_status adsp_ipi_send_ipc(enum adsp_ipi_id id, void *buf,
 
 #ifdef Liang_Check
 	if (adsp_awake_unlock(adsp_id) == -1)
-		pr_no_debug("adsp_ipi_send: awake unlock fail");
+		pr_debug("adsp_ipi_send: awake unlock fail");
 #endif
 	mutex_unlock(&adsp_ipi_mutex[adsp_id]);
 

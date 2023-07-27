@@ -43,7 +43,7 @@
 #define PFX "S5K4H7OTP"
 #define LOG_1 SENSORDB("S5K4H7,MIPI CAM\n")
 #define LOG_INF(format, args...) \
-	pr_no_debug(PFX "[%s] " format, __func__, ##args)
+	pr_debug(PFX "[%s] " format, __func__, ##args)
 /*********************   Modify end    *********************************/
 
 #define USHORT        unsigned short

@@ -69,13 +69,13 @@ int update_eas_uclamp_min(int kicker, int cgroup_idx, int value)
 	char msg1[LOG_BUF_SIZE];
 
 	if (cgroup_idx < 0 || cgroup_idx >= NR_CGROUP) {
-		pr_no_debug("cgroup_idx:%d, error\n", cgroup_idx);
+		pr_debug("cgroup_idx:%d, error\n", cgroup_idx);
 		perfmgr_trace_printk("uclamp_min", "cgroup_idx >= NR_CGROUP\n");
 		return -1;
 	}
 
 	if (kicker < 0 || kicker >= EAS_UCLAMP_MAX_KIR) {
-		pr_no_debug("kicker:%d, error\n", kicker);
+		pr_debug("kicker:%d, error\n", kicker);
 		return -1;
 	}
 
@@ -131,7 +131,7 @@ int update_eas_uclamp_min(int kicker, int cgroup_idx, int value)
 
 	strncat(msg, msg1, LOG_BUF_SIZE);
 	if (log_enable)
-		pr_no_debug("%s\n", msg);
+		pr_debug("%s\n", msg);
 
 #ifdef CONFIG_TRACING
 	perfmgr_trace_printk("eas_ctrl (uclamp)", msg);
@@ -152,12 +152,12 @@ EXPORT_SYMBOL(update_eas_uclamp_min);
 int update_prefer_idle_value(int kicker, int cgroup_idx, int value)
 {
 	if (cgroup_idx < 0 || cgroup_idx >= NR_CGROUP) {
-		pr_no_debug("cgroup_idx:%d, error\n", cgroup_idx);
+		pr_debug("cgroup_idx:%d, error\n", cgroup_idx);
 		return -EINVAL;
 	}
 
 	if (kicker < 0 || kicker >= EAS_PREFER_IDLE_MAX_KIR) {
-		pr_no_debug("kicker:%d, error\n", kicker);
+		pr_debug("kicker:%d, error\n", kicker);
 		return -EINVAL;
 	}
 
@@ -666,7 +666,7 @@ int uclamp_ctrl_init(struct proc_dir_entry *parent)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					parent, entries[i].fops)) {
-			pr_no_debug("%s(), create /eas_ctrl%s failed\n",
+			pr_debug("%s(), create /eas_ctrl%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			goto out;

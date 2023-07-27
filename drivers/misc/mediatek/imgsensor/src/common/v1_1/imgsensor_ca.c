@@ -11,9 +11,9 @@
 
 #define PREFIX "[imgsensor_ca]"
 
-#define PK_DBG(fmt, arg...)  pr_no_debug(PREFIX fmt, ##arg)
-#define PK_INFO(fmt, arg...) pr_no_debug(PREFIX fmt, ##arg)
-/*#define _TRACE(fmt, arg...) pr_no_debug(fmt, ##arg)*/
+#define PK_DBG(fmt, arg...)  pr_debug(PREFIX fmt, ##arg)
+#define PK_INFO(fmt, arg...) pr_debug(PREFIX fmt, ##arg)
+/*#define _TRACE(fmt, arg...) pr_debug(fmt, ##arg)*/
 #define _TRACE(fmt, arg...)
 
 

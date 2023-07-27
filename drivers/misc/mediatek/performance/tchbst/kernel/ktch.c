@@ -89,7 +89,7 @@ static int ktchboost_thread(void *ptr)
 		core = ktch_mgr_core;
 		freq = ktch_mgr_freq;
 		spin_unlock_irqrestore(&ktchboost.touch_lock, flags);
-		pr_no_debug("%s\n", __func__);
+		pr_debug("%s\n", __func__);
 		set_freq(event, core, freq);
 
 	}
@@ -266,7 +266,7 @@ static void dbs_input_event(struct input_handle *handle, unsigned int type,
 		return;
 
 	if ((type == EV_KEY) && (code == BTN_TOUCH)) {
-		pr_no_debug("input cb, type:%d, code:%d, value:%d\n",
+		pr_debug("input cb, type:%d, code:%d, value:%d\n",
 				type, code, value);
 		spin_lock_irqsave(&ktchboost.touch_lock, flags);
 		ktchboost.touch_event = value;
@@ -339,7 +339,7 @@ int init_ktch(struct proc_dir_entry *parent)
 	struct proc_dir_entry *tbe_dir, *tbc_dir, *tbf_dir, *tbclstr_dir;
 	int handle;
 
-	pr_no_debug("init_ktch_touch\n");
+	pr_debug("init_ktch_touch\n");
 
 	ktch_mgr_core = ktch_get_target_core();
 	ktch_mgr_freq = ktch_get_target_freq();
@@ -349,25 +349,25 @@ int init_ktch(struct proc_dir_entry *parent)
 	ktch_root = proc_mkdir("kernel", parent);
 
 	if (!ktch_root)
-		pr_no_debug("ktch_root not create\n");
+		pr_debug("ktch_root not create\n");
 	/* touch */
 	tbe_dir = proc_create("tb_enable", 0644, ktch_root,
 			&perfmgr_tb_enable_fops);
 	if (!tbe_dir)
-		pr_no_debug("tbe_dir not create\n");
+		pr_debug("tbe_dir not create\n");
 	tbc_dir = proc_create("tb_core", 0644, ktch_root,
 			&perfmgr_tb_core_fops);
 	if (!tbc_dir)
-		pr_no_debug("tbc_dir not create\n");
+		pr_debug("tbc_dir not create\n");
 
 	tbf_dir = proc_create("tb_freq", 0644, ktch_root,
 			&perfmgr_tb_freq_fops);
 	if (!tbf_dir)
-		pr_no_debug("tbf_dir not create\n");
+		pr_debug("tbf_dir not create\n");
 	tbclstr_dir = proc_create("tb_clstr", 0644, ktch_root,
 			&perfmgr_tb_clstr_fops);
 	if (!tbclstr_dir)
-		pr_no_debug("tbclstr_dir not create\n");
+		pr_debug("tbclstr_dir not create\n");
 
 	spin_lock_init(&ktchboost.touch_lock);
 	init_waitqueue_head(&ktchboost.wq);
@@ -384,7 +384,7 @@ int init_ktch(struct proc_dir_entry *parent)
 
 int ktch_suspend(void)
 {
-	/*pr_no_debug(TAG"perfmgr_touch_suspend\n");*/
+	/*pr_debug(TAG"perfmgr_touch_suspend\n");*/
 
 	set_freq(0, 0, 0);
 

@@ -180,7 +180,7 @@ static int sec_init(struct platform_device *dev)
 	int ret = 0;
 	dev_t id;
 
-	pr_no_debug("[%s] %s (%d)\n", SEC_DEV_NAME, __func__, ret);
+	pr_debug("[%s] %s (%d)\n", SEC_DEV_NAME, __func__, ret);
 
 	hacc_base = of_iomap(dev->dev.of_node, 0);
 	if (!hacc_base) {
@@ -236,7 +236,7 @@ static int sec_init(struct platform_device *dev)
 	proc_create("rid", 0444, NULL, &sec_proc_rid_fops);
 
 #ifdef MTK_SECURITY_MODULE_LITE
-	pr_no_debug("[MASP Lite] version '%s%s', enter.\n",
+	pr_debug("[MASP Lite] version '%s%s', enter.\n",
 		 BUILD_TIME,
 		 BUILD_BRANCH);
 #endif
@@ -264,7 +264,7 @@ static void sec_exit(void)
 	memset(&sec, 0, sizeof(sec));
 
 #ifdef MTK_SECURITY_MODULE_LITE
-	pr_no_debug("[MASP Lite] version '%s%s', exit.\n",
+	pr_debug("[MASP Lite] version '%s%s', exit.\n",
 		 BUILD_TIME,
 		 BUILD_BRANCH);
 #else

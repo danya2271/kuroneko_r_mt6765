@@ -116,7 +116,7 @@ static ssize_t CAMERA_HW_Reg_Debug(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -140,7 +140,7 @@ static ssize_t CAMERA_HW_Reg_Debug(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -192,7 +192,7 @@ static ssize_t CAMERA_HW_Reg_Debug2(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -216,7 +216,7 @@ static ssize_t CAMERA_HW_Reg_Debug2(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -269,7 +269,7 @@ static ssize_t CAMERA_HW_Reg_Debug3(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -293,7 +293,7 @@ static ssize_t CAMERA_HW_Reg_Debug3(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -349,7 +349,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
 
-		pr_no_debug(
+		pr_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -373,7 +373,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_no_debug(
+		pr_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -393,7 +393,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 /* Camera information */
 static int subsys_camera_info_read(struct seq_file *m, void *v)
 {
-	pr_no_debug("%s %s\n", __func__, mtk_ccm_name);
+	pr_debug("%s %s\n", __func__, mtk_ccm_name);
 	seq_printf(m, "%s\n", mtk_ccm_name);
 	return 0;
 };

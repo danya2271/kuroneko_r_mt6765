@@ -33,7 +33,7 @@ int hwmsen_set_bits(struct i2c_client *client, u8 addr, u8 bits)
 
 	err = hwmsen_read_byte(client, addr, &cur);
 	if (err) {
-		pr_no_debug("read err: 0x%02X\n", addr);
+		pr_debug("read err: 0x%02X\n", addr);
 		return -EFAULT;
 	}
 
@@ -42,7 +42,7 @@ int hwmsen_set_bits(struct i2c_client *client, u8 addr, u8 bits)
 	if (nxt ^ cur) {
 		err = hwmsen_write_byte(client, addr, nxt);
 		if (err) {
-			pr_no_debug("write err: 0x%02X\n", addr);
+			pr_debug("write err: 0x%02X\n", addr);
 			return -EFAULT;
 		}
 	}
@@ -57,7 +57,7 @@ int hwmsen_clr_bits(struct i2c_client *client, u8 addr, u8 bits)
 
 	err = hwmsen_read_byte(client, addr, &cur);
 	if (err) {
-		pr_no_debug("read err: 0x%02X\n", addr);
+		pr_debug("read err: 0x%02X\n", addr);
 		return -EFAULT;
 	}
 
@@ -66,7 +66,7 @@ int hwmsen_clr_bits(struct i2c_client *client, u8 addr, u8 bits)
 	if (nxt ^ cur) {
 		err = hwmsen_write_byte(client, addr, nxt);
 		if (err) {
-			pr_no_debug("write err: 0x%02X\n", addr);
+			pr_debug("write err: 0x%02X\n", addr);
 			return -EFAULT;
 		}
 	}
@@ -100,7 +100,7 @@ int hwmsen_read_byte(struct i2c_client *client, u8 addr, u8 *data)
 
 	err = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
 	if (err != 2) {
-		pr_no_debug("i2c_transfer error: (%d %p) %d\n", addr, data, err);
+		pr_debug("i2c_transfer error: (%d %p) %d\n", addr, data, err);
 		err = -EIO;
 	}
 
@@ -118,11 +118,11 @@ int hwmsen_write_byte(struct i2c_client *client, u8 addr, u8 data)
 
 	ret = i2c_master_send(client, (const char *)buf, sizeof(buf));
 	if (ret < 0) {
-		pr_no_debug("send command error!!\n");
+		pr_debug("send command error!!\n");
 		return -EFAULT;
 	}
 #if defined(HWMSEN_DEBUG)
-	pr_no_debug("%s(0x%02X)= %02X\n", __func__, addr, data);
+	pr_debug("%s(0x%02X)= %02X\n", __func__, addr, data);
 #endif
 
 	return 0;
@@ -139,7 +139,7 @@ int hwmsen_read_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 	if (!client)
 		return -EINVAL;
 	else if (len > C_I2C_FIFO_SIZE) {
-		pr_no_debug(" length %d exceeds %d\n", len, C_I2C_FIFO_SIZE);
+		pr_debug(" length %d exceeds %d\n", len, C_I2C_FIFO_SIZE);
 		return -EINVAL;
 	}
 
@@ -158,7 +158,7 @@ int hwmsen_read_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 
 	err = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
 	if (err != 2) {
-		pr_no_debug("i2c_transfer error: (%d %p %d) %d\n", addr, data, len,
+		pr_debug("i2c_transfer error: (%d %p %d) %d\n", addr, data, len,
 			err);
 		err = -EIO;
 	}
@@ -169,7 +169,7 @@ int hwmsen_read_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 	for (idx = 0; idx < len; idx++)
 		buflen += snprintf(buf + buflen, sizeof(buf) - buflen, "%02X ",
 				   data[idx]);
-	pr_no_debug("%s(0x%02X,%2d) = %s\n", __func__, addr, len, buf);
+	pr_debug("%s(0x%02X,%2d) = %s\n", __func__, addr, len, buf);
 #endif
 	err = 0; /*no error*/
 
@@ -186,7 +186,7 @@ int hwmsen_write_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 	if (!client)
 		return -EINVAL;
 	else if (len >= C_I2C_FIFO_SIZE) {
-		pr_no_debug(" length %d exceeds %d\n", len, C_I2C_FIFO_SIZE);
+		pr_debug(" length %d exceeds %d\n", len, C_I2C_FIFO_SIZE);
 		return -EINVAL;
 	}
 
@@ -197,7 +197,7 @@ int hwmsen_write_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 
 	err = i2c_master_send(client, buf, num);
 	if (err < 0) {
-		pr_no_debug("send command error!!\n");
+		pr_debug("send command error!!\n");
 		return -EFAULT;
 	}
 #if defined(HWMSEN_DEBUG)
@@ -207,7 +207,7 @@ int hwmsen_write_block(struct i2c_client *client, u8 addr, u8 *data, u8 len)
 	for (idx = 0; idx < len; idx++)
 		buflen += snprintf(buf + buflen, sizeof(buf) - buflen, "%02X ",
 				   data[idx]);
-	pr_no_debug("%s(0x%02X,%2d)= %s\n", __func__, addr, len, buf);
+	pr_debug("%s(0x%02X,%2d)= %s\n", __func__, addr, len, buf);
 #endif
 	err = 0; /*no error*/
 
@@ -247,14 +247,14 @@ void hwmsen_single_rw(struct i2c_client *client, struct hwmsen_reg *regs,
 		if (regs[idx].mode != REG_RW)
 			continue;
 		if (regs[idx].len > C_MAX_REG_LEN) {
-			pr_no_debug("exceed maximum length\n");
+			pr_debug("exceed maximum length\n");
 			continue;
 		}
 		ptr = &regs[idx];
 
 		err = hwmsen_read_block(client, ptr->addr, old, ptr->len);
 		if (err) {
-			pr_no_debug("read %s fails\n", ptr->name);
+			pr_debug("read %s fails\n", ptr->name);
 			continue;
 		}
 		for (pos = 0; pos < ARRAY_SIZE(pattern); pos++) {
@@ -264,45 +264,45 @@ void hwmsen_single_rw(struct i2c_client *client, struct hwmsen_reg *regs,
 			err = hwmsen_write_block(client, ptr->addr, val,
 						 ptr->len);
 			if (err) {
-				pr_no_debug("test: write %s fails, pat[0x%02X]\n",
+				pr_debug("test: write %s fails, pat[0x%02X]\n",
 					ptr->name, pattern[pos]);
 				continue;
 			}
 			err = hwmsen_read_block(client, ptr->addr, val,
 						ptr->len);
 			if (err) {
-				pr_no_debug("test: read %s fails\n", ptr->name);
+				pr_debug("test: read %s fails\n", ptr->name);
 				continue;
 			}
 
 			cmp1 = hwmsen_chrs_to_integer(val, ptr->len);
 			cmp2 = hwmsen_byte_to_integer(pattern[pos], ptr->len);
 			if ((cmp1 ^ cmp2) & ptr->mask)
-				pr_no_debug("test: reg %s[%d] 0x%08X <-> 0x%08X\n",
+				pr_debug("test: reg %s[%d] 0x%08X <-> 0x%08X\n",
 					ptr->name, num, cmp1, cmp2);
 		}
 
 		err = hwmsen_write_block(client, ptr->addr, old, ptr->len);
 		if (err) {
-			pr_no_debug("restore: write %s\n", ptr->name);
+			pr_debug("restore: write %s\n", ptr->name);
 			continue;
 		}
 
 		err = hwmsen_read_block(client, ptr->addr, val, ptr->len);
 		if (err) {
-			pr_no_debug("restore: read %s\n", ptr->name);
+			pr_debug("restore: read %s\n", ptr->name);
 			continue;
 		}
 
 		cmp1 = hwmsen_chrs_to_integer(val, ptr->len);
 		cmp2 = hwmsen_chrs_to_integer(old, ptr->len);
 		if ((cmp1 ^ cmp2) & ptr->mask) {
-			pr_no_debug("restore %s fails\n", ptr->name);
+			pr_debug("restore %s fails\n", ptr->name);
 			err = -EFAULT;
 		}
 	}
 	if (!err)
-		pr_no_debug("%s pass!!\n", __func__);
+		pr_debug("%s pass!!\n", __func__);
 }
 /*----------------------------------------------------------------------------*/
 EXPORT_SYMBOL_GPL(hwmsen_single_rw);
@@ -322,7 +322,7 @@ void hwmsen_multi_rw(struct i2c_client *client, find_reg_t findreg,
 		for (pos = 0; pos < ARRAY_SIZE(pattern); pos++) {
 			err = hwmsen_read_block(client, addr, old, len);
 			if (err) {
-				pr_no_debug("(%d) save block fail!!\n", idx);
+				pr_debug("(%d) save block fail!!\n", idx);
 				continue;
 			}
 			if (!(mode & REG_WO))
@@ -333,39 +333,39 @@ void hwmsen_multi_rw(struct i2c_client *client, find_reg_t findreg,
 				buf[p] = buf[p] & findreg(addr + p)->mask;
 			err = hwmsen_write_block(client, addr, buf, len);
 			if (err) {
-				pr_no_debug("(%d) block write fail!!\n", idx);
+				pr_debug("(%d) block write fail!!\n", idx);
 				continue;
 			}
 			memset(dat, 0x00, sizeof(dat));
 			err = hwmsen_read_block(client, addr, dat, len);
 			if (err) {
-				pr_no_debug("(%d) block read fail!!\n", idx);
+				pr_debug("(%d) block read fail!!\n", idx);
 				continue;
 			}
 			err = hwmsen_write_block(client, addr, old, len);
 			if (err) {
-				pr_no_debug("(%d) restore block fail!!\n", idx);
+				pr_debug("(%d) restore block fail!!\n", idx);
 				continue;
 			}
 
 			if (memcmp(buf, dat, len)) {
-				pr_no_debug("(%d) data compare fail!!\n", idx);
-				pr_no_debug("buf:");
+				pr_debug("(%d) data compare fail!!\n", idx);
+				pr_debug("buf:");
 				for (p = 0; p < len; p++)
-					pr_no_debug("%02X", buf[p]);
-				pr_no_debug("\n");
-				pr_no_debug("dat:");
+					pr_debug("%02X", buf[p]);
+				pr_debug("\n");
+				pr_debug("dat:");
 				for (p = 0; p < len; p++)
-					pr_no_debug("%02X", dat[p]);
-				pr_no_debug("\n");
+					pr_debug("%02X", dat[p]);
+				pr_debug("\n");
 				err = 1;
 			}
 		}
 	}
 	if (!err)
-		pr_no_debug("%s success : %d cases\n", __func__, inum);
+		pr_debug("%s success : %d cases\n", __func__, inum);
 	else
-		pr_no_debug("%s: %d cases\n", __func__, inum);
+		pr_debug("%s: %d cases\n", __func__, inum);
 }
 /*----------------------------------------------------------------------------*/
 EXPORT_SYMBOL_GPL(hwmsen_multi_rw);
@@ -429,12 +429,12 @@ ssize_t hwmsen_read_all_regs(struct i2c_client *client, struct hwmsen_reg *regs,
 		ptr = &regs[idx];
 		memset(dat, 0x00, sizeof(dat));
 		if (ptr->len > sizeof(dat)) {
-			pr_no_debug("exceeds capacity, %d\n", ptr->len);
+			pr_debug("exceeds capacity, %d\n", ptr->len);
 			break;
 		}
 		err = hwmsen_read_block(client, ptr->addr, dat, ptr->len);
 		if (err) {
-			pr_no_debug("read reg %s (0x%2X) fail!!\n", ptr->name,
+			pr_debug("read reg %s (0x%2X) fail!!\n", ptr->name,
 				ptr->addr);
 			break;
 		}
@@ -458,7 +458,7 @@ ssize_t hwmsen_show_reg(struct i2c_client *client, u8 addr, char *buf,
 
 	err = hwmsen_read_byte(client, addr, &data);
 	if (err) {
-		pr_no_debug("reading address 0x%02X fail!!", addr);
+		pr_debug("reading address 0x%02X fail!!", addr);
 		return 0;
 	} else
 		return snprintf(buf, buflen, "0x%02X\n", data);
@@ -474,14 +474,14 @@ ssize_t hwmsen_store_reg(struct i2c_client *client, u8 addr, const char *buf,
 
 	err = kstrtoint(buf, 16, &val);
 	if (err != 0) {
-		pr_no_debug("format not match: (0xAB) <-> '%s'\n", buf);
+		pr_debug("format not match: (0xAB) <-> '%s'\n", buf);
 		return count;
 	}
 	data = (u8)val;
 
 	err = hwmsen_write_byte(client, addr, data);
 	if (err)
-		pr_no_debug("write address 0x%02X fail!!\n", addr);
+		pr_debug("write address 0x%02X fail!!\n", addr);
 	return count;
 }
 /*----------------------------------------------------------------------------*/
@@ -497,7 +497,7 @@ ssize_t hwmsen_show_byte(struct device *dev, struct device_attribute *attr,
 
 	err = hwmsen_read_byte(client, addr, &dat);
 	if (err) {
-		pr_no_debug("reading address 0x%02X fail!!", addr);
+		pr_debug("reading address 0x%02X fail!!", addr);
 		return 0;
 	}
 	return snprintf(buf, buflen, "0x%02X\n", dat);
@@ -516,14 +516,14 @@ ssize_t hwmsen_store_byte(struct device *dev, struct device_attribute *attr,
 
 	err = kstrtoint(buf, 16, &val);
 	if (err != 0) {
-		pr_no_debug("format not match: (0xAB) <-> '%s'\n", buf);
+		pr_debug("format not match: (0xAB) <-> '%s'\n", buf);
 		return count;
 	}
 	dat = (u8)val;
 
 	err = hwmsen_write_byte(client, addr, dat);
 	if (err)
-		pr_no_debug("write address 0x%02X fail!!\n", addr);
+		pr_debug("write address 0x%02X fail!!\n", addr);
 	return count;
 }
 /*----------------------------------------------------------------------------*/
@@ -539,7 +539,7 @@ ssize_t hwmsen_show_word(struct device *dev, struct device_attribute *attr,
 
 	err = hwmsen_read_block(client, addr, dat, sizeof(dat));
 	if (err) {
-		pr_no_debug("reading address 0x%02X fail!!", addr);
+		pr_debug("reading address 0x%02X fail!!", addr);
 		return 0;
 	}
 	return snprintf(buf, buflen, "0x%04X\n", (dat[0] | (dat[1] << 8)));
@@ -558,7 +558,7 @@ ssize_t hwmsen_store_word(struct device *dev, struct device_attribute *attr,
 
 	err = kstrtoint(buf, 16, &val);
 	if (err != 0) {
-		pr_no_debug("format not match: (0xAB) <-> '%s'\n", buf);
+		pr_debug("format not match: (0xAB) <-> '%s'\n", buf);
 		return count;
 	}
 	dat[0] = (u8)((val & 0x00FF));
@@ -566,7 +566,7 @@ ssize_t hwmsen_store_word(struct device *dev, struct device_attribute *attr,
 
 	err = hwmsen_write_block(client, addr, dat, sizeof(dat));
 	if (err)
-		pr_no_debug("write address 0x%02X fail!!\n", addr);
+		pr_debug("write address 0x%02X fail!!\n", addr);
 	return count;
 }
 /*----------------------------------------------------------------------------*/

@@ -27,7 +27,7 @@ void sspm_set_emi_mpu(unsigned int id, phys_addr_t base, phys_addr_t size)
 			FORBIDDEN, FORBIDDEN, FORBIDDEN, NO_PROTECTION,
 			FORBIDDEN, FORBIDDEN, FORBIDDEN, FORBIDDEN,
 			FORBIDDEN, FORBIDDEN, FORBIDDEN, NO_PROTECTION);
-	pr_no_debug("[SSPM] MPU SSPM Share region<%d:%08llx:%08llx> %x, %x\n",
+	pr_debug("[SSPM] MPU SSPM Share region<%d:%08llx:%08llx> %x, %x\n",
 			region_info.region, region_info.start, region_info.end,
 			region_info.apc[1], region_info.apc[0]);
 
@@ -56,7 +56,7 @@ static int __init post_sspm_set_emi_mpu(void)
 	mtk_emimpu_set_apc(&rg_info, 8, MTK_EMIMPU_NO_PROTECTION);
 
 	ret = mtk_emimpu_set_protection(&rg_info);
-	pr_no_debug("[SSPM] MPU SSPM Share region <%d:%08llx:%08llx> %s\n",
+	pr_debug("[SSPM] MPU SSPM Share region <%d:%08llx:%08llx> %s\n",
 		sspm_rg_info.rg_num, sspm_rg_info.start, sspm_rg_info.end,
 		ret ? "fail" : "success");
 

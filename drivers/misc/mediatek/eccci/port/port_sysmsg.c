@@ -28,7 +28,7 @@ struct md_rf_notify_struct {
 #define MD_RF_NOTIFY(bit, func, name) \
 	__weak void func(unsigned int para0, unsigned int para1) \
 	{ \
-		pr_no_debug("[ccci1/SYS]weak %s", __func__); \
+		pr_debug("[ccci1/SYS]weak %s", __func__); \
 	}
 #include "mdrf_notify_list.h"
 
@@ -167,7 +167,7 @@ void exec_ccci_sys_call_back(int md_id, int cb_id, int data)
 
 signed int __weak battery_get_bat_voltage(void)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 

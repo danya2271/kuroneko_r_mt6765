@@ -48,7 +48,7 @@ static int wake_gesture_open_report_data(int open)
 {
 	int ret = 0;
 
-	pr_no_debug("%s : enable=%d\n", __func__, open);
+	pr_debug("%s : enable=%d\n", __func__, open);
 #if defined CONFIG_MTK_SCP_SENSORHUB_V1
 	if (open == 1)
 		ret = sensor_set_delay_to_hub(ID_WAKE_GESTURE, 120);
@@ -72,7 +72,7 @@ static int wake_gesture_recv_data(struct data_unit_t *event,
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_no_debug("wake_gesture do not support flush\n");
+		pr_debug("wake_gesture do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_WAKE_GESTURE,
 			(int64_t)event->time_stamp);
@@ -130,7 +130,7 @@ static int __init wakehub_init(void)
 
 static void __exit wakehub_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(wakehub_init);

@@ -248,7 +248,7 @@ static void probe_sched_fork_time(void *ignore,
 	child_pid = child->pid;
 	fork_time = dur;
 
-	pr_no_debug("[fork]comm=%s pid=%d fork child_comm=%s child_pid=%d, total fork time=%llu us",
+	pr_debug("[fork]comm=%s pid=%d fork child_comm=%s child_pid=%d, total fork time=%llu us",
 		parent_comm, parent_pid, child_comm, child_pid, fork_time);
 
 }
@@ -263,7 +263,7 @@ static void probe_sched_process_exit(void *ignore, struct task_struct *p)
 	pid = p->pid;
 	prio = p->prio;
 
-	pr_no_debug("[exit]comm=%s pid=%d prio=%d exited", comm, pid, prio);
+	pr_debug("[exit]comm=%s pid=%d prio=%d exited", comm, pid, prio);
 
 }
 

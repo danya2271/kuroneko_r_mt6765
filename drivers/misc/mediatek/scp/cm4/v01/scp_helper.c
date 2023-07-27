@@ -185,7 +185,7 @@ int get_scp_semaphore(int flag)
 		return -1;
 
 	if (scp_awake_lock(SCP_A_ID) == -1) {
-		pr_no_debug("[SCP] %s: awake scp fail\n", __func__);
+		pr_debug("[SCP] %s: awake scp fail\n", __func__);
 		return ret;
 	}
 
@@ -211,7 +211,7 @@ int get_scp_semaphore(int flag)
 		}
 
 		if (ret < 0)
-			pr_no_debug("[SCP] get scp sema. %d TIMEOUT...!\n", flag);
+			pr_debug("[SCP] get scp sema. %d TIMEOUT...!\n", flag);
 	} else {
 		pr_err("[SCP] already hold scp sema. %d\n", flag);
 	}
@@ -219,7 +219,7 @@ int get_scp_semaphore(int flag)
 	spin_unlock_irqrestore(&scp_awake_spinlock, spin_flags);
 
 	if (scp_awake_unlock(SCP_A_ID) == -1)
-		pr_no_debug("[SCP] %s: scp_awake_unlock fail\n", __func__);
+		pr_debug("[SCP] %s: scp_awake_unlock fail\n", __func__);
 
 	return ret;
 }
@@ -242,7 +242,7 @@ int release_scp_semaphore(int flag)
 		return -1;
 
 	if (scp_awake_lock(SCP_A_ID) == -1) {
-		pr_no_debug("[SCP] %s: awake scp fail\n", __func__);
+		pr_debug("[SCP] %s: awake scp fail\n", __func__);
 		return ret;
 	}
 	/* spinlock context safe*/
@@ -258,7 +258,7 @@ int release_scp_semaphore(int flag)
 		if (read_back == 0)
 			ret = 1;
 		else
-			pr_no_debug("[SCP] release scp sema. %d failed\n", flag);
+			pr_debug("[SCP] release scp sema. %d failed\n", flag);
 	} else {
 		pr_err("[SCP] try to release sema. %d not own by me\n", flag);
 	}
@@ -266,7 +266,7 @@ int release_scp_semaphore(int flag)
 	spin_unlock_irqrestore(&scp_awake_spinlock, spin_flags);
 
 	if (scp_awake_unlock(SCP_A_ID) == -1)
-		pr_no_debug("[SCP] %s: scp_awake_unlock fail\n", __func__);
+		pr_debug("[SCP] %s: scp_awake_unlock fail\n", __func__);
 
 	return ret;
 }
@@ -285,7 +285,7 @@ void scp_A_register_notify(struct notifier_block *nb)
 	mutex_lock(&scp_A_notify_mutex);
 	blocking_notifier_chain_register(&scp_A_notifier_list, nb);
 
-	pr_no_debug("[SCP] register scp A notify callback..\n");
+	pr_debug("[SCP] register scp A notify callback..\n");
 
 	if (is_scp_ready(SCP_A_ID))
 		nb->notifier_call(nb, SCP_EVENT_READY, NULL);
@@ -357,7 +357,7 @@ static void scp_A_notify_ws(struct work_struct *ws)
 #if SCP_RECOVERY_SUPPORT
 		atomic_set(&scp_reset_status, RESET_STATUS_STOP);
 #endif
-		pr_no_debug("[SCP] notify blocking call\n");
+		pr_debug("[SCP] notify blocking call\n");
 		blocking_notifier_call_chain(&scp_A_notifier_list
 			, SCP_EVENT_READY, NULL);
 		mutex_unlock(&scp_A_notify_mutex);
@@ -368,7 +368,7 @@ static void scp_A_notify_ws(struct work_struct *ws)
 
 #if SCP_RECOVERY_SUPPORT
 	/*clear reset status and unlock wake lock*/
-	pr_no_debug("[SCP] clear scp reset flag and unlock\n");
+	pr_debug("[SCP] clear scp reset flag and unlock\n");
 #ifndef CONFIG_FPGA_EARLY_PORTING
 	spm_resource_req(SPM_RESOURCE_USER_SCP, SPM_RESOURCE_RELEASE);
 
@@ -446,7 +446,7 @@ static int params_to_scp(void)
  */
 static void scp_A_set_ready(void)
 {
-	pr_no_debug("[SCP] %s()\n", __func__);
+	pr_debug("[SCP] %s()\n", __func__);
 	scp_timeout_times = 0;
 #if SCP_BOOT_TIME_OUT_MONITOR
 	del_timer(&(scp_ready_timer[SCP_A_ID].tl));
@@ -500,7 +500,7 @@ static void scp_A_ready_ipi_handler(int id, void *data, unsigned int len)
 		WARN_ON(1);
 	}
 
-	pr_no_debug("[SCP] ramdump init\n");
+	pr_debug("[SCP] ramdump init\n");
 	scp_ram_dump_init();
 }
 
@@ -567,7 +567,7 @@ int reset_scp(int reset)
 	void __iomem *scp_reset_reg = scpreg.cfg;
 
 	if (((reset & 0xf0) != 0x10) && ((reset & 0xf0) != 0x00)) {
-		pr_no_debug("[SCP] %s: skipped!\n", __func__);
+		pr_debug("[SCP] %s: skipped!\n", __func__);
 		return 0;
 	}
 
@@ -609,7 +609,7 @@ int reset_scp(int reset)
 #endif  // SCP_RECOVERY_SUPPORT
 			mdelay(20);
 		}
-		pr_no_debug("[SCP] %s: timeout = %d\n", __func__, timeout);
+		pr_debug("[SCP] %s: timeout = %d\n", __func__, timeout);
 	}
 
 	if (scp_enable[SCP_A_ID]) {
@@ -623,7 +623,7 @@ int reset_scp(int reset)
 #endif
 	}
 
-	pr_no_debug("[SCP] %s: done, %p, 0x%x\n",
+	pr_debug("[SCP] %s: done, %p, 0x%x\n",
 		__func__,
 		scp_reset_reg,
 		readl(scp_reset_reg));
@@ -642,11 +642,11 @@ static int scp_pm_event(struct notifier_block *notifier
 
 		switch (pm_event) {
 		case PM_POST_HIBERNATION:
-			pr_no_debug("[SCP] %s: reboot\n", __func__);
+			pr_debug("[SCP] %s: reboot\n", __func__);
 			retval = reset_scp(1);
 			if (retval < 0) {
 				retval = -EINVAL;
-				pr_no_debug("[SCP] %s: reboot fail\n", __func__);
+				pr_debug("[SCP] %s: reboot fail\n", __func__);
 			}
 			return NOTIFY_DONE;
 		}
@@ -742,7 +742,7 @@ static ssize_t scp_ee_enable_store(struct device *kobj
 
 	if (kstrtouint(buf, 10, &value) == 0) {
 		scp_ee_enable = value;
-		pr_no_debug("[SCP] scp_ee_enable = %d(1:enable, 0:disable)\n"
+		pr_debug("[SCP] scp_ee_enable = %d(1:enable, 0:disable)\n"
 				, scp_ee_enable);
 	}
 	return n;
@@ -820,7 +820,7 @@ static ssize_t wdt_reset_store(struct device *dev
 
 	if (!buf || !count)
 		return count;
-	pr_no_debug("[SCP] %s: %8s\n", __func__, buf);
+	pr_debug("[SCP] %s: %8s\n", __func__, buf);
 	if (kstrtouint(buf, 10, &value) == 0) {
 		if (value == 666)
 			scp_wdt_reset(SCP_A_ID);
@@ -841,7 +841,7 @@ static ssize_t scp_reset_store(struct device *dev
 
 	if (!buf || count == 0)
 		return count;
-	pr_no_debug("[SCP] %s: %8s\n", __func__, buf);
+	pr_debug("[SCP] %s: %8s\n", __func__, buf);
 	/* scp reset by cmdm set flag =1 */
 	if (kstrtouint(buf, 10, &value) == 0) {
 		if (value == 666) {
@@ -873,7 +873,7 @@ static ssize_t scp_recovery_flag_store(struct device *dev
 
 	ret = kstrtoint(buf, 10, &tmp);
 	if (kstrtoint(buf, 10, &tmp) < 0) {
-		pr_no_debug("scp_recovery_flag error\n");
+		pr_debug("scp_recovery_flag error\n");
 		return count;
 	}
 	scp_recovery_flag[SCP_A_ID] = tmp;
@@ -1171,7 +1171,7 @@ static int scp_reserve_memory_ioremap(struct platform_device *pdev)
 	/* set virtual and physical address for the reserved memory */
 	scp_mem_base_virt = ioremap_wc(scp_mem_base_phys,
 		scp_mem_size);
-	pr_no_debug("[SCP] rsrv_vir_base = 0x%llx, len:0x%llx\n",
+	pr_debug("[SCP] rsrv_vir_base = 0x%llx, len:0x%llx\n",
 		(uint64_t)scp_mem_base_virt, (uint64_t)scp_mem_size);
 
 	for (id = 0; id < NUMS_MEM_ID; id++) {
@@ -1181,7 +1181,7 @@ static int scp_reserve_memory_ioremap(struct platform_device *pdev)
 			accumlate_memory_size);
 		accumlate_memory_size += scp_reserve_mblock[id].size;
 #ifdef DEBUG
-		pr_no_debug("[SCP] [%d] phys:0x%llx, virt:0x%llx, len:0x%llx\n",
+		pr_debug("[SCP] [%d] phys:0x%llx, virt:0x%llx, len:0x%llx\n",
 			id, (uint64_t)scp_reserve_mblock[id].start_phys,
 			(uint64_t)scp_reserve_mblock[id].start_virt,
 			(uint64_t)scp_reserve_mblock[id].size);
@@ -1221,7 +1221,7 @@ void set_scp_mpu(void)
 			FORBIDDEN, FORBIDDEN, FORBIDDEN, FORBIDDEN,
 			NO_PROTECTION, FORBIDDEN, FORBIDDEN, NO_PROTECTION);
 
-	pr_no_debug("[SCP] MPU protect SCP Share region<%d:%08llx:%08llx> %x, %x\n",
+	pr_debug("[SCP] MPU protect SCP Share region<%d:%08llx:%08llx> %x, %x\n",
 			MPU_REGION_ID_SCP_SMEM,
 			(uint64_t)region_info.start,
 			(uint64_t)region_info.end,
@@ -1255,7 +1255,7 @@ void scp_register_feature(enum feature_id id)
 
 	/*prevent from access when scp is down*/
 	if (!scp_ready[SCP_A_ID]) {
-		pr_no_debug("[SCP] %s: not ready, scp=%u\n", __func__,
+		pr_debug("[SCP] %s: not ready, scp=%u\n", __func__,
 			scp_ready[SCP_A_ID]);
 		return;
 	}
@@ -1267,7 +1267,7 @@ void scp_register_feature(enum feature_id id)
 
 	/*SCP keep awake */
 	if (scp_awake_lock(SCP_A_ID) == -1) {
-		pr_no_debug("[SCP] %s: awake scp fail\n", __func__);
+		pr_debug("[SCP] %s: awake scp fail\n", __func__);
 		mutex_unlock(&scp_feature_mutex);
 		return;
 	}
@@ -1302,7 +1302,7 @@ void scp_register_feature(enum feature_id id)
 
 	/*SCP release awake */
 	if (scp_awake_unlock(SCP_A_ID) == -1)
-		pr_no_debug("[SCP] %s: awake unlock fail\n", __func__);
+		pr_debug("[SCP] %s: awake unlock fail\n", __func__);
 
 	mutex_unlock(&scp_feature_mutex);
 }
@@ -1315,7 +1315,7 @@ void scp_deregister_feature(enum feature_id id)
 
 	/* prevent from access when scp is down */
 	if (!scp_ready[SCP_A_ID]) {
-		pr_no_debug("[SCP] %s:not ready, scp=%u\n", __func__,
+		pr_debug("[SCP] %s:not ready, scp=%u\n", __func__,
 			scp_ready[SCP_A_ID]);
 		return;
 	}
@@ -1324,7 +1324,7 @@ void scp_deregister_feature(enum feature_id id)
 
 	/*SCP keep awake */
 	if (scp_awake_lock(SCP_A_ID) == -1) {
-		pr_no_debug("[SCP] %s: awake scp fail\n", __func__);
+		pr_debug("[SCP] %s: awake scp fail\n", __func__);
 		mutex_unlock(&scp_feature_mutex);
 		return;
 	}
@@ -1359,7 +1359,7 @@ void scp_deregister_feature(enum feature_id id)
 
 	/*SCP release awake */
 	if (scp_awake_unlock(SCP_A_ID) == -1)
-		pr_no_debug("[SCP] %s: awake unlock fail\n", __func__);
+		pr_debug("[SCP] %s: awake unlock fail\n", __func__);
 
 	mutex_unlock(&scp_feature_mutex);
 }
@@ -1375,7 +1375,7 @@ void scp_register_sensor(enum feature_id id, enum scp_sensor_id sensor_id)
 		return;
 
 	if (id != SENS_FEATURE_ID) {
-		pr_no_debug("[SCP]register sensor id err");
+		pr_debug("[SCP]register sensor id err");
 		return;
 	}
 	/* because feature_table is a global variable
@@ -1403,7 +1403,7 @@ void scp_deregister_sensor(enum feature_id id, enum scp_sensor_id sensor_id)
 		return;
 
 	if (id != SENS_FEATURE_ID) {
-		pr_no_debug("[SCP]deregister sensor id err");
+		pr_debug("[SCP]deregister sensor id err");
 		return;
 	}
 	/* because feature_table is a global variable
@@ -1515,10 +1515,10 @@ void scp_sys_reset_ws(struct work_struct *ws)
 	int timeout = 50; /* max wait 1s */
 
 	/*notify scp functions stop*/
-	pr_no_debug("[SCP] %s(): scp_extern_notify\n", __func__);
+	pr_debug("[SCP] %s(): scp_extern_notify\n", __func__);
 	scp_extern_notify(SCP_EVENT_STOP);
 	/*set scp not ready*/
-	pr_no_debug("[SCP] %s(): scp_status_set\n", __func__);
+	pr_debug("[SCP] %s(): scp_status_set\n", __func__);
 
 	/*
 	 *   scp_ready:
@@ -1535,28 +1535,28 @@ void scp_sys_reset_ws(struct work_struct *ws)
 	spm_resource_req(SPM_RESOURCE_USER_SCP, SPM_RESOURCE_CK_26M);
 #endif  // CONFIG_FPGA_EARLY_PORTING
 	/*request pll clock before turn off scp */
-	pr_no_debug("[SCP] %s(): scp_pll_ctrl_set\n", __func__);
+	pr_debug("[SCP] %s(): scp_pll_ctrl_set\n", __func__);
 #if SCP_DVFS_INIT_ENABLE
 	scp_pll_ctrl_set(PLL_ENABLE, CLK_26M);
 #endif
 
 	/*workqueue for scp ee, scp reset by cmd will not trigger scp ee*/
 	if (scp_reset_by_cmd == 0) {
-		pr_no_debug("[SCP] %s(): scp_aed_reset\n", __func__);
+		pr_debug("[SCP] %s(): scp_aed_reset\n", __func__);
 		scp_aed_reset(EXCEP_RUNTIME, SCP_A_ID);
 
 		/*wait scp ee finished*/
-		pr_no_debug("[SCP] %s(): wait ee finished...\n", __func__);
+		pr_debug("[SCP] %s(): wait ee finished...\n", __func__);
 		if (wait_for_completion_interruptible_timeout(&scp_sys_reset_cp
 			, jiffies_to_msecs(1000)) == 0)
-			pr_no_debug("[SCP] %s: scp ee time out\n", __func__);
+			pr_debug("[SCP] %s: scp ee time out\n", __func__);
 	}
 
 	/*disable scp logger
 	 * 0: scp logger disable
 	 * 1: scp logger enable
 	 */
-	pr_no_debug("[SCP] %s(): disable logger\n", __func__);
+	pr_debug("[SCP] %s(): disable logger\n", __func__);
 	scp_logger_init_set(0);
 
 	print_clk_registers();
@@ -1587,12 +1587,12 @@ void scp_sys_reset_ws(struct work_struct *ws)
 		dsb(SY);
 	} else if (scp_reset_type == RESET_TYPE_AWAKE) {
 		/* reset type awake fail */
-		pr_no_debug("[SCP] %s(): scp awake fail reset\n", __func__);
+		pr_debug("[SCP] %s(): scp awake fail reset\n", __func__);
 		/* stop scp */
 		writel(0, scp_reset_reg);
 	} else {
 		/* reset type cmd */
-		pr_no_debug("[SCP] %s(): scp awake fail reset\n", __func__);
+		pr_debug("[SCP] %s(): scp awake fail reset\n", __func__);
 		/* stop scp */
 		writel(0, scp_reset_reg);
 	}
@@ -1678,14 +1678,14 @@ void scp_region_info_init(void)
 	int struct_size = sizeof(scp_region_info_copy);
 
 	if (struct_size > region_size) {
-		pr_no_debug("[SCP] Error: Structure exceeds region info!\n");
+		pr_debug("[SCP] Error: Structure exceeds region info!\n");
 		WARN_ON(1);
 		return;
 	}
 
 	/*get scp loader/firmware info from scp sram*/
 	scp_region_info = (SCP_TCM + SCP_REGION_INFO_OFFSET);
-	pr_no_debug("[SCP] scp_region_info = %p\n", scp_region_info);
+	pr_debug("[SCP] scp_region_info = %p\n", scp_region_info);
 	memcpy_from_scp(&scp_region_info_copy, scp_region_info, struct_size);
 }
 #else
@@ -1705,7 +1705,7 @@ void scp_recovery_init(void)
 	scp_loader_base_virt = (phys_addr_t)(size_t)ioremap_wc(
 		scp_region_info_copy.ap_loader_start,
 		scp_region_info_copy.ap_loader_size);
-	pr_no_debug("[SCP] loader image mem: virt:0x%llx - 0x%llx\n",
+	pr_debug("[SCP] loader image mem: virt:0x%llx - 0x%llx\n",
 		(uint64_t)(phys_addr_t)scp_loader_base_virt,
 		(uint64_t)(phys_addr_t)scp_loader_base_virt +
 		(phys_addr_t)scp_region_info_copy.ap_loader_size);
@@ -1742,7 +1742,7 @@ static int scp_device_probe(struct platform_device *pdev)
 		return -1;
 	}
 	scpreg.total_tcmsize = (unsigned int)resource_size(res);
-	pr_no_debug("[SCP] sram base = %p %x\n"
+	pr_debug("[SCP] sram base = %p %x\n"
 		, scpreg.sram, scpreg.total_tcmsize);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
@@ -1751,7 +1751,7 @@ static int scp_device_probe(struct platform_device *pdev)
 		pr_err("[SCP] scpreg.cfg error\n");
 		return -1;
 	}
-	pr_no_debug("[SCP] cfg base = %p\n", scpreg.cfg);
+	pr_debug("[SCP] cfg base = %p\n", scpreg.cfg);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
 	scpreg.clkctrl = devm_ioremap_resource(dev, res);
@@ -1759,16 +1759,16 @@ static int scp_device_probe(struct platform_device *pdev)
 		pr_err("[SCP] scpreg.clkctrl error\n");
 		return -1;
 	}
-	pr_no_debug("[SCP] clkctrl base = %p\n", scpreg.clkctrl);
+	pr_debug("[SCP] clkctrl base = %p\n", scpreg.clkctrl);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 3);
 	scpreg.l1cctrl = devm_ioremap_resource(dev, res);
 	if (IS_ERR((void const *) scpreg.l1cctrl)) {
-		pr_no_debug("[SCP] scpreg.clkctrl error\n");
+		pr_debug("[SCP] scpreg.clkctrl error\n");
 		return -1;
 	}
 
-	pr_no_debug("[SCP] l1cctrl base = %p\n", scpreg.l1cctrl);
+	pr_debug("[SCP] l1cctrl base = %p\n", scpreg.l1cctrl);
 
 	res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res) {
@@ -1776,7 +1776,7 @@ static int scp_device_probe(struct platform_device *pdev)
 		return -1;
 	}
 	scpreg.irq = res->start;
-	pr_no_debug("[SCP] scpreg.irq = %d\n", scpreg.irq);
+	pr_debug("[SCP] scpreg.irq = %d\n", scpreg.irq);
 
 	of_property_read_u32(pdev->dev.of_node,
 			"scp_sramSize",
@@ -1785,7 +1785,7 @@ static int scp_device_probe(struct platform_device *pdev)
 		pr_err("[SCP] total_tcmsize not found\n");
 		return -1;
 	}
-	pr_no_debug("[SCP] scpreg.scp_tcmsize = %d\n", scpreg.scp_tcmsize);
+	pr_debug("[SCP] scpreg.scp_tcmsize = %d\n", scpreg.scp_tcmsize);
 
 	/* get number of feature settings in dts */
 	scp_feature_num = of_property_count_u32_elems(
@@ -1831,7 +1831,7 @@ static int scp_device_probe(struct platform_device *pdev)
 	if (strcmp(core_status, "enable") != 0)
 		pr_err("[SCP] core_1 not enable\n");
 	else {
-		pr_no_debug("[SCP] core_1 enable\n");
+		pr_debug("[SCP] core_1 enable\n");
 		scp_enable[SCP_A_ID] = 1;
 	}
 
@@ -1859,7 +1859,7 @@ static int scpsys_device_probe(struct platform_device *pdev)
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	scpreg.scpsys = devm_ioremap_resource(dev, res);
-	pr_no_debug("[SCP] scpreg.scpsys = %p\n", scpreg.scpsys);
+	pr_debug("[SCP] scpreg.scpsys = %p\n", scpreg.scpsys);
 	if (IS_ERR((void const *) scpreg.scpsys)) {
 		pr_err("[SCP] scpreg.scpsys error\n");
 		return -1;
@@ -1920,7 +1920,7 @@ static int __init scp_init(void)
 #endif
 
     /* scp platform initialise */
-	pr_no_debug("[SCP] %s begins\n", __func__);
+	pr_debug("[SCP] %s begins\n", __func__);
 
 	/* scp ready static flag initialise */
 	for (i = 0; i < SCP_CORE_TOTAL ; i++) {
@@ -1958,12 +1958,12 @@ static int __init scp_init(void)
 	}
 	/* scp platform initialise */
 	scp_region_info_init();
-	pr_no_debug("[SCP] platform init\n");
+	pr_debug("[SCP] platform init\n");
 	scp_awake_init();
 	scp_workqueue = create_singlethread_workqueue("SCP_WQ");
 	ret = scp_excep_init();
 	if (ret) {
-		pr_no_debug("[SCP]Excep Init Fail\n");
+		pr_debug("[SCP]Excep Init Fail\n");
 		goto err_2;
 	}
 
@@ -1993,7 +1993,7 @@ static int __init scp_init(void)
 		pr_err("[SCP] failed to register PM notifier %d\n", ret);
 
 	/* scp sysfs initialise */
-	pr_no_debug("[SCP] sysfs init\n");
+	pr_debug("[SCP] sysfs init\n");
 	ret = create_files();
 	if (unlikely(ret != 0)) {
 		pr_err("[SCP] create files failed\n");
@@ -2001,7 +2001,7 @@ static int __init scp_init(void)
 	}
 
 	/* scp request irq */
-	pr_no_debug("[SCP] request_irq\n");
+	pr_debug("[SCP] request_irq\n");
 	ret = request_irq(scpreg.irq, scp_A_irq_handler,
 			IRQF_TRIGGER_NONE, "SCP A IPC2HOST", NULL);
 	if (ret) {
@@ -2011,7 +2011,7 @@ static int __init scp_init(void)
 
 #if SCP_LOGGER_ENABLE
 	/* scp logger initialise */
-	pr_no_debug("[SCP] logger init\n");
+	pr_debug("[SCP] logger init\n");
 	/*create wq for scp logger*/
 	scp_logger_workqueue = create_singlethread_workqueue("SCP_LOG_WQ");
 	if (scp_logger_init(scp_get_reserve_mem_virt(SCP_A_LOGGER_MEM_ID),

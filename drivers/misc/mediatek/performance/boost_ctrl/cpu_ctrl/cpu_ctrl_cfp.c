@@ -158,12 +158,12 @@ static void start_cfp(void)
 	cc_is_ceiled = 1;
 	poll_ms = __cfp_polling_ms;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	cfp_unlock(__func__);
 	reg_ret = reg_loading_tracking(cfp_lt_callback, poll_ms);
 	if (reg_ret)
-		pr_no_debug("%s reg_ret=%d\n", __func__, reg_ret);
+		pr_debug("%s reg_ret=%d\n", __func__, reg_ret);
 	cfp_lock(__func__);
 }
 
@@ -178,18 +178,18 @@ static void stop_cfp(void)
 	cfp_curr_loading = 0;
 	cc_is_ceiled = 0;
 
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 
 	cfp_unlock(__func__);
 	unreg_ret = unreg_loading_tracking(cfp_lt_callback);
 	if (unreg_ret)
-		pr_no_debug("%s unreg_ret=%d\n", __func__, unreg_ret);
+		pr_debug("%s unreg_ret=%d\n", __func__, unreg_ret);
 	cfp_lock(__func__);
 }
 
 static void restart_cfp(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 	stop_cfp();
 	start_cfp();
 }
@@ -410,7 +410,7 @@ int cpu_ctrl_cfp_init(struct proc_dir_entry *parent)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create(entries[i].name, 0644,
 					parent, entries[i].fops)) {
-			pr_no_debug("%s(), create /cpu_ctrl%s failed\n",
+			pr_debug("%s(), create /cpu_ctrl%s failed\n",
 					__func__, entries[i].name);
 			ret = -EINVAL;
 			goto out_err;

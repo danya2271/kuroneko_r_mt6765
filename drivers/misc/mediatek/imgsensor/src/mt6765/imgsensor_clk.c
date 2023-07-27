@@ -68,14 +68,14 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 	switch (option) {
 	case DFS_CTRL_ENABLE:
 		mtk_pm_qos_add_request(&imgsensor_qos, PM_QOS_CAM_FREQ, 0);
-		pr_no_debug("seninf PMQoS turn on\n");
+		pr_debug("seninf PMQoS turn on\n");
 		break;
 	case DFS_CTRL_DISABLE:
 		mtk_pm_qos_remove_request(&imgsensor_qos);
-		pr_no_debug("seninf PMQoS turn off\n");
+		pr_debug("seninf PMQoS turn off\n");
 		break;
 	case DFS_UPDATE:
-		pr_no_debug(
+		pr_debug(
 			"seninf Set isp clock level:%d\n",
 			*(unsigned int *)pbuff);
 		mtk_pm_qos_update_request(&imgsensor_qos,
@@ -83,7 +83,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 
 		break;
 	case DFS_RELEASE:
-		pr_no_debug(
+		pr_debug(
 			"seninf release and set isp clk request to 0\n");
 		mtk_pm_qos_update_request(&imgsensor_qos, 0);
 
@@ -121,7 +121,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 		for (lv = 0; lv < pIspclks->clklevelcnt; lv++) {
 			/* Save clk from low to high */
 			pIspclks->clklevel[lv] = freq_steps[lv];
-			/*pr_no_debug("DFS Clk level[%d]:%d",
+			/*pr_debug("DFS Clk level[%d]:%d",
 			 *	lv, pIspclks->clklevel[lv]);
 			 */
 		}
@@ -133,7 +133,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 
 		pGetIspclk = (unsigned int *) pbuff;
 		*pGetIspclk = (u32)mmdvfs_qos_get_freq(PM_QOS_CAM_FREQ);
-		/*pr_no_debug("current isp clock:%d", *pGetIspclk);*/
+		/*pr_debug("current isp clock:%d", *pGetIspclk);*/
 	}
 		break;
 	default:
@@ -149,7 +149,7 @@ static inline void imgsensor_clk_check(struct IMGSENSOR_CLK *pclk)
 
 	for (i = 0; i < IMGSENSOR_CCF_MAX_NUM; i++) {
 		if (IS_ERR(pclk->imgsensor_ccf[i]))
-			pr_no_debug("%s fail %s", __func__,
+			pr_debug("%s fail %s", __func__,
 					gimgsensor_mclk_name[i]);
 	}
 }
@@ -257,28 +257,28 @@ void imgsensor_clk_enable_all(struct IMGSENSOR_CLK *pclk)
 		i++) {
 		if (!IS_ERR(pclk->imgsensor_ccf[i])) {
 			if (clk_prepare_enable(pclk->imgsensor_ccf[i]))
-				pr_no_debug(
+				pr_debug(
 					"[CAMERA SENSOR]imgsensor_ccf enable cmos fail cg_index = %d\n",
 					i);
 			else
 				atomic_inc(&pclk->enable_cnt[i]);
-			/*pr_no_debug("imgsensor_clk_enable_all %s ok\n",*/
+			/*pr_debug("imgsensor_clk_enable_all %s ok\n",*/
 				/*gimgsensor_mclk_name[i]);*/
 		}
 	}
 	for (i = IMGSENSOR_CCF_CG_MIN_NUM; i < IMGSENSOR_CCF_CG_MAX_NUM; i++) {
 		if (!IS_ERR(pclk->imgsensor_ccf[i])) {
 			if (clk_prepare_enable(pclk->imgsensor_ccf[i]))
-				pr_no_debug(
+				pr_debug(
 					"[CAMERA SENSOR]imgsensor_ccf enable cg fail cg_index = %d\n",
 					i);
 			else
 				atomic_inc(&pclk->enable_cnt[i]);
-			/*pr_no_debug("imgsensor_clk_enable_all %s ok\n",*/
+			/*pr_debug("imgsensor_clk_enable_all %s ok\n",*/
 				/*gimgsensor_mclk_name[i]);*/
 		}
 		if (!IS_ERR(pclk->imgsensor_ccf[i]) && i == IMGSENSOR_CCF_CG_SENINF)
-			pr_no_debug("%s counter:%d clk_is_enabled:%d\n",
+			pr_debug("%s counter:%d clk_is_enabled:%d\n",
 				gimgsensor_mclk_name[i],
 				pclk->enable_cnt[i],
 				__clk_is_enabled(pclk->imgsensor_ccf[i]));
@@ -299,7 +299,7 @@ void imgsensor_clk_disable_all(struct IMGSENSOR_CLK *pclk)
 			atomic_dec(&pclk->enable_cnt[i]);
 		}
 		if (!IS_ERR(pclk->imgsensor_ccf[i]) && i == IMGSENSOR_CCF_CG_SENINF)
-			pr_no_debug("%s counter:%d clk_is_enabled:%d\n",
+			pr_debug("%s counter:%d clk_is_enabled:%d\n",
 				gimgsensor_mclk_name[i],
 				pclk->enable_cnt[i],
 				__clk_is_enabled(pclk->imgsensor_ccf[i]));

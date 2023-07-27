@@ -140,7 +140,7 @@ static int __init gravityhub_init(void)
 
 static void __exit gravityhub_exit(void)
 {
-	pr_no_debug("%s\n", __func__);
+	pr_debug("%s\n", __func__);
 }
 
 module_init(gravityhub_init);

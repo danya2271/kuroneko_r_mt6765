@@ -25,20 +25,20 @@
 
 signed int __weak battery_get_bat_voltage(void)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 
 #ifdef CCCI_KMODULE_ENABLE
 int switch_sim_mode(int id, char *buf, unsigned int len)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 
 unsigned int get_sim_switch_type(void)
 {
-	pr_no_debug("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_debug("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 #endif

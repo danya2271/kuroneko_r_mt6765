@@ -81,7 +81,7 @@ static int polling_factor2 = 10000;
 #define mtktspa_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtktspa_debug_log) {                \
-		pr_no_debug("[Thermal/TZ/PA]" fmt, ##args); \
+		pr_debug("[Thermal/TZ/PA]" fmt, ##args); \
 	}                                   \
 } while (0)
 
@@ -233,7 +233,7 @@ static int mtktspa_get_hw_temp(void)
 	mtktspa_dprintk("PA temperature: %d\n", p_info[i].value);
 
 	if ((p_info[i].value > 100000) || (p_info[i].value < -30000))
-		pr_no_debug("[Power/PA_Thermal] PA T=%d\n", p_info[i].value);
+		pr_debug("[Power/PA_Thermal] PA T=%d\n", p_info[i].value);
 	mutex_unlock(&TSPA_lock);
 	return p_info[i].value;
 }
@@ -421,10 +421,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		pr_no_debug("Power/PA_Thermal: reset, reset, reset!!!");
-		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		pr_no_debug("*****************************************");
-		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_debug("Power/PA_Thermal: reset, reset, reset!!!");
+		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_debug("*****************************************");
+		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.
@@ -499,7 +499,7 @@ struct file *file, const char __user *buffer, size_t count, loff_t *data)
 					sizeof(*ptr_mtktspa_data), GFP_KERNEL);
 
 	if (ptr_mtktspa_data == NULL) {
-		/* pr_no_debug("[%s] kmalloc fail\n\n", __func__); */
+		/* pr_debug("[%s] kmalloc fail\n\n", __func__); */
 		return -ENOMEM;
 	}
 
@@ -676,7 +676,7 @@ static const struct file_operations _tx_thro_fops = {
 static void mtkts_pa_cancel_thermal_timer(void)
 {
 	/* cancel timer */
-	/* pr_no_debug("mtkts_pa_cancel_thermal_timer\n"); */
+	/* pr_debug("mtkts_pa_cancel_thermal_timer\n"); */
 
 	/* stop thermal framework polling when entering deep idle */
 	if (down_trylock(&sem_mutex))
@@ -693,7 +693,7 @@ static void mtkts_pa_cancel_thermal_timer(void)
 
 static void mtkts_pa_start_thermal_timer(void)
 {
-	/* pr_no_debug("mtkts_pa_start_thermal_timer\n"); */
+	/* pr_debug("mtkts_pa_start_thermal_timer\n"); */
 	/* resume thermal framework polling when leaving deep idle */
 
 	if (!isTimerCancelled)

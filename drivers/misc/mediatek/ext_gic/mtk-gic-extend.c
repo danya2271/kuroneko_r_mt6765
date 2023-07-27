@@ -180,7 +180,7 @@ void mt_irq_set_pending_for_sleep(unsigned int irq)
 	}
 
 	writel(mask, dist_base + GIC_DIST_PENDING_SET + irq / 32 * 4);
-	pr_no_debug("irq:%d, 0x%p=0x%x\n", irq,
+	pr_debug("irq:%d, 0x%p=0x%x\n", irq,
 		  dist_base + GIC_DIST_PENDING_SET + irq / 32 * 4, mask);
 
 	/* add memory barrier */

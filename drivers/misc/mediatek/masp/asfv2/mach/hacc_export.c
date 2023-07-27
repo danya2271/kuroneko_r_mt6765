@@ -145,7 +145,7 @@ _err:
 	if (true == bDoLock)
 		osal_hacc_unlock();
 
-	pr_no_debug("[%s] HACC Fail (0x%x)\n", MOD, err);
+	pr_debug("[%s] HACC Fail (0x%x)\n", MOD, err);
 
 	WARN_ON(!(0));
 
@@ -204,7 +204,7 @@ unsigned int masp_hal_sp_hacc_init(unsigned char *sec_seed, unsigned int size)
 				MTK_HACC_SEED;
 	}
 
-	pr_no_debug("0x%x,0x%x,0x%x,0x%x\n",
+	pr_debug("0x%x,0x%x,0x%x,0x%x\n",
 		 keyseed.seed[0],
 		 keyseed.seed[1],
 		 keyseed.seed[2],

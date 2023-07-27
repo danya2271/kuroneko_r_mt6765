@@ -29,12 +29,12 @@ int md_id, unsigned int id, char *buf, unsigned int len)
 #define cl_type_lower               "cl-amutt-l"
 
 #define mtk_cooler_amutt_dprintk_always(fmt, args...) \
-	pr_no_debug("[Thermal/TC/amutt]" fmt, ##args)
+	pr_debug("[Thermal/TC/amutt]" fmt, ##args)
 
 #define mtk_cooler_amutt_dprintk(fmt, args...) \
 	do { \
 		if (cl_amutt_klog_on == 1) { \
-			pr_no_debug("[Thermal/TC/amutt]" fmt, ##args); \
+			pr_debug("[Thermal/TC/amutt]" fmt, ##args); \
 		} \
 	} while (0)
 

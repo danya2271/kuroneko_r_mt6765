@@ -44,14 +44,14 @@ static int wmt_tm_debug_log;
 #define wmt_tm_dprintk(fmt, args...)   \
 do { \
 	if (wmt_tm_debug_log) \
-		pr_no_debug("[thermal/wmt]" fmt, ##args); \
+		pr_debug("[thermal/wmt]" fmt, ##args); \
 } while (0)
 
 #define wmt_tm_printk(fmt, args...)   \
-pr_no_debug("[thermal/wmt]" fmt, ##args)
+pr_debug("[thermal/wmt]" fmt, ##args)
 
 #define wmt_tm_info(fmt, args...)   \
-pr_no_debug("[thermal/wmt]" fmt, ##args)
+pr_debug("[thermal/wmt]" fmt, ##args)
 
 struct linux_thermal_ctrl_if {
 	int kernel_mode;
@@ -1446,7 +1446,7 @@ static void mtkts_wmt_cancel_thermal_timer(void)
 	else
 		return;
 
-	/* pr_no_debug("mtkts_wmt_cancel_thermal_timer\n"); */
+	/* pr_debug("mtkts_wmt_cancel_thermal_timer\n"); */
 
 	/* stop thermal framework polling when entering deep idle */
 
@@ -1472,7 +1472,7 @@ static void mtkts_wmt_start_thermal_timer(void)
 	else
 		return;
 
-	/* pr_no_debug("mtkts_wmt_start_thermal_timer\n"); */
+	/* pr_debug("mtkts_wmt_start_thermal_timer\n"); */
 	/* resume thermal framework polling when leaving deep idle */
 
 	if (!isTimerCancelled)

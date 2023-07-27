@@ -232,7 +232,7 @@ do {                \
 	if (m)          \
 		seq_printf(m, x);   \
 	else            \
-		pr_no_debug(x);        \
+		pr_debug(x);        \
 } while (0)
 
 static int monitor_hang_show(struct seq_file *m, void *v)
@@ -282,10 +282,10 @@ static ssize_t monitor_hang_proc_write(struct file *filp, const char *ubuf,
 
 	if (val == 1) {
 		monit_hang_flag = 1;
-		pr_no_debug("[hang_detect] enable ke.\n");
+		pr_debug("[hang_detect] enable ke.\n");
 	} else if (val == 0) {
 		monit_hang_flag = 0;
-		pr_no_debug("[hang_detect] disable ke.\n");
+		pr_debug("[hang_detect] disable ke.\n");
 	} else if (val == 2) {
 		reset_hang_info();
 		ShowStatus(0);
@@ -1905,7 +1905,7 @@ static int hang_detect_thread(void *arg)
 	sched_setscheduler(current, SCHED_FIFO, &param);
 	reset_hang_info();
 	msleep(120 * 1000);
-	pr_no_debug("[Hang_Detect] hang_detect thread starts.\n");
+	pr_debug("[Hang_Detect] hang_detect thread starts.\n");
 
 #ifdef BOOT_UP_HANG
 	hd_timeout = 9;
@@ -2010,7 +2010,7 @@ int hang_detect_init(void)
 
 	struct task_struct *hd_thread;
 
-	pr_no_debug("[Hang_Detect] Initialize proc\n");
+	pr_debug("[Hang_Detect] Initialize proc\n");
 	hd_thread = kthread_create(hang_detect_thread, NULL, "hang_detect");
 	if (hd_thread)
 		wake_up_process(hd_thread);

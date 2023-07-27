@@ -163,11 +163,11 @@ static void timesync_test_work_func(struct work_struct *work)
 		base_time, archcounter_time);
 	algo_offset = get_filter_output(&moving_average_algo_mono);
 
-	pr_no_debug("[archcounter_timesync] monotonic=%lld, archcounter=%lld\n",
+	pr_debug("[archcounter_timesync] monotonic=%lld, archcounter=%lld\n",
 		base_time, archcounter_time);
-	pr_no_debug("[archcounter_timesync] raw_offset=%lld\n",
+	pr_debug("[archcounter_timesync] raw_offset=%lld\n",
 		base_time - archcounter_time);
-	pr_no_debug("[archcounter_timesync] algo_offset=%lld\n", algo_offset);
+	pr_debug("[archcounter_timesync] algo_offset=%lld\n", algo_offset);
 
 
 	local_irq_save(flags);
@@ -179,11 +179,11 @@ static void timesync_test_work_func(struct work_struct *work)
 		base_time, archcounter_time);
 	algo_offset = get_filter_output(&moving_average_algo_mono);
 
-	pr_no_debug("[archcounter_timesync] boot=%lld, archcounter=%lld\n",
+	pr_debug("[archcounter_timesync] boot=%lld, archcounter=%lld\n",
 		base_time, archcounter_time);
-	pr_no_debug("[archcounter_timesync] raw_offset=%lld\n",
+	pr_debug("[archcounter_timesync] raw_offset=%lld\n",
 		base_time - archcounter_time);
-	pr_no_debug("[archcounter_timesync] algo_offset=%lld\n", algo_offset);
+	pr_debug("[archcounter_timesync] algo_offset=%lld\n", algo_offset);
 }
 
 static void timesync_test_timer_timeout(unsigned long data)
@@ -196,7 +196,7 @@ static void timesync_test_timer_timeout(unsigned long data)
 
 static int __init archcounter_timesync_entry(void)
 {
-	pr_no_debug("[archcounter_timesync] %s\n", __func__);
+	pr_debug("[archcounter_timesync] %s\n", __func__);
 
 	filter_algo_init(&moving_average_algo_mono);
 	filter_algo_init(&moving_average_algo_boot);

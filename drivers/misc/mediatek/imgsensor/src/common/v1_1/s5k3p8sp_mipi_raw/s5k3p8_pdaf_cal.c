@@ -35,7 +35,7 @@
  */
 /****************************   Modify end   *********************************/
 
-#define LOG_INF(fmt, args...)   pr_no_debug(PFX "[%s] " fmt, __func__, ##args)
+#define LOG_INF(fmt, args...)   pr_debug(PFX "[%s] " fmt, __func__, ##args)
 
 struct otp_pdaf_struct {
 	unsigned char pdaf_flag;	/* bit[7]--0:empty; 1:Valid */
