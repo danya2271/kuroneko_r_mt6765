@@ -173,6 +173,11 @@ config DEBUG_INFO
 
 	  If unsure, say N.
 
+config NO_DEBUG
+	bool "Disable pr_debug function"
+	help
+		Yey
+
 config DEBUG_INFO_REDUCED
 	bool "Reduce debugging information"
 	depends on DEBUG_INFO

@@ -425,6 +425,14 @@ extern int kptr_restrict;
 
 
 /* If you are writing a driver, please use dev_dbg instead */
+#ifdef CONFIG_NO_DEBUG
+#if defined(CONFIG_DYNAMIC_DEBUG)
+#include <linux/dynamic_debug.h>
+#define pr_debug(fmt, ...) do {} while(0)
+#else
+#define pr_debug(fmt, ...) do {} while(0)
+#endif
+#else
 #if defined(CONFIG_DYNAMIC_DEBUG)
 #include <linux/dynamic_debug.h>
 
@@ -437,6 +445,7 @@ extern int kptr_restrict;
 #else
 #define pr_debug(fmt, ...) \
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#endif
 #endif
 
 /*
@@ -551,6 +560,9 @@ extern int kptr_restrict;
 #endif
 
 /* If you are writing a driver, please use dev_dbg instead */
+#ifdef CONFIG_NO_DEBUG
+#define pr_debug_ratelimited(fmt, ...) do {} while(0)
+#else
 #if defined(CONFIG_DYNAMIC_DEBUG)
 /* descriptor check is first to prevent flooding with "callbacks suppressed" */
 #define pr_debug_ratelimited(fmt, ...)					\
@@ -569,6 +581,7 @@ do {									\
 #else
 #define pr_debug_ratelimited(fmt, ...) \
 	no_printk(KERN_DEBUG pr_fmt(fmt), ##__VA_ARGS__)
+#endif
 #endif
 
 extern const struct file_operations kmsg_fops;
