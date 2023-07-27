@@ -203,7 +203,7 @@ imgsensor_sensor_open(struct IMGSENSOR_SENSOR *psensor)
 			return -EIO;
 		}
 		/* wait for power stable */
-		mDELAY(5);
+		mDELAY(1);
 
 		IMGSENSOR_PROFILE(&psensor_inst->profile_time,
 		    "kdCISModulePowerOn");
@@ -211,14 +211,8 @@ imgsensor_sensor_open(struct IMGSENSOR_SENSOR *psensor)
 		imgsensor_mutex_lock(psensor_inst);
 
 		psensor_func->psensor_inst = psensor_inst;
-		ret = psensor_func->SensorOpen();
-		if (ret != ERROR_NONE) {
-			imgsensor_hw_power(&pgimgsensor->hw,
-			    psensor,
-			    psensor_inst->psensor_name,
-			    IMGSENSOR_HW_POWER_STATUS_OFF);
+		psensor_func->SensorOpen();
 
-			PK_DBG("SensorOpen fail");
 		} else {
 			psensor_inst->state = IMGSENSOR_STATE_OPEN;
 #ifdef CONFIG_MTK_CCU
