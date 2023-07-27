@@ -43,7 +43,7 @@ enum VAL_RESULT_T eVideoMemAlloc(struct VAL_MEMORY_T *a_prPaam,
 enum VAL_RESULT_T eVideoMemFree(struct VAL_MEMORY_T *a_prParam,
 				unsigned int a_u4ParamSize)
 {
-	/* pr_debug("!!Free Mem Size:%d!!\n",a_prParam->u4MemSize); */
+	/* pr_no_debug("!!Free Mem Size:%d!!\n",a_prParam->u4MemSize); */
 
 	return VAL_RESULT_NO_ERROR;
 
@@ -125,7 +125,7 @@ enum VAL_RESULT_T eVideoWaitEvent(struct VAL_EVENT_T *a_prParam,
 
 	pWaitQueue   = (wait_queue_head_t *)a_prParam->pvWaitQueue;
 	timeout_jiff = (a_prParam->u4TimeoutMs) * HZ / 1000;
-	/* pr_debug("[MFV]eVideoWaitEvent,a_prParam->u4TimeoutMs=%d,
+	/* pr_no_debug("[MFV]eVideoWaitEvent,a_prParam->u4TimeoutMs=%d,
 	 * timeout = %ld\n",
 	 * a_prParam->u4TimeoutMs,timeout_jiff);
 	 */
@@ -155,7 +155,7 @@ enum VAL_RESULT_T eVideoSetEvent(struct VAL_EVENT_T *a_prParam,
 				unsigned int a_u4ParamSize)
 {
 	wait_queue_head_t *pWaitQueue;
-	/* pr_debug("[MFV]eVideoSetEvent\n"); */
+	/* pr_no_debug("[MFV]eVideoSetEvent\n"); */
 	pWaitQueue = (wait_queue_head_t *)a_prParam->pvWaitQueue;
 	if (a_prParam->pvReserved != VAL_NULL) {
 		/* Add one line comment for avoid kernel coding style,
