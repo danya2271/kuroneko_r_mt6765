@@ -13,8 +13,8 @@
 LDFLAGS_vmlinux	:=--no-undefined -X
 CPPFLAGS_vmlinux.lds = -DTEXT_OFFSET=$(TEXT_OFFSET)
 GZFLAGS		:=-9
-KBUILD_CFLAGS += -Ofast
-KBUILD_AFLAGS += -Ofast
+KBUILD_CFLAGS += -O3
+KBUILD_AFLAGS += -O3
 
 ifeq ($(CONFIG_RELOCATABLE), y)
 # Pass --no-apply-dynamic-relocs to restore pre-binutils-2.27 behaviour
