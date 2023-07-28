@@ -213,7 +213,6 @@ imgsensor_sensor_open(struct IMGSENSOR_SENSOR *psensor)
 		psensor_func->psensor_inst = psensor_inst;
 		psensor_func->SensorOpen();
 
-		} else {
 			psensor_inst->state = IMGSENSOR_STATE_OPEN;
 #ifdef CONFIG_MTK_CCU
 			ccuSensorInfo.slave_addr =
@@ -235,8 +234,6 @@ imgsensor_sensor_open(struct IMGSENSOR_SENSOR *psensor)
 			if (pgimgsensor->imgsensor_oc_irq_enable != NULL)
 				pgimgsensor->imgsensor_oc_irq_enable(
 						psensor->inst.sensor_idx, true);
-
-		}
 
 		imgsensor_mutex_unlock(psensor_inst);
 
