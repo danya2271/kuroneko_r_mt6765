@@ -7,7 +7,6 @@ config ANDROID_DEFAULT_SETTING
 	select ANDROID_BINDERFS
 	select ANDROID_BINDER_IPC
 	select ARM64_SW_TTBR0_PAN if ARM64
-	select ARMV8_DEPRECATED if ARM64
 	select ASHMEM
 	select AUDIT
 	select BINFMT_ELF
@@ -17,8 +16,6 @@ config ANDROID_DEFAULT_SETTING
 	select BLK_DEV_LOOP
 	select BLK_DEV_RAM
 	select BLOCK
-	select BPF_JIT
-	select BPF_JIT_ALWAYS_ON if ARM64
 	select BPF_SYSCALL
 	select CGROUP_BPF
 	select CGROUP_CPUACCT
@@ -26,8 +23,6 @@ config ANDROID_DEFAULT_SETTING
 	select CGROUPS
 	select CGROUP_SCHED
 	select COMPAT if ARM64
-	select CP15_BARRIER_EMULATION if ARM64
-	select CPU_FREQ_TIMES
 	select CPU_SW_DOMAIN_PAN if ARM
 	select CROSS_MEMORY_ATTACH
 	select CRYPTO_AES
@@ -117,9 +112,6 @@ config ANDROID_DEFAULT_SETTING
 	select MEMCG
 	select MEMCG_SWAP
 	select MMU
-	select MODULES
-	select MODULE_UNLOAD
-	select MODVERSIONS
 	select MULTIUSER
 	select NAMESPACES
 	select NET
@@ -204,7 +196,6 @@ config ANDROID_DEFAULT_SETTING
 	select PREEMPT
 	select PROCESS_RECLAIM
 	select PROC_FS
-	select PROFILING
 	select PSI
 	select QFMT_V2
 	select QUOTA
@@ -217,7 +208,6 @@ config ANDROID_DEFAULT_SETTING
 	select SECURITY_NETWORK
 	select SECURITY_PERF_EVENTS_RESTRICT
 	select SECURITY_SELINUX
-	select SETEND_EMULATION if ARM64
 	select SHMEM
 	select SIGNALFD
 	select SND
@@ -226,9 +216,7 @@ config ANDROID_DEFAULT_SETTING
 	select STACKPROTECTOR_STRONG
 	select STAGING
 	select STRICT_KERNEL_RWX
-	select STRICT_MODULE_RWX
 	select SUSPEND
-	select SWP_EMULATION if ARM64
 	select SYNC_FILE
 	select SYSFS
 	select TASK_IO_ACCOUNTING
@@ -238,7 +226,6 @@ config ANDROID_DEFAULT_SETTING
 	select TTY
 	select TUN
 	select UHID
-	select UID_SYS_STATS
 	select UNIX
 	select UNMAP_KERNEL_AT_EL0 if ARM64
 	select USB
