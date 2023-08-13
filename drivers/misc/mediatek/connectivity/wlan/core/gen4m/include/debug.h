@@ -378,131 +378,30 @@ enum WAKE_DATA_TYPE {
 #define DBGLOG_MEM8(_Module, _Class, _StartAddr, _Length)
 #define DBGLOG_MEM32(_Module, _Class, _StartAddr, _Length)
 #else
-#define DBGLOG(_Mod, _Clz, _Fmt, ...) \
-	do { \
-		if ((aucDebugModule[DBG_##_Mod##_IDX] & \
-			 DBG_CLASS_##_Clz) == 0) \
-			break; \
-		LOG_FUNC("[%u]%s:(" #_Mod " " #_Clz ") " _Fmt, \
-			 KAL_GET_CURRENT_THREAD_ID(), \
-			 __func__, ##__VA_ARGS__); \
-	} while (0)
-#define DBGLOG_LIMITED(_Mod, _Clz, _Fmt, ...) \
-	do { \
-		if ((aucDebugModule[DBG_##_Mod##_IDX] & \
-			 DBG_CLASS_##_Clz) == 0) \
-			break; \
-		LOG_FUNC_LIMITED("[%u]%s:(" #_Mod " " #_Clz ") " _Fmt, \
-			 KAL_GET_CURRENT_THREAD_ID(), \
-			 __func__, ##__VA_ARGS__); \
-	} while (0)
-#define DBGFWLOG(_Mod, _Clz, _Fmt, ...) \
-	do { \
-		if ((aucDebugModule[DBG_##_Mod##_IDX] & \
-			 DBG_CLASS_##_Clz) == 0) \
-			break; \
-		wlanPrintFwLog(NULL, 0, DEBUG_MSG_TYPE_DRIVER, \
-			 "[%u]%s:(" #_Mod " " #_Clz ") " _Fmt, \
-			 KAL_GET_CURRENT_THREAD_ID(), \
-			 __func__, ##__VA_ARGS__); \
-	} while (0)
-#define TOOL_PRINTLOG(_Mod, _Clz, _Fmt, ...) \
-	do { \
-		if ((aucDebugModule[DBG_##_Mod##_IDX] & \
-			 DBG_CLASS_##_Clz) == 0) \
-			break; \
-		LOG_FUNC(_Fmt, ##__VA_ARGS__); \
-	} while (0)
-#define DBGLOG_MEM8(_Mod, _Clz, _Adr, _Len) \
-	{ \
-		if (aucDebugModule[DBG_##_Mod##_IDX] & DBG_CLASS_##_Clz) { \
-			LOG_FUNC("%s:(" #_Mod " " #_Clz ")\n", __func__); \
-			dumpMemory8((uint8_t *)(_Adr), (uint32_t)(_Len)); \
-		} \
-	}
-#define DBGLOG_MEM32(_Mod, _Clz, _Adr, _Len) \
-	{ \
-		if (aucDebugModule[DBG_##_Mod##_IDX] & DBG_CLASS_##_Clz) { \
-			LOG_FUNC("%s:(" #_Mod " " #_Clz ")\n", __func__); \
-			dumpMemory32((uint32_t *)(_Adr), (uint32_t)(_Len)); \
-		} \
-	}
+#define DBGLOG(_Mod, _Clz, _Fmt, ...) do {} while (0)
+#define DBGLOG_LIMITED(_Mod, _Clz, _Fmt, ...) do {} while (0)
+#define DBGFWLOG(_Mod, _Clz, _Fmt, ...) do {} while (0)
+#define TOOL_PRINTLOG(_Mod, _Clz, _Fmt, ...) do {} while (0)
+#define DBGLOG_MEM8(_Mod, _Clz, _Adr, _Len) do {} while (0)
+#define DBGLOG_MEM32(_Mod, _Clz, _Adr, _Len) do {} while (0)
 #endif
 #define DISP_STRING(_str)       _str
 #undef ASSERT
 #undef ASSERT_REPORT
 #if (BUILD_QA_DBG || DBG)
-#define ASSERT_NOMEM() \
-{ \
-	LOG_FUNC("alloate memory failed at %s:%d\n", __FILE__, __LINE__); \
-	kalSendAeeWarning("Wlan_Gen4 No Mem", "Memory Alloate Failed %s:%d",\
-		__FILE__, __LINE__); \
-}
+#define ASSERT_NOMEM() do {} while (0)
 #ifdef _lint
-#define ASSERT(_exp) \
-	{ \
-		if (!(_exp)) { \
-			do {} while (1); \
-		} \
-	}
-#define ASSERT_REPORT(_exp, _fmt) \
-	{ \
-		LOG_FUNC("Assertion failed: %s:%d (%s)\n", \
-			__FILE__, __LINE__, #_exp); \
-		LOG_FUNC _fmt; \
-		if (!(_exp)) { \
-			do {} while (1); \
-		} \
-	}
+#define ASSERT(_exp) do {} while (0)
+#define ASSERT_REPORT(_exp, _fmt) do {} while (0)
 #elif defined(WINDOWS_CE)
 #define UNICODE_TEXT(_msg)  TEXT(_msg)
-#define ASSERT(_exp) \
-	{ \
-		if (!(_exp)) { \
-			TCHAR rUbuf[256]; \
-			kalBreakPoint(); \
-			_stprintf(rUbuf, TEXT("Assertion failed: %s:%d %s\n"), \
-				  UNICODE_TEXT(__FILE__), __LINE__, \
-				  UNICODE_TEXT(#_exp)); \
-			MessageBox(NULL, rUbuf, TEXT("ASSERT!"), MB_OK); \
-		} \
-	}
-#define ASSERT_REPORT(_exp, _fmt) \
-	{ \
-		if (!(_exp)) { \
-			TCHAR rUbuf[256]; \
-			kalBreakPoint(); \
-			_stprintf(rUbuf, TEXT("Assertion failed: %s:%d %s\n"), \
-				  UNICODE_TEXT(__FILE__), __LINE__, \
-				  UNICODE_TEXT(#_exp)); \
-			MessageBox(NULL, rUbuf, TEXT("ASSERT!"), MB_OK); \
-		} \
-	}
+#define ASSERT(_exp) do {} while (0)
+#define ASSERT_REPORT(_exp, _fmt) do {} while (0)
 #else
-#define ASSERT_NOMEM() \
-{ \
-	LOG_FUNC("alloate memory failed at %s:%d\n", __FILE__, __LINE__); \
-	kalSendAeeWarning("Wlan_Gen4 No Mem", "Memory Alloate Failed %s:%d",\
-		__FILE__, __LINE__); \
-}
+#define ASSERT_NOMEM() do {} while (0)
 
-#define ASSERT(_exp) \
-	{ \
-		if (!(_exp)) { \
-			LOG_FUNC("Assertion failed: %s:%d (%s)\n", \
-				__FILE__, __LINE__, #_exp); \
-			kalBreakPoint(); \
-		} \
-	}
-#define ASSERT_REPORT(_exp, _fmt) \
-	{ \
-		if (!(_exp)) { \
-			LOG_FUNC("Assertion failed: %s:%d (%s)\n", \
-				__FILE__, __LINE__, #_exp); \
-			LOG_FUNC _fmt; \
-			kalBreakPoint(); \
-		} \
-	}
+#define ASSERT(_exp) do {} while (0)
+#define ASSERT_REPORT(_exp, _fmt) do {} while (0)
 #endif /* WINDOWS_CE */
 #else
 #define ASSERT_NOMEM() {}
@@ -511,14 +410,7 @@ enum WAKE_DATA_TYPE {
 #endif /* BUILD_QA_DBG */
 /* LOG function for print to buffer */
 /* If buffer pointer is NULL, redirect to normal DBGLOG */
-#define LOGBUF(_pucBuf, _maxLen, _curLen, _Fmt, ...) \
-	{ \
-		if (_pucBuf) \
-			(_curLen) += kalSnprintf((_pucBuf) + (_curLen), \
-			(_maxLen) - (_curLen), _Fmt, ##__VA_ARGS__); \
-		else \
-			DBGLOG(SW4, INFO, _Fmt, ##__VA_ARGS__); \
-	}
+#define LOGBUF(_pucBuf, _maxLen, _curLen, _Fmt, ...) do {} while (0)
 /* The following macro is used for debugging packed structures. */
 #ifndef DATA_STRUCT_INSPECTING_ASSERT
 #define DATA_STRUCT_INSPECTING_ASSERT(expr) \

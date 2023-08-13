@@ -692,21 +692,15 @@ int mtkts_btsmdpa_get_hw_temp(void)
 
 #if MTKTS_BTSMDPA_SW_FILTER
 	if ((t_ret > 100000) || (t_ret < -30000)) {
-		mtkts_btsmdpa_printk(
-			"[Power/BTSMDPA_Thermal] drop this data\n");
 		t_ret = pre_temp1;
 	} else if ((pre_temp1 != 0)
 		&& (((pre_temp1 - t_ret) >= DELTA_TEMP)
 			|| ((t_ret - pre_temp1) >= DELTA_TEMP))) {
 		mtkts_btsmdpa_dprintk(
-			"[Power/BTSMDPA_Thermal] t_ret=%d,(t_ret-pre_temp1)=%d,(pre_temp1-t_ret)=%d\n",
-			t_ret, (t_ret - pre_temp1), (pre_temp1 - t_ret));
 		t_ret = pre_temp1;
 	} else {
 		/* update previous temp */
 		pre_temp1 = t_ret;
-		mtkts_btsmdpa_dprintk("[Power/BTSMDPA_Thermal] pre_temp1=%d\n",
-								pre_temp1);
 	}
 #endif
 

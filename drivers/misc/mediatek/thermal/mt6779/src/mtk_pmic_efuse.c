@@ -442,8 +442,6 @@ int mtktspmic_get_hw_temp(void)
 	} else {
 		/* update previous temp */
 		pre_temp1 = temp1;
-		mtktspmic_dprintk("[mtktspmic_get_hw_temp] pre_temp1=%d\n",
-				pre_temp1);
 
 		if (PMIC_counter == 0)
 			PMIC_counter++;
