@@ -13,25 +13,7 @@
 char *perfmgr_copy_from_user_for_proc(const char __user *buffer,
 		size_t count)
 {
-	char *buf = (char *)__get_free_page(GFP_USER);
-
-	if (!buf)
-		return NULL;
-
-	if (count >= PAGE_SIZE)
-		goto out;
-
-	if (copy_from_user(buf, buffer, count))
-		goto out;
-
-	buf[count] = '\0';
-
-	return buf;
-
-out:
-	free_page((unsigned long)buf);
-
-	return NULL;
+	return 0;
 }
 
 int check_proc_write(int *data, const char *ubuf, size_t cnt)
@@ -145,6 +127,30 @@ void perfmgr_trace_log(char *module, const char *fmt, ...)
 	va_end(args);
 	perfmgr_trace_printk(module, log);
 }
+#else
+static unsigned long __read_mostly tracing_mark_write_addr;
+static inline void __mt_update_tracing_mark_write_addr(void)
+{
+}
 
+void perfmgr_trace_count(int val, const char *fmt, ...)
+{
+}
+
+void perfmgr_trace_printk(char *module, char *string)
+{
+}
+
+void perfmgr_trace_begin(char *name, int id, int a, int b)
+{
+}
+
+void perfmgr_trace_end(void)
+{
+}
+
+void perfmgr_trace_log(char *module, const char *fmt, ...)
+{
+}
 #endif
 

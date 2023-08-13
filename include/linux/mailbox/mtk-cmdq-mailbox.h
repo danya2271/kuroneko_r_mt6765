@@ -12,8 +12,8 @@
 #include <linux/trace_events.h>
 
 #if !IS_ENABLED(CONFIG_MTK_CMDQ_MBOX_EXT)
-#define cmdq_util_msg(f, args...) cmdq_msg(f, ##args)
-#define cmdq_util_err(f, args...) cmdq_dump(f, ##args)
+#define cmdq_util_msg(f, args...) do {} while (0)
+#define cmdq_util_err(f, args...) do {} while (0)
 #endif
 
 /* see also gce platform binding header */
@@ -156,12 +156,7 @@ struct cmdq_thread {
 };
 
 extern int mtk_cmdq_log;
-#define cmdq_log(fmt, args...) \
-do { \
-	if (mtk_cmdq_log) \
-		pr_notice("[cmdq] "fmt" @%s,%u\n", \
-		##args, __func__, __LINE__); \
-} while (0)
+#define cmdq_log(fmt, args...) do {} while (0)
 
 
 /* MTK only functions */
@@ -176,43 +171,16 @@ do { \
 	pr_notice("[cmdq][err] "fmt"\n", ##args)
 
 /* CMDQ FTRACE */
-#define cmdq_trace_begin(fmt, args...) do { \
-	preempt_disable(); \
-	event_trace_printk(cmdq_get_tracing_mark(), \
-		"B|%d|"fmt"\n", current->tgid, ##args); \
-	preempt_enable();\
-} while (0)
+#define cmdq_trace_begin(fmt, args...) do {} while (0)
 
-#define cmdq_trace_end() do { \
-	preempt_disable(); \
-	event_trace_printk(cmdq_get_tracing_mark(), "E\n"); \
-	preempt_enable(); \
-} while (0)
+#define cmdq_trace_end() do {} while (0)
 
 extern int cmdq_trace;
-#define cmdq_trace_ex_begin(fmt, args...) do { \
-	if (cmdq_trace) { \
-		preempt_disable(); \
-		event_trace_printk(cmdq_get_tracing_mark(), \
-			"B|%d|"fmt"\n", current->tgid, ##args); \
-		preempt_enable();\
-	} \
-} while (0)
+#define cmdq_trace_ex_begin(fmt, args...) do {} while (0)
 
-#define cmdq_trace_ex_end() do { \
-	if (cmdq_trace) { \
-		preempt_disable(); \
-		event_trace_printk(cmdq_get_tracing_mark(), "E\n"); \
-		preempt_enable(); \
-	} \
-} while (0)
+#define cmdq_trace_ex_end() do {} while (0)
 
-#define cmdq_trace_c(fmt, args...) do { \
-	preempt_disable(); \
-	event_trace_printk(cmdq_get_tracing_mark(), \
-		"C|"fmt, ##args); \
-	preempt_enable(); \
-} while (0)
+#define cmdq_trace_c(fmt, args...) do {} while (0)
 
 dma_addr_t cmdq_thread_get_pc(struct cmdq_thread *thread);
 dma_addr_t cmdq_thread_get_end(struct cmdq_thread *thread);
