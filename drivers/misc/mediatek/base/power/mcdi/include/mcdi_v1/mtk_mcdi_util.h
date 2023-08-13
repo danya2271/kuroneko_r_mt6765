@@ -13,8 +13,7 @@
 #define NF_CMD_BUF          128
 #define LOG_BUF_LEN         1024
 
-#define log2buf(p, s, fmt, args...) \
-	(p += scnprintf(p, sizeof(s) - strlen(s), fmt, ##args))
+#define log2buf(p, s, fmt, args...) do {} while (0)
 
 #undef mcdi_log
 #define mcdi_log(fmt, args...)	log2buf(p, dbg_buf, fmt, ##args)
