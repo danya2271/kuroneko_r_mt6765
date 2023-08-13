@@ -69,32 +69,14 @@ struct DumpFirstErrorStruct {
 };
 #endif
 
-#define CMDQ_LOG(string, args...) \
-do {			\
-	pr_notice("[CMDQ]"string, ##args); \
-	cmdq_core_save_first_dump("[CMDQ]"string, ##args); \
-} while (0)
+#define CMDQ_LOG(string, args...) do {} while (0)
 
-#define CMDQ_MSG(string, args...) \
-do {			\
-	if (cmdq_core_should_print_msg()) { \
-		pr_notice("[CMDQ]"string, ##args); \
-	} \
-} while (0)
+#define CMDQ_MSG(string, args...) do {} while (0)
 
-#define CMDQ_VERBOSE(string, args...) \
-do { \
-	if (cmdq_core_should_print_msg()) { \
-		pr_debug("[CMDQ]"string, ##args); \
-	} \
-} while (0)
+#define CMDQ_VERBOSE(string, args...) do {} while (0)
 
 
-#define CMDQ_ERR(string, args...) \
-do {			\
-	pr_notice("[CMDQ][ERR]"string, ##args); \
-	cmdq_core_save_first_dump("[CMDQ][ERR]"string, ##args); \
-} while (0)
+#define CMDQ_ERR(string, args...) do {} while (0)
 
 #define CMDQ_CHECK_AND_BREAK_STATUS(status)\
 {					\
@@ -102,45 +84,8 @@ if (status < 0)		\
 	break;			\
 }
 
-#if IS_ENABLED(CONFIG_MTK_AEE_FEATURE)
-#define CMDQ_AEE_EX(DB_OPTs, tag, string, args...) \
-{		\
-do {			\
-	char dispatchedTag[50]; \
-	int len = snprintf(dispatchedTag, 50, "CRDISPATCH_KEY:%s", tag); \
-	if (len >= 50) \
-		pr_debug("%s:%d len:%d over 50\n", __func__, __LINE__, len); \
-	pr_notice("[CMDQ][AEE]"string, ##args); \
-	cmdq_core_save_first_dump("[CMDQ][AEE]"string, ##args); \
-	cmdq_core_turnoff_first_dump(); \
-	aee_kernel_warning_api(__FILE__, __LINE__, \
-		DB_OPT_DEFAULT | DB_OPT_PROC_CMDQ_INFO | \
-		DB_OPT_MMPROFILE_BUFFER | DB_OPT_FTRACE | DB_OPTs, \
-		dispatchedTag, "error: "string, ##args); \
-} while (0);	\
-}
 
-#define CMDQ_AEE(tag, string, args...) \
-do { \
-	if (cmdq_core_aee_enable()) \
-		CMDQ_AEE_EX(DB_OPT_DUMP_DISPLAY, tag, string, ##args) \
-} while (0)
-
-#else
-#define CMDQ_AEE(tag, string, args...) \
-{		\
-do {			\
-	char dispatchedTag[50]; \
-	int len = snprintf(dispatchedTag, 50, "CRDISPATCH_KEY:%s", tag); \
-	if (len >= 50) \
-		pr_debug("%s:%d len:%d over 50\n", __func__, __LINE__, len); \
-	pr_debug("[CMDQ][AEE] AEE not READY!!!"); \
-	pr_debug("[CMDQ][AEE]"string, ##args); \
-	cmdq_core_save_first_dump("[CMDQ][AEE]"string, ##args); \
-	cmdq_core_turnoff_first_dump(); \
-} while (0);	\
-}
-#endif
+#define CMDQ_AEE(tag, string, args...) do {} while (0)
 
 /*#define CMDQ_PROFILE*/
 
@@ -148,27 +93,12 @@ do {			\
 #define CMDQ_TIME unsigned long long
 
 #ifdef CMDQ_PROFILE
-#define CMDQ_PROF_INIT()	\
-{		\
-do {if (cmdq_core_met_enabled()) met_tag_init(); } while (0);	\
-}
+#define CMDQ_PROF_INIT()	do {} while (0)
 
-#define CMDQ_PROF_START(args...)	\
-{		\
-do {if (cmdq_core_met_enabled()) met_tag_start(args);	\
-	} while (0);	\
-}
+#define CMDQ_PROF_START(args...)	do {} while (0)
 
-#define CMDQ_PROF_END(args...)	\
-{		\
-do {if (cmdq_core_met_enabled()) met_tag_end(args);	\
-	} while (0);	\
-}
-#define CMDQ_PROF_ONESHOT(args...)	\
-{		\
-do {if (cmdq_core_met_enabled()) met_tag_oneshot(args);	\
-	} while (0);	\
-}
+#define CMDQ_PROF_END(args...)	do {} while (0)
+#define CMDQ_PROF_ONESHOT(args...)	do {} while (0)
 #else
 #define CMDQ_PROF_INIT()
 #define CMDQ_PROF_START(args...)
@@ -176,41 +106,17 @@ do {if (cmdq_core_met_enabled()) met_tag_oneshot(args);	\
 #define CMDQ_PROF_ONESHOT(args...)
 #endif
 
-#if IS_ENABLED(CMDQ_MMPROFILE_SUPPORT)
-#define CMDQ_PROF_MMP(args...)\
-{\
-do {if (1) mmprofile_log_ex(args); } while (0);	\
-}
-#else
 #define CMDQ_PROF_MMP(args...)
-#endif
 
 /* CMDQ FTRACE */
-#define CMDQ_TRACE_FORCE_BEGIN(fmt, args...) do { \
-	preempt_disable(); \
-	event_trace_printk(cmdq_get_tracing_mark(), \
-		"B|%d|"fmt, current->tgid, ##args); \
-	preempt_enable();\
-} while (0)
+#define CMDQ_TRACE_FORCE_BEGIN(fmt, args...) do {} while (0)
 
-#define CMDQ_TRACE_FORCE_END() do { \
-	preempt_disable(); \
-	event_trace_printk(cmdq_get_tracing_mark(), "E\n"); \
-	preempt_enable(); \
-} while (0)
+#define CMDQ_TRACE_FORCE_END() do {} while (0)
 
 
-#define CMDQ_SYSTRACE_BEGIN(fmt, args...) do { \
-	if (cmdq_core_ftrace_enabled()) { \
-		CMDQ_TRACE_FORCE_BEGIN(fmt, ##args); \
-	} \
-} while (0)
+#define CMDQ_SYSTRACE_BEGIN(fmt, args...) do {} while (0)
 
-#define CMDQ_SYSTRACE_END() do { \
-	if (cmdq_core_ftrace_enabled()) { \
-		CMDQ_TRACE_FORCE_END(); \
-	} \
-} while (0)
+#define CMDQ_SYSTRACE_END() do {} while (0)
 
 #define CMDQ_GET_TIME_IN_MS(start, end, duration)	\
 {	\
