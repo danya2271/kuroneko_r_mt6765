@@ -8177,23 +8177,10 @@ int can_migrate_task(struct task_struct *p, struct lb_env *env)
 	if (throttled_lb_pair(task_group(p), env->src_cpu, env->dst_cpu))
 		return 0;
 
-<<<<<<< HEAD
-=======
-	/*
-	 * don't allow pull boost task to smaller cores.
-	 */
-	if (!can_migrate_boosted_task(p, env->src_cpu, env->dst_cpu))
-		return 0;
-
-	if (p->in_iowait && is_min_capacity_cpu(env->dst_cpu) &&
-			!is_min_capacity_cpu(env->src_cpu))
-		return 0;
-
 	/* Disregard pcpu kthreads; they are where they need to be. */
 	if ((p->flags & PF_KTHREAD) && kthread_is_per_cpu(p))
 		return 0;
 
->>>>>>> 59beb418e4de0 (sched/fair: Ignore percpu threads for imbalance pulls)
 	if (!cpumask_test_cpu(env->dst_cpu, &p->cpus_allowed)) {
 		int cpu;
 
