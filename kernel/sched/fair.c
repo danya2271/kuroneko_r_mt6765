@@ -9095,7 +9095,7 @@ static inline void update_sg_lb_stats(struct lb_env *env,
 		struct rq *rq = cpu_rq(i);
 		if (cpu_isolated(i))
 			continue;
-		if ((env->flags & LBF_NOHZ_STATS) && update_nohz_stats(rq, false))
+		if ((env->flags & LBF_NOHZ_STATS) && update_nohz_stats(rq))
 			env->flags |= LBF_NOHZ_AGAIN;
 
 		/* Bias balancing toward CPUs of our domain: */
