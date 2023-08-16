@@ -2700,12 +2700,6 @@ static void copy_name(struct dentry *dentry, struct dentry *target)
  * flag because fscrypt doesn't allow encrypted aliases to be the source or
  * target of a rename().
  */
-static inline void fscrypt_handle_d_move(struct dentry *dentry)
-{
-#if IS_ENABLED(CONFIG_FS_ENCRYPTION)
-	dentry->d_flags &= ~DCACHE_ENCRYPTED_NAME;
-#endif
-}
 
 /*
  * __d_move - move a dentry
