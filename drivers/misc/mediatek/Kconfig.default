@@ -7,7 +7,6 @@ config ANDROID_DEFAULT_SETTING
 	select ANDROID_BINDERFS
 	select ANDROID_BINDER_IPC
 	select ARM64_SW_TTBR0_PAN if ARM64
-	select ARMV8_DEPRECATED if ARM64
 	select ASHMEM
 	select BINFMT_ELF
 	select BINFMT_SCRIPT
@@ -198,8 +197,6 @@ config ANDROID_DEFAULT_SETTING
 	select PREEMPT
 	select PROCESS_RECLAIM
 	select PROC_FS
-	select PROFILING
-	select PSI
 	select QFMT_V2
 	select QUOTA
 	select QUOTACTL
