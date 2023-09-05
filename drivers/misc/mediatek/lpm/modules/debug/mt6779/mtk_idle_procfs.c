@@ -109,7 +109,7 @@ int __init mtk_idle_procfs_init(void)
 	dir = proc_mkdir(MTK_IDLE_PROC_FS_NAME, NULL);
 
 	if (!dir) {
-		pr_notice("fail to create procfs @ %s()\n", __func__);
+		pr_no_notice("fail to create procfs @ %s()\n", __func__);
 		return -ENOMEM;
 	}
 

@@ -375,7 +375,7 @@ static void tcpc_device_release(struct device *dev)
 {
 	struct tcpc_device *tcpc_dev = to_tcpc_device(dev);
 
-	pr_info("%s : %s device release\n", __func__, dev_name(dev));
+	pr_no_info("%s : %s device release\n", __func__, dev_name(dev));
 	PD_BUG_ON(tcpc_dev == NULL);
 	/* Un-init pe thread */
 #ifdef CONFIG_USB_POWER_DELIVERY
@@ -396,10 +396,10 @@ struct tcpc_device *tcpc_device_register(struct device *parent,
 	struct tcpc_device *tcpc;
 	int ret = 0, i = 0;
 
-	pr_info("%s register tcpc device (%s)\n", __func__, tcpc_desc->name);
+	pr_no_info("%s register tcpc device (%s)\n", __func__, tcpc_desc->name);
 	tcpc = devm_kzalloc(parent, sizeof(*tcpc), GFP_KERNEL);
 	if (!tcpc) {
-		pr_err("%s : allocate tcpc memeory failed\n", __func__);
+		pr_no_err("%s : allocate tcpc memeory failed\n", __func__);
 		return NULL;
 	}
 
@@ -466,7 +466,7 @@ static int tcpc_device_irq_enable(struct tcpc_device *tcpc)
 	int ret;
 
 	if (!tcpc->ops->init) {
-		pr_err("%s Please implment tcpc ops init function\n",
+		pr_no_err("%s Please implment tcpc ops init function\n",
 		__func__);
 		return -EINVAL;
 	}
@@ -475,21 +475,21 @@ static int tcpc_device_irq_enable(struct tcpc_device *tcpc)
 	ret = tcpci_init(tcpc, false);
 	if (ret < 0) {
 		tcpci_unlock_typec(tcpc);
-		pr_err("%s tcpc init fail\n", __func__);
+		pr_no_err("%s tcpc init fail\n", __func__);
 		return ret;
 	}
 
 	ret = tcpc_typec_init(tcpc, tcpc->desc.role_def + 1);
 	tcpci_unlock_typec(tcpc);
 	if (ret < 0) {
-		pr_err("%s : tcpc typec init fail\n", __func__);
+		pr_no_err("%s : tcpc typec init fail\n", __func__);
 		return ret;
 	}
 
 	schedule_delayed_work(
 		&tcpc->event_init_work, msecs_to_jiffies(10*1000));
 
-	pr_info("%s : tcpc irq enable OK!\n", __func__);
+	pr_no_info("%s : tcpc irq enable OK!\n", __func__);
 	return 0;
 }
 
@@ -569,7 +569,7 @@ static void tcpc_event_init_work(struct work_struct *work)
 	}
 #endif /* CONFIG_TYPEC_WAIT_BC12 */
 	tcpc->pd_inited_flag = 1; /* MTK Only */
-	pr_info("%s typec attach new = %d\n",
+	pr_no_info("%s typec attach new = %d\n",
 			__func__, tcpc->typec_attach_new);
 	if (tcpc->typec_attach_new)
 		pd_put_cc_attached_event(tcpc, tcpc->typec_attach_new);
@@ -588,7 +588,7 @@ static void tcpc_event_init_work(struct work_struct *work)
 	tcpc->bat_nb.priority = 0;
 	retval = power_supply_reg_notifier(&tcpc->bat_nb);
 	if (retval < 0)
-		pr_err("%s register power supply notifier fail\n", __func__);
+		pr_no_err("%s register power supply notifier fail\n", __func__);
 #endif /* CONFIG_USB_PD_REV30 */
 
 #endif /* CONFIG_USB_POWER_DELIVERY */
@@ -603,7 +603,7 @@ static void tcpc_init_work(struct work_struct *work)
 	if (tcpc->desc.notifier_supply_num == 0)
 		return;
 #endif
-	pr_info("%s force start\n", __func__);
+	pr_no_info("%s force start\n", __func__);
 
 	tcpc->desc.notifier_supply_num = 0;
 	tcpc_device_irq_enable(tcpc);
@@ -615,7 +615,7 @@ int tcpc_schedule_init_work(struct tcpc_device *tcpc)
 	if (tcpc->desc.notifier_supply_num == 0)
 		return tcpc_device_irq_enable(tcpc);
 
-	pr_info("%s wait %d num\n", __func__, tcpc->desc.notifier_supply_num);
+	pr_no_info("%s wait %d num\n", __func__, tcpc->desc.notifier_supply_num);
 
 	schedule_delayed_work(
 		&tcpc->init_work, msecs_to_jiffies(30*1000));
@@ -734,12 +734,12 @@ int register_tcp_dev_notifier(struct tcpc_device *tcp_dev,
 
 #ifndef CONFIG_TCPC_NOTIFIER_LATE_SYNC
 	if (tcp_dev->desc.notifier_supply_num == 0) {
-		pr_info("%s already started\n", __func__);
+		pr_no_info("%s already started\n", __func__);
 		return 0;
 	}
 
 	tcp_dev->desc.notifier_supply_num--;
-	pr_info("%s supply_num = %d\n", __func__,
+	pr_no_info("%s supply_num = %d\n", __func__,
 		tcp_dev->desc.notifier_supply_num);
 
 	if (tcp_dev->desc.notifier_supply_num == 0) {
@@ -862,7 +862,7 @@ static void tcpc_init_attrs(struct device_type *dev_type)
 
 static int __init tcpc_class_init(void)
 {
-	pr_info("%s (%s)\n", __func__, TCPC_CORE_VERSION);
+	pr_no_info("%s (%s)\n", __func__, TCPC_CORE_VERSION);
 
 #ifdef CONFIG_USB_POWER_DELIVERY
 	dpm_check_supported_modes();
@@ -870,20 +870,20 @@ static int __init tcpc_class_init(void)
 
 	tcpc_class = class_create(THIS_MODULE, "tcpc");
 	if (IS_ERR(tcpc_class)) {
-		pr_info("Unable to create tcpc class; errno = %ld\n",
+		pr_no_info("Unable to create tcpc class; errno = %ld\n",
 		       PTR_ERR(tcpc_class));
 		return PTR_ERR(tcpc_class);
 	}
 	tcpc_init_attrs(&tcpc_dev_type);
 
-	pr_info("TCPC class init OK\n");
+	pr_no_info("TCPC class init OK\n");
 	return 0;
 }
 
 static void __exit tcpc_class_exit(void)
 {
 	class_destroy(tcpc_class);
-	pr_info("TCPC class un-init OK\n");
+	pr_no_info("TCPC class un-init OK\n");
 }
 
 subsys_initcall(tcpc_class_init);
@@ -925,7 +925,7 @@ static int __tcpc_class_complete_work(struct device *dev, void *data)
 #endif /* CONFIG_USB_POWER_DELIVERY */
 
 	if (tcpc != NULL) {
-		pr_info("%s = %s\n", __func__, dev_name(dev));
+		pr_no_info("%s = %s\n", __func__, dev_name(dev));
 
 		tcpc_device_irq_enable(tcpc);
 
@@ -936,7 +936,7 @@ static int __tcpc_class_complete_work(struct device *dev, void *data)
 		ret = register_battery_notifier(fg_bat_nb);
 #endif
 		if (ret < 0) {
-			pr_notice("%s: register bat notifier fail\n", __func__);
+			pr_no_notice("%s: register bat notifier fail\n", __func__);
 			return -EINVAL;
 		}
 #endif /* CONFIG_RECV_BAT_ABSENT_NOTIFY */

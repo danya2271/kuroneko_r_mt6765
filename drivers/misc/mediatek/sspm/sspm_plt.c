@@ -91,19 +91,19 @@ int __init sspm_plt_init(void)
 
 	phys_addr = sspm_reserve_mem_get_phys(SSPM_MEM_ID);
 	if (phys_addr == 0) {
-		pr_err("SSPM: Can't get logger phys mem\n");
+		pr_no_err("SSPM: Can't get logger phys mem\n");
 		goto error;
 	}
 
 	virt_addr = sspm_reserve_mem_get_virt(SSPM_MEM_ID);
 	if (virt_addr == 0) {
-		pr_err("SSPM: Can't get logger virt mem\n");
+		pr_no_err("SSPM: Can't get logger virt mem\n");
 		goto error;
 	}
 
 	mem_sz = sspm_reserve_mem_get_size(SSPM_MEM_ID);
 	if (mem_sz == 0) {
-		pr_err("SSPM: Can't get logger mem size\n");
+		pr_no_err("SSPM: Can't get logger mem size\n");
 		goto error;
 	}
 
@@ -125,19 +125,19 @@ int __init sspm_plt_init(void)
 	last_ofs = plt_ctl->size;
 
 
-	pr_debug("SSPM: %s(): after plt, ofs=%u\n", __func__, last_ofs);
+	pr_no_debug("SSPM: %s(): after plt, ofs=%u\n", __func__, last_ofs);
 
 #if SSPM_LOGGER_SUPPORT
 	plt_ctl->logger_ofs = last_ofs;
 	last_sz = sspm_logger_init(virt_addr + last_ofs, mem_sz - last_ofs);
 
 	if (last_sz == 0) {
-		pr_err("SSPM: sspm_logger_init return fail\n");
+		pr_no_err("SSPM: sspm_logger_init return fail\n");
 		goto error;
 	}
 
 	last_ofs += last_sz;
-	pr_debug("SSPM: %s(): after logger, ofs=%u\n", __func__, last_ofs);
+	pr_no_debug("SSPM: %s(): after logger, ofs=%u\n", __func__, last_ofs);
 #endif
 
 	ipi_data.cmd = PLT_INIT;
@@ -147,12 +147,12 @@ int __init sspm_plt_init(void)
 	ret = sspm_ipi_send_sync(IPI_ID_PLATFORM, IPI_OPT_POLLING, &ipi_data,
 			sizeof(ipi_data) / MBOX_SLOT_SIZE, &ackdata, 1);
 	if (ret != 0) {
-		pr_err("SSPM: logger IPI fail ret=%d\n", ret);
+		pr_no_err("SSPM: logger IPI fail ret=%d\n", ret);
 		goto error;
 	}
 
 	if (!ackdata) {
-		pr_err("SSPM: logger IPI init fail, ret=%d\n", ackdata);
+		pr_no_err("SSPM: logger IPI init fail, ret=%d\n", ackdata);
 		goto error;
 	}
 

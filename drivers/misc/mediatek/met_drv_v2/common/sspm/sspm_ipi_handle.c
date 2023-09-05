@@ -108,7 +108,7 @@ int ondiemet_sspm_recv_thread(void *data)
 				wlen * 4, log_done_cb, (void *)1);
 			}
 			ret = ondiemet_log_manager_stop();
-			/* pr_debug("MET_CLOSE_FILE: ret=%d log_discard=%d\n", ret, met_sspm_log_discard); */
+			/* pr_no_debug("MET_CLOSE_FILE: ret=%d log_discard=%d\n", ret, met_sspm_log_discard); */
 			sspm_ipi_send_ack(IPI_ID_TST1, &rdata);
 			if (sspm_run_mode == SSPM_RUN_CONTINUOUS) {
 				/* clear the memory */
@@ -166,7 +166,7 @@ int met_ipi_cb(unsigned int ipi_id, void *prdata, void *data, unsigned int len)
 			wlen * 4, log_done_cb, (void *)1);
 		}
 		ret = ondiemet_log_manager_stop();
-		/* pr_debug("MET_CLOSE_FILE: ret=%d log_discard=%d\n", ret, met_sspm_log_discard); */
+		/* pr_no_debug("MET_CLOSE_FILE: ret=%d log_discard=%d\n", ret, met_sspm_log_discard); */
 		break;
 	case MET_RESP_MD2AP:
 		break;
@@ -183,7 +183,7 @@ int ondiemet_sspm_recv_thread(void *data)
 
 	ret = mtk_ipi_register(sspm_ipidev_symbol, IPIR_C_MET, met_ipi_cb, NULL, (void *)recv_buf);
 	if (ret)
-		pr_debug("[MET] ipi_register:%d failed:%d\n", IPIR_C_MET, ret);
+		pr_no_debug("[MET] ipi_register:%d failed:%d\n", IPIR_C_MET, ret);
 
 	do {
 		mtk_ipi_recv_reply(sspm_ipidev_symbol,IPIR_C_MET, (void *)&rdata, 1);
@@ -240,7 +240,7 @@ void start_sspm_ipi_recv_thread(void)
 
 	ret = mtk_ipi_register(sspm_ipidev_symbol, IPIS_C_MET, NULL, NULL, (void *) &ackdata);
 	if (ret)
-		pr_debug("[MET] ipi_register:%d failed:%d\n", IPIS_C_MET, ret);
+		pr_no_debug("[MET] ipi_register:%d failed:%d\n", IPIS_C_MET, ret);
 #endif
 
 	if (sspm_ipi_thread_started != 1) {
@@ -248,7 +248,7 @@ void start_sspm_ipi_recv_thread(void)
 		ondiemet_sspm_recv_task =
 		    kthread_run(ondiemet_sspm_recv_thread, NULL, "ondiemet_sspm_recv");
 		if (IS_ERR(ondiemet_sspm_recv_task))
-			pr_debug("MET: Can not create ondiemet_sspm_recv\n");
+			pr_no_debug("MET: Can not create ondiemet_sspm_recv\n");
 		else
 			sspm_ipi_thread_started = 1;
 	}
@@ -288,7 +288,7 @@ int met_ipi_to_sspm_command(void *buffer, int slot, unsigned int *retbuf, int re
 	}
 #endif
 	if (ret != 0)
-		pr_debug("met_ipi_to_sspm_command error(%d)\n", ret);
+		pr_no_debug("met_ipi_to_sspm_command error(%d)\n", ret);
 
 	return ret;
 }
@@ -310,7 +310,7 @@ int met_ipi_to_sspm_command_async(void *buffer, int slot, unsigned int *retbuf, 
 	}
 #endif
 	if (ret != 0)
-		pr_debug("met_ipi_to_sspm_command error(%d)\n", ret);
+		pr_no_debug("met_ipi_to_sspm_command error(%d)\n", ret);
 
 	return ret;
 }

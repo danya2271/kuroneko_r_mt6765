@@ -34,18 +34,18 @@ static int tcpc_dual_role_set_prop_pr(const struct typec_capability *cap,
 	}
 
 	if (val == tcpc->dual_role_pr) {
-		pr_info("%s wrong role (%d->%d)\n",
+		pr_no_info("%s wrong role (%d->%d)\n",
 			__func__, tcpc->dual_role_pr, val);
 		return 0;
 	}
 
 	ret = tcpm_dpm_pd_power_swap(tcpc, role, NULL);
-	pr_info("%s power role swap (%d->%d): %d\n",
+	pr_no_info("%s power role swap (%d->%d): %d\n",
 		__func__, tcpc->dual_role_pr, val, ret);
 
 	if (ret == TCPM_ERROR_NO_PD_CONNECTED) {
 		ret = tcpm_typec_role_swap(tcpc);
-		pr_info("%s typec role swap (%d->%d): %d\n",
+		pr_no_info("%s typec role swap (%d->%d): %d\n",
 			__func__, tcpc->dual_role_pr, val, ret);
 	}
 
@@ -75,13 +75,13 @@ static int tcpc_dual_role_set_prop_dr(const struct typec_capability *cap,
 	}
 
 	if (val == tcpc->dual_role_dr) {
-		pr_info("%s wrong role (%d->%d)\n",
+		pr_no_info("%s wrong role (%d->%d)\n",
 			__func__, tcpc->dual_role_dr, val);
 		return 0;
 	}
 
 	ret = tcpm_dpm_pd_data_swap(tcpc, role, NULL);
-	pr_info("%s data role swap (%d->%d): %d\n",
+	pr_no_info("%s data role swap (%d->%d): %d\n",
 		__func__, tcpc->dual_role_dr, val, ret);
 
 	typec_set_data_role(tcpc->typec_port, data);
@@ -111,13 +111,13 @@ static int tcpc_dual_role_set_prop_vconn(const struct typec_capability *cap,
 	}
 
 	if (val == tcpc->dual_role_vconn) {
-		pr_info("%s wrong role (%d->%d)\n",
+		pr_no_info("%s wrong role (%d->%d)\n",
 			__func__, tcpc->dual_role_vconn, val);
 		return 0;
 	}
 
 	ret = tcpm_dpm_pd_vconn_swap(tcpc, role, NULL);
-	pr_info("%s vconn swap (%d->%d): %d\n",
+	pr_no_info("%s vconn swap (%d->%d): %d\n",
 		__func__, tcpc->dual_role_vconn, val, ret);
 
 	typec_set_vconn_role(tcpc->typec_port, trole);

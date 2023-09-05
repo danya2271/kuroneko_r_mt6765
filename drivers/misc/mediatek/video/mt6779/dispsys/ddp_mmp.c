@@ -567,7 +567,7 @@ void ddp_mmp_ovl_layer(struct OVL_CONFIG_STRUCT *pLayer,
 		yuv = 1;
 		break;
 	default:
-		DDP_PR_ERR("%s(), unknown fmt=0x%x,dump raw\n", __func__,
+		DDP_pr_no_err("%s(), unknown fmt=0x%x,dump raw\n", __func__,
 			   pLayer->fmt);
 		raw = 1;
 		break;
@@ -586,7 +586,7 @@ void ddp_mmp_ovl_layer(struct OVL_CONFIG_STRUCT *pLayer,
 						Bitmap.data_size,
 						(unsigned long *)&Bitmap.p_data,
 						&Bitmap.data_size) != 0) {
-				DDP_PR_ERR("%s(),fail to dump rgb(0x%x)\n",
+				DDP_pr_no_err("%s(),fail to dump rgb(0x%x)\n",
 					   __func__, pLayer->fmt);
 				goto end;
 			}
@@ -609,7 +609,7 @@ void ddp_mmp_ovl_layer(struct OVL_CONFIG_STRUCT *pLayer,
 			if (m4u_mva_map_kernel(pLayer->addr, Bitmap.data_size,
 					       (unsigned long *)&Bitmap.p_data,
 					       &Bitmap.data_size) != 0) {
-				DDP_PR_ERR("%s(),fail to dump yuv(0x%x)\n",
+				DDP_pr_no_err("%s(),fail to dump yuv(0x%x)\n",
 					   __func__, pLayer->fmt);
 				goto end;
 			}
@@ -632,7 +632,7 @@ void ddp_mmp_ovl_layer(struct OVL_CONFIG_STRUCT *pLayer,
 		if (disp_mva_map_kernel(module, pLayer->addr, meta.size,
 					(unsigned long *)&meta.p_data,
 					&meta.size) != 0) {
-			DDP_PR_ERR("%s(),fail to dump raw(0x%x)\n",
+			DDP_pr_no_err("%s(),fail to dump raw(0x%x)\n",
 				   __func__, pLayer->fmt);
 			goto end;
 		}
@@ -667,7 +667,7 @@ void ddp_mmp_wdma_layer(struct WDMA_CONFIG_STRUCT *wdma_layer,
 	int raw = 0;
 
 	if (wdma_num > 1) {
-		DDP_PR_ERR("%s is error %d\n", __func__, wdma_num);
+		DDP_pr_no_err("%s is error %d\n", __func__, wdma_num);
 		return;
 	}
 
@@ -710,7 +710,7 @@ void ddp_mmp_wdma_layer(struct WDMA_CONFIG_STRUCT *wdma_layer,
 		Bitmap.data2 = wdma_layer->outputFormat;
 		break;
 	default:
-		DDP_PR_ERR("%s, unknown fmt=%d, dump raw\n", __func__,
+		DDP_pr_no_err("%s, unknown fmt=%d, dump raw\n", __func__,
 			   wdma_layer->outputFormat);
 		raw = 1;
 		break;
@@ -734,7 +734,7 @@ void ddp_mmp_wdma_layer(struct WDMA_CONFIG_STRUCT *wdma_layer,
 					      Bitmap.data_size,
 					      (unsigned long)Bitmap.p_data);
 		} else {
-			DDP_PR_ERR("%s,fail to dump rgb(0x%x)\n", __func__,
+			DDP_pr_no_err("%s,fail to dump rgb(0x%x)\n", __func__,
 				   wdma_layer->outputFormat);
 		}
 	} else {
@@ -750,7 +750,7 @@ void ddp_mmp_wdma_layer(struct WDMA_CONFIG_STRUCT *wdma_layer,
 					      Bitmap.data_size,
 					      (unsigned long)Bitmap.p_data);
 		} else {
-			DDP_PR_ERR("%s,fail to dump raw(0x%x)\n", __func__,
+			DDP_pr_no_err("%s,fail to dump raw(0x%x)\n", __func__,
 				   wdma_layer->outputFormat);
 		}
 	}
@@ -768,7 +768,7 @@ void ddp_mmp_rdma_layer(struct RDMA_CONFIG_STRUCT *rdma_layer,
 	if (rdma_layer->idx == 1)
 		module = DISP_MODULE_RDMA1;
 	if (rdma_num > 1) {
-		DDP_PR_ERR("%s is error %d\n", __func__, rdma_num);
+		DDP_pr_no_err("%s is error %d\n", __func__, rdma_num);
 		return;
 	}
 
@@ -811,7 +811,7 @@ void ddp_mmp_rdma_layer(struct RDMA_CONFIG_STRUCT *rdma_layer,
 		Bitmap.data2 = rdma_layer->inputFormat;
 		break;
 	default:
-		DDP_PR_ERR("%s, unknown fmt=%d, dump raw\n", __func__,
+		DDP_pr_no_err("%s, unknown fmt=%d, dump raw\n", __func__,
 			   rdma_layer->inputFormat);
 		raw = 1;
 		break;
@@ -834,7 +834,7 @@ void ddp_mmp_rdma_layer(struct RDMA_CONFIG_STRUCT *rdma_layer,
 					      Bitmap.data_size,
 					      (unsigned long)Bitmap.p_data);
 		} else {
-			DDP_PR_ERR("%s,fail to dump rgb(0x%x)\n", __func__,
+			DDP_pr_no_err("%s,fail to dump rgb(0x%x)\n", __func__,
 				   rdma_layer->inputFormat);
 		}
 	} else {
@@ -848,7 +848,7 @@ void ddp_mmp_rdma_layer(struct RDMA_CONFIG_STRUCT *rdma_layer,
 			disp_mva_unmap_kernel(rdma_layer->address, meta.size,
 					      (unsigned long)meta.p_data);
 		} else {
-			DDP_PR_ERR("%s,fail to dump raw(0x%x)\n", __func__,
+			DDP_pr_no_err("%s,fail to dump raw(0x%x)\n", __func__,
 				   rdma_layer->inputFormat);
 		}
 	}

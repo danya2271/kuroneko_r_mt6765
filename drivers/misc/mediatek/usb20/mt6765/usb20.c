@@ -967,31 +967,31 @@ void usb_dump_debug_register(void)
 	usb_enable_clock(true);
 
 	/* 1:Read 0x11200620; */
-	pr_notice("[IPI USB dump]addr: 0x620, value: %x\n",
+	pr_no_notice("[IPI USB dump]addr: 0x620, value: %x\n",
 					musb_readl(musb->mregs, 0x620));
 
 	/* 2: set 0x11200600[5:0]  = 0x23; */
 	/* Read 0x11200634; */
 	musb_writew(musb->mregs, 0x600, 0x23);
-	pr_notice("[IPI USB dump]addr: 0x634, 0x23 value: %x\n",
+	pr_no_notice("[IPI USB dump]addr: 0x634, 0x23 value: %x\n",
 					musb_readl(musb->mregs, 0x634));
 
 	/* 3: set 0x11200600[5:0]  = 0x24; */
 	/* Read 0x11200634; */
 	musb_writew(musb->mregs, 0x600, 0x24);
-	pr_notice("[IPI USB dump]addr: 0x634, 0x24 value: %x\n",
+	pr_no_notice("[IPI USB dump]addr: 0x634, 0x24 value: %x\n",
 					musb_readl(musb->mregs, 0x634));
 
 	/* 4:set 0x11200600[5:0]  = 0x25; */
 	/* Read 0x11200634; */
 	musb_writew(musb->mregs, 0x600, 0x25);
-	pr_notice("[IPI USB dump]addr: 0x634, 0x25 value: %x\n",
+	pr_no_notice("[IPI USB dump]addr: 0x634, 0x25 value: %x\n",
 					musb_readl(musb->mregs, 0x634));
 
 	/* 5:set 0x11200600[5:0]  = 0x26; */
 	/* Read 0x11200634; */
 	musb_writew(musb->mregs, 0x600, 0x26);
-	pr_notice("[IPI USB dump]addr: 0x634, 0x26 value: %x\n",
+	pr_no_notice("[IPI USB dump]addr: 0x634, 0x26 value: %x\n",
 					musb_readl(musb->mregs, 0x634));
 
 	usb_enable_clock(false);
@@ -1539,29 +1539,29 @@ static int __init mt_usb_init(struct musb *musb)
 		ret = regulator_set_voltage(reg_vusb,
 					VUSB33_VOL_MIN, VUSB33_VOL_MAX);
 		if (ret < 0)
-			pr_notice("regulator set vol failed: %d\n", ret);
+			pr_no_notice("regulator set vol failed: %d\n", ret);
 		else
 			DBG(0, "regulator set vol ok, <%d,%d>\n",
 					VUSB33_VOL_MIN, VUSB33_VOL_MAX);
 #endif /* NEVER */
 		ret = regulator_enable(reg_vusb);
 		if (ret < 0) {
-			pr_notice("regulator_enable vusb failed: %d\n", ret);
+			pr_no_notice("regulator_enable vusb failed: %d\n", ret);
 			regulator_put(reg_vusb);
 		}
 	} else
-		pr_notice("regulator_get vusb failed\n");
+		pr_no_notice("regulator_get vusb failed\n");
 
 
 	reg_va12 = regulator_get(musb->controller, "va12");
 	if (!IS_ERR(reg_va12)) {
 		ret = regulator_enable(reg_va12);
 		if (ret < 0) {
-			pr_notice("regulator_enable va12 failed: %d\n", ret);
+			pr_no_notice("regulator_enable va12 failed: %d\n", ret);
 			regulator_put(reg_va12);
 		}
 	} else
-		pr_notice("regulator_get va12 failed\n");
+		pr_no_notice("regulator_get va12 failed\n");
 
 #endif
 
@@ -1876,7 +1876,7 @@ static int __init usb20_init(void)
 
 #ifdef CONFIG_MTK_USB2JTAG_SUPPORT
 	if (usb2jtag_mode()) {
-		pr_notice("[USB2JTAG] in usb2jtag mode, not to initialize usb driver\n");
+		pr_no_notice("[USB2JTAG] in usb2jtag mode, not to initialize usb driver\n");
 		return 0;
 	}
 #endif

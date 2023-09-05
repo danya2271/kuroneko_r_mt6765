@@ -248,7 +248,7 @@ static int mtkfb_release(struct fb_info *info, int user)
 	(CONFIG_MTK_DUAL_DISPLAY_SUPPORT == 2)
 static int mtkfb1_blank(int blank_mode, struct fb_info *info)
 {
-	pr_debug("%s blank mode :%d\n", __func__, blank_mode);
+	pr_no_debug("%s blank mode :%d\n", __func__, blank_mode);
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
 	case FB_BLANK_NORMAL:
@@ -285,7 +285,7 @@ static int mtkfb_blank(int blank_mode, struct fb_info *info)
 	case FB_BLANK_NORMAL:
 		DISPDBG("%s mtkfb_late_resume\n", __func__);
 		if (bypass_blank) {
-			DISP_PR_INFO("FB_BLANK_UNBLANK bypass_blank %d\n",
+			DISP_pr_no_info("FB_BLANK_UNBLANK bypass_blank %d\n",
 				     bypass_blank);
 			break;
 		}
@@ -301,7 +301,7 @@ static int mtkfb_blank(int blank_mode, struct fb_info *info)
 	case FB_BLANK_POWERDOWN:
 		DISPDBG("%s mtkfb_early_suspend\n", __func__);
 		if (bypass_blank) {
-			DISP_PR_INFO("FB_BLANK_POWERDOWN bypass_blank %d\n",
+			DISP_pr_no_info("FB_BLANK_POWERDOWN bypass_blank %d\n",
 				     bypass_blank);
 			break;
 		}
@@ -354,12 +354,12 @@ int mtkfb_set_backlight_mode(unsigned int mode)
 {
 	MTKFB_FUNC();
 	if (down_interruptible(&sem_flipping)) {
-		DISP_PR_ERR("[FB Driver] can't get semaphore:%d\n", __LINE__);
+		DISP_pr_no_err("[FB Driver] can't get semaphore:%d\n", __LINE__);
 		return -ERESTARTSYS;
 	}
 	sem_flipping_cnt--;
 	if (down_interruptible(&sem_early_suspend)) {
-		DISP_PR_ERR("[FB Driver] can't get semaphore:%d\n", __LINE__);
+		DISP_pr_no_err("[FB Driver] can't get semaphore:%d\n", __LINE__);
 		sem_flipping_cnt++;
 		up(&sem_flipping);
 		return -ERESTARTSYS;
@@ -383,12 +383,12 @@ int mtkfb_set_backlight_pwm(int div)
 {
 	MTKFB_FUNC();
 	if (down_interruptible(&sem_flipping)) {
-		DISP_PR_ERR("[FB Driver] can't get semaphore:%d\n", __LINE__);
+		DISP_pr_no_err("[FB Driver] can't get semaphore:%d\n", __LINE__);
 		return -ERESTARTSYS;
 	}
 	sem_flipping_cnt--;
 	if (down_interruptible(&sem_early_suspend)) {
-		DISP_PR_ERR("[FB Driver] can't get semaphore:%d\n", __LINE__);
+		DISP_pr_no_err("[FB Driver] can't get semaphore:%d\n", __LINE__);
 		sem_flipping_cnt++;
 		up(&sem_flipping);
 		return -ERESTARTSYS;
@@ -480,7 +480,7 @@ static int _convert_fb_layer_to_disp_input(struct fb_overlay_layer *src,
 		break;
 
 	default:
-		DISP_PR_INFO("Invalid color format: 0x%x\n", src->src_fmt);
+		DISP_pr_no_info("Invalid color format: 0x%x\n", src->src_fmt);
 		return -1;
 	}
 
@@ -580,7 +580,7 @@ static int mtkfb_pan_display_impl(struct fb_var_screeninfo *var,
 
 	session_input = kzalloc(sizeof(*session_input), GFP_KERNEL);
 	if (!session_input) {
-		DISP_PR_ERR("session input allocate fail\n");
+		DISP_pr_no_err("session input allocate fail\n");
 		ASSERT(0);
 		return -1;
 	}
@@ -614,7 +614,7 @@ static int mtkfb_pan_display_impl(struct fb_var_screeninfo *var,
 			DISP_FORMAT_BGRA8888 : DISP_FORMAT_RGBX8888;
 		break;
 	default:
-		DISP_PR_INFO("Invalid color format bpp: %d\n",
+		DISP_pr_no_info("Invalid color format bpp: %d\n",
 			     var->bits_per_pixel);
 		kfree(session_input);
 		return -1;
@@ -673,7 +673,7 @@ static void set_fb_fix(struct mtkfb_device *fbdev)
 		fix->visual = FB_VISUAL_PSEUDOCOLOR;
 		break;
 	default:
-		DISP_PR_ERR("set fb fix fail,bits per pixel=%d\n",
+		DISP_pr_no_err("set fb fix fail,bits per pixel=%d\n",
 			    var->bits_per_pixel);
 		return;
 	}
@@ -861,7 +861,7 @@ static int mtkfb_set_par(struct fb_info *fbi)
 
 	default:
 		fb_layer.src_fmt = MTK_FB_FORMAT_UNKNOWN;
-		DISP_PR_INFO("[%s]unsupported bpp: %d", __func__, bpp);
+		DISP_pr_no_info("[%s]unsupported bpp: %d", __func__, bpp);
 		return -1;
 	}
 
@@ -953,7 +953,7 @@ unsigned int mtkfb_fm_auto_test(void)
 	int idle_state_backup = disp_helper_get_option(DISP_OPT_IDLE_MGR);
 
 	if (primary_display_is_sleepd()) {
-		DISP_PR_INFO("primary display path is already sleep, skip\n");
+		DISP_pr_no_info("primary display path is already sleep, skip\n");
 		return 0;
 	}
 
@@ -1000,7 +1000,7 @@ unsigned int mtkfb_fm_auto_test(void)
 		enable_idlemgr(1);
 
 	if (result == 0)
-		DISP_PR_ERR("ATA LCM failed\n");
+		DISP_pr_no_err("ATA LCM failed\n");
 	else
 		DISPMSG("ATA LCM passed\n");
 
@@ -1042,10 +1042,10 @@ int mtkfb_aod_mode_switch(enum mtkfb_aod_power_mode aod_pm)
 
 		debug_print_power_mode_check(prev_pm, DOZE);
 	} else {
-		DISP_PR_ERR("AOD: error: unknown AOD power mode %d\n", aod_pm);
+		DISP_pr_no_err("AOD: error: unknown AOD power mode %d\n", aod_pm);
 	}
 	if (ret < 0)
-		DISP_PR_ERR("AOD: set %s failed\n",
+		DISP_pr_no_err("AOD: set %s failed\n",
 			aod_pm ? "AOD_SUSPEND" : "AOD_RESUME");
 	return ret;
 }
@@ -1091,7 +1091,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 			dispif_info[displayid].displayMode =
 				    primary_display_is_video_mode() ? 0 : 1;
 		} else {
-			DISP_PR_ERR("info for displayid:%d is not available\n",
+			DISP_pr_no_err("info for displayid:%d is not available\n",
 				    displayid);
 			return -EFAULT;
 		}
@@ -1117,7 +1117,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 	{
 		MTKFB_FUNC();
 		if (primary_display_is_sleepd()) {
-			DISP_PR_INFO("[FB Driver]still in MTKFB_POWEROFF!\n");
+			DISP_pr_no_info("[FB Driver]still in MTKFB_POWEROFF!\n");
 			return ret;
 		}
 
@@ -1128,7 +1128,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		 */
 		/*ret = primary_display_suspend();*/
 		if (stat < 0)
-			DISP_PR_ERR("primary display suspend failed\n");
+			DISP_pr_no_err("primary display suspend failed\n");
 		DISPDBG("[FB Driver] leave MTKFB_POWEROFF\n");
 
 		is_early_suspended = TRUE; /* no care */
@@ -1138,7 +1138,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 	{
 		MTKFB_FUNC();
 		if (primary_display_is_alive()) {
-			DISP_PR_INFO("[FB Driver]still in MTKFB_POWERON!\n");
+			DISP_pr_no_info("[FB Driver]still in MTKFB_POWERON!\n");
 			return ret;
 		}
 		DISPDBG("[FB Driver] enter MTKFB_POWERON\n");
@@ -1161,7 +1161,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 			power_state = 1;
 
 		if (copy_to_user(argp, &power_state, sizeof(power_state))) {
-			pr_err("MTKFB_GET_POWERSTATE failed\n");
+			pr_no_err("MTKFB_GET_POWERSTATE failed\n");
 			return -EFAULT;
 		}
 
@@ -1201,7 +1201,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 					fbsize,
 					UFMT_BGRA8888);
 		if (ret < 0)
-			DISP_PR_ERR("primary capture framebuffer failed\n");
+			DISP_pr_no_err("primary capture framebuffer failed\n");
 		dprec_logger_done(DPREC_LOGGER_WDMA_DUMP, 0, 0);
 		if (copy_to_user((void __user *)arg, src_pbuf, fbsize)) {
 			MTKFB_LOG("[FB]: copy_to_user failed! line:%d\n",
@@ -1261,7 +1261,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 					(unsigned long)src_pbuf, fbsize,
 					format);
 		if (ret < 0)
-			DISP_PR_ERR("primary capture framebuffer failed\n");
+			DISP_pr_no_err("primary capture framebuffer failed\n");
 
 		if (copy_to_user((unsigned long *)capConfig.outputBuffer,
 				 src_pbuf, fbsize)) {
@@ -1322,7 +1322,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		 * info SF by return value
 		 */
 		if (primary_display_is_sleepd()) {
-			DISP_PR_INFO("[FB]set overlay in early suspend,skip\n");
+			DISP_pr_no_info("[FB]set overlay in early suspend,skip\n");
 			kfree(layerInfo);
 			return MTKFB_ERROR_IS_EARLY_SUSPEND;
 		}
@@ -1341,7 +1341,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 	}
 	case MTKFB_ERROR_INDEX_UPDATE_TIMEOUT:
 	{
-		pr_info("[DDP] %s():MTKFB_ERROR_INDEX_UPDATE_TIMEOUT\n",
+		pr_no_info("[DDP] %s():MTKFB_ERROR_INDEX_UPDATE_TIMEOUT\n",
 			__func__);
 		/* call info dump function here */
 		/* mtkfb_dump_layer_info(); */
@@ -1349,7 +1349,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 	}
 	case MTKFB_ERROR_INDEX_UPDATE_TIMEOUT_AEE:
 	{
-		pr_info("[DDP] %s():MTKFB_ERROR_INDEX_UPDATE_TIMEOUT\n",
+		pr_no_info("[DDP] %s():MTKFB_ERROR_INDEX_UPDATE_TIMEOUT\n",
 			__func__);
 		/* call info dump function here */
 		/* mtkfb_dump_layer_info(); */
@@ -1388,7 +1388,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		memset((void *)&session_input, 0, sizeof(session_input));
 		for (i = 0; i < VIDEO_LAYER_COUNT; ++i) {
 			if (layerInfo[i].layer_id >= TOTAL_OVL_LAYER_NUM) {
-				DISP_PR_INFO("cmd(0x%08x:layer_id invalid=%d\n",
+				DISP_pr_no_info("cmd(0x%08x:layer_id invalid=%d\n",
 					     cmd, layerInfo[i].layer_id);
 				continue;
 			}
@@ -1547,7 +1547,7 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		return 0;
 	}
 	default:
-		DISP_PR_INFO("%s:Not support:info=%p,cmd=0x%08x,arg=0x%08lx\n",
+		DISP_pr_no_info("%s:Not support:info=%p,cmd=0x%08x,arg=0x%08lx\n",
 			     __func__, info, (unsigned int)cmd, arg);
 		return -EINVAL;
 	}
@@ -1614,7 +1614,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		data32 = compat_ptr(arg);
 		data = (__u32)fb_mva;
 		if (put_user(data, data32)) {
-			pr_err("MTKFB_FRAMEBUFFER_MVA failed\n");
+			pr_no_err("MTKFB_FRAMEBUFFER_MVA failed\n");
 			ret = -EFAULT;
 		}
 		DISPDBG("MTKFB_FRAMEBUFFER_MVA success 0x%lx\n", fb_mva);
@@ -1627,11 +1627,11 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 
 		data32 = compat_ptr(arg);
 		if (get_user(displayid, data32)) {
-			pr_err("cmd(0x%08x) failed\n", cmd);
+			pr_no_err("cmd(0x%08x) failed\n", cmd);
 			return -EFAULT;
 		}
 		if (displayid >= MTKFB_MAX_DISPLAY_COUNT) {
-			pr_err("[FB]: invalid display id:%d\n", displayid);
+			pr_no_err("[FB]: invalid display id:%d\n", displayid);
 			return -EFAULT;
 		}
 		if (displayid == 0) {
@@ -1647,13 +1647,13 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			dispif_info[displayid].displayMode =
 					primary_display_is_video_mode() ? 0 : 1;
 		} else {
-			DISP_PR_INFO("info for displayid:%d is not available\n",
+			DISP_pr_no_info("info for displayid:%d is not available\n",
 				     displayid);
 		}
 
 		if (copy_to_user((void __user *)arg, &(dispif_info[displayid]),
 				 sizeof(struct compat_mtk_dispif_info))) {
-			pr_err("[FB]: copy_to_user failed! line:%d\n",
+			pr_no_err("[FB]: copy_to_user failed! line:%d\n",
 			       __LINE__);
 			return -EFAULT;
 		}
@@ -1680,7 +1680,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		else
 			power_state = 1;
 		if (put_user(power_state, data32)) {
-			pr_err("MTKFB_GET_POWERSTATE failed\n");
+			pr_no_err("MTKFB_GET_POWERSTATE failed\n");
 			ret = -EFAULT;
 		}
 		DISPDBG("MTKFB_GET_POWERSTATE success %d\n", power_state);
@@ -1740,7 +1740,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			 * info SF by return value
 			 */
 			if (primary_display_is_sleepd()) {
-				DISP_PR_INFO("set OVL in early suspend,skip\n");
+				DISP_pr_no_info("set OVL in early suspend,skip\n");
 				kfree(compat_layerInfo);
 				return MTKFB_ERROR_IS_EARLY_SUSPEND;
 			}
@@ -1800,7 +1800,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 
 		data32 = compat_ptr(arg);
 		if (put_user(dal_en, data32)) {
-			pr_err("MTKFB_GET_POWERSTATE failed\n");
+			pr_no_err("MTKFB_GET_POWERSTATE failed\n");
 			ret = -EFAULT;
 		}
 		break;
@@ -1814,7 +1814,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		result = mtkfb_fm_auto_test();
 		data32 = compat_ptr(arg);
 		if (put_user(result, data32)) {
-			pr_err("MTKFB_GET_POWERSTATE failed\n");
+			pr_no_err("MTKFB_GET_POWERSTATE failed\n");
 			ret = -EFAULT;
 		}
 		break;
@@ -1939,7 +1939,7 @@ static int mtkfb_fbinfo_init(struct fb_info *info)
 
 	ret = fb_alloc_cmap(&info->cmap, 32, 0);
 	if (ret)
-		DISP_PR_ERR("unable to allocate color map memory\n");
+		DISP_pr_no_err("unable to allocate color map memory\n");
 
 	/* setup the initial video mode (RGB565) */
 
@@ -1971,13 +1971,13 @@ static int mtkfb_fbinfo_init(struct fb_info *info)
 
 	ret = mtkfb_check_var(&var, info);
 	if (ret)
-		DISP_PR_ERR("failed to mtkfb_check_var\n");
+		DISP_pr_no_err("failed to mtkfb_check_var\n");
 
 	info->var = var;
 
 	ret = mtkfb_set_par(info);
 	if (ret)
-		DISP_PR_ERR("failed to mtkfb_set_par\n");
+		DISP_pr_no_err("failed to mtkfb_set_par\n");
 
 	MSG_FUNC_LEAVE();
 	return ret;
@@ -2045,7 +2045,7 @@ static void mtkfb_free_resources(struct mtkfb_device *fbdev, int state)
 		/* nothing to free */
 		break;
 	default:
-		DISP_PR_ERR("free resources fail, state=%d\n", state);
+		DISP_pr_no_err("free resources fail, state=%d\n", state);
 		break;
 	}
 }
@@ -2443,7 +2443,7 @@ static struct fb_info *allocate_fb_by_index(struct device *dev)
 
 	fb_dev = framebuffer_alloc(sizeof(struct mtkfb_device), dev);
 	if (!fb_dev) {
-		DISP_PR_ERR("unable to allocate memory for device info\n");
+		DISP_pr_no_err("unable to allocate memory for device info\n");
 		return NULL;
 	}
 
@@ -2497,7 +2497,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	fbi = framebuffer_alloc(sizeof(struct mtkfb_device), &(pdev->dev));
 	if (!fbi) {
-		DISP_PR_ERR("unable to allocate memory for device info\n");
+		DISP_pr_no_err("unable to allocate memory for device info\n");
 		ret = -ENOMEM;
 		goto cleanup;
 	}
@@ -2546,7 +2546,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 		  (unsigned long)fbdev->fb_va_base);
 
 	if (!fbdev->fb_va_base) {
-		DISP_PR_ERR("unable to allocate memory for frame buffer\n");
+		DISP_pr_no_err("unable to allocate memory for frame buffer\n");
 		ret = -ENOMEM;
 		goto cleanup;
 	}
@@ -2554,7 +2554,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	ret = mtkfb_fbinfo_init(fbi);
 	if (ret) {
-		DISP_PR_ERR("mtkfb_fbinfo_init fail, ret = %d\n", ret);
+		DISP_pr_no_err("mtkfb_fbinfo_init fail, ret = %d\n", ret);
 		goto cleanup;
 	}
 	init_state++; /* 4 */
@@ -2582,7 +2582,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	ret = mtkfb_register_sysfs(fbdev);
 	if (ret) {
-		DISP_PR_ERR("mtkfb_register_sysfs fail, ret = %d\n", ret);
+		DISP_pr_no_err("mtkfb_register_sysfs fail, ret = %d\n", ret);
 		goto cleanup;
 	}
 	init_state++; /* 5 */
@@ -2590,7 +2590,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 	DISPMSG("register_framebuffer start...\n");
 	ret = register_framebuffer(fbi);
 	if (ret) {
-		DISP_PR_ERR("register_framebuffer failed\n");
+		DISP_pr_no_err("register_framebuffer failed\n");
 		goto cleanup;
 	}
 	DISPMSG("register_framebuffer done\n");
@@ -2616,13 +2616,13 @@ static int mtkfb_probe(struct platform_device *pdev)
 	fbdev->state = MTKFB_ACTIVE;
 
 	MSG_FUNC_LEAVE();
-	pr_info("disp driver(2) %s end\n", __func__);
+	pr_no_info("disp driver(2) %s end\n", __func__);
 	return 0;
 
 cleanup:
 	mtkfb_free_resources(fbdev, init_state);
 
-	pr_info("disp driver(3) %s end\n", __func__);
+	pr_no_info("disp driver(3) %s end\n", __func__);
 	return ret;
 }
 
@@ -2732,7 +2732,7 @@ static void mtkfb_early_suspend(void)
 	ret = primary_display_suspend();
 
 	if (ret < 0) {
-		DISP_PR_ERR("primary display suspend failed\n");
+		DISP_pr_no_err("primary display suspend failed\n");
 		return;
 	}
 
@@ -2761,7 +2761,7 @@ static void mtkfb_late_resume(void)
 	ret = primary_display_resume();
 
 	if (ret) {
-		DISP_PR_ERR("primary display resume failed\n");
+		DISP_pr_no_err("primary display resume failed\n");
 		return;
 	}
 
@@ -2773,7 +2773,7 @@ static void mtkfb_late_resume(void)
 
 int mtkfb_pm_suspend(struct device *device)
 {
-	/* pr_debug("calling %s()\n", __func__); */
+	/* pr_no_debug("calling %s()\n", __func__); */
 
 	struct platform_device *pdev = to_platform_device(device);
 
@@ -2787,7 +2787,7 @@ int mtkfb_pm_suspend(struct device *device)
 
 int mtkfb_pm_resume(struct device *device)
 {
-	/* pr_debug("calling %s()\n", __func__); */
+	/* pr_no_debug("calling %s()\n", __func__); */
 
 	struct platform_device *pdev = to_platform_device(device);
 

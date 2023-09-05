@@ -45,10 +45,10 @@ irqreturn_t  adsp_A_wdt_handler(int irq, void *dev_id)
 
 	if (adsp_set_reset_status() == ADSP_RESET_STATUS_STOP) {
 		wdt_counter++;
-		pr_info("[ADSP] WDT exception (%u)\n", wdt_counter);
+		pr_no_info("[ADSP] WDT exception (%u)\n", wdt_counter);
 		adsp_send_reset_wq(ADSP_RESET_TYPE_WDT, ADSP_A_ID);
 	} else
-		pr_notice("[ADSP] resetting (%u)\n", wdt_counter);
+		pr_no_notice("[ADSP] resetting (%u)\n", wdt_counter);
 
 #else
 	adsp_aed_reset(EXCEP_RUNTIME, ADSP_A_ID);
@@ -65,7 +65,7 @@ static void adsp_wdt_counter_reset(struct timer_list *t)
 {
 	del_timer(&adsp_wdt_timer);
 	wdt_counter = 0;
-	pr_info("[ADSP] %s\n", __func__);
+	pr_no_info("[ADSP] %s\n", __func__);
 }
 #endif
 

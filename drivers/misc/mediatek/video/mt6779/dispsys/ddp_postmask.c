@@ -31,7 +31,7 @@ unsigned long postmask_base_addr(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_POSTMASK:
 		return DISPSYS_POSTMASK_BASE;
 	default:
-		DDP_PR_ERR("invalid postmask module=%d\n", module);
+		DDP_pr_no_err("invalid postmask module=%d\n", module);
 		return -1;
 	}
 
@@ -237,7 +237,7 @@ static int postmask_config(enum DISP_MODULE_ENUM module,
 
 	if (lcm_param->round_corner_en == 1) {
 		if (rc_mode != DISP_HELPER_HW_RC) {
-			DDP_PR_ERR("unsupport round corner mode:%d\n", rc_mode);
+			DDP_pr_no_err("unsupport round corner mode:%d\n", rc_mode);
 			return -1;
 		}
 

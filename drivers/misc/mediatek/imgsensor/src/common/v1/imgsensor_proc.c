@@ -116,7 +116,7 @@ static ssize_t CAMERA_HW_Reg_Debug(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -128,7 +128,7 @@ static ssize_t CAMERA_HW_Reg_Debug(
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
 		if (ret == 0) {
-			pr_info("Error! snprintf allocate 0");
+			pr_no_info("Error! snprintf allocate 0");
 			ret = IMGSENSOR_RETURN_ERROR;
 			return ret;
 		}
@@ -140,7 +140,7 @@ static ssize_t CAMERA_HW_Reg_Debug(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -192,7 +192,7 @@ static ssize_t CAMERA_HW_Reg_Debug2(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -204,7 +204,7 @@ static ssize_t CAMERA_HW_Reg_Debug2(
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
 		if (ret == 0) {
-			pr_info("Error! snprintf allocate 0");
+			pr_no_info("Error! snprintf allocate 0");
 			ret = IMGSENSOR_RETURN_ERROR;
 			return ret;
 		}
@@ -216,7 +216,7 @@ static ssize_t CAMERA_HW_Reg_Debug2(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -269,7 +269,7 @@ static ssize_t CAMERA_HW_Reg_Debug3(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -281,7 +281,7 @@ static ssize_t CAMERA_HW_Reg_Debug3(
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
 		if (ret == 0) {
-			pr_info("Error! snprintf allocate 0");
+			pr_no_info("Error! snprintf allocate 0");
 			ret = IMGSENSOR_RETURN_ERROR;
 			return ret;
 		}
@@ -293,7 +293,7 @@ static ssize_t CAMERA_HW_Reg_Debug3(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -349,7 +349,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
 
-		pr_debug(
+		pr_no_debug(
 		    "write addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -361,7 +361,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
 		if (ret == 0) {
-			pr_info("Error! snprintf allocate 0");
+			pr_no_info("Error! snprintf allocate 0");
 			ret = IMGSENSOR_RETURN_ERROR;
 			return ret;
 		}
@@ -373,7 +373,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 		    (MUINT8 *) &sensorReg,
 		    (MUINT32 *) sizeof(MSDK_SENSOR_REG_INFO_STRUCT));
 
-		pr_debug(
+		pr_no_debug(
 		    "read addr = 0x%08x, data = 0x%08x\n",
 		    sensorReg.RegAddr,
 		    sensorReg.RegData);
@@ -393,7 +393,7 @@ static ssize_t CAMERA_HW_Reg_Debug4(
 /* Camera information */
 static int subsys_camera_info_read(struct seq_file *m, void *v)
 {
-	pr_debug("%s %s\n", __func__, mtk_ccm_name);
+	pr_no_debug("%s %s\n", __func__, mtk_ccm_name);
 	seq_printf(m, "%s\n", mtk_ccm_name);
 	return 0;
 };
@@ -422,7 +422,7 @@ static int imgsensor_proc_status_read(struct seq_file *m, void *v)
 			"ERR_L0, %x\n",
 			*((uint32_t *)(&pgimgsensor->status)));
 	if (ret == 0) {
-		pr_info("Error! snprintf allocate 0");
+		pr_no_info("Error! snprintf allocate 0");
 		ret = IMGSENSOR_RETURN_ERROR;
 		return ret;
 	}

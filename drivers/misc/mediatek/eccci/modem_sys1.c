@@ -49,7 +49,7 @@ static void debug_in_flight_mode(struct ccci_modem *md);
 #ifdef CCCI_KMODULE_ENABLE
 bool spm_is_md1_sleep(void)
 {
-	pr_notice("[ccci/dummy] %s is not supported!\n", __func__);
+	pr_no_notice("[ccci/dummy] %s is not supported!\n", __func__);
 	return 0;
 }
 

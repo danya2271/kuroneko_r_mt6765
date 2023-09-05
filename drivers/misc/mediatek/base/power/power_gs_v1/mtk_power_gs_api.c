@@ -89,7 +89,7 @@ static void __iomem *_golden_io_phys_to_virt(unsigned int addr)
 			ioremap_nocache(_g.phy_base, REMAP_SIZE_MASK+1);
 
 		if (!_g.io_base)
-			pr_err("warning: ioremap_nocache(0x%x, 0x%x)\n",
+			pr_no_err("warning: ioremap_nocache(0x%x, 0x%x)\n",
 					base, REMAP_SIZE_MASK+1);
 	}
 
@@ -281,7 +281,7 @@ void __iomem *_get_virt_base_from_table(unsigned int pa)
 			if (br.table[k].pa == pa)
 				return (io_base = br.table[k].va);
 	} else
-		pr_err("Power_gs: cannot find virtual address\n");
+		pr_no_err("Power_gs: cannot find virtual address\n");
 
 	return io_base;
 }
@@ -309,13 +309,13 @@ unsigned int mt_power_gs_base_remap_init(char *scenario, char *pmic_name,
 							REMAP_SIZE_MASK + 1);
 
 				if (!table[br.table_pos].va)
-					pr_err("ioremap_nocache(0x%x, 0x%x)\n",
+					pr_no_err("ioremap_nocache(0x%x, 0x%x)\n",
 						base, REMAP_SIZE_MASK + 1);
 
 				if (br.table_pos < br.table_size)
 					br.table_pos++;
 				else {
-					pr_err("base_remap in maximum size\n");
+					pr_no_err("base_remap in maximum size\n");
 					return 0;
 				}
 			}
@@ -346,13 +346,13 @@ void mt_power_gs_pmic_manual_dump(void)
 				_golden_read_reg(pmd.addr_array[i]));
 
 			if (dump_cnt && ((dump_cnt % PER_LINE_TO_PRINT) == 0)) {
-				pr_notice("%s", buf);
+				pr_no_notice("%s", buf);
 				p = buf;
 				p += snprintf(p, sizeof(buf), "\n");
 			}
 		}
 		if (dump_cnt % PER_LINE_TO_PRINT)
-			pr_notice("%s", buf);
+			pr_no_notice("%s", buf);
 	}
 }
 
@@ -394,7 +394,7 @@ void mt_power_gs_compare(char *scenario, char *pmic_name,
 
 				if (dump_cnt &&
 					((dump_cnt % PER_LINE_TO_PRINT) == 0)) {
-					pr_notice("%s", buf);
+					pr_no_notice("%s", buf);
 					p = buf;
 					p += snprintf(p, sizeof(buf), "\n");
 				}
@@ -402,7 +402,7 @@ void mt_power_gs_compare(char *scenario, char *pmic_name,
 
 		}
 		if (dump_cnt % PER_LINE_TO_PRINT)
-			pr_notice("%s", buf);
+			pr_no_notice("%s", buf);
 
 	/* dump raw data mode */
 	} else {
@@ -420,12 +420,12 @@ void mt_power_gs_compare(char *scenario, char *pmic_name,
 				scenario, pmic_name, pmic_gs[i], val0);
 
 			if (dump_cnt && ((dump_cnt % PER_LINE_TO_PRINT) == 0)) {
-				pr_notice("%s", buf);
+				pr_no_notice("%s", buf);
 				p = buf;
 				p += snprintf(p, sizeof(buf), "\n");
 			}
 		}
 		if (dump_cnt % PER_LINE_TO_PRINT)
-			pr_notice("%s", buf);
+			pr_no_notice("%s", buf);
 	}
 }

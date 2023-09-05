@@ -20,7 +20,7 @@ void set_lcm(struct LCM_setting_table_V3 *para_tbl,
 	if (_is_power_on_status(DISP_MODULE_DSI0))
 		DSI_set_cmdq_V4(DISP_MODULE_DSI0, hs, para_tbl, size, 1);
 	else
-		DISP_PR_ERR("%s invalid: dsi is power off\n", __func__);
+		DISP_pr_no_err("%s invalid: dsi is power off\n", __func__);
 
 	primary_display_manual_unlock();
 	_primary_path_switch_dst_unlock();
@@ -41,7 +41,7 @@ int read_lcm(unsigned char cmd, unsigned char *buf,
 		ret = DSI_dcs_read_lcm_reg_v4(DISP_MODULE_DSI0,
 					cmd, buf, buf_size, sendhs);
 	else
-		DISP_PR_ERR("%s invalid: dsi is power off\n", __func__);
+		DISP_pr_no_err("%s invalid: dsi is power off\n", __func__);
 
 	primary_display_manual_unlock();
 	_primary_path_switch_dst_unlock();

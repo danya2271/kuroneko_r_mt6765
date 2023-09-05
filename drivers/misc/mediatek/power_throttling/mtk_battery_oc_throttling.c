@@ -83,12 +83,12 @@ void register_battery_oc_notify(battery_oc_callback oc_cb,
 				enum BATTERY_OC_PRIO_TAG prio_val)
 {
 	if (prio_val >= OCCB_MAX_NUM || prio_val < 0) {
-		pr_info("[%s] prio_val=%d, out of boundary\n",
+		pr_no_info("[%s] prio_val=%d, out of boundary\n",
 			__func__, prio_val);
 		return;
 	}
 	occb_tb[prio_val].occb = oc_cb;
-	pr_info("[%s] prio_val=%d\n", __func__, prio_val);
+	pr_no_info("[%s] prio_val=%d\n", __func__, prio_val);
 }
 EXPORT_SYMBOL(register_battery_oc_notify);
 
@@ -97,13 +97,13 @@ static void exec_battery_oc_callback(enum BATTERY_OC_LEVEL_TAG battery_oc_level)
 	int i;
 
 	if (g_battery_oc_stop == 1) {
-		pr_info("[%s] g_battery_oc_stop=%d\n"
+		pr_no_info("[%s] g_battery_oc_stop=%d\n"
 			, __func__, g_battery_oc_stop);
 	} else {
 		for (i = 0; i < OCCB_MAX_NUM; i++) {
 			if (occb_tb[i].occb) {
 				occb_tb[i].occb(battery_oc_level);
-				pr_info("[%s] prio_val=%d,battery_oc_level=%d\n",
+				pr_no_info("[%s] prio_val=%d,battery_oc_level=%d\n",
 					__func__, i, battery_oc_level);
 			}
 		}
@@ -119,7 +119,7 @@ static ssize_t battery_oc_protect_ut_show(
 {
 	struct battery_oc_priv *priv = dev_get_drvdata(pdev);
 
-	pr_debug("[%s] g_battery_oc_level=%d\n",
+	pr_no_debug("[%s] g_battery_oc_level=%d\n",
 		__func__, priv->oc_level);
 	return sprintf(buf, "%u\n", priv->oc_level);
 }
@@ -132,18 +132,18 @@ static ssize_t battery_oc_protect_ut_store(
 	char *pvalue = NULL;
 	unsigned int val = 0;
 
-	pr_info("[%s]\n", __func__);
+	pr_no_info("[%s]\n", __func__);
 
 	if (buf != NULL && size != 0) {
-		pr_info("[%s] buf is %s and size is %zu\n",
+		pr_no_info("[%s] buf is %s and size is %zu\n",
 			__func__, buf, size);
 		pvalue = (char *)buf;
 		ret = kstrtou32(pvalue, 16, (unsigned int *)&val);
 		if (val <= 1) {
-			pr_info("[%s] your input is %d\n", __func__, val);
+			pr_no_info("[%s] your input is %d\n", __func__, val);
 			exec_battery_oc_callback(val);
 		} else {
-			pr_info("[%s] wrong number (%d)\n", __func__, val);
+			pr_no_info("[%s] wrong number (%d)\n", __func__, val);
 		}
 	}
 	return size;
@@ -158,7 +158,7 @@ static ssize_t battery_oc_protect_stop_show(
 		struct device *pdev, struct device_attribute *attr,
 		char *buf)
 {
-	pr_debug("[%s] g_battery_oc_stop=%d\n",
+	pr_no_debug("[%s] g_battery_oc_stop=%d\n",
 		__func__, g_battery_oc_stop);
 	return sprintf(buf, "%u\n", g_battery_oc_stop);
 }
@@ -171,17 +171,17 @@ static ssize_t battery_oc_protect_stop_store(
 	char *pvalue = NULL;
 	unsigned int val = 0;
 
-	pr_info("[%s]\n", __func__);
+	pr_no_info("[%s]\n", __func__);
 
 	if (buf != NULL && size != 0) {
-		pr_info("[%s] buf is %s and size is %zu\n",
+		pr_no_info("[%s] buf is %s and size is %zu\n",
 			__func__, buf, size);
 		pvalue = (char *)buf;
 		ret = kstrtou32(pvalue, 16, (unsigned int *)&val);
 		if ((val != 0) && (val != 1))
 			val = 0;
 		g_battery_oc_stop = val;
-		pr_info("[%s] g_battery_oc_stop=%d\n",
+		pr_no_info("[%s] g_battery_oc_stop=%d\n",
 			__func__, g_battery_oc_stop);
 	}
 	return size;
@@ -198,7 +198,7 @@ static ssize_t battery_oc_protect_level_show(
 {
 	struct battery_oc_priv *priv = dev_get_drvdata(pdev);
 
-	pr_info("[%s] g_battery_oc_level=%d\n",
+	pr_no_info("[%s] g_battery_oc_level=%d\n",
 		__func__, priv->oc_level);
 	return sprintf(buf, "%u\n", priv->oc_level);
 }
@@ -209,7 +209,7 @@ static ssize_t battery_oc_protect_level_store(
 {
 	struct battery_oc_priv *priv = dev_get_drvdata(pdev);
 
-	pr_info("[%s] g_battery_oc_level = %d\n",
+	pr_no_info("[%s] g_battery_oc_level = %d\n",
 		__func__, priv->oc_level);
 
 	return size;

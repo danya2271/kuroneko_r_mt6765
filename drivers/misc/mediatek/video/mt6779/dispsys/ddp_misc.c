@@ -45,7 +45,7 @@ unsigned long get_smi_larb_va(unsigned int larb)
 	}
 
 	if (i == DISP_LARB_NUM) {
-		DDP_PR_ERR("Cannot find smi-larb%d\n",
+		DDP_pr_no_err("Cannot find smi-larb%d\n",
 				larb);
 		return 0;
 	}
@@ -54,7 +54,7 @@ unsigned long get_smi_larb_va(unsigned int larb)
 		va = (unsigned long)of_iomap(node, 0);
 
 	if (va == 0)
-		DDP_PR_ERR("Cannot get smi larb va, smi DT name: %s\n",
+		DDP_pr_no_err("Cannot get smi larb va, smi DT name: %s\n",
 			   smi_larb_dt_name);
 
 	return va;
@@ -242,7 +242,7 @@ void fake_engine(unsigned int idx, unsigned int en,
 	int delay_cnt = 0;
 
 	if (idx > 1) {
-		DDP_PR_ERR("%s idx only 0 and 1\n", __func__);
+		DDP_pr_no_err("%s idx only 0 and 1\n", __func__);
 		return;
 	}
 
@@ -313,7 +313,7 @@ void fake_engine(unsigned int idx, unsigned int en,
 			delay_cnt++;
 			udelay(1);
 			if (delay_cnt > 1000) {
-				DDP_PR_ERR("Wait fake_engine_%d idle timeout\n",
+				DDP_pr_no_err("Wait fake_engine_%d idle timeout\n",
 					idx);
 				break;
 			}

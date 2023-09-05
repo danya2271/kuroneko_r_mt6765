@@ -37,7 +37,7 @@ static int wake_gesture_get_data(int *probability, int *status)
 
 	err = sensor_get_data_from_hub(ID_WAKE_GESTURE, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp = data.time_stamp;
@@ -48,7 +48,7 @@ static int wake_gesture_open_report_data(int open)
 {
 	int ret = 0;
 
-	pr_debug("%s : enable=%d\n", __func__, open);
+	pr_no_debug("%s : enable=%d\n", __func__, open);
 #if defined CONFIG_MTK_SCP_SENSORHUB_V1
 	if (open == 1)
 		ret = sensor_set_delay_to_hub(ID_WAKE_GESTURE, 120);
@@ -72,7 +72,7 @@ static int wake_gesture_recv_data(struct data_unit_t *event,
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("wake_gesture do not support flush\n");
+		pr_no_debug("wake_gesture do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_WAKE_GESTURE,
 			(int64_t)event->time_stamp);
@@ -90,20 +90,20 @@ static int wakehub_local_init(void)
 	ctl.is_support_wake_lock = true;
 	err = situation_register_control_path(&ctl, ID_WAKE_GESTURE);
 	if (err) {
-		pr_err("register wake_gesture control path err\n");
+		pr_no_err("register wake_gesture control path err\n");
 		goto exit;
 	}
 
 	data.get_data = wake_gesture_get_data;
 	err = situation_register_data_path(&data, ID_WAKE_GESTURE);
 	if (err) {
-		pr_err("register wake_gesture data path err\n");
+		pr_no_err("register wake_gesture data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_WAKE_GESTURE,
 		wake_gesture_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -130,7 +130,7 @@ static int __init wakehub_init(void)
 
 static void __exit wakehub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(wakehub_init);

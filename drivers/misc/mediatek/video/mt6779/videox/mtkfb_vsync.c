@@ -32,11 +32,11 @@
 #include "primary_display.h"
 /* #include "extd_info.h" */
 
-#define VSYNC_DBG(...) pr_debug(__VA_ARGS__)
+#define VSYNC_DBG(...) pr_no_debug(__VA_ARGS__)
 
-#define VSYNC_INF(...) pr_debug(__VA_ARGS__)
-#define VSYNC_WRN(...) pr_debug(__VA_ARGS__)
-#define VSYNC_ERR(...) pr_debug(__VA_ARGS__)
+#define VSYNC_INF(...) pr_no_debug(__VA_ARGS__)
+#define VSYNC_WRN(...) pr_no_debug(__VA_ARGS__)
+#define VSYNC_ERR(...) pr_no_debug(__VA_ARGS__)
 
 static size_t mtkfb_vsync_on;
 #define MTKFB_VSYNC_LOG(fmt, arg...) \
@@ -111,7 +111,7 @@ static long mtkfb_vsync_unlocked_ioctl(struct file *file, unsigned int cmd,
 		if (arg == MTKFB_VSYNC_SOURCE_HDMI ||
 			arg == MTKFB_VSYNC_SOURCE_EPD) {
 			if (down_interruptible(&mtkfb_vsync_sem)) {
-				pr_err("[mtkfb_vsync_ioctl] can't get semaphore,%d\n",
+				pr_no_err("[mtkfb_vsync_ioctl] can't get semaphore,%d\n",
 				       __LINE__);
 				msleep(20);
 				return ret;
@@ -123,7 +123,7 @@ static long mtkfb_vsync_unlocked_ioctl(struct file *file, unsigned int cmd,
 				ret = -EFAULT;
 
 			up(&mtkfb_vsync_sem);
-			pr_debug("[MTKFB_VSYNC]: leave MTKFB_VSYNC_IOCTL, %d, ret:%d\n",
+			pr_no_debug("[MTKFB_VSYNC]: leave MTKFB_VSYNC_IOCTL, %d, ret:%d\n",
 				 __LINE__, ret);
 
 			return ret;
@@ -131,7 +131,7 @@ static long mtkfb_vsync_unlocked_ioctl(struct file *file, unsigned int cmd,
 #endif
 
 		if (down_interruptible(&mtkfb_vsync_sem)) {
-			pr_err("[mtkfb_vsync_ioctl] can't get semaphore,%d\n",
+			pr_no_err("[mtkfb_vsync_ioctl] can't get semaphore,%d\n",
 				__LINE__);
 			msleep(20);
 			return ret;
@@ -161,7 +161,7 @@ static int mtkfb_vsync_probe(struct platform_device *pdev)
 	struct class_device *class_dev = NULL;
 	int ret = -1;
 
-	pr_info("\n=== MTKFB_VSYNC probe ===\n");
+	pr_no_info("\n=== MTKFB_VSYNC probe ===\n");
 
 	if (alloc_chrdev_region(&mtkfb_vsync_devno, 0,
 				1, MTKFB_VSYNC_DEVNAME)) {
@@ -169,7 +169,7 @@ static int mtkfb_vsync_probe(struct platform_device *pdev)
 		return -EFAULT;
 	}
 
-	pr_info("get device major number (%d)\n", mtkfb_vsync_devno);
+	pr_no_info("get device major number (%d)\n", mtkfb_vsync_devno);
 
 	mtkfb_vsync_cdev = cdev_alloc();
 	mtkfb_vsync_cdev->owner = THIS_MODULE;
@@ -199,7 +199,7 @@ static int mtkfb_vsync_remove(struct platform_device *pdev)
 
 static void mtkfb_vsync_shutdown(struct platform_device *pdev)
 {
-	pr_info("mtkfb_vsync device shutdown\n");
+	pr_no_info("mtkfb_vsync device shutdown\n");
 }
 
 static int mtkfb_vsync_suspend(struct platform_device *pdev, pm_message_t mesg)

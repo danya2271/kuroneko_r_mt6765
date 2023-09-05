@@ -136,27 +136,27 @@ struct DumpFirstErrorStruct {
 
 #define CMDQ_LOG(string, args...) \
 do {			\
-	pr_notice("[CMDQ]"string, ##args); \
+	pr_no_notice("[CMDQ]"string, ##args); \
 	cmdq_core_save_first_dump("[CMDQ]"string, ##args); \
 } while (0)
 
 #define CMDQ_MSG(string, args...) \
 do {			\
 	if (cmdq_core_should_print_msg()) { \
-		pr_notice("[CMDQ]"string, ##args); \
+		pr_no_notice("[CMDQ]"string, ##args); \
 }			\
 } while (0)
 
 #define CMDQ_VERBOSE(string, args...) \
 do {			\
 	if (cmdq_core_should_print_msg()) { \
-		pr_debug("[CMDQ]"string, ##args); \
+		pr_no_debug("[CMDQ]"string, ##args); \
 }			\
 } while (0)
 
 #define CMDQ_ERR(string, args...) \
 do {			\
-	pr_notice("[CMDQ][ERR]"string, ##args); \
+	pr_no_notice("[CMDQ][ERR]"string, ##args); \
 	cmdq_core_save_first_dump("[CMDQ][ERR]"string, ##args); \
 } while (0)
 
@@ -166,7 +166,7 @@ do {			\
 do {			\
 	char dispatchedTag[50]; \
 	snprintf(dispatchedTag, 50, "CRDISPATCH_KEY:%s", tag); \
-	pr_notice("[CMDQ][AEE]"string, ##args); \
+	pr_no_notice("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_save_first_dump("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_turnoff_first_dump(); \
 	aee_kernel_warning_api(__FILE__, __LINE__, \
@@ -187,8 +187,8 @@ do {			\
 do {			\
 	char dispatchedTag[50]; \
 	snprintf(dispatchedTag, 50, "CRDISPATCH_KEY:%s", tag); \
-	pr_debug("[CMDQ][AEE] AEE not READY!!!"); \
-	pr_debug("[CMDQ][AEE]"string, ##args); \
+	pr_no_debug("[CMDQ][AEE] AEE not READY!!!"); \
+	pr_no_debug("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_save_first_dump("[CMDQ][AEE]"string, ##args); \
 	cmdq_core_turnoff_first_dump(); \
 } while (0);	\

@@ -52,7 +52,7 @@ do { \
 	if (evt) \
 		seq_printf(evt, fmt, ##args); \
 	if (!buff && !evt) { \
-		pr_info(fmt, ##args); \
+		pr_no_info(fmt, ##args); \
 	} \
 } while (0)
 
@@ -329,11 +329,11 @@ void mtk_btag_mictx_dump(void)
 	ret = mtk_btag_mictx_get_data(&iostat);
 
 	if (ret) {
-		pr_info("[BLOCK_TAG] Mictx: Get data failed %d\n", ret);
+		pr_no_info("[BLOCK_TAG] Mictx: Get data failed %d\n", ret);
 		return;
 	}
 
-	pr_info("[BLOCK_TAG] Mictx: %llu|%u|%u|%u|%u|%u|%u|%u|%u|%u|%u\n",
+	pr_no_info("[BLOCK_TAG] Mictx: %llu|%u|%u|%u|%u|%u|%u|%u|%u|%u|%u\n",
 		iostat.duration, iostat.q_depth, iostat.wl,
 		iostat.tp_req_r, iostat.tp_req_w,
 		iostat.tp_all_r, iostat.tp_all_w,
@@ -874,7 +874,7 @@ static int mtk_btag_sub_open(struct inode *inode, struct file *file)
 			struct dentry, d_u.d_alias);
 
 		if (entry && entry->d_parent) {
-			pr_notice("[BLOCK_TAG] %s: %s/%s\n", __func__,
+			pr_no_notice("[BLOCK_TAG] %s: %s/%s\n", __func__,
 				entry->d_parent->d_name.name,
 				entry->d_name.name);
 			m->private =
@@ -919,7 +919,7 @@ static ssize_t mtk_btag_mictx_sub_write(struct file *file,
 	else if (cmd[0] == '4')
 		mtk_btag_mictx_debug = 0;
 	else {
-		pr_info("[pidmap] invalid arg: 0x%x\n", cmd[0]);
+		pr_no_info("[pidmap] invalid arg: 0x%x\n", cmd[0]);
 		goto err;
 	}
 
@@ -967,7 +967,7 @@ struct mtk_blocktag *mtk_btag_alloc(const char *name,
 
 	btag = mtk_btag_find(name);
 	if (btag) {
-		pr_notice("[BLOCK_TAG] %s: blocktag %s already exists.\n",
+		pr_no_notice("[BLOCK_TAG] %s: blocktag %s already exists.\n",
 			__func__, name);
 		return NULL;
 	}
@@ -1055,7 +1055,7 @@ static int __init mtk_btag_early_memory_info(void)
 	start = memblock_start_of_DRAM();
 	end = memblock_end_of_DRAM();
 	mtk_btag_system_dram_size = (unsigned long long)(end - start);
-	pr_debug("[BLOCK_TAG] DRAM: %pa - %pa, size: 0x%llx\n", &start,
+	pr_no_debug("[BLOCK_TAG] DRAM: %pa - %pa, size: 0x%llx\n", &start,
 		&end, (unsigned long long)(end - start));
 	return 0;
 }
@@ -1079,7 +1079,7 @@ init:
 	if (mtk_btag_pagelogger)
 		memset(mtk_btag_pagelogger, -1, size);
 	else
-		pr_info(
+		pr_no_info(
 		"[BLOCK_TAG] blockio: fail to allocate mtk_btag_pagelogger\n");
 }
 
@@ -1175,7 +1175,7 @@ static int mtk_btag_init_procfs(void)
 	if (proc_entry)
 		proc_set_user(proc_entry, uid, gid);
 	else
-		pr_info("[BLOCK_TAG} %s: failed to initialize procfs", __func__);
+		pr_no_info("[BLOCK_TAG} %s: failed to initialize procfs", __func__);
 
 	return 0;
 }
@@ -1347,7 +1347,7 @@ void mtk_btag_mictx_enable(int enable)
 		mtk_btag_mictx =
 			kzalloc(sizeof(struct mtk_btag_mictx_struct), GFP_NOFS);
 		if (!mtk_btag_mictx) {
-			pr_info("[BLOCK_TAG] mtk_btag_mictx allocation fail, disabled.\n");
+			pr_no_info("[BLOCK_TAG] mtk_btag_mictx allocation fail, disabled.\n");
 			return;
 		}
 

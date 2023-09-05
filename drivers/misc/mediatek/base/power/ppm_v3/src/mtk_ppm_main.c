@@ -474,7 +474,7 @@ static void ppm_main_calc_new_limit(void)
 			ppm_main_info.client_info[PPM_CLIENT_DVFS].limit_cb) {
 		if (ppm_main_info.is_doe_enabled == 1) {
 			for_each_ppm_clusters(i) {
-				pr_debug(
+				pr_no_debug(
 					"[DoE] cl: %d max: %d min: %d\n",
 					i,
 					ppm_main_info.cluster_info[i].doe_max,
@@ -598,13 +598,6 @@ static void ppm_main_log_print(unsigned int policy_mask,
 		filter_log = true;
 		filter_cnt++;
 	}
-
-	if (!filter_log)
-		ppm_info("(0x%x)(%d)(%d)%s\n", policy_mask,
-			min_power_budget, root_cluster, msg);
-	else
-		ppm_ver("(0x%x)(%d)(%d)%s\n", policy_mask,
-			min_power_budget, root_cluster, msg);
 
 	prev_log_time = cur_time;
 }
@@ -777,8 +770,6 @@ int mt_ppm_main(void)
 				delta = ktime_to_us(
 					ktime_sub(ktime_get(), now));
 				ppm_profile_update_client_exec_time(to, delta);
-				ppm_dbg(TIME_PROFILE,
-					"notify dvfs time = %lld us\n", delta);
 				goto nofity_end;
 			} else if (notify_hps && !notify_dvfs) {
 				to = PPM_CLIENT_HOTPLUG;
@@ -798,8 +789,6 @@ int mt_ppm_main(void)
 				delta = ktime_to_us(
 					ktime_sub(ktime_get(), now));
 				ppm_profile_update_client_exec_time(to, delta);
-				ppm_dbg(TIME_PROFILE,
-					"notify hps time = %lld us\n", delta);
 				goto nofity_end;
 			}
 		}
@@ -816,10 +805,6 @@ int mt_ppm_main(void)
 				force_update_to_hps = 1;
 			delta = ktime_to_us(ktime_sub(ktime_get(), now));
 			ppm_profile_update_client_exec_time(i, delta);
-			ppm_dbg(TIME_PROFILE,
-				"%s callback done! time = %lld us\n",
-				(i == PPM_CLIENT_DVFS)
-				? "DVFS" : "HPS", delta);
 		}
 
 nofity_end:

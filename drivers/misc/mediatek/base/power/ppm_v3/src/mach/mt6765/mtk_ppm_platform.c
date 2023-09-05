@@ -84,7 +84,6 @@ static int ppm_cpu_freq_callback(struct notifier_block *nb,
 
 	switch (val) {
 	case CPUFREQ_POSTCHANGE:
-		ppm_dbg(DLPT, "%s: POSTCHANGE!, cpu = %d\n", __func__, cpu);
 		ppm_get_cluster_status(cl_status);
 		mt_ppm_dlpt_kick_PBM(cl_status, ppm_main_info.cluster_num);
 		break;
@@ -107,7 +106,6 @@ static int ppm_cpu_dead(unsigned int cpu)
 	int i;
 #endif
 
-	ppm_dbg(DLPT, "action = %s\n", __func__);
 	ppm_get_cluster_status(cl_status);
 #ifdef PPM_SSPM_SUPPORT
 	for_each_ppm_clusters(i)
@@ -125,7 +123,6 @@ static int ppm_cpu_up(unsigned int cpu)
 	int i;
 #endif
 
-	ppm_dbg(DLPT, "action = %s\n", __func__);
 	ppm_get_cluster_status(cl_status);
 #ifdef PPM_SSPM_SUPPORT
 	for_each_ppm_clusters(i)
@@ -296,11 +293,6 @@ unsigned int ppm_calc_total_power(struct ppm_cluster_status *cluster_status,
 			budget += total;
 			delta = ktime_sub(ktime_get(), now);
 
-			ppm_dbg(DLPT,
-				"%d:OP/V/C/Lkg/TO=%d/%d/%d/%d/%d(t=%lldus)\n",
-				i, opp, cluster_status[i].volt,
-				cluster_status[i].core_num,
-				lkg, total, ktime_to_us(delta));
 		}
 	}
 
@@ -309,7 +301,6 @@ unsigned int ppm_calc_total_power(struct ppm_cluster_status *cluster_status,
 		return -1; /* not found */
 	}
 
-	ppm_dbg(DLPT, "@%s: total budget = %d\n", __func__, budget);
 
 	return budget;
 }

@@ -54,7 +54,7 @@ int scp_awake_lock(enum scp_core_id scp_id)
 	unsigned int tmp;
 
 	if (scp_id >= SCP_CORE_TOTAL) {
-		pr_notice("%s: SCP ID >= SCP_CORE_TOTAL\n", __func__);
+		pr_no_notice("%s: SCP ID >= SCP_CORE_TOTAL\n", __func__);
 		return ret;
 	}
 
@@ -62,7 +62,7 @@ int scp_awake_lock(enum scp_core_id scp_id)
 	core_id = core_ids[scp_id];
 
 	if (is_scp_ready(scp_id) == 0) {
-		pr_notice("%s: %s not enabled\n", __func__, core_id);
+		pr_no_notice("%s: %s not enabled\n", __func__, core_id);
 		return ret;
 	}
 
@@ -75,19 +75,19 @@ int scp_awake_lock(enum scp_core_id scp_id)
 	}
 
 	/*set a direct IPI to awake SCP */
-	/*pr_debug("scp_awake_lock: try to awake %s\n", core_id);*/
+	/*pr_no_debug("scp_awake_lock: try to awake %s\n", core_id);*/
 	writel(0xA0 | (1 << AP_AWAKE_LOCK), INFRA_IRQ_SET);
 
 	count = 0;
 	while (++count != SCP_AWAKE_TIMEOUT) {
 		if (atomic_read(&scp_reset_status) == RESET_STATUS_START) {
-			pr_notice("%s: resetting scp, break\n", __func__);
+			pr_no_notice("%s: resetting scp, break\n", __func__);
 			break;
 		}
 
 		tmp = readl(INFRA_IRQ_SET);
 		if ((tmp & 0xf0) != 0xA0) {
-			pr_notice("%s: INFRA_IRQ_SET %x\n", __func__, tmp);
+			pr_no_notice("%s: INFRA_IRQ_SET %x\n", __func__, tmp);
 			break;
 		}
 		if (!((tmp & 0x0f) & (1 << AP_AWAKE_LOCK))) {
@@ -104,14 +104,14 @@ int scp_awake_lock(enum scp_core_id scp_id)
 		*scp_awake_count = *scp_awake_count + 1;
 
 	if (ret == -1) {
-		pr_notice("%s: awake %s fail..\n", __func__, core_id);
+		pr_no_notice("%s: awake %s fail..\n", __func__, core_id);
 		WARN_ON(1);
 #if SCP_RECOVERY_SUPPORT
 		if (scp_set_reset_status() == RESET_STATUS_STOP) {
-			pr_notice("%s: start to reset scp...\n", __func__);
+			pr_no_notice("%s: start to reset scp...\n", __func__);
 			scp_send_reset_wq(RESET_TYPE_AWAKE);
 		} else
-			pr_notice("%s: scp resetting\n", __func__);
+			pr_no_notice("%s: scp resetting\n", __func__);
 #endif
 	}
 
@@ -137,7 +137,7 @@ int scp_awake_unlock(enum scp_core_id scp_id)
 	unsigned int tmp;
 
 	if (scp_id >= SCP_CORE_TOTAL) {
-		pr_notice("%s: SCP ID >= SCP_CORE_TOTAL\n", __func__);
+		pr_no_notice("%s: SCP ID >= SCP_CORE_TOTAL\n", __func__);
 		return -1;
 	}
 
@@ -145,7 +145,7 @@ int scp_awake_unlock(enum scp_core_id scp_id)
 	core_id = core_ids[scp_id];
 
 	if (is_scp_ready(scp_id) == 0) {
-		pr_notice("%s: %s not enabled\n", __func__, core_id);
+		pr_no_notice("%s: %s not enabled\n", __func__, core_id);
 		return -1;
 	}
 
@@ -158,14 +158,14 @@ int scp_awake_unlock(enum scp_core_id scp_id)
 	}
 
 	/* WE1: set a direct IPI to release awake SCP */
-	/*pr_debug("scp_awake_lock: try to awake %s\n", core_id);*/
+	/*pr_no_debug("scp_awake_lock: try to awake %s\n", core_id);*/
 	writel(0xA0 | (1 << AP_AWAKE_UNLOCK), INFRA_IRQ_SET);
 
 	count = 0;
 	while (++count != SCP_AWAKE_TIMEOUT) {
 		tmp = readl(INFRA_IRQ_SET);
 		if ((tmp & 0xf0) != 0xA0) {
-			pr_notice("%s: INFRA7_IRQ_SET %x\n", __func__, tmp);
+			pr_no_notice("%s: INFRA7_IRQ_SET %x\n", __func__, tmp);
 			break;
 		}
 		if (!((tmp & 0x0f) & (1 << AP_AWAKE_UNLOCK))) {
@@ -180,7 +180,7 @@ int scp_awake_unlock(enum scp_core_id scp_id)
 	/* scp unlock awake success*/
 	if (ret != -1) {
 		if (*scp_awake_count <= 0)
-			pr_notice("%s:%s awake_count=%d NOT SYNC!\n",
+			pr_no_notice("%s:%s awake_count=%d NOT SYNC!\n",
 				__func__, core_id, *scp_awake_count);
 
 		if (*scp_awake_count > 0)
@@ -227,9 +227,9 @@ int scp_sys_full_reset(void)
 	unsigned int reset_timeout;
 	u32 tmp;
 
-	pr_notice("[SCP]full reset start\n");
+	pr_no_notice("[SCP]full reset start\n");
 
-	pr_notice("[SCP]enable sleep protection\n");
+	pr_no_notice("[SCP]enable sleep protection\n");
 	/*enable sleep protection*/
 	reset_timeout = SCP_SYS_RESET_TIMEOUT;
 	tmp = readl(INFRA_SLP_PROT_SET);
@@ -237,7 +237,7 @@ int scp_sys_full_reset(void)
 	dsb(SY);
 	if ((readl(INFRA_SLP_PROT_STAT) & INFRA_SLP_PROT_BITS)
 			!= INFRA_SLP_PROT_BITS) {
-		pr_notice("[SCP]waiting sleep protection\n");
+		pr_no_notice("[SCP]waiting sleep protection\n");
 		reset_timeout = SCP_SYS_RESET_TIMEOUT;
 		while ((reset_timeout > 0) &&
 			((readl(INFRA_SLP_PROT_STAT) & INFRA_SLP_PROT_BITS)
@@ -247,17 +247,17 @@ int scp_sys_full_reset(void)
 		}
 
 		if (reset_timeout == 0)
-			pr_notice("[SCP]sleep protection timeout\n");
+			pr_no_notice("[SCP]sleep protection timeout\n");
 	}
 
-	pr_notice("[SCP]set subsys reset\n");
+	pr_no_notice("[SCP]set subsys reset\n");
 	/*shut down scp subsys*/
 	reset_timeout = SCP_SYS_RESET_TIMEOUT;
 	tmp = readl(MODULE_RESET_STATUS);
 	writel(SUBSYS_RESET_BITS | tmp, MODULE_RESET_SET);
 	if ((readl(MODULE_RESET_STATUS) & SUBSYS_RESET_BITS)
 			!= SUBSYS_RESET_BITS) {
-		pr_notice("[SCP] sys reset waiting status...\n");
+		pr_no_notice("[SCP] sys reset waiting status...\n");
 		while ((reset_timeout > 0) &&
 			((readl(MODULE_RESET_STATUS) & SUBSYS_RESET_BITS)
 			!= SUBSYS_RESET_BITS)) {
@@ -266,20 +266,20 @@ int scp_sys_full_reset(void)
 		}
 
 		if (reset_timeout)
-			pr_notice("[SCP]full reset timeout\n");
+			pr_no_notice("[SCP]full reset timeout\n");
 	}
 
 	/*finish the shutdown process by clearing reset bit*/
-	pr_notice("[SCP]clear subsys reset\n");
+	pr_no_notice("[SCP]clear subsys reset\n");
 	tmp = readl(MODULE_RESET_CLR);
 	writel(SUBSYS_RESET_BITS | tmp, MODULE_RESET_CLR);
 
 	/*enable scp sram*/
-	pr_notice("[SCP]enable sram\n");
+	pr_no_notice("[SCP]enable sram\n");
 	scp_enable_sram();
 #endif
 
-	pr_notice("[SCP]copy scp to sram\n");
+	pr_no_notice("[SCP]copy scp to sram\n");
 	/*copy loader to scp sram*/
 	memcpy_to_scp(SCP_TCM, (const void *)(size_t)scp_loader_base_virt
 		, scp_region_info_copy.ap_loader_size);
@@ -288,13 +288,13 @@ int scp_sys_full_reset(void)
 		, sizeof(scp_region_info_copy));
 
 #if SCP_SYSTEM_RESET_SUPPORT
-	pr_notice("[SCP]disable sleep protection\n");
+	pr_no_notice("[SCP]disable sleep protection\n");
 	/*disable sleep protection*/
 	tmp = readl(INFRA_SLP_PROT_SET);
 	writel(~INFRA_SLP_PROT_BITS & tmp,
 		INFRA_SLP_PROT_SET);
 #endif
-	pr_notice("[SCP]full reset done\n");
+	pr_no_notice("[SCP]full reset done\n");
 	return 0;
 }
 #else

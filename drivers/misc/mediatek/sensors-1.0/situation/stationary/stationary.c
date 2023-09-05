@@ -37,7 +37,7 @@ static int stat_get_data(int *probability, int *status)
 
 	err = sensor_get_data_from_hub(ID_STATIONARY_DETECT, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp		= data.time_stamp;
@@ -56,7 +56,7 @@ static int stat_open_report_data(int open)
 #else
 
 #endif
-	pr_debug("%s : type=%d, open=%d\n",
+	pr_no_debug("%s : type=%d, open=%d\n",
 		__func__, ID_STATIONARY_DETECT, open);
 	ret = sensor_enable_to_hub(ID_STATIONARY_DETECT, open);
 	return ret;
@@ -72,7 +72,7 @@ static int stat_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("stat do not support flush\n");
+		pr_no_debug("stat do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_STATIONARY_DETECT,
 			(int64_t)event->time_stamp);
@@ -90,20 +90,20 @@ static int stat_local_init(void)
 	ctl.is_support_wake_lock = true;
 	err = situation_register_control_path(&ctl, ID_STATIONARY_DETECT);
 	if (err) {
-		pr_err("register stationary control path err\n");
+		pr_no_err("register stationary control path err\n");
 		goto exit;
 	}
 
 	data.get_data = stat_get_data;
 	err = situation_register_data_path(&data, ID_STATIONARY_DETECT);
 	if (err) {
-		pr_err("register stationary data path err\n");
+		pr_no_err("register stationary data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_STATIONARY_DETECT,
 		stat_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -130,7 +130,7 @@ static int __init stat_init(void)
 
 static void __exit stat_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(stat_init);

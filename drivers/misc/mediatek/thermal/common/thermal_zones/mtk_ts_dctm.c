@@ -39,12 +39,12 @@
 #define mtkts_dctm_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtkts_dctm_debug_log) {                \
-		pr_debug("[Thermal/TZ/DCTM]" fmt, ##args); \
+		pr_no_debug("[Thermal/TZ/DCTM]" fmt, ##args); \
 	}                                   \
 } while (0)
 
 #define mtkts_dctm_printk(fmt, args...) \
-pr_debug("[Thermal/TZ/DCTM]" fmt, ##args)
+pr_no_debug("[Thermal/TZ/DCTM]" fmt, ##args)
 
 /*=============================================================
  *Function prototype
@@ -283,7 +283,7 @@ static int mtkts_dctm_get_temp(struct thermal_zone_device *thermal, int *t)
 	}
 
 	if (t_ret < 0)
-		pr_notice("%s, wakeup_ta_algo out of memory\n", __func__);
+		pr_no_notice("%s, wakeup_ta_algo out of memory\n", __func__);
 
 	if ((int)*t >= polling_trip_temp1)
 		thermal->polling_delay = interval * 1000;
@@ -972,7 +972,7 @@ static int __init mtkts_dctm_init(void)
 #ifdef CONFIG_PM
 	ret = register_pm_notifier(&dctm_pm_notifier_func);
 	if (ret)
-		pr_notice("Failed to register dctm PM notifier.\n");
+		pr_no_notice("Failed to register dctm PM notifier.\n");
 #endif
 	return 0;
 }

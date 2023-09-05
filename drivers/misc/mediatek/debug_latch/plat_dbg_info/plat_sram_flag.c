@@ -40,7 +40,7 @@ static int check_sram_base(void)
 	if (plat)
 		return 0;
 
-	pr_notice("%s:%d: sram_base == 0x0\n", __func__, __LINE__);
+	pr_no_notice("%s:%d: sram_base == 0x0\n", __func__, __LINE__);
 	return -1;
 }
 
@@ -63,13 +63,13 @@ int set_sram_flag_etb_user(unsigned int etb_id, unsigned int user_id)
 		return -1;
 
 	if (etb_id >= MAX_ETB_NUM) {
-		pr_notice("%s:%d: etb_id > MAX_ETB_NUM\n",
+		pr_no_notice("%s:%d: etb_id > MAX_ETB_NUM\n",
 				__func__, __LINE__);
 		return -1;
 	}
 
 	if (user_id >= MAX_ETB_USER_NUM) {
-		pr_notice("%s:%d: user_id > MAX_ETB_USER_NUM\n",
+		pr_no_notice("%s:%d: user_id > MAX_ETB_USER_NUM\n",
 				__func__, __LINE__);
 		return -1;
 	}
@@ -110,7 +110,7 @@ static ssize_t plat_sram_flag_dump_show(struct device_driver *driver,
 	char *wp = buf;
 
 	if (!plat) {
-		pr_notice("%s:%d: sram_base == 0x0\n", __func__, __LINE__);
+		pr_no_notice("%s:%d: sram_base == 0x0\n", __func__, __LINE__);
 		return snprintf(buf, PAGE_SIZE, "sram_base == 0x0\n");
 	}
 
@@ -160,7 +160,7 @@ static int __init plat_sram_flag_init(void)
 
 	size = get_dbg_info_size(PLAT_SRAM_FLAG_KEY);
 	if (size != sizeof(struct plat_sram_flag)) {
-		pr_debug("[SRAM FLAG] Can't match plat_sram_flag size\n");
+		pr_no_debug("[SRAM FLAG] Can't match plat_sram_flag size\n");
 		return -EINVAL;
 	}
 
@@ -171,7 +171,7 @@ static int __init plat_sram_flag_init(void)
 	ret = driver_create_file(&plat_sram_flag_drv.driver,
 			&driver_attr_plat_sram_flag_dump);
 	if (ret)
-		pr_notice("%s:%d: driver_create_file failed.\n",
+		pr_no_notice("%s:%d: driver_create_file failed.\n",
 				__func__, __LINE__);
 
 

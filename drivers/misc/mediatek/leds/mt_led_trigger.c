@@ -506,14 +506,14 @@ int mt_led_trigger_register(struct mt_led_ops *ops)
 
 	ret = mt_led_check_ops(ops);
 	if (ret < 0) {
-		pr_notice("%s all ops need to be implment\n", __func__);
+		pr_no_notice("%s all ops need to be implment\n", __func__);
 		return -EINVAL;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(mt_led_trigger); i++) {
 		ret = led_trigger_register(&mt_led_trigger[i]);
 		if (ret < 0) {
-			pr_notice("%s register led %d fail\n", __func__, i);
+			pr_no_notice("%s register led %d fail\n", __func__, i);
 			goto out_led_trigger;
 		}
 	}

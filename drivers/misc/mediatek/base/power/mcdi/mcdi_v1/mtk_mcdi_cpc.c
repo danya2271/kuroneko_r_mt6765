@@ -419,15 +419,15 @@ void mcdi_cpc_init(void)
 		ret = snprintf(cpc.cpu[i].name, CPC_LAT_NAME_SIZE,
 			       get_cpu_type_str(i));
 		if (ret < 0)
-			pr_info("[mcdi] [%s] cpc cpu name fail!\n", __func__);
+			pr_no_info("[mcdi] [%s] cpc cpu name fail!\n", __func__);
 		ret = snprintf(cpc.cluster[i].name, CPC_LAT_NAME_SIZE,
 			       "cluster off(%s)", get_cpu_type_str(i));
 		if (ret < 0)
-			pr_info("[mcdi] [%s] cpc cluster name fail!\n", __func__);
+			pr_no_info("[mcdi] [%s] cpc cluster name fail!\n", __func__);
 	}
 	ret = snprintf(cpc.mcusys.name, CPC_LAT_NAME_SIZE, "mcusys");
 	if (ret < 0)
-		pr_info("[mcdi] [%s] cpc mcusys name fail!\n", __func__);
+		pr_no_info("[mcdi] [%s] cpc mcusys name fail!\n", __func__);
 }
 
 #else

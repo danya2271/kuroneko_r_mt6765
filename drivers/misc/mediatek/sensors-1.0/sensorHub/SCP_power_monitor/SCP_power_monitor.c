@@ -23,7 +23,7 @@ void scp_power_monitor_notify(uint8_t action, void *data)
 			continue;
 		}
 		c->notifier_call(action, data);
-		pr_debug("%s, module name:%s notify\n", __func__, c->name);
+		pr_no_debug("%s, module name:%s notify\n", __func__, c->name);
 	}
 	switch (action) {
 	case SENSOR_POWER_DOWN:
@@ -55,14 +55,14 @@ int scp_power_monitor_register(struct scp_power_monitor *monitor)
 
 	list_add_tail(&monitor->list, &power_monitor_list);
 	if (atomic_read(&power_status) == SENSOR_POWER_UP) {
-		pr_debug("scp_power_monitor_notify, module name:%s notify\n",
+		pr_no_debug("scp_power_monitor_notify, module name:%s notify\n",
 			monitor->name);
 		monitor->notifier_call(SENSOR_POWER_UP, NULL);
 	}
 	spin_unlock_irq(&pm_lock);
 	return err;
  out:
-	pr_err("%s %s register fail\n", __func__, monitor->name);
+	pr_no_err("%s %s register fail\n", __func__, monitor->name);
 	spin_unlock_irq(&pm_lock);
 	return err;
 }

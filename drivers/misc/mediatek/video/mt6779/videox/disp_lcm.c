@@ -35,7 +35,7 @@ int _is_lcm_inited(struct disp_lcm_handle *plcm)
 			return 1;
 	}
 
-	DISP_PR_INFO("WARNING, invalid lcm handle: %p\n", plcm);
+	DISP_pr_no_info("WARNING, invalid lcm handle: %p\n", plcm);
 	return 0;
 }
 
@@ -44,7 +44,7 @@ struct LCM_PARAMS *_get_lcm_params_by_handle(struct disp_lcm_handle *plcm)
 	if (plcm)
 		return plcm->params;
 
-	DISP_PR_INFO("WARNING, invalid lcm handle:%p\n", plcm);
+	DISP_pr_no_info("WARNING, invalid lcm handle:%p\n", plcm);
 	return NULL;
 }
 
@@ -53,7 +53,7 @@ struct LCM_DRIVER *_get_lcm_driver_by_handle(struct disp_lcm_handle *plcm)
 	if (plcm)
 		return plcm->drv;
 
-	DISP_PR_INFO("WARNING, invalid lcm handle:%p\n", plcm);
+	DISP_pr_no_info("WARNING, invalid lcm handle:%p\n", plcm);
 	return NULL;
 }
 
@@ -63,7 +63,7 @@ void _dump_lcm_info(struct disp_lcm_handle *plcm)
 	struct LCM_PARAMS *p = NULL;
 
 	if (plcm == NULL) {
-		DISP_PR_ERR("plcm is null\n");
+		DISP_pr_no_err("plcm is null\n");
 		return;
 	}
 
@@ -241,7 +241,7 @@ void parse_lcm_params_dt_node(struct device_node *np,
 			      struct LCM_PARAMS *lcm_params)
 {
 	if (!lcm_params) {
-		pr_err("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
+		pr_no_err("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
@@ -566,19 +566,19 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	struct LCM_DATA *lcm_data;
 
 	if (!lcm_dts) {
-		pr_err("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
+		pr_no_err("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	/* parse LCM init table */
 	len = disp_of_getprop_u8(np, "init", dts);
 	if (len <= 0) {
-		pr_err("%s:%d: Cannot find LCM init table, cannot skip it!\n",
+		pr_no_err("%s:%d: Cannot find LCM init table, cannot skip it!\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	if (len > (sizeof(struct LCM_DATA)*INIT_SIZE)) {
-		pr_err("%s:%d: LCM init table overflow: %d\n",
+		pr_no_err("%s:%d: LCM init table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -623,14 +623,14 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 				break;
 
 			default:
-				pr_err("%s/%d: %d\n",
+				pr_no_err("%s/%d: %d\n",
 					__FILE__, __LINE__, lcm_data[i].type);
 				return;
 			}
 			break;
 
 		default:
-			pr_err("%s/%d: %d\n",
+			pr_no_err("%s/%d: %d\n",
 				__FILE__, __LINE__, lcm_data[i].func);
 			return;
 		}
@@ -645,7 +645,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	}
 	lcm_dts->init_size = i + 1;
 	if (lcm_dts->init_size > INIT_SIZE) {
-		pr_err("%s:%d: LCM init table overflow: %d\n",
+		pr_no_err("%s:%d: LCM init table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -653,11 +653,11 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	/* parse LCM compare_id table */
 	len = disp_of_getprop_u8(np, "compare_id", dts);
 	if (len <= 0) {
-		pr_warn("%s:%d: Cannot find LCM compare_id table, skip it!\n",
+		pr_no_warn("%s:%d: Cannot find LCM compare_id table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*COMPARE_ID_SIZE)) {
-			pr_err("%s:%d: LCM compare_id table overflow: %d\n",
+			pr_no_err("%s:%d: LCM compare_id table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -704,7 +704,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 					break;
 
 				default:
-					pr_err("%s:%d: %d\n",
+					pr_no_err("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						(unsigned int)lcm_data[i].type);
 					return;
@@ -712,7 +712,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 				break;
 
 			default:
-				pr_err("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_err("%s:%d: %d\n", __FILE__, __LINE__,
 				       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -727,7 +727,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 		}
 		lcm_dts->compare_id_size = i + 1;
 		if (lcm_dts->compare_id_size > COMPARE_ID_SIZE) {
-			pr_err("%s:%d: LCM compare_id table overflow: %d\n",
+			pr_no_err("%s:%d: LCM compare_id table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -736,12 +736,12 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	/* parse LCM suspend table */
 	len = disp_of_getprop_u8(np, "suspend", dts);
 	if (len <= 0) {
-		pr_err("%s:%d: Cannot find LCM suspend table, cannot skip it!\n",
+		pr_no_err("%s:%d: Cannot find LCM suspend table, cannot skip it!\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	if (len > (sizeof(struct LCM_DATA)*SUSPEND_SIZE)) {
-		pr_err("%s:%d: LCM suspend table overflow: %d\n",
+		pr_no_err("%s:%d: LCM suspend table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -783,14 +783,14 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 				break;
 
 			default:
-				pr_err("%s:%d: %d\n",
+				pr_no_err("%s:%d: %d\n",
 					__FILE__, __LINE__, lcm_data[i].type);
 				return;
 			}
 			break;
 
 		default:
-			pr_err("%s:%d: %d\n", __FILE__, __LINE__,
+			pr_no_err("%s:%d: %d\n", __FILE__, __LINE__,
 			       (unsigned int)lcm_data[i].func);
 			return;
 		}
@@ -805,7 +805,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	}
 	lcm_dts->suspend_size = i + 1;
 	if (lcm_dts->suspend_size > SUSPEND_SIZE) {
-		pr_err("%s:%d: LCM suspend table overflow: %d\n",
+		pr_no_err("%s:%d: LCM suspend table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -813,11 +813,11 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	/* parse LCM backlight table */
 	len = disp_of_getprop_u8(np, "backlight", dts);
 	if (len <= 0) {
-		pr_err("%s:%d: Cannot find LCM backlight table, skip it!\n",
+		pr_no_err("%s:%d: Cannot find LCM backlight table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*BACKLIGHT_SIZE)) {
-			pr_err("%s:%d: LCM backlight table overflow: %d\n",
+			pr_no_err("%s:%d: LCM backlight table overflow: %d\n",
 				__FILE__, __LINE__,	len);
 			return;
 		}
@@ -854,7 +854,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 					break;
 
 				default:
-					pr_err("%s:%d: %d\n",
+					pr_no_err("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						lcm_data[i].type);
 					return;
@@ -862,7 +862,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 				break;
 
 			default:
-				pr_err("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_err("%s:%d: %d\n", __FILE__, __LINE__,
 				       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -877,7 +877,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 		}
 		lcm_dts->backlight_size = i + 1;
 		if (lcm_dts->backlight_size > BACKLIGHT_SIZE) {
-			pr_err("%s:%d: LCM backlight table overflow: %d\n",
+			pr_no_err("%s:%d: LCM backlight table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -886,11 +886,11 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 	/* parse LCM backlight cmdq table */
 	len = disp_of_getprop_u8(np, "backlight_cmdq", dts);
 	if (len <= 0) {
-		pr_err("%s:%d: Cannot find LCM backlight cmdq table, skip it!\n",
+		pr_no_err("%s:%d: Cannot find LCM backlight cmdq table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*BACKLIGHT_CMDQ_SIZE)) {
-			pr_err("%s:%d: LCM backlight cmdq table overflow: %d\n",
+			pr_no_err("%s:%d: LCM backlight cmdq table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -927,14 +927,14 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 					break;
 
 				default:
-					pr_err("%s:%d: %d\n",
+					pr_no_err("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						lcm_data[i].type);
 					return;
 				}
 				break;
 			default:
-				pr_err("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_err("%s:%d: %d\n", __FILE__, __LINE__,
 				       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -949,7 +949,7 @@ void parse_lcm_ops_dt_node(struct device_node *np, struct LCM_DTS *lcm_dts,
 		}
 		lcm_dts->backlight_cmdq_size = i + 1;
 		if (lcm_dts->backlight_cmdq_size > BACKLIGHT_CMDQ_SIZE) {
-			DISP_PR_INFO("%s:%d: LCM BL cmdq table overflow: %d\n",
+			DISP_pr_no_info("%s:%d: LCM BL cmdq table overflow: %d\n",
 				     __FILE__, __LINE__, len);
 			return;
 		}
@@ -968,7 +968,7 @@ int check_lcm_node_from_DT(void)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np) {
-		pr_err("LCM PARAMS DT node: Not found\n");
+		pr_no_err("LCM PARAMS DT node: Not found\n");
 		return -1;
 	}
 
@@ -979,7 +979,7 @@ int check_lcm_node_from_DT(void)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np) {
-		pr_err("LCM OPS DT node: Not found\n");
+		pr_no_err("LCM OPS DT node: Not found\n");
 		return -1;
 	}
 
@@ -994,7 +994,7 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	struct LCM_DTS *parse_dts = &lcm_dts;
 
 	if (!lcm_drv) {
-		pr_err("%s:%d: Error access to LCM_DRIVER(NULL)\n",
+		pr_no_err("%s:%d: Error access to LCM_DRIVER(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
@@ -1008,7 +1008,7 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np)
-		pr_err("LCM PARAMS DT node: Not found\n");
+		pr_no_err("LCM PARAMS DT node: Not found\n");
 	else
 		parse_lcm_params_dt_node(np, &(parse_dts->params));
 
@@ -1019,14 +1019,14 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np)
-		pr_err("LCM OPS DT node: Not found\n");
+		pr_no_err("LCM OPS DT node: Not found\n");
 	else
 		parse_lcm_ops_dt_node(np, parse_dts, tmp_dts);
 
 	if (lcm_drv->parse_dts)
 		lcm_drv->parse_dts(parse_dts, 1);
 	else
-		pr_err("LCM set_params not implemented!!!\n");
+		pr_no_err("LCM set_params not implemented!!!\n");
 }
 #endif /* MTK_LCM_DEVICE_TREE_SUPPORT */
 
@@ -1053,7 +1053,7 @@ struct disp_lcm_handle *disp_lcm_probe(char *plcm_name,
 		lcm_drv = &lcm_common_drv;
 		lcm_drv->name = lcm_name_list[0];
 		if (strcmp(lcm_drv->name, plcm_name)) {
-			DISP_PR_ERR("LCM Driver: kernel(%s)!=LK(%s)\n",
+			DISP_pr_no_err("LCM Driver: kernel(%s)!=LK(%s)\n",
 				    lcm_drv->name, plcm_name);
 			return NULL;
 		}
@@ -1073,7 +1073,7 @@ struct disp_lcm_handle *disp_lcm_probe(char *plcm_name,
 	}
 #endif
 	if (_lcm_count() == 0) {
-		DISP_PR_ERR("no lcm driver defined in linux kernel driver\n");
+		DISP_pr_no_err("no lcm driver defined in linux kernel driver\n");
 		return NULL;
 	} else if (_lcm_count() == 1) {
 		if (plcm_name == NULL) {
@@ -1085,7 +1085,7 @@ struct disp_lcm_handle *disp_lcm_probe(char *plcm_name,
 		} else {
 			lcm_drv = lcm_driver_list[0];
 			if (strcmp(lcm_drv->name, plcm_name)) {
-				DISP_PR_ERR("LCM Driver: kernel(%s)!=LK(%s)\n",
+				DISP_pr_no_err("LCM Driver: kernel(%s)!=LK(%s)\n",
 					    lcm_drv->name, plcm_name);
 				return NULL;
 			}
@@ -1117,7 +1117,7 @@ struct disp_lcm_handle *disp_lcm_probe(char *plcm_name,
 				}
 			}
 			if (!isLCMFound) {
-				DISP_PR_ERR("find no lcm driver:%s in kernel\n",
+				DISP_pr_no_err("find no lcm driver:%s in kernel\n",
 					    plcm_name);
 			} else if (!is_lcm_inited) {
 				isLCMInited = false;
@@ -1131,7 +1131,7 @@ check_lcm_node_done:
 #endif
 
 	if (isLCMFound == false) {
-		DISP_PR_ERR("FATAL ERROR! No LCM Driver defined\n");
+		DISP_pr_no_err("FATAL ERROR! No LCM Driver defined\n");
 		return NULL;
 	}
 
@@ -1145,7 +1145,7 @@ check_lcm_node_done:
 		plcm->is_inited = isLCMInited;
 		plcm->index = lcmindex;
 	} else {
-		DISP_PR_ERR("kzalloc plcm and plcm->params failed\n");
+		DISP_pr_no_err("kzalloc plcm and plcm->params failed\n");
 		goto fail;
 	}
 
@@ -1175,7 +1175,7 @@ check_lcm_node_done:
 		return plcm;
 	}
 
-	DISP_PR_ERR("LCM Interface[%d] didn't define any lcm driver\n", lcm_id);
+	DISP_pr_no_err("LCM Interface[%d] didn't define any lcm driver\n", lcm_id);
 fail:
 	kfree(plcm);
 	kfree(lcm_param);
@@ -1199,7 +1199,7 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 	DISPCHECK("plcm_name=%s is_lcm_inited %d\n", plcm_name, is_lcm_inited);
 
 	if (_lcm_count() < 2) {
-		DISP_PR_ERR("no ext lcm driver defined in kernel driver\n");
+		DISP_pr_no_err("no ext lcm driver defined in kernel driver\n");
 		return NULL;
 	} else if (_lcm_count() == 2) {
 		if (plcm_name == NULL) {
@@ -1210,7 +1210,7 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 			isLCMInited = false;
 			DISPCHECK("EXT LCM Name NULL\n");
 #else
-			DISP_PR_INFO("No CONFIG_MTK_DUAL_DISPLAY_SUPPORT\n");
+			DISP_pr_no_info("No CONFIG_MTK_DUAL_DISPLAY_SUPPORT\n");
 			return NULL;
 #endif
 
@@ -1225,8 +1225,8 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 				}
 			}
 			if (lcm_drv == NULL) {
-				DISP_PR_ERR("Cannot find EXT_LCM Driver.");
-				DISP_PR_ERR("The LK ext lcm name is(%s)\n",
+				DISP_pr_no_err("Cannot find EXT_LCM Driver.");
+				DISP_pr_no_err("The LK ext lcm name is(%s)\n",
 					    plcm_name);
 				return NULL;
 			}
@@ -1245,7 +1245,7 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 	}
 
 	if (isLCMFound == false) {
-		DISP_PR_ERR("FATAL ERROR! No EXT LCM Driver defined\n");
+		DISP_pr_no_err("FATAL ERROR! No EXT LCM Driver defined\n");
 		return NULL;
 	}
 
@@ -1259,7 +1259,7 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 		plcm->is_inited = isLCMInited;
 		plcm->index = lcmindex;
 	} else {
-		DISP_PR_ERR("kzalloc plcm and plcm->params failed\n");
+		DISP_pr_no_err("kzalloc plcm and plcm->params failed\n");
 		goto fail;
 	}
 
@@ -1279,7 +1279,7 @@ struct disp_lcm_handle *disp_ext_lcm_probe(char *plcm_name,
 		return plcm;
 	}
 
-	DISP_PR_ERR("EXT LCM Interface [%d] didn't define any lcm driver\n",
+	DISP_pr_no_err("EXT LCM Interface [%d] didn't define any lcm driver\n",
 		    lcm_id);
 
 fail:
@@ -1295,7 +1295,7 @@ int disp_lcm_init(struct disp_lcm_handle *plcm, int force)
 	DISPFUNC();
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_ERR("plcm is null\n");
+		DISP_pr_no_err("plcm is null\n");
 		return -1;
 	}
 
@@ -1314,7 +1314,7 @@ int disp_lcm_init(struct disp_lcm_handle *plcm, int force)
 			lcm_drv->init();
 		}
 	} else {
-		DISP_PR_ERR("FATAL ERROR, lcm_drv->init is null\n");
+		DISP_pr_no_err("FATAL ERROR, lcm_drv->init is null\n");
 		return -1;
 	}
 
@@ -1348,7 +1348,7 @@ int disp_lcm_update(struct disp_lcm_handle *plcm, int x, int y, int w, int h,
 
 	DISPDBGFUNC();
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_ERR("lcm_drv is null\n");
+		DISP_pr_no_err("lcm_drv is null\n");
 		return -1;
 	}
 
@@ -1357,7 +1357,7 @@ int disp_lcm_update(struct disp_lcm_handle *plcm, int x, int y, int w, int h,
 		lcm_drv->update(x, y, w, h);
 	} else {
 		if (!disp_lcm_is_video_mode(plcm))
-			DISP_PR_ERR("cmd mode but lcm_drv->update is null\n");
+			DISP_pr_no_err("cmd mode but lcm_drv->update is null\n");
 		return -1;
 	}
 
@@ -1376,10 +1376,10 @@ int disp_lcm_esd_check(struct disp_lcm_handle *plcm)
 		if (lcm_drv->esd_check)
 			return lcm_drv->esd_check();
 
-		DISP_PR_ERR("FATAL ERROR, lcm_drv->esd_check is null\n");
+		DISP_pr_no_err("FATAL ERROR, lcm_drv->esd_check is null\n");
 		return 0;
 	}
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return 0;
 }
 
@@ -1399,7 +1399,7 @@ int disp_lcm_esd_recover(struct disp_lcm_handle *plcm)
 
 		return 0;
 	}
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return -1;
 }
 
@@ -1413,7 +1413,7 @@ int disp_lcm_suspend(struct disp_lcm_handle *plcm)
 		if (lcm_drv->suspend) {
 			lcm_drv->suspend();
 		} else {
-			DISP_PR_ERR("FATAL ERROR, lcm_drv->suspend is null\n");
+			DISP_pr_no_err("FATAL ERROR, lcm_drv->suspend is null\n");
 			return -1;
 		}
 
@@ -1422,7 +1422,7 @@ int disp_lcm_suspend(struct disp_lcm_handle *plcm)
 
 		return 0;
 	}
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return -1;
 }
 
@@ -1440,13 +1440,13 @@ int disp_lcm_resume(struct disp_lcm_handle *plcm)
 		if (lcm_drv->resume) {
 			lcm_drv->resume();
 		} else {
-			DISP_PR_ERR("FATAL ERROR, lcm_drv->resume is null\n");
+			DISP_pr_no_err("FATAL ERROR, lcm_drv->resume is null\n");
 			return -1;
 		}
 
 		return 0;
 	}
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return -1;
 }
 
@@ -1460,13 +1460,13 @@ int disp_lcm_aod(struct disp_lcm_handle *plcm, int enter)
 		if (lcm_drv->aod) {
 			lcm_drv->aod(enter);
 		} else {
-			DISP_PR_ERR("FATAL ERROR, lcm_drv->aod is null\n");
+			DISP_pr_no_err("FATAL ERROR, lcm_drv->aod is null\n");
 			return -1;
 		}
 		return 0;
 	}
 
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return -1;
 }
 
@@ -1481,7 +1481,7 @@ int disp_lcm_is_support_adjust_fps(struct disp_lcm_handle *plcm)
 		else
 			return 0;
 	}
-	DISP_PR_ERR("lcm not initialied\n");
+	DISP_pr_no_err("lcm not initialied\n");
 	return 0;
 }
 
@@ -1496,7 +1496,7 @@ int disp_lcm_adjust_fps(void *cmdq, struct disp_lcm_handle *plcm, int fps)
 			return 0;
 		}
 	}
-	DISP_PR_ERR("lcm not initialied\n");
+	DISP_pr_no_err("lcm not initialied\n");
 	return -1;
 }
 
@@ -1507,7 +1507,7 @@ int disp_lcm_set_backlight(struct disp_lcm_handle *plcm,
 
 	DISPFUNC();
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_ERR("lcm_drv is null\n");
+		DISP_pr_no_err("lcm_drv is null\n");
 		return -1;
 	}
 
@@ -1515,7 +1515,7 @@ int disp_lcm_set_backlight(struct disp_lcm_handle *plcm,
 	if (lcm_drv->set_backlight_cmdq) {
 		lcm_drv->set_backlight_cmdq(handle, level);
 	} else {
-		DISP_PR_ERR("FATAL ERROR, lcm_drv->set_backlight is null\n");
+		DISP_pr_no_err("FATAL ERROR, lcm_drv->set_backlight is null\n");
 		return -1;
 	}
 
@@ -1528,12 +1528,12 @@ int disp_lcm_get_hbm_state(struct disp_lcm_handle *plcm)
 		return -1;
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_INFO("lcm_drv is null\n");
+		DISP_pr_no_info("lcm_drv is null\n");
 		return -1;
 	}
 
 	if (!plcm->drv->get_hbm_state) {
-		DISP_PR_INFO("FATAL ERROR, lcm_drv->get_hbm_state is null\n");
+		DISP_pr_no_info("FATAL ERROR, lcm_drv->get_hbm_state is null\n");
 		return -1;
 	}
 
@@ -1546,12 +1546,12 @@ int disp_lcm_get_hbm_wait(struct disp_lcm_handle *plcm)
 		return -1;
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_INFO("lcm_drv is null\n");
+		DISP_pr_no_info("lcm_drv is null\n");
 		return -1;
 	}
 
 	if (!plcm->drv->get_hbm_wait) {
-		DISP_PR_INFO("FATAL ERROR, lcm_drv->get_hbm_wait is null\n");
+		DISP_pr_no_info("FATAL ERROR, lcm_drv->get_hbm_wait is null\n");
 		return -1;
 	}
 
@@ -1564,12 +1564,12 @@ int disp_lcm_set_hbm_wait(bool wait, struct disp_lcm_handle *plcm)
 		return -1;
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_INFO("lcm_drv is null\n");
+		DISP_pr_no_info("lcm_drv is null\n");
 		return -1;
 	}
 
 	if (!plcm->drv->set_hbm_wait) {
-		DISP_PR_INFO("FATAL ERROR, lcm_drv->set_hbm_wait is null\n");
+		DISP_pr_no_info("FATAL ERROR, lcm_drv->set_hbm_wait is null\n");
 		return -1;
 	}
 
@@ -1583,12 +1583,12 @@ int disp_lcm_set_hbm(bool en, struct disp_lcm_handle *plcm, void *qhandle)
 		return -1;
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_INFO("lcm_drv is null\n");
+		DISP_pr_no_info("lcm_drv is null\n");
 		return -1;
 	}
 
 	if (!plcm->drv->set_hbm_cmdq) {
-		DISP_PR_INFO("FATAL ERROR, lcm_drv->set_hbm_cmdq is null\n");
+		DISP_pr_no_info("FATAL ERROR, lcm_drv->set_hbm_cmdq is null\n");
 		return -1;
 	}
 
@@ -1605,7 +1605,7 @@ unsigned int disp_lcm_get_hbm_time(bool en, struct disp_lcm_handle *plcm)
 		return -1;
 
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_INFO("lcm_drv is null\n");
+		DISP_pr_no_info("lcm_drv is null\n");
 		return -1;
 	}
 
@@ -1643,14 +1643,14 @@ unsigned int disp_lcm_ATA(struct disp_lcm_handle *plcm)
 
 			ret = lcm_drv->ata_check(NULL);
 		} else {
-			DISP_PR_ERR("lcm_drv->ata_check is null\n");
+			DISP_pr_no_err("lcm_drv->ata_check is null\n");
 			return 0;
 		}
 
 		return ret;
 	}
 
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return 0;
 }
 
@@ -1661,18 +1661,18 @@ void *disp_lcm_switch_mode(struct disp_lcm_handle *plcm, int mode)
 
 	/* DISPFUNC(); */
 	if (!_is_lcm_inited(plcm)) {
-		DISP_PR_ERR("lcm_drv is null\n");
+		DISP_pr_no_err("lcm_drv is null\n");
 		return NULL;
 	}
 
 	if (plcm->params->dsi.switch_mode_enable == 0) {
-		DISP_PR_ERR("Not enable switch in lcm_get_params function\n");
+		DISP_pr_no_err("Not enable switch in lcm_get_params function\n");
 		return NULL;
 	}
 
 	lcm_drv = plcm->drv;
 	if (!lcm_drv->switch_mode) {
-		DISP_PR_ERR("FATAL ERROR, lcm_drv->switch_mode is null\n");
+		DISP_pr_no_err("FATAL ERROR, lcm_drv->switch_mode is null\n");
 		return NULL;
 	}
 
@@ -1700,7 +1700,7 @@ int disp_lcm_is_video_mode(struct disp_lcm_handle *plcm)
 	case LCM_TYPE_DPI:
 		return 1;
 	default:
-		DISP_PR_INFO("[LCM] TYPE: unknown\n");
+		DISP_pr_no_info("[LCM] TYPE: unknown\n");
 		break;
 	}
 
@@ -1713,7 +1713,7 @@ int disp_lcm_is_video_mode(struct disp_lcm_handle *plcm)
 		case BURST_VDO_MODE:
 			return 1;
 		default:
-			DISP_PR_INFO("[LCM] DSI Mode: Unknown\n");
+			DISP_pr_no_info("[LCM] DSI Mode: Unknown\n");
 			break;
 		}
 	}
@@ -1735,14 +1735,14 @@ int disp_lcm_set_lcm_cmd(struct disp_lcm_handle *plcm, void *cmdq_handle,
 			lcm_drv->set_lcm_cmd(cmdq_handle, lcm_cmd, lcm_count,
 					     lcm_value);
 		} else {
-			DISP_PR_ERR("lcm_drv->set_lcm_cmd is null\n");
+			DISP_pr_no_err("lcm_drv->set_lcm_cmd is null\n");
 			return -1;
 		}
 
 		return 0;
 	}
 
-	DISP_PR_ERR("lcm_drv is null\n");
+	DISP_pr_no_err("lcm_drv is null\n");
 	return -1;
 }
 
@@ -1755,7 +1755,7 @@ int disp_lcm_is_partial_support(struct disp_lcm_handle *plcm)
 		if (lcm_drv->validate_roi)
 			return 1;
 	}
-	/* DISP_PR_ERR("Not support partial update\n"); */
+	/* DISP_pr_no_err("Not support partial update\n"); */
 	return 0;
 }
 
@@ -1770,9 +1770,9 @@ int disp_lcm_validate_roi(struct disp_lcm_handle *plcm, int *x, int *y,
 			lcm_drv->validate_roi(x, y, w, h);
 			return 0;
 		}
-		DISP_PR_ERR("Not support partial roi\n");
+		DISP_pr_no_err("Not support partial roi\n");
 		return -1;
 	}
-	DISP_PR_ERR("validate roi lcm_drv is null\n");
+	DISP_pr_no_err("validate roi lcm_drv is null\n");
 	return -1;
 }

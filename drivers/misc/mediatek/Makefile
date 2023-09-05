@@ -1,5 +1,5 @@
 export MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
-KBUILD_CFLAGS += -Wno-return-type -Wno-implicit-int
+KBUILD_CFLAGS += -Wno-return-type -Wno-implicit-int -Wno-implicit-function-declaration
 subdir-ccflags-y += -Werror
 subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include
 subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat/$(MTK_PLATFORM)/include

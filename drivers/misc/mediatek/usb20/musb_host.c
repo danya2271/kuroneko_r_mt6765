@@ -752,7 +752,7 @@ check_recycle_qh:
 			static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 			if (__ratelimit(&ratelimit))
-				pr_debug("<ratelimit> no URB in QH, possible performance drop\n");
+				pr_no_debug("<ratelimit> no URB in QH, possible performance drop\n");
 		}
 
 		DBG(3, "musb_advance_schedule::ep urb_list is empty\n");
@@ -982,7 +982,7 @@ static void musb_rx_reinit
 	} else {
 		csr = musb_readw(ep->regs, MUSB_RXCSR);
 		if (csr & MUSB_RXCSR_RXPKTRDY)
-			pr_notice("[MUSB]rx%d, packet/%d ready?\n", ep->epnum,
+			pr_no_notice("[MUSB]rx%d, packet/%d ready?\n", ep->epnum,
 				musb_readw(ep->regs, MUSB_RXCOUNT));
 
 		/* musb_h_flush_rxfifo(ep, MUSB_RXCSR_CLRDATATOG); */
@@ -1323,7 +1323,7 @@ finish:
 			if (csr & (MUSB_RXCSR_RXPKTRDY
 					| MUSB_RXCSR_DMAENAB
 					| MUSB_RXCSR_H_REQPKT))
-				pr_notice("broken !rx_reinit, ep%d csr %04x\n"
+				pr_no_notice("broken !rx_reinit, ep%d csr %04x\n"
 					, hw_ep->epnum, csr);
 
 			/* scrub any stale state, leaving toggle alone */
@@ -1377,7 +1377,7 @@ finish:
 					urb->actual_length)
 			    > hw_ep->max_packet_sz_rx) {
 
-				/* pr_debug("Using DMA epnum%d: is_out=%d,
+				/* pr_no_debug("Using DMA epnum%d: is_out=%d,
 				 * urb->actual_length = %d,
 				 * urb->transfer_buffer_length = %d\n",
 				 * epnum, is_out, urb->actual_length,
@@ -1393,7 +1393,7 @@ finish:
 				rx_count =
 					musb_readw(hw_ep->regs, MUSB_RXCOUNT);
 
-				/* pr_debug("RX%d count %d,
+				/* pr_no_debug("RX%d count %d,
 				 * buffer 0x%p len %d/%d\n",
 				 * epnum, rx_count,
 				 * urb->transfer_dma
@@ -1403,7 +1403,7 @@ finish:
 
 				length = rx_count;
 				buf = urb->transfer_dma + urb->actual_length;
-				 /* pr_debug("urb->transfer_flags = 0x%x,
+				 /* pr_no_debug("urb->transfer_flags = 0x%x,
 				  * urb->transfer_buffer_length = %d,
 				  * urb->actual_length = %d,
 				  * qh->maxpacket= %d, rx_count= %d\n",
@@ -1445,7 +1445,7 @@ finish:
 				 */
 
 				csr = musb_readw(hw_ep->regs, MUSB_RXCSR);
-				/* pr_debug("dma_channel->desired_mode = %d,
+				/* pr_no_debug("dma_channel->desired_mode = %d,
 				 * length = %d, csr= 0x%x\n",
 				 * dma_channel->desired_mode, length, csr);
 				 */
@@ -1479,7 +1479,7 @@ finish:
 				 * csr |= MUSB_RXCSR_AUTOCLEAR;
 				 */
 
-				/* pr_notice("%s, line %d: csr = 0x%x,
+				/* pr_no_notice("%s, line %d: csr = 0x%x,
 				 *	qh->hb_mult = %d,
 				 * MUSB_RXCSR,MUSB_RXCSR_H_WZC_BITS
 				 *	| csr = 0x%x\n",
@@ -1515,7 +1515,7 @@ finish:
 
 				packetSize = (length / qh->maxpacket)
 							+ shortPkt;
-				/* pr_debug("length = %d, packetSize = %d,
+				/* pr_no_debug("length = %d, packetSize = %d,
 				 * shortPkt = %d, epnum = %d\n",
 				 * length, packetSize, shortPkt, epnum);
 				 */
@@ -1671,7 +1671,7 @@ static bool musb_h_ep0_continue(struct musb *musb, u16 len, struct urb *urb)
 		}
 		break;
 	default:
-		pr_notice("bogus ep0 stage %d\n", musb->ep0_stage);
+		pr_no_notice("bogus ep0 stage %d\n", musb->ep0_stage);
 		break;
 	}
 
@@ -1765,7 +1765,7 @@ irqreturn_t musb_h_ep0_irq(struct musb *musb)
 		/* stop endpoint since we have no place for its data, this
 		 * SHOULD NEVER HAPPEN!
 		 */
-		pr_notice("no URB for end 0\n");
+		pr_no_notice("no URB for end 0\n");
 
 		musb_h_ep0_flush_fifo(hw_ep);
 		goto done;
@@ -2275,7 +2275,7 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 
 	if (unlikely(dma_channel_status(dma) == MUSB_DMA_STATUS_BUSY)) {
 		/* SHOULD NEVER HAPPEN ... but at least DaVinci has done it */
-		pr_notice("RX%d dma busy, csr %04x\n", epnum, rx_csr);
+		pr_no_notice("RX%d dma busy, csr %04x\n", epnum, rx_csr);
 		goto finish;
 	}
 
@@ -2376,7 +2376,7 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 		/* if no errors, be sure a packet is ready for unloading */
 		if (unlikely(!(rx_csr & MUSB_RXCSR_RXPKTRDY))) {
 			status = -EPROTO;
-			pr_notice("Rx interrupt with no errors or packet!\n");
+			pr_no_notice("Rx interrupt with no errors or packet!\n");
 
 			/* FIXME this is another "SHOULD NEVER HAPPEN" */
 
@@ -2759,7 +2759,7 @@ success:
 			static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 			if (__ratelimit(&ratelimit))
-				pr_debug("<ratelimit> QH create, 1st transfer\n");
+				pr_no_debug("<ratelimit> QH create, 1st transfer\n");
 		}
 
 #ifdef CONFIG_MTK_MUSB_QMU_SUPPORT
@@ -3383,7 +3383,7 @@ static int musb_bus_suspend(struct usb_hcd *hcd)
 		static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 1);
 
 		if (__ratelimit(&ratelimit))
-			pr_debug("<ratelimit> trying to suspend as %s while active\n"
+			pr_no_debug("<ratelimit> trying to suspend as %s while active\n"
 				, otg_state_string(musb->xceiv->otg->state));
 		return -EBUSY;
 	}

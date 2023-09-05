@@ -138,7 +138,7 @@ static void mtk_pidmap_init_map(void)
 
 	FOR_EACH_INTEREST(i) {
 		if (interests[i].tp == NULL) {
-			pr_info("Error: %s not found\n", interests[i].name);
+			pr_no_info("Error: %s not found\n", interests[i].name);
 			/* Unload previously loaded */
 			mtk_pidmap_deinit();
 			return;
@@ -272,20 +272,20 @@ static ssize_t mtk_pidmap_proc_write(struct file *file, const char *buf,
 
 	if (mtk_pidmap_proc_cmd_buf[0] == '0') {
 		mtk_pidmap_proc_dump_mode = PIDMAP_PROC_DUMP_RAW;
-		pr_info("[pidmap] dump mode: raw\n");
+		pr_no_info("[pidmap] dump mode: raw\n");
 	} else if (mtk_pidmap_proc_cmd_buf[0] == '1') {
 		mtk_pidmap_proc_dump_mode = PIDMAP_PROC_DUMP_READABLE;
-		pr_info("[pidmap] dump mode: readable\n");
+		pr_no_info("[pidmap] dump mode: readable\n");
 	} else if (mtk_pidmap_proc_cmd_buf[0] == '2') {
 		memset(mtk_pidmap, 0, sizeof(mtk_pidmap));
-		pr_info("[pidmap] reset pidmap\n");
+		pr_no_info("[pidmap] reset pidmap\n");
 	} else
 		goto err;
 
 	goto out;
 
 err:
-	pr_info("[pidmap] invalid arg: 0x%x\n", mtk_pidmap_proc_cmd_buf[0]);
+	pr_no_info("[pidmap] invalid arg: 0x%x\n", mtk_pidmap_proc_cmd_buf[0]);
 	return -1;
 out:
 	return count;
@@ -319,7 +319,7 @@ static int mtk_pidmap_proc_init(void)
 	if (mtk_pidmap_proc_entry)
 		proc_set_user(mtk_pidmap_proc_entry, uid, gid);
 	else
-		pr_info("[pidmap] failed to create /proc/pidmap\n");
+		pr_no_info("[pidmap] failed to create /proc/pidmap\n");
 
 	return 0;
 }

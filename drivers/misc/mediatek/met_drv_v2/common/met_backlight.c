@@ -116,7 +116,7 @@ static int met_backlight_create(struct kobject *parent)
 
 	ret = sysfs_create_file(kobj_met_backlight, &bl_tag_enable_attr.attr);
 	if (ret != 0) {
-		pr_debug("Failed to create montype0 in sysfs\n");
+		pr_no_debug("Failed to create montype0 in sysfs\n");
 		return ret;
 	}
 

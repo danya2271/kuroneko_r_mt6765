@@ -20,38 +20,38 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
 		if (g_mobilelog)					\
-			pr_debug("[DISP]"string, ##args);		\
+			pr_no_debug("[DISP]"string, ##args);		\
 	} while (0)
 
 #define DISPMSG(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
-		pr_debug("[DISP]"string, ##args);			\
+		pr_no_debug("[DISP]"string, ##args);			\
 	} while (0)
 
 #define DISPCHECK(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, string, ##args);	\
-		pr_debug("[DISP]"string, ##args);			\
+		pr_no_debug("[DISP]"string, ##args);			\
 	} while (0)
 
 #define DISP_ONESHOT_DUMP(string, args...)				\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_ONESHOT_DUMP, string, ##args); \
-		pr_debug("[DISP]"string, ##args);			\
+		pr_no_debug("[DISP]"string, ##args);			\
 	} while (0)
 
-#define DISP_PR_INFO(string, args...)					\
+#define DISP_pr_no_info(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_ERROR, string, ##args);	\
-		pr_info("[DISP][%s #%d]warn:"string,			\
+		pr_no_info("[DISP][%s #%d]warn:"string,			\
 				__func__, __LINE__, ##args);		\
 	} while (0)
 
-#define DISP_PR_ERR(string, args...)					\
+#define DISP_pr_no_err(string, args...)					\
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_ERROR, string, ##args);	\
-		pr_err("[DISP][%s #%d]ERROR:"string,			\
+		pr_no_err("[DISP][%s #%d]ERROR:"string,			\
 				__func__, __LINE__, ##args);		\
 	} while (0)
 
@@ -59,7 +59,7 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_FENCE, string, ##args);	\
 		if (g_mobilelog)					\
-			pr_debug("fence/"string, ##args);		\
+			pr_no_debug("fence/"string, ##args);		\
 	} while (0)
 
 #define DISPDBG(string, args...)					\
@@ -72,7 +72,7 @@
 	do {								\
 		dprec_logger_pr(DPREC_LOGGER_DEBUG, "func|%s\n", __func__); \
 		if (g_mobilelog)					\
-			pr_debug("[DISP]func|%s\n", __func__);		\
+			pr_no_debug("[DISP]func|%s\n", __func__);		\
 	} while (0)
 
 #define DISPDBGFUNC() DISPFUNC()
@@ -92,12 +92,12 @@
 			DB_OPT_DEFAULT | DB_OPT_MMPROFILE_BUFFER |	\
 			DB_OPT_DISPLAY_HANG_DUMP | DB_OPT_DUMP_DISPLAY,	\
 			disp_name, "[DISP] error"string, ##args);	\
-		pr_err("DISP error: "string, ##args);			\
+		pr_no_err("DISP error: "string, ##args);			\
 	} while (0)
 
 # define disp_aee_db_print(string, args...)				\
 	do {								\
-		pr_err("DISP error:"string, ##args);			\
+		pr_no_err("DISP error:"string, ##args);			\
 		aee_kernel_exception("DISP", "[DISP]error:%s, %d\n",	\
 					__FILE__, __LINE__);		\
 	} while (0)
@@ -105,7 +105,7 @@
 #define _DISP_PRINT_FENCE_OR_ERR(is_err, string, args...)		\
 	do {								\
 		if (is_err)						\
-			DISP_PR_ERR(string, ##args);			\
+			DISP_pr_no_err(string, ##args);			\
 		else							\
 			DISPFENCE(string, ##args);			\
 	} while (0)

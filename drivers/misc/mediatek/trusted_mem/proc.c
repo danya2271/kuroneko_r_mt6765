@@ -38,7 +38,7 @@ static int tmem_open(struct inode *inode, struct file *file)
 	UNUSED(inode);
 	UNUSED(file);
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_no_info("%s:%d\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 
@@ -47,7 +47,7 @@ static int tmem_release(struct inode *inode, struct file *file)
 	UNUSED(inode);
 	UNUSED(file);
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_no_info("%s:%d\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 
@@ -63,11 +63,11 @@ static void trusted_mem_device_chunk_alloc(enum TRUSTED_MEM_TYPE mem_type)
 			mem_type, alignment, min_chunk_sz, &ref_count,
 			&g_common_mem_handle[mem_type], NULL, 0, 0);
 	else
-		pr_info("%d chunk is already allocated, handle:0x%x\n",
+		pr_no_info("%d chunk is already allocated, handle:0x%x\n",
 			mem_type, g_common_mem_handle[mem_type]);
 
 	if (ret)
-		pr_err("%d alloc chunk failed:%d\n", mem_type, ret);
+		pr_no_err("%d alloc chunk failed:%d\n", mem_type, ret);
 }
 
 static void trusted_mem_device_chunk_free(enum TRUSTED_MEM_TYPE mem_type)
@@ -79,7 +79,7 @@ static void trusted_mem_device_chunk_free(enum TRUSTED_MEM_TYPE mem_type)
 			mem_type, g_common_mem_handle[mem_type], NULL, 0);
 
 	if (ret)
-		pr_err("%d free chunk failed:%d\n", mem_type, ret);
+		pr_no_err("%d free chunk failed:%d\n", mem_type, ret);
 	else
 		g_common_mem_handle[mem_type] = 0;
 }
@@ -91,7 +91,7 @@ static void trusted_mem_device_common_operations(u64 cmd, u64 param1,
 	int device_cmd = ((u32)cmd) % 10;
 
 	if (device_mem_type >= TRUSTED_MEM_MAX) {
-		pr_err("unsupported mem type: %d (user cmd:%lld)\n",
+		pr_no_err("unsupported mem type: %d (user cmd:%lld)\n",
 		       device_mem_type, cmd);
 		return;
 	}
@@ -122,7 +122,7 @@ static void trusted_mem_device_common_operations(u64 cmd, u64 param1,
 		trusted_mem_device_chunk_free(device_mem_type);
 		break;
 	default:
-		pr_err("unsupported device cmd: %d, mem type: %d (user cmd:%lld)\n",
+		pr_no_err("unsupported device cmd: %d, mem type: %d (user cmd:%lld)\n",
 		       device_cmd, device_mem_type, cmd);
 		break;
 	}
@@ -137,7 +137,7 @@ static void trusted_mem_region_status_dump(void)
 	for (mem_idx = 0; mem_idx < TRUSTED_MEM_MAX; mem_idx++) {
 		is_region_on = tmem_core_is_regmgr_region_on(mem_idx);
 		is_dev_registered = tmem_core_is_device_registered(mem_idx);
-		pr_info("mem%d reg_state:%s registered:%s\n", mem_idx,
+		pr_no_info("mem%d reg_state:%s registered:%s\n", mem_idx,
 			is_region_on ? "BUSY" : "IDLE",
 			is_dev_registered ? "YES" : "NO");
 	}
@@ -209,7 +209,7 @@ static ssize_t tmem_write(struct file *file, const char __user *buffer,
 	if (kstrtol(desc, 10, &cmd) != 0)
 		return count;
 
-	pr_debug("receives user space cmd '%ld'\n", cmd);
+	pr_no_debug("receives user space cmd '%ld'\n", cmd);
 
 	if ((cmd >= TMEM_MANUAL_CMD_RESERVE_START)
 	    && (cmd <= TMEM_MANUAL_CMD_RESERVE_END)) {
@@ -273,7 +273,7 @@ MODULE_PARM_DESC(ut_saturation_stress_pmem_min_chunk_size,
 
 static int trusted_mem_init(struct platform_device *pdev)
 {
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_no_info("%s:%d\n", __func__, __LINE__);
 
 	ssmr_probe(pdev);
 
@@ -298,7 +298,7 @@ static int trusted_mem_init(struct platform_device *pdev)
 
 	trusted_mem_create_proc_entry();
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_no_info("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 

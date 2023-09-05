@@ -624,7 +624,7 @@ static void dump_lvts_error_info(void)
 			break;
 
 		if ((cnt + 1) % 10 == 0) {
-			pr_notice("Cnt = %d LVTS TC %d, LVTSMSRCTL1[10,7,0] = %d,%d,%d\n",
+			pr_no_notice("Cnt = %d LVTS TC %d, LVTSMSRCTL1[10,7,0] = %d,%d,%d\n",
 					cnt + 1, (temp >> 16),
 					((temp & _BIT_(2)) >> 2),
 					((temp & _BIT_(1)) >> 1),
@@ -984,12 +984,12 @@ int get_io_reg_base(void)
 	/* TODO: If this is required, it needs to confirm which node to read. */
 	node = of_find_compatible_node(NULL, NULL, "mediatek,infrasys");
 	if (!node) {
-		pr_err("[CLK_INFRACFG_AO] find node failed\n");
+		pr_no_err("[CLK_INFRACFG_AO] find node failed\n");
 		return 0;
 	}
 	therm_clk_infracfg_ao_base = of_iomap(node, 0);
 	if (!therm_clk_infracfg_ao_base) {
-		pr_err("[CLK_INFRACFG_AO] base failed\n");
+		pr_no_err("[CLK_INFRACFG_AO] base failed\n");
 		return 0;
 	}
 #endif

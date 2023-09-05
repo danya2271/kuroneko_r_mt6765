@@ -31,7 +31,7 @@
 			      audio_ringbuf_free_space(rb), \
 			      count); \
 		} else { \
-			pr_notice("%s(), %uL, %p %p\n", \
+			pr_no_notice("%s(), %uL, %p %p\n", \
 				  __func__, __LINE__, rb, description); \
 		} \
 	} while (0)
@@ -534,7 +534,7 @@ void dynamic_change_ring_buf_size(
 			change_size  = (2 * (data_count + write_size));
 			change_size += MAX_SIZE_OF_ONE_FRAME;
 
-			pr_info("%s(), %p: %u -> %u, data_count %u, write_size %u, free_space %u\n",
+			pr_no_info("%s(), %p: %u -> %u, data_count %u, write_size %u, free_space %u\n",
 				__func__,
 				rb->base,
 				rb->size,

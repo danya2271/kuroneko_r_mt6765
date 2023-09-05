@@ -571,17 +571,17 @@ unsigned int _mt_cpufreq_get_cpu_level(void)
 	node = of_find_compatible_node(NULL, NULL, "mediatek,mt6765-dvfsp");
 
 	if (!node) {
-		tag_pr_info("%s fail to get device node\n", __func__);
+		tag_pr_no_info("%s fail to get device node\n", __func__);
 		return 0;
 	}
 	pdev = of_device_alloc(node, NULL, NULL);
 	if (!pdev) {
-		tag_pr_info("%s fail to create device node\n", __func__);
+		tag_pr_no_info("%s fail to create device node\n", __func__);
 		return 0;
 	}
 	efuse_cell = nvmem_cell_get(&pdev->dev, "efuse_segment_cell");
 	if (IS_ERR(efuse_cell)) {
-		tag_pr_info("@%s: cannot get efuse_cell, errno %ld\n",
+		tag_pr_no_info("@%s: cannot get efuse_cell, errno %ld\n",
 			__func__, PTR_ERR(efuse_cell));
 		return 0;
 	}
@@ -595,7 +595,7 @@ unsigned int _mt_cpufreq_get_cpu_level(void)
 	/* get efuse ly */
 	efuse_cell = nvmem_cell_get(&pdev->dev, "efuse_ly_cell");
 	if (IS_ERR(efuse_cell)) {
-		tag_pr_info("@%s: cannot get efuse_ly_cell, errno %ld\n",
+		tag_pr_no_info("@%s: cannot get efuse_ly_cell, errno %ld\n",
 			__func__, PTR_ERR(efuse_cell));
 		return 0;
 	}
@@ -630,7 +630,7 @@ unsigned int _mt_cpufreq_get_cpu_level(void)
 	}
 
 	turbo_flag = 0;
-	tag_pr_info("%d,%d,%d,%d,%d,%d,%d,%d\n",
+	tag_pr_no_info("%d,%d,%d,%d,%d,%d,%d,%d\n",
 		lv, turbo_flag, val, val_ly,
 		UP_VPROC_ST, DOWN_VPROC_ST,
 		UP_VSRAM_ST, DOWN_VSRAM_ST);

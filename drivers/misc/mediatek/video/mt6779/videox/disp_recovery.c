@@ -315,7 +315,7 @@ int do_esd_check_read(void)
 	/* 0.create esd check cmdq */
 	ret = cmdqRecCreate(CMDQ_SCENARIO_DISP_ESD_CHECK, &qhandle);
 	if (ret) {
-		DISP_PR_ERR("%s:%d, create cmdq handle fail!ret=%d\n",
+		DISP_pr_no_err("%s:%d, create cmdq handle fail!ret=%d\n",
 			    __func__, __LINE__, ret);
 		return -1;
 	}
@@ -473,7 +473,7 @@ static int primary_display_check_recovery_worker_kthread(void *data)
 			if (!ret) /* 0:success */
 				break;
 
-			DISP_PR_ERR("[ESD]check fail, do esd recovery.try=%d\n",
+			DISP_pr_no_err("[ESD]check fail, do esd recovery.try=%d\n",
 				    i);
 			primary_display_esd_recovery();
 			recovery_done = 1;
@@ -487,7 +487,7 @@ static int primary_display_check_recovery_worker_kthread(void *data)
 			n = scnprintf(msg, len,
 				"[ESD]LCM recover fail. Try time:%d. Disable esd check\n",
 				esd_try_cnt);
-			DISP_PR_ERR("%s", msg);
+			DISP_pr_no_err("%s", msg);
 			primary_display_esd_check_enable(0);
 		} else if (recovery_done == 1) {
 			DISPCHECK("[ESD]esd recovery success\n");
@@ -592,7 +592,7 @@ int primary_display_esd_recovery(void)
 	DISPCHECK("[ESD]start dpmgr path[end]\n");
 
 	if (dpmgr_path_is_busy(primary_get_dpmgr_handle())) {
-		DISP_PR_ERR("[ESD]Main display busy before triggering SOF\n");
+		DISP_pr_no_err("[ESD]Main display busy before triggering SOF\n");
 		ret = -1;
 		/* goto done; */
 	}
@@ -667,7 +667,7 @@ int primary_display_ovl_recovery(void)
 	DISPCHECK("[%s]stop dpmgr path[end]\n", __func__);
 
 	if (dpmgr_path_is_busy(primary_get_dpmgr_handle()))
-		DISP_PR_ERR("[%s]display path is busy after stop\n",
+		DISP_pr_no_err("[%s]display path is busy after stop\n",
 			__func__);
 
 	DISPDBG("[%s]reset display path[begin]\n", __func__);
@@ -708,7 +708,7 @@ int primary_display_ovl_recovery(void)
 	DISPCHECK("[%s]start dpmgr path[end]\n", __func__);
 
 	if (dpmgr_path_is_busy(primary_get_dpmgr_handle())) {
-		DISP_PR_ERR("[%s]not trigger display but already busy\n",
+		DISP_pr_no_err("[%s]not trigger display but already busy\n",
 			__func__);
 		ret = -1;
 		/* goto done; */
@@ -773,7 +773,7 @@ static int primary_display_recovery_kthread(void *data)
 			ovl_need_mmsys_sw_reset(DISP_MODULE_OVL0)) {
 			atomic_set(&enable_ovl0_recovery, 0);
 			atomic_set(&enable_ovl0_2l_recovery, 0);
-			DISP_PR_ERR("Detect %s malfunction, do recovery\n",
+			DISP_pr_no_err("Detect %s malfunction, do recovery\n",
 				ddp_get_module_name(DISP_MODULE_OVL0));
 			primary_display_ovl_recovery();
 		}
@@ -782,7 +782,7 @@ static int primary_display_recovery_kthread(void *data)
 			ovl_need_mmsys_sw_reset(DISP_MODULE_OVL0_2L)) {
 			atomic_set(&enable_ovl0_recovery, 0);
 			atomic_set(&enable_ovl0_2l_recovery, 0);
-			DISP_PR_ERR("Detect %s malfunction, do recovery\n",
+			DISP_pr_no_err("Detect %s malfunction, do recovery\n",
 				ddp_get_module_name(DISP_MODULE_OVL0_2L));
 			primary_display_ovl_recovery();
 		}
@@ -805,14 +805,14 @@ void primary_display_request_eint(void)
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek, DSI_TE-eint");
 	if (!node) {
-		DISP_PR_ERR("[ESD] cannot find DSI_TE-eint DT node\n");
+		DISP_pr_no_err("[ESD] cannot find DSI_TE-eint DT node\n");
 		return;
 	}
 
 	te_irq = irq_of_parse_and_map(node, 0);
 	if (request_irq(te_irq, _esd_check_ext_te_irq_handler,
 			IRQF_TRIGGER_RISING, "DSI_TE-eint", NULL)) {
-		DISP_PR_ERR("[ESD] EINT IRQ LINE not available\n");
+		DISP_pr_no_err("[ESD] EINT IRQ LINE not available\n");
 		return;
 	}
 
@@ -968,7 +968,7 @@ int external_display_switch_esd_mode(int mode)
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek, dsi_te_1-eint");
 	if (node == NULL) {
-		DISP_PR_ERR("[EXTD-ESD][%s]can't find DSI_TE eint DT node\n",
+		DISP_pr_no_err("[EXTD-ESD][%s]can't find DSI_TE eint DT node\n",
 			    __func__);
 		return ret;
 	}
@@ -981,7 +981,7 @@ int external_display_switch_esd_mode(int mode)
 		irq = irq_of_parse_and_map(node, 0);
 		if (request_irq(irq, extd_esd_check_ext_te_irq_handler,
 				IRQF_TRIGGER_RISING, "dsi_te_1-eint", NULL))
-			DISP_PR_ERR("[EXTD-ESD]EINT IRQ LINE NOT AVAILABLE!\n");
+			DISP_pr_no_err("[EXTD-ESD]EINT IRQ LINE NOT AVAILABLE!\n");
 	} else if (mode == GPIO_DSI_MODE) {
 		/* 1. unregister irq handler */
 		irq = irq_of_parse_and_map(node, 0);
@@ -1078,7 +1078,7 @@ static int external_display_check_recovery_worker_kthread(void *data)
 			DISPCHECK("%s", msg);
 			continue;
 		}
-		pr_debug("[EXTD ext_disp_check]check thread waked up!\n");
+		pr_no_debug("[EXTD ext_disp_check]check thread waked up!\n");
 		ext_disp_esd_check_lock();
 		/* esd check and  recovery */
 
@@ -1095,7 +1095,7 @@ static int external_display_check_recovery_worker_kthread(void *data)
 			n = scnprintf(msg, len,
 				"[EXTD-ESD]esd check fail, will do esd recovery. try=%d\n",
 				i);
-			DISP_PR_ERR("%s", msg);
+			DISP_pr_no_err("%s", msg);
 			ext_disp_esd_recovery();
 			recovery_done = 1;
 		} while (++i < esd_try_cnt);
@@ -1104,7 +1104,7 @@ static int external_display_check_recovery_worker_kthread(void *data)
 			n = scnprintf(msg, len,
 				"[EXTD-ESD]after esd recovery %d times, still fail, disable esd check\n",
 				esd_try_cnt);
-			DISP_PR_ERR("%s", msg);
+			DISP_pr_no_err("%s", msg);
 			external_display_esd_check_enable(0);
 		} else if (recovery_done == 1) {
 			DISPCHECK("[EXTD-ESD]esd recovery success\n");

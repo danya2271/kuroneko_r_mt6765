@@ -40,14 +40,14 @@ EXPORT_SYMBOL(mtk_thermal_get_gpu_loading_fp);
 bool __attribute__ ((weak))
 mtk_get_gpu_loading(unsigned int *pLoading)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return 0;
 }
 
 int __attribute__ ((weak))
 force_get_tbat(void)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return 30;
 }
 
@@ -70,12 +70,12 @@ static DEFINE_MUTEX(MTM_SYSINFO_LOCK);
 #define THRML_LOG(fmt, args...) \
 do { \
 	if (enable_ThermalMonitor)\
-		pr_notice("THERMAL/PLATFORM" fmt, ##args); \
+		pr_no_notice("THERMAL/PLATFORM" fmt, ##args); \
 } while (0)
 
 
 #define THRML_ERROR_LOG(fmt, args...) \
-	pr_notice("THERMAL/PLATFORM" fmt, ##args)
+	pr_no_notice("THERMAL/PLATFORM" fmt, ##args)
 
 /* ************************************ */
 /* Define */

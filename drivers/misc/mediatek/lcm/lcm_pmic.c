@@ -23,14 +23,14 @@ int display_bias_regulator_init(void)
 	disp_bias_pos = regulator_get(NULL, "dsv_pos");
 	if (IS_ERR(disp_bias_pos)) { /* handle return value */
 		ret = PTR_ERR(disp_bias_pos);
-		pr_info("get dsv_pos fail, error: %d\n", ret);
+		pr_no_info("get dsv_pos fail, error: %d\n", ret);
 		return ret;
 	}
 
 	disp_bias_neg = regulator_get(NULL, "dsv_neg");
 	if (IS_ERR(disp_bias_neg)) { /* handle return value */
 		ret = PTR_ERR(disp_bias_neg);
-		pr_info("get dsv_neg fail, error: %d\n", ret);
+		pr_no_info("get dsv_neg fail, error: %d\n", ret);
 		return ret;
 	}
 
@@ -50,24 +50,24 @@ int display_bias_enable(void)
 	/* set voltage with min & max*/
 	ret = regulator_set_voltage(disp_bias_pos, 5400000, 5400000);
 	if (ret < 0)
-		pr_info("set voltage disp_bias_pos fail, ret = %d\n", ret);
+		pr_no_info("set voltage disp_bias_pos fail, ret = %d\n", ret);
 	retval |= ret;
 
 	ret = regulator_set_voltage(disp_bias_neg, 5400000, 5400000);
 	if (ret < 0)
-		pr_info("set voltage disp_bias_neg fail, ret = %d\n", ret);
+		pr_no_info("set voltage disp_bias_neg fail, ret = %d\n", ret);
 	retval |= ret;
 
 	/* enable regulator */
 	ret = regulator_enable(disp_bias_pos);
 	if (ret < 0)
-		pr_info("enable regulator disp_bias_pos fail, ret = %d\n",
+		pr_no_info("enable regulator disp_bias_pos fail, ret = %d\n",
 			ret);
 	retval |= ret;
 
 	ret = regulator_enable(disp_bias_neg);
 	if (ret < 0)
-		pr_info("enable regulator disp_bias_neg fail, ret = %d\n",
+		pr_no_info("enable regulator disp_bias_neg fail, ret = %d\n",
 			ret);
 	retval |= ret;
 
@@ -84,13 +84,13 @@ int display_bias_disable(void)
 
 	ret = regulator_disable(disp_bias_neg);
 	if (ret < 0)
-		pr_info("disable regulator disp_bias_neg fail, ret = %d\n",
+		pr_no_info("disable regulator disp_bias_neg fail, ret = %d\n",
 			ret);
 	retval |= ret;
 
 	ret = regulator_disable(disp_bias_pos);
 	if (ret < 0)
-		pr_info("disable regulator disp_bias_pos fail, ret = %d\n",
+		pr_no_info("disable regulator disp_bias_pos fail, ret = %d\n",
 			ret);
 	retval |= ret;
 

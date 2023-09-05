@@ -128,7 +128,7 @@ int sspm_mbox_send(unsigned int mbox, unsigned int slot, unsigned int irq,
 
 	spin_lock_irqsave(&lock_mbox[mbox], flags);
 	if (readl(out_irq) & (0x1 << irq)) {
-		pr_err("%s: MBOX%d[%d] out_irq is not clear!\n", __func__,
+		pr_no_err("%s: MBOX%d[%d] out_irq is not clear!\n", __func__,
 			mbox, irq);
 		spin_unlock_irqrestore(&lock_mbox[desc->id], flags);
 		return -1;
@@ -195,14 +195,14 @@ static int sspm_mbox_group_activate(int mbox, unsigned int is64d,
 		res = platform_get_resource_byname(sspm_pdev,
 						IORESOURCE_MEM, name);
 		if (!res) {
-			pr_err("[SSPM] mbox%d_base IO resource not found\n",
+			pr_no_err("[SSPM] mbox%d_base IO resource not found\n",
 					mbox);
 			goto fail;
 		}
 
 		desc->base = devm_ioremap_resource(dev, res);
 		if (IS_ERR((void const *) desc->base)) {
-			pr_err("[SSPM] MBOX %d can't remap BASE\n", mbox);
+			pr_no_err("[SSPM] MBOX %d can't remap BASE\n", mbox);
 			goto fail;
 		}
 
@@ -210,28 +210,28 @@ static int sspm_mbox_group_activate(int mbox, unsigned int is64d,
 		res = platform_get_resource_byname(sspm_pdev, IORESOURCE_MEM,
 						name);
 		if (!res) {
-			pr_err("[SSPM] mbox%d_ctrl IO resource not found\n",
+			pr_no_err("[SSPM] mbox%d_ctrl IO resource not found\n",
 					mbox);
 			goto fail;
 		}
 
 		desc->in_out = devm_ioremap_resource(dev, res);
 		if (IS_ERR((void const *) desc->in_out)) {
-			pr_err("[SSPM] MBOX %d can't find IN_OUT_IRQ\n", mbox);
+			pr_no_err("[SSPM] MBOX %d can't find IN_OUT_IRQ\n", mbox);
 			goto fail;
 		}
 
 		snprintf(name, sizeof(name), "mbox%d", mbox);
 		desc->irq_num = platform_get_irq_byname(sspm_pdev, name);
 		if (desc->irq_num < 0) {
-			pr_err("[SSPM] MBOX %d can't find IRQ\n", mbox);
+			pr_no_err("[SSPM] MBOX %d can't find IRQ\n", mbox);
 			goto fail;
 		}
 
 		ret = request_irq(desc->irq_num, sspm_mbox_irq_handler,
 				IRQF_TRIGGER_NONE, "SSPM_MBOX", (void *) desc);
 		if (ret) {
-			pr_err("[SSPM] MBOX %d request irq Failed\n", mbox);
+			pr_no_err("[SSPM] MBOX %d request irq Failed\n", mbox);
 			goto fail;
 		}
 
@@ -256,7 +256,7 @@ unsigned int sspm_mbox_init(unsigned int mode, unsigned int count,
 	int mbox;
 
 	if (count > SSPM_MBOX_MAX) {
-		pr_debug("[SSPM] %s(): count (%u) too large, set to %u\n",
+		pr_no_debug("[SSPM] %s(): count (%u) too large, set to %u\n",
 			__func__, count, SSPM_MBOX_MAX);
 		count = SSPM_MBOX_MAX;
 	}
@@ -273,7 +273,7 @@ unsigned int sspm_mbox_init(unsigned int mode, unsigned int count,
 
 	sspm_mbox_cnt = mbox;
 
-	pr_debug("[SSPM] Find %d MBOX\n", sspm_mbox_cnt);
+	pr_no_debug("[SSPM] Find %d MBOX\n", sspm_mbox_cnt);
 
 	return 0;
 

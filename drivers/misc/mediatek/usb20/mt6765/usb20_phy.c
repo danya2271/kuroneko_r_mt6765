@@ -161,13 +161,13 @@ int usb2jtag_usb_init(void)
 #endif
 
 	if (!node) {
-		pr_notice("[USB2JTAG] map node @ mediatek,USB0 failed\n");
+		pr_no_notice("[USB2JTAG] map node @ mediatek,USB0 failed\n");
 		return -1;
 	}
 
 	usb_phy_base = of_iomap(node, 1);
 	if (!usb_phy_base) {
-		pr_notice("[USB2JTAG] iomap usb_phy_base failed\n");
+		pr_no_notice("[USB2JTAG] iomap usb_phy_base failed\n");
 		return -1;
 	}
 

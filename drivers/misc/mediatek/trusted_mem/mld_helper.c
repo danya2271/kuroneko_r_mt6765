@@ -39,7 +39,7 @@ struct tcore_mem_list_context g_mld_context;
 
 void mld_init(void)
 {
-	pr_info("TMEM_MLD_DETECTION_ENABLED\n");
+	pr_no_info("TMEM_MLD_DETECTION_ENABLED\n");
 
 	INIT_LIST_HEAD(&g_mld_context.tcore_list.list);
 	mutex_init(&g_mld_context.lock);
@@ -52,7 +52,7 @@ static void mld_create(size_t size, void *mem_ptr)
 
 	mem_item = kmalloc(sizeof(struct tcore_mem_list_item), GFP_KERNEL);
 	if (INVALID(mem_item)) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		return;
 	}
 
@@ -81,7 +81,7 @@ static void mld_destroy(const void *mem_ptr)
 			list_del(&mem_item->list);
 			if (g_mld_context.malloc_total_size
 			    < mem_item->mem_size)
-				pr_err("%s:%d system error! (%zx < %zx)\n",
+				pr_no_err("%s:%d system error! (%zx < %zx)\n",
 				       __func__, __LINE__,
 				       g_mld_context.malloc_total_size,
 				       mem_item->mem_size);
@@ -134,15 +134,15 @@ enum MLD_CHECK_STATUS mld_stamp_check(size_t previous_stamped_size)
 	MLD_UNLOCK();
 
 	if (previous_stamped_size == current_size) {
-		pr_debug("[MLD_CHECK] pass: 0x%zx\n", current_size);
+		pr_no_debug("[MLD_CHECK] pass: 0x%zx\n", current_size);
 		return MLD_CHECK_PASS;
 	}
 
-	pr_err("[MLD_CHECK] previous: 0x%zx\n", previous_stamped_size);
-	pr_err("[MLD_CHECK] current: 0x%zx\n", current_size);
-	pr_err("[MLD_CHECK] diff: 0x%zx\n",
+	pr_no_err("[MLD_CHECK] previous: 0x%zx\n", previous_stamped_size);
+	pr_no_err("[MLD_CHECK] current: 0x%zx\n", current_size);
+	pr_no_err("[MLD_CHECK] diff: 0x%zx\n",
 	       (current_size - previous_stamped_size));
-	pr_err("[MLD_CHECK] memory leak is detected!\n");
+	pr_no_err("[MLD_CHECK] memory leak is detected!\n");
 
 	return MLD_CHECK_FAIL;
 }

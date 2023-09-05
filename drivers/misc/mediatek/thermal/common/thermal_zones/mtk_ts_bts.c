@@ -38,13 +38,13 @@
 int __attribute__ ((weak))
 IMM_IsAdcInitReady(void)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return 0;
 }
 int __attribute__ ((weak))
 IMM_GetOneChannelValue(int dwChannel, int data[4], int *rawdata)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return -1;
 }
 
@@ -100,13 +100,13 @@ int bts_cur_temp = 1;
 #define mtkts_bts_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtkts_bts_debug_log) {                \
-		pr_notice("[Thermal/TZ/BTS]" fmt, ##args); \
+		pr_no_notice("[Thermal/TZ/BTS]" fmt, ##args); \
 	}                                   \
 } while (0)
 
 
 #define mtkts_bts_printk(fmt, args...) \
-pr_debug("[Thermal/TZ/BTS]" fmt, ##args)
+pr_no_debug("[Thermal/TZ/BTS]" fmt, ##args)
 
 #if defined(CONFIG_MEDIATEK_MT6577_AUXADC)
 struct iio_channel *thermistor_ch0;
@@ -674,7 +674,7 @@ int mtkts_bts_get_hw_temp(void)
 		t_ret2 = wakeup_ta_algo(TA_CATMPLUS_TTJ);
 
 	if (t_ret2 < 0)
-		pr_notice("[Thermal/TZ/BTS]wakeup_ta_algo out of memory\n");
+		pr_no_notice("[Thermal/TZ/BTS]wakeup_ta_algo out of memory\n");
 
 	bts_cur_temp = t_ret;
 
@@ -1085,7 +1085,7 @@ void mtkts_bts_prepare_table(int table_num)
 		break;
 	}
 
-	pr_notice("[Thermal/TZ/BTS] %s table_num=%d\n", __func__, table_num);
+	pr_no_notice("[Thermal/TZ/BTS] %s table_num=%d\n", __func__, table_num);
 
 }
 

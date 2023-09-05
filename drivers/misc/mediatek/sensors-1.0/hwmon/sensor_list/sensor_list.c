@@ -125,7 +125,7 @@ static void sensorlist_get_deviceinfo(struct work_struct *work)
 		err = sensor_set_cmd_to_hub(sensor,
 			CUST_ACTION_GET_SENSOR_INFO, &devinfo);
 		if (err < 0) {
-			pr_err("sensor(%d) not register\n", sensor);
+			pr_no_err("sensor(%d) not register\n", sensor);
 			continue;
 		}
 		spin_lock(&sensorlist_info_lock);

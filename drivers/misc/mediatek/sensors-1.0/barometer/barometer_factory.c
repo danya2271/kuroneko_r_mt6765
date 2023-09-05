@@ -42,7 +42,7 @@ static long baro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				 _IOC_SIZE(cmd));
 
 	if (err) {
-		pr_err("access error: %08X, (%2d, %2d)\n", cmd,
+		pr_no_err("access error: %08X, (%2d, %2d)\n", cmd,
 			    _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -55,14 +55,14 @@ static long baro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    baro_factory.fops->enable_sensor != NULL) {
 			err = baro_factory.fops->enable_sensor(flag, 200);
 			if (err < 0) {
-				pr_err("BAROMETER_IOCTL_INIT fail!\n");
+				pr_no_err("BAROMETER_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_debug(
+			pr_no_debug(
 				"BAROMETER_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 200);
 		} else {
-			pr_err("BAROMETER_IOCTL_INIT NULL\n");
+			pr_no_err("BAROMETER_IOCTL_INIT NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -71,14 +71,14 @@ static long baro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    baro_factory.fops->get_data != NULL) {
 			err = baro_factory.fops->get_data(&data);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"BAROMETER_GET_PRESS_DATA read data fail!\n");
 				return -EINVAL;
 			}
 			if (copy_to_user(ptr, &data, sizeof(data)))
 				return -EFAULT;
 		} else {
-			pr_err("BAROMETER_GET_PRESS_DATA NULL\n");
+			pr_no_err("BAROMETER_GET_PRESS_DATA NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -87,19 +87,19 @@ static long baro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    baro_factory.fops->enable_calibration != NULL) {
 			err = baro_factory.fops->enable_calibration();
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"BAROMETER_IOCTL_ENABLE_CALI fail!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("BAROMETER_IOCTL_ENABLE_CALI NULL\n");
+			pr_no_err("BAROMETER_IOCTL_ENABLE_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
 	case BAROMETER_GET_TEMP_DATA:
 		return 0;
 	default:
-		pr_err("unknown IOCTL: 0x%08x\n", cmd);
+		pr_no_err("unknown IOCTL: 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 	return 0;
@@ -111,7 +111,7 @@ static long compat_baro_factory_unlocked_ioctl(struct file *filp,
 					       unsigned long arg)
 {
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl) {
-		pr_err(
+		pr_no_err(
 			"compat_ion_ioctl file has no f_op or no f_op->unlocked_ioctl.\n");
 		return -ENOTTY;
 	}
@@ -122,14 +122,14 @@ static long compat_baro_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_BAROMETER_GET_PRESS_DATA:
 	case COMPAT_BAROMETER_GET_TEMP_DATA:
 	case COMPAT_BAROMETER_IOCTL_ENABLE_CALI: {
-		pr_debug(
+		pr_no_debug(
 			"compat_ion_ioctl : BAROMETER_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(
 			filp, cmd, (unsigned long)compat_ptr(arg));
 	}
 	default:
-		pr_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
+		pr_no_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 }
@@ -161,7 +161,7 @@ int baro_factory_device_register(struct baro_factory_public *dev)
 	baro_factory.fops = dev->fops;
 	err = misc_register(&baro_factory_device);
 	if (err) {
-		pr_err("baro_factory_device register failed\n");
+		pr_no_err("baro_factory_device register failed\n");
 		err = -1;
 	}
 	return err;

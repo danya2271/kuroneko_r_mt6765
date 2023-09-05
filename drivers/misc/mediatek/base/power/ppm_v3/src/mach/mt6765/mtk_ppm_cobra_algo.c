@@ -159,12 +159,6 @@ void ppm_cobra_update_limit(void *user_req)
 	if (power_budget >= ppm_get_max_pwr_idx())
 		return;
 
-	ppm_dbg(COBRA, "[PREV]Core_Limit=%d%d, policy_limit=%d%d\n",
-			Core_limit[PPM_CLUSTER_LL],
-			Core_limit[PPM_CLUSTER_L],
-			req->limit[PPM_CLUSTER_LL].max_cpu_core,
-			req->limit[PPM_CLUSTER_L].max_cpu_core);
-
 	for_each_ppm_clusters(i) {
 #ifndef NO_SCHEDULE_API
 		ppm_get_cl_cpus(&cluster_cpu, i);
@@ -247,21 +241,9 @@ void ppm_cobra_update_limit(void *user_req)
 #endif
 	}
 
-#if PPM_COBRA_USE_CORE_LIMIT
-	ppm_dbg(COBRA, "[COBRA] max throttle core num = %d,%d\n",
-		max_thro_core[PPM_CLUSTER_LL],
-		max_thro_core[PPM_CLUSTER_L]);
-#endif
-
 	/* Which Cluster in L and LL is active (1: L is on, 0: LL is on) */
 	LxLL = (ACT_CORE(L) > 0) ? PPM_CLUSTER_L : PPM_CLUSTER_LL;
 
-	ppm_dbg(COBRA,
-		"[IN](bgt/del/cur)=(%d/%d/%d),(opp/act/c)=(%d,%d/%d%d/%d%d)\n",
-		power_budget, delta_power, curr_power,
-		opp[PPM_CLUSTER_LL], opp[PPM_CLUSTER_L],
-		ACT_CORE(LL), ACT_CORE(L),
-		CORE_LIMIT(LL), CORE_LIMIT(L));
 
 	/* increase ferquency limit */
 	if (delta_power >= 0) {
@@ -327,21 +309,11 @@ void ppm_cobra_update_limit(void *user_req)
 
 end:
 #endif
-			ppm_dbg(COBRA,
-				"+ChoosenCl=-1!del=%d,(opp/c)=(%d,%d/%d%d)\n",
-				delta_power, opp[PPM_CLUSTER_LL],
-				opp[PPM_CLUSTER_L],
-				CORE_LIMIT(LL), CORE_LIMIT(L));
 
 			break;
 
 prepare_next_round:
 			delta_power -= ChoosenPwr;
-
-			ppm_dbg(COBRA,
-				"+(delta/Cl/Pwr)=(%d,%d,%d), opp=%d,%d\n",
-				delta_power, ChoosenCl, ChoosenPwr,
-				opp[PPM_CLUSTER_LL], opp[PPM_CLUSTER_L]);
 		}
 	} else {
 		/* init global variables */
@@ -353,10 +325,6 @@ prepare_next_round:
 			int ChoosenCl = -1;
 			int ChoosenPwr = 0;
 
-			ppm_dbg(COBRA,
-				"exclusive_core_flag = %d,%d(LxLL=%d)\n",
-				f_ex_core[PPM_CLUSTER_LL],
-				f_ex_core[PPM_CLUSTER_L], LxLL);
 
 			/* LxLL */
 			if (opp[LxLL] >= 0
@@ -457,12 +425,6 @@ check_exclusive_core_flag:
 					/* re-scan from L */
 					LxLL = PPM_CLUSTER_L;
 			}
-
-			ppm_dbg(COBRA,
-				"-delta/Cl/P=%d,%d,%d! opp/act=%d,%d/%d%d\n",
-				delta_power, ChoosenCl, ChoosenPwr,
-				opp[PPM_CLUSTER_LL], opp[PPM_CLUSTER_L],
-				ACT_CORE(LL), ACT_CORE(L));
 		}
 	}
 
@@ -474,16 +436,6 @@ check_exclusive_core_flag:
 	for_each_ppm_clusters(i) {
 		req->limit[i].max_cpufreq_idx = opp[LxLL];
 	}
-
-	ppm_dbg(COBRA,
-		"[OUT]delta=%d,opp/act/c_lmt/f_lmt=%d,%d/%d%d/%d%d/%d,%d\n",
-		delta_power,
-		opp[PPM_CLUSTER_LL], opp[PPM_CLUSTER_L],
-		ACT_CORE(LL), ACT_CORE(L),
-		req->limit[PPM_CLUSTER_LL].max_cpu_core,
-		req->limit[PPM_CLUSTER_L].max_cpu_core,
-		req->limit[PPM_CLUSTER_LL].max_cpufreq_idx,
-		req->limit[PPM_CLUSTER_L].max_cpufreq_idx);
 
 	/* error check */
 	for_each_ppm_clusters(i) {

@@ -24,12 +24,12 @@
 /* #define SPOWER_LOG_PRINT SPOWER_LOG_WITH_PRINTK */
 #define SPOWER_LOG_PRINT SPOWER_LOG_NONE
 
-#define SPOWER_INFO(fmt, args...)	 pr_info(SP_TAG fmt, ##args)
+#define SPOWER_INFO(fmt, args...)	 pr_no_info(SP_TAG fmt, ##args)
 
 #if (SPOWER_LOG_PRINT == SPOWER_LOG_NONE)
 #define SPOWER_DEBUG(fmt, args...)
 #elif (SPOWER_LOG_PRINT == SPOWER_LOG_WITH_PRINTK)
-#define SPOWER_DEBUG(fmt, args...)	 pr_debug(SP_TAG fmt, ##args)
+#define SPOWER_DEBUG(fmt, args...)	 pr_no_debug(SP_TAG fmt, ##args)
 #endif
 /* charles add*/
 #define WITHOUT_LKG_EFUSE 1
@@ -446,7 +446,7 @@ int spower_procfs_init(void)
 	dir = proc_mkdir("leakage", NULL);
 
 	if (!dir) {
-		pr_notice("fail to create /proc/leakage @ %s()\n",
+		pr_no_notice("fail to create /proc/leakage @ %s()\n",
 								__func__);
 		return -ENOMEM;
 	}
@@ -454,7 +454,7 @@ int spower_procfs_init(void)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create
 		    (entries[i].name, 0664, dir, entries[i].fops))
-			pr_notice("%s(), create /proc/leakage/%s failed\n",
+			pr_no_notice("%s(), create /proc/leakage/%s failed\n",
 				__func__, entries[i].name);
 	}
 	return 0;
@@ -489,14 +489,14 @@ int mt_spower_init(void)
 
 	node = of_find_node_by_name(NULL, "eem_fsm");
 	if (node == NULL) {
-		pr_notice("%s fail to get device node\n", __func__);
+		pr_no_notice("%s fail to get device node\n", __func__);
 		err_flag = 1;
 		goto efuse_end;
 	}
 	pdev = of_device_alloc(node, NULL, NULL);
 	nvmem_dev = nvmem_device_get(&pdev->dev, "mtk_efuse");
 	if (IS_ERR(nvmem_dev)) {
-		pr_notice("%s failed to get mtk_efuse device\n",
+		pr_no_notice("%s failed to get mtk_efuse device\n",
 			__func__);
 		err_flag = 1;
 		goto efuse_end;

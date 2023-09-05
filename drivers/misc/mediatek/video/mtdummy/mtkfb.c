@@ -216,7 +216,7 @@ static int mtkfb_set_par(struct fb_info *fbi)
 static int mtkfb_pan_display_impl(struct fb_var_screeninfo *var,
 	struct fb_info *info)
 {
-	pr_info("xoffset=%u, yoffset=%u, xres=%u, yres=%u, xresv=%u, yresv=%u\n",
+	pr_no_info("xoffset=%u, yoffset=%u, xres=%u, yres=%u, xresv=%u, yresv=%u\n",
 		var->xoffset, var->yoffset, info->var.xres,
 		info->var.yres, info->var.xres_virtual, info->var.yres_virtual);
 	info->var.yoffset = var->yoffset;
@@ -235,7 +235,7 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 
 	struct mtkfb_device *fbdev = (struct mtkfb_device *)fbi->par;
 
-	pr_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
+	pr_no_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
 	       __func__, var->xres, var->yres, var->xres_virtual,
 	       var->yres_virtual, var->xoffset, var->yoffset,
 	       var->bits_per_pixel);
@@ -243,7 +243,7 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 	bpp = var->bits_per_pixel;
 
 	if (bpp != 16 && bpp != 24 && bpp != 32) {
-		pr_info("[%s]unsupported bpp: %d", __func__, bpp);
+		pr_no_info("[%s]unsupported bpp: %d", __func__, bpp);
 		return -1;
 	}
 
@@ -268,7 +268,7 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 		var->yres_virtual = var->yres;
 
 	max_frame_size = fbdev->fb_size_in_byte;
-	pr_info("fbdev->fb_size_in_byte=0x%08lx\n", fbdev->fb_size_in_byte);
+	pr_no_info("fbdev->fb_size_in_byte=0x%08lx\n", fbdev->fb_size_in_byte);
 	line_size = var->xres_virtual * bpp / 8;
 
 	if (line_size * var->yres_virtual > max_frame_size) {
@@ -282,7 +282,7 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 			var->yres_virtual = max_frame_size / line_size;
 		}
 	}
-	pr_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
+	pr_no_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
 	       __func__, var->xres, var->yres, var->xres_virtual,
 	       var->yres_virtual, var->xoffset, var->yoffset,
 	       var->bits_per_pixel);
@@ -291,7 +291,7 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 	if (var->yres + var->yoffset > var->yres_virtual)
 		var->yoffset = var->yres_virtual - var->yres;
 
-	pr_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
+	pr_no_info("%s, xres=%u, yres=%u, xres_virtual=%u, yres_virtual=%u, xoffset=%u, yoffset=%u, bits_per_pixel=%u)\n",
 	       __func__, var->xres, var->yres, var->xres_virtual,
 	       var->yres_virtual, var->xoffset, var->yoffset,
 	       var->bits_per_pixel);
@@ -312,17 +312,17 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 		/* Check if format is RGB565 or BGR565 */
 
 		if (!(var->green.offset == 8)) {
-			pr_err("%s: green.offset=%d\n", __func__,
+			pr_no_err("%s: green.offset=%d\n", __func__,
 				var->green.offset);
 			return -1;
 		}
 		if (!(var->red.offset + var->blue.offset == 16)) {
-			pr_err("%s: red.offset=%d, blue.offset=%d\n", __func__,
+			pr_no_err("%s: red.offset=%d, blue.offset=%d\n", __func__,
 			       var->green.offset, var->blue.offset);
 			return -1;
 		}
 		if (!(var->red.offset == 16 || var->red.offset == 0)) {
-			pr_err("%s: red.offset=%d\n", __func__,
+			pr_no_err("%s: red.offset=%d\n", __func__,
 			       var->green.offset);
 			return -1;
 		}
@@ -333,17 +333,17 @@ static int mtkfb_check_var(struct fb_var_screeninfo *var, struct fb_info *fbi)
 		/* Check if format is ARGB565 or ABGR565 */
 
 		if (!(var->green.offset == 8 && var->transp.offset == 24)) {
-			pr_err("%s: green.offset=%d, transp.offset=%d\n",
+			pr_no_err("%s: green.offset=%d, transp.offset=%d\n",
 			       __func__, var->green.offset, var->transp.offset);
 			return -1;
 		}
 		if (!(var->red.offset + var->blue.offset == 16)) {
-			pr_err("%s: red.offset=%d, blue.offset=%d\n",
+			pr_no_err("%s: red.offset=%d, blue.offset=%d\n",
 			       __func__, var->red.offset, var->blue.offset);
 			return -1;
 		}
 		if (!(var->red.offset == 16 || var->red.offset == 0)) {
-			pr_err("%s: red.offset=%d\n",
+			pr_no_err("%s: red.offset=%d\n",
 			       __func__, var->red.offset);
 			return -1;
 		}
@@ -422,7 +422,7 @@ static int mtkfb_fbinfo_init(struct fb_info *info)
 
 	r = fb_alloc_cmap(&info->cmap, 32, 0);
 	if (r != 0)
-		pr_info("unable to allocate color map memory\n");
+		pr_no_info("unable to allocate color map memory\n");
 
 	/* setup the initial video mode (RGB565) */
 
@@ -451,13 +451,13 @@ static int mtkfb_fbinfo_init(struct fb_info *info)
 
 	r = mtkfb_check_var(&var, info);
 	if (r != 0)
-		pr_info("failed to mtkfb_check_var\n");
+		pr_no_info("failed to mtkfb_check_var\n");
 
 	info->var = var;
 
 	r = mtkfb_set_par(info);
 	if (r != 0)
-		pr_info("failed to mtkfb_set_par\n");
+		pr_no_info("failed to mtkfb_set_par\n");
 	return r;
 }
 
@@ -566,13 +566,13 @@ static int __parse_tag_videolfb_extra(struct device_node *node)
 	if (!prop)
 		return -1;
 	if (size >= sizeof(mtkfb_lcm_name)) {
-		pr_info("%s: error to get lcmname size=%ld\n", __func__, size);
+		pr_no_info("%s: error to get lcmname size=%ld\n", __func__, size);
 		return -1;
 	}
 	memset((void *)mtkfb_lcm_name, 0, sizeof(mtkfb_lcm_name));
 	strncpy((char *)mtkfb_lcm_name, prop, sizeof(mtkfb_lcm_name));
 	mtkfb_lcm_name[size] = '\0';
-	pr_info("%s done\n", __func__);
+	pr_no_info("%s done\n", __func__);
 	return 0;
 }
 
@@ -600,7 +600,7 @@ int __parse_tag_videolfb(struct device_node *node)
 		return 0;
 	}
 
-	pr_info("[DT][videolfb] videolfb_tag not found\n");
+	pr_no_info("[DT][videolfb] videolfb_tag not found\n");
 	return -1;
 }
 
@@ -610,7 +610,7 @@ static int _parse_tag_videolfb(void)
 	int ret;
 	struct device_node *chosen_node;
 
-	pr_info("[DT][videolfb]isvideofb_parse_done = %d\n",
+	pr_no_info("[DT][videolfb]isvideofb_parse_done = %d\n",
 		is_videofb_parse_done);
 
 	if (is_videofb_parse_done)
@@ -632,18 +632,18 @@ static int _parse_tag_videolfb(void)
 		if (!ret)
 			goto found;
 	} else {
-		pr_info("[DT][videolfb] of_chosen not found\n");
+		pr_no_info("[DT][videolfb] of_chosen not found\n");
 	}
 	return -1;
 
 found:
 	is_videofb_parse_done = 1;
-	pr_info("[DT][videolfb] islcmfound = %d\n", islcmconnected);
-	pr_info("[DT][videolfb] is_lcm_inited = %d\n", is_lcm_inited);
-	pr_info("[DT][videolfb] fps        = %d\n", lcd_fps);
-	pr_info("[DT][videolfb] fb_base    = 0x%lx\n", (unsigned long)fb_base);
-	pr_info("[DT][videolfb] vram       = 0x%x (%d)\n", vramsize, vramsize);
-	pr_info("[DT][videolfb] lcmname    = %s\n", mtkfb_lcm_name);
+	pr_no_info("[DT][videolfb] islcmfound = %d\n", islcmconnected);
+	pr_no_info("[DT][videolfb] is_lcm_inited = %d\n", is_lcm_inited);
+	pr_no_info("[DT][videolfb] fps        = %d\n", lcd_fps);
+	pr_no_info("[DT][videolfb] fb_base    = 0x%lx\n", (unsigned long)fb_base);
+	pr_no_info("[DT][videolfb] vram       = 0x%x (%d)\n", vramsize, vramsize);
+	pr_no_info("[DT][videolfb] lcmname    = %s\n", mtkfb_lcm_name);
 	return 0;
 }
 
@@ -659,7 +659,7 @@ int mtkfb_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 				unsigned long *va, unsigned long *mva)
 {
 	*va = (unsigned long)ioremap_nocache(pa_start, pa_end - pa_start + 1);
-	pr_info("disphal_allocate_fb, pa=%pa, va=0x%08lx\n", &pa_start, *va);
+	pr_no_info("disphal_allocate_fb, pa=%pa, va=0x%08lx\n", &pa_start, *va);
 	{
 		*mva = pa_start & 0xffffffffULL;
 	}
@@ -673,7 +673,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 	int init_state;
 	int r = 0;
 
-	pr_info("%s begin\n", __func__);
+	pr_no_info("%s begin\n", __func__);
 
 #ifdef CONFIG_OF
 	_parse_tag_videolfb();
@@ -682,7 +682,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	fbi = framebuffer_alloc(sizeof(struct mtkfb_device), &(pdev->dev));
 	if (!fbi) {
-		pr_info("unable to allocate memory for device info\n");
+		pr_no_info("unable to allocate memory for device info\n");
 		r = -ENOMEM;
 		goto cleanup;
 	}
@@ -695,9 +695,9 @@ static int mtkfb_probe(struct platform_device *pdev)
 	{
 
 #ifdef CONFIG_OF
-		pr_info("%s:get FB MEM REG\n", __func__);
+		pr_no_info("%s:get FB MEM REG\n", __func__);
 		_parse_tag_videolfb();
-		pr_info("%s: fb_pa = 0x%p\n", __func__, (void *)fb_base);
+		pr_no_info("%s: fb_pa = 0x%p\n", __func__, (void *)fb_base);
 
 		mtkfb_allocate_framebuffer(fb_base, (fb_base + vramsize - 1),
 			(unsigned long *)&fbdev->fb_va_base, &fb_pa);
@@ -720,17 +720,17 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	MTK_FB_BPP = 32;
 	MTK_FB_PAGES = 3;
-	pr_info("MTK_FB_XRES=%d, MTKFB_YRES=%d, MTKFB_BPP=%d, MTK_FB_PAGES=%d, MTKFB_LINE=%d, MTKFB_SIZEV=%d\n",
+	pr_no_info("MTK_FB_XRES=%d, MTKFB_YRES=%d, MTKFB_BPP=%d, MTK_FB_PAGES=%d, MTKFB_LINE=%d, MTKFB_SIZEV=%d\n",
 	     MTK_FB_XRES, MTK_FB_YRES, MTK_FB_BPP,
 	     MTK_FB_PAGES, MTK_FB_LINE, MTK_FB_SIZEV);
 	fbdev->fb_size_in_byte = MTK_FB_SIZEV;
 
 	/* Allocate and initialize video frame buffer */
-	pr_info("[FB Driver] fbdev->fb_pa_base = %p, fbdev->fb_va_base = %lx\n",
+	pr_no_info("[FB Driver] fbdev->fb_pa_base = %p, fbdev->fb_va_base = %lx\n",
 	       (void *)fbdev->fb_pa_base, (unsigned long)(fbdev->fb_va_base));
 
 	if (!fbdev->fb_va_base) {
-		pr_info("unable to allocate memory for frame buffer\n");
+		pr_no_info("unable to allocate memory for frame buffer\n");
 		r = -ENOMEM;
 		goto cleanup;
 	}
@@ -740,7 +740,7 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	r = mtkfb_fbinfo_init(fbi);
 	if (r) {
-		pr_info("mtkfb_fbinfo_init fail, r = %d\n", r);
+		pr_no_info("mtkfb_fbinfo_init fail, r = %d\n", r);
 		goto cleanup;
 	}
 	init_state++;		/* 4 */
@@ -749,17 +749,17 @@ static int mtkfb_probe(struct platform_device *pdev)
 
 	r = register_framebuffer(fbi);
 	if (r != 0) {
-		pr_info("register_framebuffer failed\n");
+		pr_no_info("register_framebuffer failed\n");
 		goto cleanup;
 	}
 	fbdev->state = MTKFB_ACTIVE;
-	pr_info("%s end\n", __func__);
+	pr_no_info("%s end\n", __func__);
 	return 0;
 
 cleanup:
 	mtkfb_free_resources(fbdev, init_state);
 
-	pr_info("%s end\n", __func__);
+	pr_no_info("%s end\n", __func__);
 	return r;
 }
 
@@ -811,10 +811,10 @@ int __init mtkfb_init(void)
 {
 	int r = 0;
 
-	pr_info("%s init", __func__);
+	pr_no_info("%s init", __func__);
 
 	if (platform_driver_register(&mtkfb_driver)) {
-		pr_info("failed to register mtkfb driver\n");
+		pr_no_info("failed to register mtkfb driver\n");
 		r = -ENODEV;
 	}
 	return r;

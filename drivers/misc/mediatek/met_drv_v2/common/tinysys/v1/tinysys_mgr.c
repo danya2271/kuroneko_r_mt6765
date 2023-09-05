@@ -185,14 +185,14 @@ int ondiemet_attr_init(struct device *dev)
 	PR_BOOTMSG("%s\n", __FUNCTION__);
 	_g_tinysys_kobj = kobject_create_and_add("tinysys", &dev->kobj);
 	if (_g_tinysys_kobj == NULL) {
-		pr_debug("can not create kobject: tinysys\n");
+		pr_no_debug("can not create kobject: tinysys\n");
 		return -1;
 	}
 
 #if FEATURE_SSPM_NUM
 	ret = _create_sspm_node(dev);
 	if (ret != 0) {
-		pr_debug("can not create sspm node\n");
+		pr_no_debug("can not create sspm node\n");
 		return ret;
 	}
 #endif
@@ -200,7 +200,7 @@ int ondiemet_attr_init(struct device *dev)
 #if FEATURE_MCUPM_NUM
 	ret = _create_mcupm_node(_g_tinysys_kobj);
 	if (ret != 0) {
-		pr_debug("can not create cpu eb node\n");
+		pr_no_debug("can not create cpu eb node\n");
 		return ret;
 	}
 #endif
@@ -515,55 +515,55 @@ static int _create_sspm_node(struct device *dev)
 
 	ret = device_create_file(dev, &dev_attr_sspm_ipi_supported);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_ipi_supported\n");
+		pr_no_debug("can not create device file: sspm_ipi_supported\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_buffer_size);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_buffer_size\n");
+		pr_no_debug("can not create device file: sspm_buffer_size\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_available);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_available\n");
+		pr_no_debug("can not create device file: sspm_available\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_log_discard);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_log_discard\n");
+		pr_no_debug("can not create device file: sspm_log_discard\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_log_mode);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_log_mode\n");
+		pr_no_debug("can not create device file: sspm_log_mode\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_log_size);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_log_size\n");
+		pr_no_debug("can not create device file: sspm_log_size\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_run_mode);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_run_mode\n");
+		pr_no_debug("can not create device file: sspm_run_mode\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_modules);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_modules\n");
+		pr_no_debug("can not create device file: sspm_modules\n");
 		return ret;
 	}
 
 	ret = device_create_file(dev, &dev_attr_sspm_op_ctrl);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm_op_ctrl\n");
+		pr_no_debug("can not create device file: sspm_op_ctrl\n");
 		return ret;
 	}
 	return ret;
@@ -782,49 +782,49 @@ static int _create_mcupm_node(struct kobject *parent)
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_available.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: available\n");
+		pr_no_debug("can not create device file: available\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_buffer_size.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: buffer_size\n");
+		pr_no_debug("can not create device file: buffer_size\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_log_discard.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: log_discard\n");
+		pr_no_debug("can not create device file: log_discard\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_log_size.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: log_size\n");
+		pr_no_debug("can not create device file: log_size\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_run_mode.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: run_mode\n");
+		pr_no_debug("can not create device file: run_mode\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_op_ctrl.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: op_ctrl\n");
+		pr_no_debug("can not create device file: op_ctrl\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_modules.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: modules\n");
+		pr_no_debug("can not create device file: modules\n");
 		return ret;
 	}
 
 	ret = sysfs_create_file(_mcupm_kobj, &_attr_mcupm_ipi_supported.attr);
 	if (ret != 0) {
-		pr_debug("can not create device file: ipi_supported\n");
+		pr_no_debug("can not create device file: ipi_supported\n");
 		return ret;
 	}
 	return ret;

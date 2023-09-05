@@ -41,7 +41,7 @@ unsigned int rdma_index(enum DISP_MODULE_ENUM module)
 		idx = 1;
 		break;
 	default:
-		DDP_PR_ERR("invalid rdma module=%d\n", module);
+		DDP_pr_no_err("invalid rdma module=%d\n", module);
 		ASSERT(0);
 		break;
 	}
@@ -84,7 +84,7 @@ static inline unsigned long rdma_to_cmdq_engine(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_RDMA1:
 		return CMDQ_ENG_DISP_RDMA1;
 	default:
-		DDP_PR_ERR("invalid rdma module=%d,rdma to cmdq engine fail\n",
+		DDP_pr_no_err("invalid rdma module=%d,rdma to cmdq engine fail\n",
 			   module);
 		ASSERT(0);
 		return DISP_MODULE_UNKNOWN;
@@ -101,7 +101,7 @@ rdma_to_cmdq_event_nonsec_end(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_RDMA1:
 		return CMDQ_SYNC_DISP_RDMA1_2NONSEC_END;
 	default:
-		DDP_PR_ERR("invalid rdma module=%d,rmda to cmdq event fail\n",
+		DDP_pr_no_err("invalid rdma module=%d,rmda to cmdq event fail\n",
 			   module);
 		ASSERT(0);
 		return DISP_MODULE_UNKNOWN;
@@ -258,7 +258,7 @@ int rdma_reset(enum DISP_MODULE_ENUM module, void *handle)
 				"DISP_REG_RDMA_GLOBAL_CON=0x%x\n",
 				DISP_REG_GET(offset +
 				DISP_REG_RDMA_GLOBAL_CON));
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 			break;
 		}
 	}
@@ -278,7 +278,7 @@ int rdma_reset(enum DISP_MODULE_ENUM module, void *handle)
 		n += scnprintf(msg + n, len - n,
 			      "DISP_REG_RDMA_GLOBAL_CON=0x%x\n",
 			      DISP_REG_GET(offset + DISP_REG_RDMA_GLOBAL_CON));
-		DDP_PR_ERR("%s", msg);
+		DDP_pr_no_err("%s", msg);
 		break;
 	}
 	return ret;
@@ -527,7 +527,7 @@ static int rdma_config(enum DISP_MODULE_ENUM module, enum RDMA_MODE mode,
 
 	ASSERT(idx <= RDMA_INSTANCES);
 	if ((width > RDMA_MAX_WIDTH) || (height > RDMA_MAX_HEIGHT))
-		DDP_PR_ERR("RDMA input overflow,w=%d,h=%d,max_w=%d,max_h=%d\n",
+		DDP_pr_no_err("RDMA input overflow,w=%d,h=%d,max_w=%d,max_h=%d\n",
 			   width, height, RDMA_MAX_WIDTH, RDMA_MAX_HEIGHT);
 
 	offset = idx * DISP_RDMA_INDEX_OFFSET;
@@ -545,7 +545,7 @@ static int rdma_config(enum DISP_MODULE_ENUM module, enum RDMA_MODE mode,
 			color_matrix = 7;
 			break; /* BT709 */
 		default:
-			DDP_PR_ERR("%s,un-recognized yuv_range=%d!\n",
+			DDP_pr_no_err("%s,un-recognized yuv_range=%d!\n",
 				   __func__, yuv_range);
 			color_matrix = 4;
 			break;
@@ -933,7 +933,7 @@ static int do_rdma_config_l(enum DISP_MODULE_ENUM module,
 
 	if (mode == RDMA_MODE_DIRECT_LINK &&
 	    cfg->security != DISP_NORMAL_BUFFER)
-		DDP_PR_ERR("%s: rdma directlink BUT is sec ??!!\n", __func__);
+		DDP_pr_no_err("%s: rdma directlink BUT is sec ??!!\n", __func__);
 
 	if (mode == RDMA_MODE_DIRECT_LINK) {
 		cfg->bg_ctrl.top = 0;
@@ -1260,7 +1260,7 @@ static int rdma_build_cmdq(enum DISP_MODULE_ENUM module, void *handle,
 			   enum CMDQ_STATE state)
 {
 	if (handle == NULL) {
-		DDP_PR_ERR("cmdq_trigger_handle is NULL\n");
+		DDP_pr_no_err("cmdq_trigger_handle is NULL\n");
 		return -1;
 	}
 	if (state == CMDQ_RESET_AFTER_STREAM_EOF) {

@@ -212,7 +212,7 @@ int swtp_init(int md_id)
 	/*input system config*/
 	swtp_ipdev = input_allocate_device();
 	if (!swtp_ipdev) {
-		pr_err("swtp_init: input_allocate_device fail\n");
+		pr_no_err("swtp_init: input_allocate_device fail\n");
 		return -1;
 	}
 	swtp_ipdev->name = "swtp-input";
@@ -223,10 +223,10 @@ int swtp_init(int md_id)
 	//set_bit(INPUT_PROP_NO_DUMMY_RELEASE, ant_info->ipdev->propbit);
 	ret = input_register_device(swtp_ipdev);
 	if (ret) {
-		pr_err("swtp_init: input_register_device fail rc=%d\n", ret);
+		pr_no_err("swtp_init: input_register_device fail rc=%d\n", ret);
 		return -1;
 	}
-	pr_info("swtp_init: input_register_device success \n");
+	pr_no_info("swtp_init: input_register_device success \n");
 
 	swtp_data[md_id].md_id = md_id;
 	INIT_DELAYED_WORK(&swtp_data[md_id].delayed_work, swtp_tx_delayed_work);

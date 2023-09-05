@@ -229,7 +229,7 @@ static char *vpu_debug_simple_write(const char __user *buffer, size_t count)
 
 	ret = copy_from_user(buf, buffer, count);
 	if (ret) {
-		pr_info("%s: copy_from_user: ret=%d\n", __func__, ret);
+		pr_no_info("%s: copy_from_user: ret=%d\n", __func__, ret);
 		kfree(buf);
 		buf = NULL;
 		goto out;
@@ -276,7 +276,7 @@ int vpu_init_debug(struct vpu_device *vpu_dev)
 
 	if (IS_ERR_OR_NULL(proc_root)) {
 		ret = PTR_ERR(proc_root);
-		pr_info("%s: failed to create procfs node: %d\n",
+		pr_no_info("%s: failed to create procfs node: %d\n",
 			__func__, ret);
 		goto out;
 	}
@@ -298,7 +298,7 @@ int vpu_init_debug(struct vpu_device *vpu_dev)
 			&vpu_debug_ ## name ## _fops, NULL); \
 		if (IS_ERR_OR_NULL(proc_root)) { \
 			ret = PTR_ERR(proc_root); \
-			pr_info("%s: " #name "): %d\n", \
+			pr_no_info("%s: " #name "): %d\n", \
 				__func__, ret); \
 			goto out; \
 		} \

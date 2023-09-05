@@ -97,7 +97,7 @@ ssize_t sensor_event_read(unsigned char handle, struct file *file,
 	size_t read = 0;
 
 	if (count != 0 && count < sizeof(struct sensor_event)) {
-		pr_err("%s handle: %d err count(%d)\n", __func__,
+		pr_no_err("%s handle: %d err count(%d)\n", __func__,
 			  handle, (int)count);
 		return -EINVAL;
 	}
@@ -106,7 +106,7 @@ ssize_t sensor_event_read(unsigned char handle, struct file *file,
 		if (client->head == client->tail)
 			return 0;
 		if (count == 0) {
-			pr_debug("%s count: %d\n", __func__, (int)count);
+			pr_no_debug("%s count: %d\n", __func__, (int)count);
 			break;
 		}
 
@@ -136,7 +136,7 @@ unsigned int sensor_event_poll(unsigned char handle, struct file *file,
 	poll_wait(file, &client->wait, wait);
 
 	if (client->head != client->tail) {
-		/* pr_err("sensor_event_poll handle:%d\n", handle); */
+		/* pr_no_err("sensor_event_poll handle:%d\n", handle); */
 		mask |= POLLIN | POLLRDNORM;
 	}
 
@@ -177,7 +177,7 @@ unsigned int sensor_event_register(unsigned char handle)
 			vzalloc(obj->client[handle].bufsize *
 				sizeof(struct sensor_event));
 		if (!obj->client[handle].buffer) {
-			pr_err("Alloc ringbuffer error!\n");
+			pr_no_err("Alloc ringbuffer error!\n");
 			return -1;
 		}
 		init_waitqueue_head(&obj->client[handle].wait);
@@ -196,7 +196,7 @@ unsigned int sensor_event_register(unsigned char handle)
 			vzalloc(obj->client[handle].bufsize *
 				sizeof(struct sensor_event));
 		if (!obj->client[handle].buffer) {
-			pr_err("Alloc ringbuffer error!\n");
+			pr_no_err("Alloc ringbuffer error!\n");
 			return -1;
 		}
 		init_waitqueue_head(&obj->client[handle].wait);
@@ -219,7 +219,7 @@ unsigned int sensor_event_register(unsigned char handle)
 			vzalloc(obj->client[handle].bufsize *
 				sizeof(struct sensor_event));
 		if (!obj->client[handle].buffer) {
-			pr_err("Alloc ringbuffer error!\n");
+			pr_no_err("Alloc ringbuffer error!\n");
 			return -1;
 		}
 		init_waitqueue_head(&obj->client[handle].wait);

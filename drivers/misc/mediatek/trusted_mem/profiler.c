@@ -66,8 +66,8 @@ void trusted_mem_core_profile_dump(struct trusted_mem_device *mem_device)
 
 	struct profile_data_context *data = &mem_device->profile_mgr->data;
 
-	pr_info("=================================================\n");
-	pr_info("[%d] Profiling Summary:\n", mem_device->mem_type);
+	pr_no_info("=================================================\n");
+	pr_no_info("[%d] Profiling Summary:\n", mem_device->mem_type);
 
 	for (idx = 0; idx < PROFILE_ENTRY_MAX; idx++) {
 		average_one_time_us = SEC_TO_US(data->item[idx].sec);
@@ -76,19 +76,19 @@ void trusted_mem_core_profile_dump(struct trusted_mem_device *mem_device)
 			u64_div(average_one_time_us, data->item[idx].count);
 		average_one_time_ms = us_to_ms(average_one_time_us);
 
-		pr_info("[%d] Entry: %s\n", mem_device->mem_type,
+		pr_no_info("[%d] Entry: %s\n", mem_device->mem_type,
 			profile_entry_str[idx].str);
-		pr_info("[%d]   invoke count: %lld\n", mem_device->mem_type,
+		pr_no_info("[%d]   invoke count: %lld\n", mem_device->mem_type,
 			data->item[idx].count);
-		pr_info("[%d]   spend time: %lld.%06lld sec\n",
+		pr_no_info("[%d]   spend time: %lld.%06lld sec\n",
 			mem_device->mem_type, data->item[idx].sec,
 			data->item[idx].usec);
-		pr_info("[%d]   average one time: %lld msec (%06lld usec)\n",
+		pr_no_info("[%d]   average one time: %lld msec (%06lld usec)\n",
 			mem_device->mem_type, average_one_time_ms,
 			average_one_time_us);
 	}
 
-	pr_info("=================================================\n");
+	pr_no_info("=================================================\n");
 }
 
 static void increase_enter_count(enum PROFILE_ENTRY_TYPE entry,
@@ -306,12 +306,12 @@ struct profile_mgr_desc *create_profile_mgr_desc(void)
 	int idx;
 	struct profile_mgr_desc *t_profile_desc;
 
-	pr_info("TMEM_PROFILE_ENABLED\n");
+	pr_no_info("TMEM_PROFILE_ENABLED\n");
 
 	t_profile_desc =
 		mld_kmalloc(sizeof(struct profile_mgr_desc), GFP_KERNEL);
 	if (INVALID(t_profile_desc)) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		return NULL;
 	}
 

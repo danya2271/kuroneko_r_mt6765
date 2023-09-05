@@ -507,12 +507,12 @@ static void _DSI_INTERNAL_IRQ_Handler(enum DISP_MODULE_ENUM module,
 		_set_condition_and_wake_up(&(_dsi_context[i].sleep_in_done_wq));
 
 	if (status.BUFFER_UNDERRUN_INT_EN) {
-		DDP_PR_ERR("%s:buffer underrun\n", ddp_get_module_name(module));
+		DDP_pr_no_err("%s:buffer underrun\n", ddp_get_module_name(module));
 		primary_display_diagnose();
 	}
 
 	if (status.INP_UNFINISH_INT_EN)
-		DDP_PR_ERR("%s:input relay unfinish\n",
+		DDP_pr_no_err("%s:input relay unfinish\n",
 			   ddp_get_module_name(module));
 }
 
@@ -651,7 +651,7 @@ void DSI_enter_ULPS(enum DISP_MODULE_ENUM module)
 					 2 * HZ);
 		atomic_set(&(waitq->condition), 0);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi%d wait sleepin timeout\n", i);
+			DISP_pr_no_err("dsi%d wait sleepin timeout\n", i);
 			DSI_DumpRegisters(module, 1);
 			DSI_Reset(module, NULL);
 		}
@@ -725,7 +725,7 @@ void DSI_exit_ULPS(enum DISP_MODULE_ENUM module)
 					 2 * HZ);
 		atomic_set(&(waitq->condition), 0);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi%d wait sleepout timeout\n", i);
+			DISP_pr_no_err("dsi%d wait sleepout timeout\n", i);
 			DSI_DumpRegisters(module, 1);
 			DSI_Reset(module, NULL);
 		}
@@ -1002,7 +1002,7 @@ static void DSI_Get_Porch_Addr(enum DISP_MODULE_ENUM module,
 	enum DSI_PORCH_TYPE porch_type = DSI_VFP;
 
 	if (pAddr == NULL) {
-		DISP_PR_ERR("%s, pAddr NULL pointer!\n", __func__);
+		DISP_pr_no_err("%s, pAddr NULL pointer!\n", __func__);
 		return;
 	}
 
@@ -1238,7 +1238,7 @@ unsigned long MIPI_BASE_ADDR(enum DISP_MODULE_ENUM dsi_module)
 	case DISP_MODULE_DSI1:
 		return DSI_PHY_REG[1];
 	default:
-		DDP_PR_ERR("invalid module=%d\n", dsi_module);
+		DDP_pr_no_err("invalid module=%d\n", dsi_module);
 		break;
 	}
 
@@ -1508,7 +1508,7 @@ static void _DSI_PHY_clk_setting(enum DISP_MODULE_ENUM module,
 
 
 		if (data_Rate > 2500) {
-			DISP_PR_ERR("mipitx Data Rate exceed limitation(%d)\n",
+			DISP_pr_no_err("mipitx Data Rate exceed limitation(%d)\n",
 				    data_Rate);
 			ASSERT(0);
 		} else if (data_Rate >= 2000) { /* 2G ~ 2.5G */
@@ -1532,7 +1532,7 @@ static void _DSI_PHY_clk_setting(enum DISP_MODULE_ENUM module,
 			posdiv    = 4;
 			prediv    = 0;
 		} else {
-			DISP_PR_ERR("dataRate is too low(%d)\n", data_Rate);
+			DISP_pr_no_err("dataRate is too low(%d)\n", data_Rate);
 			ASSERT(0);
 		}
 
@@ -1782,7 +1782,7 @@ static void _dsi_phy_clk_setting_gce(enum DISP_MODULE_ENUM module,
 			continue;
 
 		if (data_Rate > 2500) {
-			DISP_PR_ERR("mipitx Data Rate exceed limit(%d)\n",
+			DISP_pr_no_err("mipitx Data Rate exceed limit(%d)\n",
 				    data_Rate);
 			ASSERT(0);
 		} else if (data_Rate >= 2000) { /* 2G ~ 2.5G */
@@ -1806,7 +1806,7 @@ static void _dsi_phy_clk_setting_gce(enum DISP_MODULE_ENUM module,
 			posdiv    = 4;
 			prediv    = 0;
 		} else {
-			DISP_PR_ERR("dataRate is too low(%d)\n", data_Rate);
+			DISP_pr_no_err("dataRate is too low(%d)\n", data_Rate);
 			ASSERT(0);
 		}
 
@@ -1886,7 +1886,7 @@ void DSI_MIPI_clk_change(enum DISP_MODULE_ENUM module, void *cmdq, int clk)
 			unsigned int tmp = 0;
 
 			if (clk > 2500 || clk < 125) {
-				DISP_PR_INFO("%s, invalid clk:%d\n",
+				DISP_pr_no_info("%s, invalid clk:%d\n",
 					__func__, clk);
 				return;
 			} else	if (clk >= 2000) { /* 2G ~ 2.5G */
@@ -1976,7 +1976,7 @@ int mipi_clk_change(enum DISP_MODULE_ENUM module, int en)
 
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 	if (ret) {
-		DISP_PR_ERR("%s:Fail to create cmdq handle\n", __func__);
+		DISP_pr_no_err("%s:Fail to create cmdq handle\n", __func__);
 		return -1;
 	}
 	cmdqRecReset(handle);
@@ -2242,7 +2242,7 @@ void DSI_PHY_TIMCONFIG(enum DISP_MODULE_ENUM module, struct cmdqRecStruct *cmdq,
 		DISP_LOG_PRINT(ANDROID_LOG_INFO, "DSI", "%s", msg);
 
 	} else {
-		DISP_PR_ERR("[dsi_dsi.c] PLL clock should not be 0!\n");
+		DISP_pr_no_err("[dsi_dsi.c] PLL clock should not be 0!\n");
 		ASSERT(0);
 	}
 
@@ -2474,21 +2474,21 @@ static int check_rdrdy_cmddone_irq(struct cmdqRecStruct *cmdq,
 	/* dump cmdq & rxdata */
 	if (DSI_REG[dsi_i]->DSI_INTSTA.RD_RDY != 0 ||
 		DSI_REG[dsi_i]->DSI_INTSTA.CMD_DONE != 0) {
-		DISP_PR_ERR("Last DSI Read Why not clear irq???\n");
-		DISP_PR_ERR("DSI_CMDQ_SIZE	: %d\n",
+		DISP_pr_no_err("Last DSI Read Why not clear irq???\n");
+		DISP_pr_no_err("DSI_CMDQ_SIZE	: %d\n",
 				 AS_UINT32(&DSI_REG[dsi_i]->DSI_CMDQ_SIZE));
 		for (i = 0; i < DSI_REG[dsi_i]->DSI_CMDQ_SIZE.CMDQ_SIZE;
 			 i++) {
-			DISP_PR_ERR("DSI_CMDQ_DATA%d : 0x%08x\n", i,
+			DISP_pr_no_err("DSI_CMDQ_DATA%d : 0x%08x\n", i,
 				AS_UINT32(&DSI_CMDQ_REG[dsi_i]->data[i]));
 		}
-		DISP_PR_ERR("DSI_RX_DATA0: 0x%08x\n",
+		DISP_pr_no_err("DSI_RX_DATA0: 0x%08x\n",
 				 AS_UINT32(&DSI_REG[dsi_i]->DSI_RX_DATA0));
-		DISP_PR_ERR("DSI_RX_DATA1: 0x%08x\n",
+		DISP_pr_no_err("DSI_RX_DATA1: 0x%08x\n",
 				 AS_UINT32(&DSI_REG[dsi_i]->DSI_RX_DATA1));
-		DISP_PR_ERR("DSI_RX_DATA2: 0x%08x\n",
+		DISP_pr_no_err("DSI_RX_DATA2: 0x%08x\n",
 				 AS_UINT32(&DSI_REG[dsi_i]->DSI_RX_DATA2));
-		DISP_PR_ERR("DSI_RX_DATA3: 0x%08x\n",
+		DISP_pr_no_err("DSI_RX_DATA3: 0x%08x\n",
 				 AS_UINT32(&DSI_REG[dsi_i]->DSI_RX_DATA3));
 
 		/* clear irq */
@@ -2642,12 +2642,12 @@ UINT32 DSI_dcs_read_lcm_reg_v2(enum DISP_MODULE_ENUM module,
 	/* illegal parameters */
 	ASSERT(cmdq == NULL);
 	if (cmdq != NULL) {
-		DISP_PR_ERR("DSI Read Fail: not support cmdq version\n");
+		DISP_pr_no_err("DSI Read Fail: not support cmdq version\n");
 		return 0;
 	}
 
 	if (buffer == NULL || buffer_size == 0) {
-		DISP_PR_ERR("DSI Read Fail: buffer=%p and buffer_size=%d\n",
+		DISP_pr_no_err("DSI Read Fail: buffer=%p and buffer_size=%d\n",
 			 buffer, (unsigned int)buffer_size);
 		return 0;
 	}
@@ -2661,14 +2661,14 @@ UINT32 DSI_dcs_read_lcm_reg_v2(enum DISP_MODULE_ENUM module,
 
 	if (DSI_REG[dsi_i]->DSI_MODE_CTRL.MODE) {
 		/* only cmd mode can read */
-		DISP_PR_ERR("DSI Read Fail: DSI Mode is %d\n",
+		DISP_pr_no_err("DSI Read Fail: DSI Mode is %d\n",
 			 DSI_REG[dsi_i]->DSI_MODE_CTRL.MODE);
 		return 0;
 	}
 
 	do {
 		if (max_try_count == 0) {
-			DISP_PR_ERR("DSI Read Fail: try 5 times\n");
+			DISP_pr_no_err("DSI Read Fail: try 5 times\n");
 			DSI_OUTREGBIT(cmdq, struct DSI_INT_ENABLE_REG,
 				      DSI_REG[dsi_i]->DSI_INTEN, RD_RDY, 0);
 			return 0;
@@ -2698,7 +2698,7 @@ UINT32 DSI_dcs_read_lcm_reg_v2(enum DISP_MODULE_ENUM module,
 		atomic_set(&(waitq->condition), 0);
 		if (ret == 0) {
 			/* wait read ready timeout */
-			DISP_PR_ERR("Read Fail: dsi wait read ready timeout\n");
+			DISP_pr_no_err("Read Fail: dsi wait read ready timeout\n");
 			DSI_DumpRegisters(module, 2);
 
 			/* do necessary reset here */
@@ -2727,7 +2727,7 @@ UINT32 DSI_dcs_read_lcm_reg_v2(enum DISP_MODULE_ENUM module,
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
 			/* wait cmddone timeout */
-			DISP_PR_ERR("DSI Read Fail:dsi wait cmddone timeout\n");
+			DISP_pr_no_err("DSI Read Fail:dsi wait cmddone timeout\n");
 			DSI_DumpRegisters(module, 2);
 			DSI_Reset(module, NULL);
 		}
@@ -2791,7 +2791,7 @@ UINT32 DSI_dcs_read_lcm_reg_v4(enum DISP_MODULE_ENUM module,
 
 	/* illegal parameters */
 	if (usr_buffer == NULL || buffer_size == 0) {
-		DISP_PR_ERR("DSI Read Fail: usr_buffer=%p and buffer_size=%d\n",
+		DISP_pr_no_err("DSI Read Fail: usr_buffer=%p and buffer_size=%d\n",
 			usr_buffer, (unsigned int)buffer_size);
 		return 0;
 	}
@@ -2846,7 +2846,7 @@ UINT32 DSI_dcs_read_lcm_reg_v4(enum DISP_MODULE_ENUM module,
 			DSI_BACKUPREG32(cmdq, hSlot, 3,
 					&DSI_REG[dsi_i]->DSI_RX_DATA3);
 		} else {
-			DISP_PR_ERR("DSI read save RX data fail\n");
+			DISP_pr_no_err("DSI read save RX data fail\n");
 		}
 
 		/* 6. write RX_RACK */
@@ -2873,7 +2873,7 @@ UINT32 DSI_dcs_read_lcm_reg_v4(enum DISP_MODULE_ENUM module,
 			cmdqBackupReadSlot(hSlot, 2, (uint32_t *)&read_data[2]);
 			cmdqBackupReadSlot(hSlot, 3, (uint32_t *)&read_data[3]);
 		} else {
-			DISP_PR_ERR("DSI read hSlot is empty\n");
+			DISP_pr_no_err("DSI read hSlot is empty\n");
 		}
 
 		/* 10. process data*/
@@ -3454,7 +3454,7 @@ int ddp_dsi_set_lcm_utils(enum DISP_MODULE_ENUM module,
 	struct LCM_UTIL_FUNCS *utils = NULL;
 
 	if (lcm_drv == NULL) {
-		DISP_PR_ERR("lcm_drv is null\n");
+		DISP_pr_no_err("lcm_drv is null\n");
 		return -1;
 	}
 
@@ -3465,7 +3465,7 @@ int ddp_dsi_set_lcm_utils(enum DISP_MODULE_ENUM module,
 	} else if (module == DISP_MODULE_DSIDUAL) {
 		utils = (struct LCM_UTIL_FUNCS *)&lcm_utils_dsidual;
 	} else {
-		DISP_PR_INFO("wrong module: %d\n", module);
+		DISP_pr_no_info("wrong module: %d\n", module);
 		return -1;
 	}
 
@@ -4105,7 +4105,7 @@ static int _ddp_dsi_stop_dual(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[0]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi0 wait event for not busy timeout\n");
+			DISP_pr_no_err("dsi0 wait event for not busy timeout\n");
 			DSI_DumpRegisters(DISP_MODULE_DSI0, 1);
 			DSI_Reset(DISP_MODULE_DSI0, NULL);
 		}
@@ -4114,7 +4114,7 @@ static int _ddp_dsi_stop_dual(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[1]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi1 wait event for not busy timeout\n");
+			DISP_pr_no_err("dsi1 wait event for not busy timeout\n");
 			DSI_DumpRegisters(DISP_MODULE_DSI1, 1);
 			DSI_Reset(DISP_MODULE_DSI1, NULL);
 		}
@@ -4130,7 +4130,7 @@ static int _ddp_dsi_stop_dual(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[0]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi0 wait event for not busy timeout\n");
+			DISP_pr_no_err("dsi0 wait event for not busy timeout\n");
 			DSI_DumpRegisters(DISP_MODULE_DSI0, 1);
 			DSI_Reset(DISP_MODULE_DSI0, NULL);
 		}
@@ -4139,7 +4139,7 @@ static int _ddp_dsi_stop_dual(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[1]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi1 wait event for not busy timeout\n");
+			DISP_pr_no_err("dsi1 wait event for not busy timeout\n");
 			DSI_DumpRegisters(DISP_MODULE_DSI1, 1);
 			DSI_Reset(DISP_MODULE_DSI1, NULL);
 		}
@@ -4217,7 +4217,7 @@ int ddp_dsi_stop(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[i]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi%d wait event for not busy timeout\n",
+			DISP_pr_no_err("dsi%d wait event for not busy timeout\n",
 				    i);
 			DSI_DumpRegisters(module, 1);
 			DSI_Reset(module, NULL);
@@ -4233,7 +4233,7 @@ int ddp_dsi_stop(enum DISP_MODULE_ENUM module, void *cmdq_handle)
 					 !(DSI_REG[i]->DSI_INTSTA.BUSY),
 					 WAIT_TIMEOUT);
 		if (ret == 0) {
-			DISP_PR_ERR("dsi%d wait event for not busy timeout\n",
+			DISP_pr_no_err("dsi%d wait event for not busy timeout\n",
 				    i);
 			DSI_DumpRegisters(module, 1);
 			DSI_Reset(module, NULL);
@@ -4498,7 +4498,7 @@ int ddp_dsi_ioctl(enum DISP_MODULE_ENUM module, void *cmdq_handle,
 	case DDP_DSI_PORCH_CHANGE:
 	{
 		if (params == NULL) {
-			DDP_PR_ERR("[%s] input pointer is NULL\n", __func__);
+			DDP_pr_no_err("[%s] input pointer is NULL\n", __func__);
 		} else {
 			unsigned int *p = (unsigned int *)params;
 			unsigned int vfp = p[0];
@@ -4513,7 +4513,7 @@ int ddp_dsi_ioctl(enum DISP_MODULE_ENUM module, void *cmdq_handle,
 	case DDP_DSI_PORCH_ADDR:
 	{
 		if (params == NULL) {
-			DDP_PR_ERR("[%s] input pointer is NULL\n", __func__);
+			DDP_pr_no_err("[%s] input pointer is NULL\n", __func__);
 		} else {
 			unsigned int *p = (unsigned int *)params;
 			unsigned int addr = p[0];
@@ -4824,7 +4824,7 @@ void dsi_analysis(enum DISP_MODULE_ENUM module)
 int ddp_dsi_dump(enum DISP_MODULE_ENUM module, int level)
 {
 	if (!_is_power_on_status(module)) {
-		DISP_PR_INFO("sleep, dump is invalid\n");
+		DISP_pr_no_info("sleep, dump is invalid\n");
 		return 0;
 	}
 
@@ -4906,7 +4906,7 @@ int ddp_dsi_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 	dsi_params = &_dsi_context[dsi_i].dsi_params;
 
 	if (cmdq_trigger_handle == NULL) {
-		DISP_PR_ERR("cmdq_trigger_handle is NULL\n");
+		DISP_pr_no_err("cmdq_trigger_handle is NULL\n");
 		return -1;
 	}
 
@@ -4925,7 +4925,7 @@ int ddp_dsi_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 						  CMDQ_EVENT_DSI_TE);
 			}
 		} else {
-			DISP_PR_INFO("wrong module: %s\n",
+			DISP_pr_no_info("wrong module: %s\n",
 				     ddp_get_module_name(module));
 			return -1;
 		}
@@ -4937,7 +4937,7 @@ int ddp_dsi_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 				      &DSI_REG[dsi_i]->DSI_INTSTA,
 				      0x80000000, 0);
 		} else {
-			DISP_PR_INFO("wrong module: %s\n",
+			DISP_pr_no_info("wrong module: %s\n",
 				     ddp_get_module_name(module));
 			return -1;
 		}
@@ -5085,7 +5085,7 @@ int ddp_dsi_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 					     "[DSI]cmp fail:read(0x%x)!=expect(0x%x)\n",
 					     read_data0.byte1,
 					     lcm_esd_tb->para_list[0]);
-					DISP_PR_ERR("%s", msg);
+					DISP_pr_no_err("%s", msg);
 				ret = 1;
 				break;
 			}

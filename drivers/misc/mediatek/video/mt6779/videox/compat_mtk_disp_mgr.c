@@ -696,13 +696,13 @@ int _compat_ioctl_create_session(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_session_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_config fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_config fail!\n");
 		return err;
 	}
 
@@ -712,7 +712,7 @@ int _compat_ioctl_create_session(struct file *file, unsigned long arg)
 	err = compat_put_disp_session_config(data32, data);
 
 	if (err) {
-		DISP_PR_ERR("compat_put_disp_session_config fail!\n");
+		DISP_pr_no_err("compat_put_disp_session_config fail!\n");
 		return err;
 	}
 	return ret;
@@ -731,13 +731,13 @@ int _compat_ioctl_destroy_session(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_session_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_config fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_config fail!\n");
 		return err;
 	}
 
@@ -760,13 +760,13 @@ int _compat_ioctl_trigger_session(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_session_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_config fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_config fail!\n");
 		return err;
 	}
 
@@ -788,13 +788,13 @@ int _compat_ioctl_prepare_present_fence(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_present_fence));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_present_fence(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_present_fence fail!\n");
+		DISP_pr_no_err("compat_get_disp_present_fence fail!\n");
 		return err;
 	}
 
@@ -803,7 +803,7 @@ int _compat_ioctl_prepare_present_fence(struct file *file, unsigned long arg)
 
 	err = compat_put_disp_present_fence(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_put_disp_present_fence fail!\n");
+		DISP_pr_no_err("compat_put_disp_present_fence fail!\n");
 		return err;
 	}
 
@@ -823,13 +823,13 @@ int _compat_ioctl_get_info(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_session_info));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_info(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_info fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_info fail!\n");
 		return err;
 	}
 
@@ -838,7 +838,7 @@ int _compat_ioctl_get_info(struct file *file, unsigned long arg)
 
 	err = compat_put_disp_session_info(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_put_disp_session_info fail!\n");
+		DISP_pr_no_err("compat_put_disp_session_info fail!\n");
 		return err;
 	}
 
@@ -859,13 +859,13 @@ int _compat_ioctl_prepare_buffer(struct file *file, unsigned long arg,
 
 	data = compat_alloc_user_space(sizeof(struct disp_buffer_info));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_buffer_info(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_buffer_info fail!\n");
+		DISP_pr_no_err("compat_get_disp_buffer_info fail!\n");
 		return err;
 	}
 
@@ -880,7 +880,7 @@ int _compat_ioctl_prepare_buffer(struct file *file, unsigned long arg,
 
 	err = compat_put_disp_buffer_info(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_put_disp_buffer_info fail!\n");
+		DISP_pr_no_err("compat_put_disp_buffer_info fail!\n");
 		return err;
 	}
 
@@ -902,13 +902,13 @@ int _compat_ioctl_wait_vsync(struct file *file, unsigned long arg)
 	data = compat_alloc_user_space(sizeof(
 					struct disp_session_vsync_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_vsync_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("%s get fail!\n", __func__);
+		DISP_pr_no_err("%s get fail!\n", __func__);
 		return err;
 	}
 
@@ -917,7 +917,7 @@ int _compat_ioctl_wait_vsync(struct file *file, unsigned long arg)
 
 	err = compat_put_disp_session_vsync_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("%s put fail!\n", __func__);
+		DISP_pr_no_err("%s put fail!\n", __func__);
 		return err;
 	}
 
@@ -939,13 +939,13 @@ int _compat_ioctl_set_input_buffer(struct file *file, unsigned long arg)
 	data = compat_alloc_user_space(sizeof(
 					struct disp_session_input_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_input_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_input_config fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_input_config fail!\n");
 		return err;
 	}
 
@@ -967,13 +967,13 @@ int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_caps_info));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_caps_info(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_caps_info fail!\n");
+		DISP_pr_no_err("compat_get_disp_caps_info fail!\n");
 		return err;
 	}
 
@@ -983,7 +983,7 @@ int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
 	err = compat_put_disp_caps_info(data32, data);
 
 	if (err) {
-		DISP_PR_ERR("compat_put_disp_caps_info fail!\n");
+		DISP_pr_no_err("compat_put_disp_caps_info fail!\n");
 		return err;
 	}
 
@@ -1006,7 +1006,7 @@ int _compat_ioctl_set_vsync(struct file *file, unsigned long arg)
 	unsigned int fps = (unsigned int)arg;
 
 	if ((fps < 50) || (fps > 60)) {
-		DISP_PR_INFO("%s fps setting is out of range, fps=%d\n",
+		DISP_pr_no_info("%s fps setting is out of range, fps=%d\n",
 			     __func__, fps);
 		return  -EFAULT;
 	}
@@ -1028,13 +1028,13 @@ int _compat_ioctl_set_session_mode(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_session_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_session_config fail!\n");
+		DISP_pr_no_err("compat_get_disp_session_config fail!\n");
 		return err;
 	}
 
@@ -1059,13 +1059,13 @@ int _compat_ioctl_set_output_buffer(struct file *file, unsigned long arg)
 	data = compat_alloc_user_space(sizeof(
 					struct disp_session_output_config));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_session_output_config(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp__session_output_config fail!\n");
+		DISP_pr_no_err("compat_get_disp__session_output_config fail!\n");
 		return err;
 	}
 
@@ -1087,13 +1087,13 @@ int _compat_ioctl_frame_config(struct file *file, unsigned long arg)
 
 	data = compat_alloc_user_space(sizeof(struct disp_frame_cfg_t));
 	if (!data) {
-		DISP_PR_ERR("compat_alloc_user_space fail!\n");
+		DISP_pr_no_err("compat_alloc_user_space fail!\n");
 		return -EFAULT;
 	}
 
 	err = compat_get_disp_frame_cfg(data32, data);
 	if (err) {
-		DISP_PR_ERR("compat_get_disp_frame_cfg fail!\n");
+		DISP_pr_no_err("compat_get_disp_frame_cfg fail!\n");
 		return err;
 	}
 

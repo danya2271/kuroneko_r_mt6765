@@ -58,11 +58,11 @@ static void _MFC_DrawChar(struct MFC_CONTEXT *ctxt, UINT32 x,
 	int font_draw_table16[4];
 
 	if (x > (MFC_WIDTH - MFC_FONT_WIDTH*ctxt->font_scale)) {
-		pr_info("draw width too large,x=%d\n", x);
+		pr_no_info("draw width too large,x=%d\n", x);
 		return;
 	}
 	if (y > (MFC_HEIGHT - MFC_FONT_HEIGHT*ctxt->font_scale)) {
-		pr_info("draw hight too large,y=%d\n", y);
+		pr_no_info("draw hight too large,y=%d\n", y);
 		return;
 	}
 
@@ -162,7 +162,7 @@ static void _MFC_DrawChar(struct MFC_CONTEXT *ctxt, UINT32 x,
 		}
 		break;
 	default:
-		pr_info("draw char fail,MFC_BPP=%d\n", MFC_BPP);
+		pr_no_info("draw char fail,MFC_BPP=%d\n", MFC_BPP);
 	}
 }
 
@@ -327,7 +327,7 @@ enum MFC_STATUS MFC_SetScale(MFC_HANDLE handle, unsigned int scale)
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n", __func__);
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n", __func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}
 
@@ -346,7 +346,7 @@ enum MFC_STATUS MFC_SetColor(MFC_HANDLE handle, unsigned int fg_color,
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n",
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n",
 			__func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}
@@ -366,7 +366,7 @@ enum MFC_STATUS MFC_ResetCursor(MFC_HANDLE handle)
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n",
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n",
 			__func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}
@@ -386,7 +386,7 @@ enum MFC_STATUS MFC_SetCursor(MFC_HANDLE handle,
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n", __func__);
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n", __func__);
 		WARN_ON(1);
 		return MFC_STATUS_LOCK_FAIL;
 	}
@@ -407,7 +407,7 @@ enum MFC_STATUS MFC_Print(MFC_HANDLE handle, const char *str)
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n",
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n",
 			__func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}
@@ -433,7 +433,7 @@ enum MFC_STATUS MFC_SetMem(MFC_HANDLE handle, const char *str, UINT32 color)
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n",
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n",
 			__func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}
@@ -464,7 +464,7 @@ enum MFC_STATUS MFC_LowMemory_Printf(MFC_HANDLE handle, const char *str,
 		return MFC_STATUS_INVALID_ARGUMENT;
 
 	if (down_interruptible(&ctxt->sem)) {
-		pr_info("[MFC] ERROR: Can't get semaphore in %s()\n",
+		pr_no_info("[MFC] ERROR: Can't get semaphore in %s()\n",
 			__func__);
 		return MFC_STATUS_LOCK_FAIL;
 	}

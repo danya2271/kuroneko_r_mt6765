@@ -128,25 +128,25 @@ struct FDVT_CLK_STRUCT fdvt_clk;
 #define IRQTag "KEEPER"
 
 #define log_vrb(format, args...) \
-pr_debug(MyTag "[%s] " format, __func__, ##args)
+pr_no_debug(MyTag "[%s] " format, __func__, ##args)
 
 #ifdef FDVT_DEBUG_USE
 #define log_dbg(format, args...) \
-pr_info(MyTag "[%s] " format, __func__, ##args)
+pr_no_info(MyTag "[%s] " format, __func__, ##args)
 #else
 #define log_dbg(format, args...)
 #endif
 
 #define log_inf(format, args...) \
-pr_info(MyTag "[%s] " format, __func__, ##args)
+pr_no_info(MyTag "[%s] " format, __func__, ##args)
 #define log_notice(format, args...) \
-pr_notice(MyTag "[%s] " format, __func__, ##args)
+pr_no_notice(MyTag "[%s] " format, __func__, ##args)
 #define log_wrn(format, args...) \
-pr_info(MyTag "[%s] " format, __func__, ##args)
+pr_no_info(MyTag "[%s] " format, __func__, ##args)
 #define log_err(format, args...) \
-pr_info(MyTag "[%s] " format, __func__, ##args)
+pr_no_info(MyTag "[%s] " format, __func__, ##args)
 #define log_ast(format, args...) \
-pr_debug(MyTag "[%s] " format, __func__, ##args)
+pr_no_debug(MyTag "[%s] " format, __func__, ##args)
 
 /*****************************************************************************
  *
@@ -498,7 +498,7 @@ static struct SV_LOG_STR gSvLog[FDVT_IRQ_TYPE_AMOUNT];
 } while (0)
 #else
 #define IRQ_LOG_KEEPER(irq, ppb, logT, fmt, args...) \
-pr_debug(IRQTag fmt,  ##args)
+pr_no_debug(IRQTag fmt,  ##args)
 #endif
 
 #ifdef LOG_MACRO
@@ -3236,7 +3236,7 @@ enum m4u_callback_ret_t FDVT_M4U_TranslationFault_callback(int port,
 	unsigned int mva, void *data)
 {
 
-	pr_info("[FDVT_M4U]fault call port=%d, mva=0x%x", port, mva);
+	pr_no_info("[FDVT_M4U]fault call port=%d, mva=0x%x", port, mva);
 
 	switch (port) {
 	case M4U_PORT_FDVT_RDA:
@@ -3244,17 +3244,17 @@ enum m4u_callback_ret_t FDVT_M4U_TranslationFault_callback(int port,
 	case M4U_PORT_FDVT_WRA:
 	case M4U_PORT_FDVT_WRB:
 	default:  //ISP_FDVT_BASE = 0x1b001000
-		pr_info("FDVT_IN_BASE_ADR_0:0x%08x, FDVT_IN_BASE_ADR_1:0x%08x, FDVT_IN_BASE_ADR_2:0x%08x, FDVT_IN_BASE_ADR_3:0x%08x\n",
+		pr_no_info("FDVT_IN_BASE_ADR_0:0x%08x, FDVT_IN_BASE_ADR_1:0x%08x, FDVT_IN_BASE_ADR_2:0x%08x, FDVT_IN_BASE_ADR_3:0x%08x\n",
 			FDVT_RD32(FDVT_IN_BASE_ADR_0_REG),
 			FDVT_RD32(FDVT_IN_BASE_ADR_1_REG),
 			FDVT_RD32(FDVT_IN_BASE_ADR_2_REG),
 			FDVT_RD32(FDVT_IN_BASE_ADR_3_REG));
-		pr_info("FDVT_OUT_BASE_ADR_0:0x%08x, FDVT_OUT_BASE_ADR_1:0x%08x, FDVT_OUT_BASE_ADR_2:0x%08x, FDVT_OUT_BASE_ADR_3:0x%08x\n",
+		pr_no_info("FDVT_OUT_BASE_ADR_0:0x%08x, FDVT_OUT_BASE_ADR_1:0x%08x, FDVT_OUT_BASE_ADR_2:0x%08x, FDVT_OUT_BASE_ADR_3:0x%08x\n",
 			FDVT_RD32(FDVT_OUT_BASE_ADR_0_REG),
 			FDVT_RD32(FDVT_OUT_BASE_ADR_1_REG),
 			FDVT_RD32(FDVT_OUT_BASE_ADR_2_REG),
 			FDVT_RD32(FDVT_OUT_BASE_ADR_3_REG));
-		pr_info("FDVT_KERNEL_BASE_ADR_0:0x%08x, FDVT_KERNEL_BASE_ADR_1:0x%08x\n",
+		pr_no_info("FDVT_KERNEL_BASE_ADR_0:0x%08x, FDVT_KERNEL_BASE_ADR_1:0x%08x\n",
 			FDVT_RD32(FDVT_KERNEL_BASE_ADR_0_REG),
 			FDVT_RD32(FDVT_KERNEL_BASE_ADR_1_REG));
 	break;
@@ -3666,7 +3666,7 @@ int FDVT_pm_suspend(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/* pr_debug("calling %s()\n", __func__); */
+	/* pr_no_debug("calling %s()\n", __func__); */
 	log_inf("FDVT suspend g_u4EnableClockCount: %d, g_u4FdvtCnt: %d",
 		g_u4EnableClockCount, g_u4FdvtCnt);
 
@@ -3679,7 +3679,7 @@ int FDVT_pm_resume(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	/* pr_debug("calling %s()\n", __func__); */
+	/* pr_no_debug("calling %s()\n", __func__); */
 	log_inf("FDVT resume g_u4EnableClockCount: %d, g_u4FdvtCnt: %d",
 		g_u4EnableClockCount, g_u4FdvtCnt);
 
@@ -3691,7 +3691,7 @@ int FDVT_pm_resume(struct device *device)
 #endif
 int FDVT_pm_restore_noirq(struct device *device)
 {
-	pr_debug("calling %s()\n", __func__);
+	pr_no_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 /*	mt_irq_set_sens(FDVT_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);*/
 /*	mt_irq_set_polarity(FDVT_IRQ_BIT_ID, MT_POLARITY_LOW);*/

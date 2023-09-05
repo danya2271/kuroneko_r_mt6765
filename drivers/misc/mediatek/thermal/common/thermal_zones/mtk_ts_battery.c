@@ -39,7 +39,7 @@ static void tsbattery_exit(void);
 int __attribute__ ((weak))
 read_tbat_value(void)
 {
-	pr_notice("[Thermal] E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("[Thermal] E_WF: %s doesn't exist\n", __func__);
 	return 30;
 }
 
@@ -49,7 +49,7 @@ battery_get_bat_temperature(void)
 	int i;
 
 	for (i = 0; i < 5; i++)
-		pr_notice("[Thermal] E_WF: %s doesn't exist\n", __func__);
+		pr_no_notice("[Thermal] E_WF: %s doesn't exist\n", __func__);
 
 	tsbattery_exit();
 	return -127000;
@@ -130,12 +130,12 @@ static int polling_factor2 = 10000;
 #define mtktsbattery_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtktsbattery_debug_log) {                \
-		pr_debug("[Thermal/TZ/BATTERY]" fmt, ##args); \
+		pr_no_debug("[Thermal/TZ/BATTERY]" fmt, ##args); \
 	}                                   \
 } while (0)
 
 #define mtktsbattery_printk(fmt, args...)   \
-pr_debug("[Thermal/TZ/BATTERY]" fmt, ##args)
+pr_no_debug("[Thermal/TZ/BATTERY]" fmt, ##args)
 /*
  * kernel fopen/fclose
  */
@@ -416,10 +416,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		pr_debug("Power/battery_Thermal: reset, reset, reset!!!");
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-		pr_debug("*****************************************");
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_no_debug("Power/battery_Thermal: reset, reset, reset!!!");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		pr_no_debug("*****************************************");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.
@@ -667,7 +667,7 @@ struct file *file, const char __user *buffer, size_t count, loff_t *data)
 static void mtkts_battery_cancel_thermal_timer(void)
 {
 	/* cancel timer */
-	/*pr_debug("mtkts_battery_cancel_thermal_timer\n"); */
+	/*pr_no_debug("mtkts_battery_cancel_thermal_timer\n"); */
 
 	/* stop thermal framework polling when entering deep idle */
 	/* For charging current throttling during deep idle,
@@ -681,7 +681,7 @@ static void mtkts_battery_cancel_thermal_timer(void)
 
 static void mtkts_battery_start_thermal_timer(void)
 {
-	/*pr_debug("mtkts_battery_start_thermal_timer\n"); */
+	/*pr_no_debug("mtkts_battery_start_thermal_timer\n"); */
 	/* resume thermal framework polling when leaving deep idle */
 	/* For charging current throttling during deep idle,
 	 *   this delayed work cannot be canceled.

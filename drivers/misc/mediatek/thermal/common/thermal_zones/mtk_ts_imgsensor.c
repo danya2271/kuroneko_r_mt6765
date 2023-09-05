@@ -35,7 +35,7 @@ enum CAMERA_DUAL_CAMERA_SENSOR_ENUM senDevId, MUINT8 *valid, MUINT32 *temp)
 {
 	*valid = SENSOR_TEMPERATURE_CANNOT_SEARCH_SENSOR;
 	*temp = -127;
-	pr_notice("[Thermal/TZ/IMGS] E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("[Thermal/TZ/IMGS] E_WF: %s doesn't exist\n", __func__);
 
 	return -1;
 }
@@ -54,12 +54,12 @@ enum CAMERA_DUAL_CAMERA_SENSOR_ENUM senDevId, MUINT8 *valid, MUINT32 *temp)
 #define mtk_imgs_dprintk(fmt, args...)   \
 	do {                                    \
 		if (mtk_imgs_debug_log) {                \
-			pr_notice("[Thermal/TZ/IMGS]" fmt, ##args);\
+			pr_no_notice("[Thermal/TZ/IMGS]" fmt, ##args);\
 		}                                   \
 	} while (0)
 
 #define mtk_imgs_printk(fmt, args...)   \
-	pr_notice("[Thermal/TZ/IMGS]" fmt, ##args)
+	pr_no_notice("[Thermal/TZ/IMGS]" fmt, ##args)
 /*=============================================================
  * Function prototype
  *=============================================================
@@ -766,12 +766,12 @@ struct thermal_cooling_device *cdev, unsigned long state)
 	g_clData[index].sysrst_state = state;
 
 	if (g_clData[index].sysrst_state == 1) {
-		pr_debug("%s: reset, reset, reset!!!\n",
+		pr_no_debug("%s: reset, reset, reset!!!\n",
 						g_clData[index].cl_name);
 
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		pr_debug("*****************************************\n");
-		pr_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_debug("*****************************************\n");
+		pr_no_debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.

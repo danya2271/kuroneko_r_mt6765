@@ -268,13 +268,13 @@ static int __init met_drv_init(void)
 
 	ret = met_kernel_symbol_get();
 	if (ret) {
-		pr_notice("[MET] met_kernel_symbol_get fail, ret = %d\n", ret);
+		pr_no_notice("[MET] met_kernel_symbol_get fail, ret = %d\n", ret);
 		return ret;
 	}
 
 	ret = fs_reg(met_minor);
 	if (ret) {
-		pr_notice("[MET] met fs_reg fail, ret = %d\n", ret);
+		pr_no_notice("[MET] met fs_reg fail, ret = %d\n", ret);
 		return ret;
 	}
 

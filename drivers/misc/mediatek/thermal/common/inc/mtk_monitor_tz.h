@@ -22,10 +22,10 @@ extern int get_monitor_thermal_zone_temp(enum monitor_thermal_zone tz_id);
 #define monitor_tz_dprintk(fmt, args...)	\
 	do {					\
 		if (monitor_tz_debug_log == 1) {	\
-			pr_notice(MONITOR_TZ_LOG_TAG fmt, ##args);	\
+			pr_no_notice(MONITOR_TZ_LOG_TAG fmt, ##args);	\
 		}	\
 	} while (0)
 
 #define monitor_tz_printk(fmt, args...)	\
-	pr_notice(MONITOR_TZ_LOG_TAG fmt, ##args)
+	pr_no_notice(MONITOR_TZ_LOG_TAG fmt, ##args)
 #endif	/* __MTK_MONITOR_TZ_H__ */

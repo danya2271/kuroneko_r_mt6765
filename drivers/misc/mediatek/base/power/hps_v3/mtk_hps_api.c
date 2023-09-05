@@ -561,7 +561,7 @@ void iccs_enter_low_power_state(void)
 
 	iccs_cache_shared_state = iccs_get_curr_cache_shared_state();
 	/*
-	 * pr_notice("[%s] iccs_cache_shared_state: 0x%x\n",
+	 * pr_no_notice("[%s] iccs_cache_shared_state: 0x%x\n",
 	 * __func__, iccs_cache_shared_state);
 	 */
 

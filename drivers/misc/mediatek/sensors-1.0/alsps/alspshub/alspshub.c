@@ -80,7 +80,7 @@ long alspshub_read_ps(u8 *ps)
 	res = sensor_get_data_from_hub(ID_PROXIMITY, &data_t);
 	if (res < 0) {
 		*ps = -1;
-		pr_err("sensor_get_data_from_hub fail, (ID: %d)\n",
+		pr_no_err("sensor_get_data_from_hub fail, (ID: %d)\n",
 			ID_PROXIMITY);
 		return -1;
 	}
@@ -114,7 +114,7 @@ static ssize_t trace_show(struct device_driver *ddri, char *buf)
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
 	if (!obj_ipi_data) {
-		pr_err("obj_ipi_data is null!!\n");
+		pr_no_err("obj_ipi_data is null!!\n");
 		return 0;
 	}
 
@@ -131,19 +131,19 @@ static ssize_t trace_store(struct device_driver *ddri,
 	int ret = 0;
 
 	if (!obj) {
-		pr_err("obj_ipi_data is null!!\n");
+		pr_no_err("obj_ipi_data is null!!\n");
 		return 0;
 	}
 	ret = sscanf(buf, "0x%x", &trace);
 	if (ret != 1) {
-		pr_err("invalid content: '%s', length = %zu\n", buf, count);
+		pr_no_err("invalid content: '%s', length = %zu\n", buf, count);
 		return count;
 	}
 	atomic_set(&obj->trace, trace);
 	res = sensor_set_cmd_to_hub(ID_PROXIMITY,
 		CUST_ACTION_SET_TRACE, &trace);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
 			ID_PROXIMITY, CUST_ACTION_SET_TRACE);
 		return 0;
 	}
@@ -156,7 +156,7 @@ static ssize_t als_show(struct device_driver *ddri, char *buf)
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
 	if (!obj) {
-		pr_err("obj_ipi_data is null!!\n");
+		pr_no_err("obj_ipi_data is null!!\n");
 		return 0;
 	}
 	res = alspshub_read_als(&obj->als);
@@ -172,7 +172,7 @@ static ssize_t ps_show(struct device_driver *ddri, char *buf)
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
 	if (!obj) {
-		pr_err("cm3623_obj is null!!\n");
+		pr_no_err("cm3623_obj is null!!\n");
 		return 0;
 	}
 	res = alspshub_read_ps(&obj->ps);
@@ -188,7 +188,7 @@ static ssize_t reg_show(struct device_driver *ddri, char *buf)
 
 	res = sensor_set_cmd_to_hub(ID_PROXIMITY, CUST_ACTION_SHOW_REG, buf);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
 			ID_PROXIMITY, CUST_ACTION_SHOW_REG);
 		return 0;
 	}
@@ -202,7 +202,7 @@ static ssize_t alslv_show(struct device_driver *ddri, char *buf)
 
 	res = sensor_set_cmd_to_hub(ID_LIGHT, CUST_ACTION_SHOW_ALSLV, buf);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
 			ID_LIGHT, CUST_ACTION_SHOW_ALSLV);
 		return 0;
 	}
@@ -216,7 +216,7 @@ static ssize_t alsval_show(struct device_driver *ddri, char *buf)
 
 	res = sensor_set_cmd_to_hub(ID_LIGHT, CUST_ACTION_SHOW_ALSVAL, buf);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
 			ID_LIGHT, CUST_ACTION_SHOW_ALSVAL);
 		return 0;
 	}
@@ -250,7 +250,7 @@ static int alspshub_create_attr(struct device_driver *driver)
 	for (idx = 0; idx < num; idx++) {
 		err = driver_create_file(driver, alspshub_attr_list[idx]);
 		if (err) {
-			pr_err("driver_create_file (%s) = %d\n",
+			pr_no_err("driver_create_file (%s) = %d\n",
 				alspshub_attr_list[idx]->attr.name, err);
 			break;
 		}
@@ -281,7 +281,7 @@ static void alspshub_init_done_work(struct work_struct *work)
 #endif
 
 	if (atomic_read(&obj->scp_init_done) == 0) {
-		pr_err("wait for nvram to set calibration\n");
+		pr_no_err("wait for nvram to set calibration\n");
 		return;
 	}
 	if (atomic_xchg(&obj->first_ready_after_boot, 1) == 0)
@@ -290,7 +290,7 @@ static void alspshub_init_done_work(struct work_struct *work)
 	err = sensor_set_cmd_to_hub(ID_PROXIMITY,
 		CUST_ACTION_SET_CALI, &obj->ps_cali);
 	if (err < 0)
-		pr_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID: %d),(action: %d)\n",
 			ID_PROXIMITY, CUST_ACTION_SET_CALI);
 #else
 	spin_lock(&calibration_lock);
@@ -300,7 +300,7 @@ static void alspshub_init_done_work(struct work_struct *work)
 	err = sensor_cfg_to_hub(ID_PROXIMITY,
 		(uint8_t *)cfg_data, sizeof(cfg_data));
 	if (err < 0)
-		pr_err("sensor_cfg_to_hub ps fail\n");
+		pr_no_err("sensor_cfg_to_hub ps fail\n");
 
 	spin_lock(&calibration_lock);
 	cfg_data[0] = atomic_read(&obj->als_cali);
@@ -308,7 +308,7 @@ static void alspshub_init_done_work(struct work_struct *work)
 	err = sensor_cfg_to_hub(ID_LIGHT,
 		(uint8_t *)cfg_data, sizeof(cfg_data));
 	if (err < 0)
-		pr_err("sensor_cfg_to_hub als fail\n");
+		pr_no_err("sensor_cfg_to_hub als fail\n");
 #endif
 }
 static int ps_recv_data(struct data_unit_t *event, void *reserved)
@@ -386,13 +386,13 @@ static int alshub_factory_enable_sensor(bool enable_disable,
 	if (enable_disable == true) {
 		err = sensor_set_delay_to_hub(ID_LIGHT, sample_periods_ms);
 		if (err) {
-			pr_err("sensor_set_delay_to_hub failed!\n");
+			pr_no_err("sensor_set_delay_to_hub failed!\n");
 			return -1;
 		}
 	}
 	err = sensor_enable_to_hub(ID_LIGHT, enable_disable);
 	if (err) {
-		pr_err("sensor_enable_to_hub failed!\n");
+		pr_no_err("sensor_enable_to_hub failed!\n");
 		return -1;
 	}
 	mutex_lock(&alspshub_mutex);
@@ -436,7 +436,7 @@ static int alshub_factory_set_cali(int32_t offset)
 	err = sensor_cfg_to_hub(ID_LIGHT,
 		(uint8_t *)&cfg_data, sizeof(cfg_data));
 	if (err < 0)
-		pr_err("sensor_cfg_to_hub fail\n");
+		pr_no_err("sensor_cfg_to_hub fail\n");
 	atomic_set(&obj->als_cali, offset);
 	als_cali_report(&cfg_data);
 
@@ -459,13 +459,13 @@ static int pshub_factory_enable_sensor(bool enable_disable,
 	if (enable_disable == true) {
 		err = sensor_set_delay_to_hub(ID_PROXIMITY, sample_periods_ms);
 		if (err) {
-			pr_err("sensor_set_delay_to_hub failed!\n");
+			pr_no_err("sensor_set_delay_to_hub failed!\n");
 			return -1;
 		}
 	}
 	err = sensor_enable_to_hub(ID_PROXIMITY, enable_disable);
 	if (err) {
-		pr_err("sensor_enable_to_hub failed!\n");
+		pr_no_err("sensor_enable_to_hub failed!\n");
 		return -1;
 	}
 	mutex_lock(&alspshub_mutex);
@@ -512,7 +512,7 @@ static int pshub_factory_clear_cali(void)
 	err = sensor_set_cmd_to_hub(ID_PROXIMITY,
 			CUST_ACTION_RESET_CALI, &obj->ps_cali);
 	if (err < 0) {
-		pr_err("sensor_set_cmd_to_hub fail, (ID: %d),(action: %d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail, (ID: %d),(action: %d)\n",
 			ID_PROXIMITY, CUST_ACTION_RESET_CALI);
 		return -1;
 	}
@@ -542,7 +542,7 @@ static int pshub_factory_set_threshold(int32_t threshold[2])
 #endif
 	if (threshold[0] < threshold[1] || threshold[0] <= 0 ||
 		threshold[1] <= 0) {
-		pr_err("PS set threshold fail! invalid value:[%d, %d]\n",
+		pr_no_err("PS set threshold fail! invalid value:[%d, %d]\n",
 			threshold[0], threshold[1]);
 		return -1;
 	}
@@ -555,7 +555,7 @@ static int pshub_factory_set_threshold(int32_t threshold[2])
 	err = sensor_set_cmd_to_hub(ID_PROXIMITY,
 		CUST_ACTION_SET_PS_THRESHOLD, threshold);
 	if (err < 0)
-		pr_err("sensor_set_cmd_to_hub fail, (ID:%d),(action:%d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail, (ID:%d),(action:%d)\n",
 			ID_PROXIMITY, CUST_ACTION_SET_PS_THRESHOLD);
 #else
 	spin_lock(&calibration_lock);
@@ -565,7 +565,7 @@ static int pshub_factory_set_threshold(int32_t threshold[2])
 	err = sensor_cfg_to_hub(ID_PROXIMITY,
 		(uint8_t *)cfg_data, sizeof(cfg_data));
 	if (err < 0)
-		pr_err("sensor_cfg_to_hub fail\n");
+		pr_no_err("sensor_cfg_to_hub fail\n");
 
 	ps_cali_report(cfg_data);
 #endif
@@ -619,7 +619,7 @@ static int als_enable_nodata(int en)
 	int res = 0;
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
-	pr_debug("obj_ipi_data als enable value = %d\n", en);
+	pr_no_debug("obj_ipi_data als enable value = %d\n", en);
 
 	if (en == true)
 		WRITE_ONCE(obj->als_android_enable, true);
@@ -628,7 +628,7 @@ static int als_enable_nodata(int en)
 
 	res = sensor_enable_to_hub(ID_LIGHT, en);
 	if (res < 0) {
-		pr_err("%s is failed!!\n", __func__);
+		pr_no_err("%s is failed!!\n", __func__);
 		return -1;
 	}
 
@@ -650,10 +650,10 @@ static int als_set_delay(u64 ns)
 	delayms = (unsigned int)ns / 1000 / 1000;
 	err = sensor_set_delay_to_hub(ID_LIGHT, delayms);
 	if (err) {
-		pr_err("%s fail!\n", __func__);
+		pr_no_err("%s fail!\n", __func__);
 		return err;
 	}
-	pr_debug("%s (%d)\n", __func__, delayms);
+	pr_no_debug("%s (%d)\n", __func__, delayms);
 	return 0;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -693,7 +693,7 @@ static int rgbw_enable(int en)
 
 	res = sensor_enable_to_hub(ID_RGBW, en);
 	if (res < 0) {
-		pr_err("%s is failed!!\n", __func__);
+		pr_no_err("%s is failed!!\n", __func__);
 		return -1;
 	}
 	return 0;
@@ -719,7 +719,7 @@ static int als_get_data(int *value, int *status)
 
 	err = sensor_get_data_from_hub(ID_LIGHT, &data);
 	if (err) {
-		pr_err("sensor_get_data_from_hub fail!\n");
+		pr_no_err("sensor_get_data_from_hub fail!\n");
 	} else {
 		time_stamp = data.time_stamp;
 		*value = data.light;
@@ -727,7 +727,7 @@ static int als_get_data(int *value, int *status)
 	}
 
 	if (atomic_read(&obj_ipi_data->trace) & CMC_TRC_PS_DATA)
-		pr_debug("value = %d\n", *value);
+		pr_no_debug("value = %d\n", *value);
 	return 0;
 }
 
@@ -741,7 +741,7 @@ static int ps_enable_nodata(int en)
 	int res = 0;
 	struct alspshub_ipi_data *obj = obj_ipi_data;
 
-	pr_debug("obj_ipi_data als enable value = %d\n", en);
+	pr_no_debug("obj_ipi_data als enable value = %d\n", en);
 	if (en == true)
 		WRITE_ONCE(obj->ps_android_enable, true);
 	else
@@ -749,7 +749,7 @@ static int ps_enable_nodata(int en)
 
 	res = sensor_enable_to_hub(ID_PROXIMITY, en);
 	if (res < 0) {
-		pr_err("als_enable_nodata is failed!!\n");
+		pr_no_err("als_enable_nodata is failed!!\n");
 		return -1;
 	}
 
@@ -774,11 +774,11 @@ static int ps_set_delay(u64 ns)
 	delayms = (unsigned int)ns / 1000 / 1000;
 	err = sensor_set_delay_to_hub(ID_PROXIMITY, delayms);
 	if (err < 0) {
-		pr_err("%s fail!\n", __func__);
+		pr_no_err("%s fail!\n", __func__);
 		return err;
 	}
 
-	pr_debug("%s (%d)\n", __func__, delayms);
+	pr_no_debug("%s (%d)\n", __func__, delayms);
 	return 0;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -809,7 +809,7 @@ static int ps_get_data(int *value, int *status)
 
 	err = sensor_get_data_from_hub(ID_PROXIMITY, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!\n");
+		pr_no_err("sensor_get_data_from_hub fail!\n");
 		*value = -1;
 		err = -1;
 	} else {
@@ -819,7 +819,7 @@ static int ps_get_data(int *value, int *status)
 	}
 
 	if (atomic_read(&obj_ipi_data->trace) & CMC_TRC_PS_DATA)
-		pr_debug("value = %d\n", *value);
+		pr_no_debug("value = %d\n", *value);
 
 	return err;
 }
@@ -869,7 +869,7 @@ static int alspshub_probe(struct platform_device *pdev)
 	struct ps_control_path ps_ctl = { 0 };
 	struct ps_data_path ps_data = { 0 };
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
 		err = -ENOMEM;
@@ -903,30 +903,30 @@ static int alspshub_probe(struct platform_device *pdev)
 	scp_power_monitor_register(&scp_ready_notifier);
 	err = scp_sensorHub_data_registration(ID_PROXIMITY, ps_recv_data);
 	if (err < 0) {
-		pr_err("scp_sensorHub_data_registration failed\n");
+		pr_no_err("scp_sensorHub_data_registration failed\n");
 		goto exit_kfree;
 	}
 	err = scp_sensorHub_data_registration(ID_LIGHT, als_recv_data);
 	if (err < 0) {
-		pr_err("scp_sensorHub_data_registration failed\n");
+		pr_no_err("scp_sensorHub_data_registration failed\n");
 		goto exit_kfree;
 	}
 	err = scp_sensorHub_data_registration(ID_RGBW, rgbw_recv_data);
 	if (err < 0) {
-		pr_err("scp_sensorHub_data_registration failed\n");
+		pr_no_err("scp_sensorHub_data_registration failed\n");
 		goto exit_kfree;
 	}
 	err = alsps_factory_device_register(&alspshub_factory_device);
 	if (err) {
-		pr_err("alsps_factory_device_register register failed\n");
+		pr_no_err("alsps_factory_device_register register failed\n");
 		goto exit_kfree;
 	}
-	pr_debug("alspshub_misc_device misc_register OK!\n");
+	pr_no_debug("alspshub_misc_device misc_register OK!\n");
 	als_ctl.is_use_common_factory = false;
 	ps_ctl.is_use_common_factory = false;
 	err = alspshub_create_attr(&paddr->driver);
 	if (err) {
-		pr_err("create attribute err = %d\n", err);
+		pr_no_err("create attribute err = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 	als_ctl.open_report_data = als_open_report_data;
@@ -944,7 +944,7 @@ static int alspshub_probe(struct platform_device *pdev)
 
 	err = als_register_control_path(&als_ctl);
 	if (err) {
-		pr_err("register fail = %d\n", err);
+		pr_no_err("register fail = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 
@@ -952,7 +952,7 @@ static int alspshub_probe(struct platform_device *pdev)
 	als_data.vender_div = 100;
 	err = als_register_data_path(&als_data);
 	if (err) {
-		pr_err("tregister fail = %d\n", err);
+		pr_no_err("tregister fail = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 
@@ -968,7 +968,7 @@ static int alspshub_probe(struct platform_device *pdev)
 
 	err = ps_register_control_path(&ps_ctl);
 	if (err) {
-		pr_err("register fail = %d\n", err);
+		pr_no_err("register fail = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 
@@ -976,18 +976,18 @@ static int alspshub_probe(struct platform_device *pdev)
 	ps_data.vender_div = 100;
 	err = ps_register_data_path(&ps_data);
 	if (err) {
-		pr_err("tregister fail = %d\n", err);
+		pr_no_err("tregister fail = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 	obj->ps_wake_lock = wakeup_source_register(NULL, "ps_wake_lock");
 	if (!obj->ps_wake_lock) {
-		pr_err("wakeup source init fail\n");
+		pr_no_err("wakeup source init fail\n");
 		err = -ENOMEM;
 		goto exit_create_attr_failed;
 	}
 
 	alspshub_init_flag = 0;
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	return 0;
 
 exit_create_attr_failed:
@@ -996,7 +996,7 @@ exit_kfree:
 	kfree(obj);
 	obj_ipi_data = NULL;
 exit:
-	pr_err("%s: err = %d\n", __func__, err);
+	pr_no_err("%s: err = %d\n", __func__, err);
 	alspshub_init_flag = -1;
 	return err;
 }
@@ -1012,7 +1012,7 @@ static int alspshub_remove(struct platform_device *pdev)
 		wakeup_source_unregister(obj->ps_wake_lock);
 	err = alspshub_delete_attr(&paddr->driver);
 	if (err)
-		pr_err("alspshub_delete_attr fail: %d\n", err);
+		pr_no_err("alspshub_delete_attr fail: %d\n", err);
 	alsps_factory_device_deregister(&alspshub_factory_device);
 	kfree(platform_get_drvdata(pdev));
 	return 0;
@@ -1021,13 +1021,13 @@ static int alspshub_remove(struct platform_device *pdev)
 
 static int alspshub_suspend(struct platform_device *pdev, pm_message_t msg)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	return 0;
 }
 
 static int alspshub_resume(struct platform_device *pdev)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	return 0;
 }
 static struct platform_device alspshub_device = {
@@ -1049,7 +1049,7 @@ static int alspshub_local_init(void)
 {
 
 	if (platform_driver_register(&alspshub_driver)) {
-		pr_err("add driver error\n");
+		pr_no_err("add driver error\n");
 		return -1;
 	}
 	if (-1 == alspshub_init_flag)
@@ -1066,7 +1066,7 @@ static int alspshub_local_remove(void)
 static int __init alspshub_init(void)
 {
 	if (platform_device_register(&alspshub_device)) {
-		pr_err("alsps platform device error\n");
+		pr_no_err("alsps platform device error\n");
 		return -1;
 	}
 	alsps_driver_add(&alspshub_init_info);
@@ -1075,7 +1075,7 @@ static int __init alspshub_init(void)
 
 static void __exit alspshub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(alspshub_init);

@@ -112,12 +112,12 @@ void mcdi_of_init(void **base)
 	node = of_find_compatible_node(NULL, NULL, mcdi_node_name);
 
 	if (!node)
-		pr_info("node '%s' not found!\n", mcdi_node_name);
+		pr_no_info("node '%s' not found!\n", mcdi_node_name);
 
 	*base = of_iomap(node, 0);
 
 	if (*base)
-		pr_info("node '%s' can not iomap!\n", mcdi_node_name);
+		pr_no_info("node '%s' can not iomap!\n", mcdi_node_name);
 
-	pr_info("mcdi_sysram_base = %p\n", *base);
+	pr_no_info("mcdi_sysram_base = %p\n", *base);
 }

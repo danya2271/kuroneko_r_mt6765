@@ -53,14 +53,14 @@ static inline void run_ut_with_memory_leak_check(u64 cmd, u64 param1,
 #ifdef TCORE_UT_TESTS_SUPPORT
 	invoke_ut_cases(cmd, param1, param2, param3);
 #else
-	pr_err("TCORE_UT_TESTS_SUPPORT option is not enabled\n");
+	pr_no_err("TCORE_UT_TESTS_SUPPORT option is not enabled\n");
 #endif
 
 #ifdef TCORE_MEMORY_LEAK_DETECTION_SUPPORT
 	if (mld_stamp_check(start_size) == MLD_CHECK_PASS)
-		pr_info("memory leak check is passed!!!\n");
+		pr_no_info("memory leak check is passed!!!\n");
 	else
-		pr_err("trusted memory core exists memory leak!\n");
+		pr_no_err("trusted memory core exists memory leak!\n");
 #endif
 }
 
@@ -77,7 +77,7 @@ get_trusted_mem_device(enum TRUSTED_MEM_TYPE mem_type)
 	    && VALID(tmem_dev[mem_type].device))
 		return tmem_dev[mem_type].device;
 
-	pr_err("trusted mem device:%d is not registered\n", mem_type);
+	pr_no_err("trusted mem device:%d is not registered\n", mem_type);
 	return NULL;
 }
 
@@ -89,7 +89,7 @@ create_trusted_mem_device(enum TRUSTED_MEM_TYPE register_type,
 
 	t_device = mld_kmalloc(sizeof(struct trusted_mem_device), GFP_KERNEL);
 	if (INVALID(t_device)) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		goto err_create_device;
 	}
 
@@ -115,7 +115,7 @@ create_trusted_mem_device(enum TRUSTED_MEM_TYPE register_type,
 		goto err_create_profile_mgr_desc;
 #endif
 
-	pr_info("trusted mem device:%d created\n", register_type);
+	pr_no_info("trusted mem device:%d created\n", register_type);
 	return t_device;
 
 #ifdef TCORE_PROFILING_SUPPORT
@@ -228,7 +228,7 @@ int register_trusted_mem_device(enum TRUSTED_MEM_TYPE register_type,
 	install_profiler(tmem_device);
 #endif
 
-	pr_info("trusted mem type '%s' %d registered!\n", tmem_device->name,
+	pr_no_info("trusted mem type '%s' %d registered!\n", tmem_device->name,
 		register_type);
 	return TMEM_OK;
 }
@@ -237,7 +237,7 @@ int trusted_mem_subsys_init(void)
 {
 	int idx;
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_no_info("%s:%d\n", __func__, __LINE__);
 
 #ifdef TCORE_MEMORY_LEAK_DETECTION_SUPPORT
 	mld_init();
@@ -248,7 +248,7 @@ int trusted_mem_subsys_init(void)
 		tmem_dev[idx].device = NULL;
 	}
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_no_info("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 
@@ -256,7 +256,7 @@ void trusted_mem_subsys_exit(void)
 {
 	int idx;
 
-	pr_info("%s:%d\n", __func__, __LINE__);
+	pr_no_info("%s:%d\n", __func__, __LINE__);
 
 	for (idx = 0; idx < TRUSTED_MEM_MAX; idx++) {
 		if (VALID_MEM_TYPE(tmem_dev[idx].mem_type)

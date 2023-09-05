@@ -26,14 +26,14 @@
 #define mtktscharger2_dprintk(fmt, args...) \
 do { \
 	if (mtktscharger2_debug_log) \
-		pr_notice("[Thermal/tzcharger2]" fmt, ##args); \
+		pr_no_notice("[Thermal/tzcharger2]" fmt, ##args); \
 } while (0)
 
 #define mtktscharger2_dprintk_always(fmt, args...) \
-	pr_notice("[Thermal/tzcharger2]" fmt, ##args)
+	pr_no_notice("[Thermal/tzcharger2]" fmt, ##args)
 
-#define mtktscharger2_pr_notice(fmt, args...) \
-	pr_notice("[Thermal/tzcharger2]" fmt, ##args)
+#define mtktscharger2_pr_no_notice(fmt, args...) \
+	pr_no_notice("[Thermal/tzcharger2]" fmt, ##args)
 
 static kuid_t uid = KUIDT_INIT(0);
 static kgid_t gid = KGIDT_INIT(1000);
@@ -110,7 +110,7 @@ static struct power_supply *get_charger2_handle(void)
 		if (m_psy)
 			return m_psy;
 	}
-	pr_notice("%s is not dual charger project\n",
+	pr_no_notice("%s is not dual charger project\n",
 				__func__);
 	return NULL;
 }
@@ -336,7 +336,7 @@ struct thermal_cooling_device *cdev, unsigned long state)
 {
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		mtktscharger2_pr_notice(
+		mtktscharger2_pr_no_notice(
 			"[Thermal/mtktscharger2_sysrst] reset, reset, reset!!!\n");
 
 
@@ -584,7 +584,7 @@ static int mtktscharger2_pdrv_probe(struct platform_device *pdev)
 
 	mtktscharger2_dir = mtk_thermal_get_proc_drv_therm_dir_entry();
 	if (!mtktscharger2_dir) {
-		mtktscharger2_pr_notice("%s get /proc/driver/thermal failed\n",
+		mtktscharger2_pr_no_notice("%s get /proc/driver/thermal failed\n",
 								__func__);
 	} else {
 		entry = proc_create("tzcharger2", 0664, mtktscharger2_dir,

@@ -80,9 +80,6 @@ void ppm_profile_update_client_exec_time(enum ppm_client client,
 	ppm_profile_data.avg_client_exec_time_us[client] =
 		(ppm_profile_data.avg_client_exec_time_us[client] + time) / 2;
 
-	ppm_dbg(TIME_PROFILE, "@%s: client = %s, time = %lld\n",
-		__func__, ppm_main_info.client_info[client].name, time);
-
 end:
 	ppm_unlock(&ppm_profile_data.lock);
 }
@@ -103,9 +100,6 @@ void ppm_profile_update_ipi_exec_time(int id,
 		ppm_profile_data.max_ipi_exec_time_us[id] = time;
 	ppm_profile_data.avg_ipi_exec_time_us[id] =
 		(ppm_profile_data.avg_ipi_exec_time_us[id] + time) / 2;
-
-	ppm_dbg(TIME_PROFILE, "@%s: IPI id = %d, time = %lld\n",
-		__func__, id, time);
 
 end:
 	ppm_unlock(&ppm_profile_data.lock);

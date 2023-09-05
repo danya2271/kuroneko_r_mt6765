@@ -24,12 +24,12 @@
 
 #define TAG_NAME "[flashligh_sywt78_drv]"
 #define PK_DBG_NONE(fmt, arg...)  do {} while (0)
-#define PK_DBG_FUNC(fmt, arg...)  pr_debug(TAG_NAME "%s: " fmt, __func__, ##arg)
-#define PK_ERR(fmt, arg...)       pr_info(TAG_NAME "%s: " fmt, __func__, ##arg)
+#define PK_DBG_FUNC(fmt, arg...)  pr_no_debug(TAG_NAME "%s: " fmt, __func__, ##arg)
+#define PK_ERR(fmt, arg...)       pr_no_info(TAG_NAME "%s: " fmt, __func__, ##arg)
 
 #define DEBUG_LEDS_STROBE
 #ifdef DEBUG_LEDS_STROBE
-#define PK_INF(fmt, arg...)       pr_info(TAG_NAME "%s is called.\n", __func__)
+#define PK_INF(fmt, arg...)       pr_no_info(TAG_NAME "%s is called.\n", __func__)
 #define PK_DBG                    PK_DBG_FUNC
 #else
 #define PK_INF(fmt, arg...)       do {} while (0)
@@ -411,7 +411,7 @@ static int sywt78_parse_dt(struct device *dev,
 		pdata->dev_id[i].channel = i;
 		pdata->dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_no_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				pdata->dev_id[i].type, pdata->dev_id[i].ct,
 				pdata->dev_id[i].part, pdata->dev_id[i].name,
 				pdata->dev_id[i].channel,

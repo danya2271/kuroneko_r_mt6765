@@ -200,7 +200,7 @@ static int mt6779_qos_ipi_recv_handler(void *arg)
 
 	ret = sspm_ipi_recv_registration(IPI_ID_QOS, &qos_isr);
 	if (ret) {
-		pr_info("mtkqos:%s, sspm register fail(%u)\n", __func__, ret);
+		pr_no_info("mtkqos:%s, sspm register fail(%u)\n", __func__, ret);
 		return 0;
 	}
 
@@ -215,7 +215,7 @@ static int mt6779_qos_ipi_recv_handler(void *arg)
 					qos_ipi_d.u.qos_bound.state,
 					get_qos_bound());
 		else
-			pr_info("mtkqos: %s wrong QoS IPI command: %d\n",
+			pr_no_info("mtkqos: %s wrong QoS IPI command: %d\n",
 				__func__, qos_ipi_d.cmd);
 
 	} while (!kthread_should_stop());

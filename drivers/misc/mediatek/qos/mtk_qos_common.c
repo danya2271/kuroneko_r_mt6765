@@ -98,7 +98,7 @@ void qos_sram_init(void __iomem *regs, unsigned int bound)
 
 	qos_sram_base = regs;
 	qos_sram_bound = bound;
-	pr_info("qos_sram addr:0x%x len:%d\n",
+	pr_no_info("qos_sram addr:0x%x len:%d\n",
 		qos_sram_base, qos_sram_bound);
 
 	for (i = 0; i < bound; i += 4)
@@ -139,7 +139,7 @@ int mtk_qos_probe(struct platform_device *pdev,
 
 	platform_set_drvdata(pdev, qos);
 
-	pr_info("mtkqos:%s done\n", __func__);
+	pr_no_info("mtkqos:%s done\n", __func__);
 
 	return 0;
 }

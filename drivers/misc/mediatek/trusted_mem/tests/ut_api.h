@@ -31,8 +31,8 @@ struct ut_params {
 		typeof(val) ret_val = val; \
 		typeof(got) ret_got = got; \
 		if (ret_val op ret_got) { \
-			pr_err("'%s' FAILED!\n", msg); \
-			pr_err( \
+			pr_no_err("'%s' FAILED!\n", msg); \
+			pr_no_err( \
 				"[ERR]%s:%d unexpected: 0x%x, " \
 				"expected: 0x%x\n", \
 				__func__, __LINE__, ret_got, ret_val); \
@@ -43,7 +43,7 @@ struct ut_params {
 			} \
 		} else { \
 			ut_increase_pass_cnt(); \
-			pr_debug("'%s' PASSED!\n", msg); \
+			pr_no_debug("'%s' PASSED!\n", msg); \
 		} \
 	} while (0)
 
@@ -51,8 +51,8 @@ struct ut_params {
 	do { \
 		typeof(got) ret_got = got; \
 		if (ret_got == NULL) { \
-			pr_err("'%s' FAILED!\n", msg); \
-			pr_err( \
+			pr_no_err("'%s' FAILED!\n", msg); \
+			pr_no_err( \
 				"[ERR]%s:%d unexpected: %p, " \
 				"expected not null\n", \
 				__func__, __LINE__, ret_got); \
@@ -63,7 +63,7 @@ struct ut_params {
 			} \
 		} else { \
 			ut_increase_pass_cnt(); \
-			pr_debug("'%s' PASSED!\n", msg); \
+			pr_no_debug("'%s' PASSED!\n", msg); \
 		} \
 	} while (0)
 

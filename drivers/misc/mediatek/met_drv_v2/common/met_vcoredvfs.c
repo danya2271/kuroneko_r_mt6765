@@ -206,7 +206,7 @@ static int met_vcoredvfs_create(struct kobject *parent)
 
 	ret = sysfs_create_file(kobj_met_vcoredvfs, &vcorefs_polling_attr.attr);
 	if (ret != 0) {
-		pr_debug("Failed to create vcoredvfs in sysfs\n");
+		pr_no_debug("Failed to create vcoredvfs in sysfs\n");
 		return ret;
 	}
 

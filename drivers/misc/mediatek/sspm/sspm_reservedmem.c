@@ -53,13 +53,13 @@ static void sspm_reserve_memory_ioremap(struct platform_device *pdev)
 	/* Get reserved memory */
 	rmem_node = of_find_compatible_node(NULL, NULL, SSPM_MEM_RESERVED_KEY);
 	if (!rmem_node) {
-		pr_err("[SSPM] no node for reserved memory\n");
+		pr_no_err("[SSPM] no node for reserved memory\n");
 		return;
 	}
 
 	rmem = of_reserved_mem_lookup(rmem_node);
 	if (!rmem) {
-		pr_err("[SSPM] cannot lookup reserved memory\n");
+		pr_no_err("[SSPM] cannot lookup reserved memory\n");
 		return;
 	}
 
@@ -74,7 +74,7 @@ static int __init sspm_reserve_mem_of_init(struct reserved_mem *rmem)
 	sspm_mem_size      = rmem->size;
 
 #ifdef DEBUG
-	pr_debug("[SSPM] phys:0x%llx - 0x%llx (0x%llx)\n",
+	pr_no_debug("[SSPM] phys:0x%llx - 0x%llx (0x%llx)\n",
 		(unsigned long long)rmem->base,
 		(unsigned long long)(rmem->base + rmem->size),
 		(unsigned long long)rmem->size);
@@ -89,7 +89,7 @@ RESERVEDMEM_OF_DECLARE(sspm_reservedmem, SSPM_MEM_RESERVED_KEY,
 phys_addr_t sspm_reserve_mem_get_phys(unsigned int id)
 {
 	if (id >= NUMS_MEM_ID) {
-		pr_err("[SSPM] no reserve memory for 0x%x", id);
+		pr_no_err("[SSPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return sspm_reserve_mblock[id].start_phys;
@@ -99,7 +99,7 @@ EXPORT_SYMBOL_GPL(sspm_reserve_mem_get_phys);
 phys_addr_t sspm_reserve_mem_get_virt(unsigned int id)
 {
 	if (id >= NUMS_MEM_ID) {
-		pr_err("[SSPM] no reserve memory for 0x%x", id);
+		pr_no_err("[SSPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return sspm_reserve_mblock[id].start_virt;
@@ -109,7 +109,7 @@ EXPORT_SYMBOL_GPL(sspm_reserve_mem_get_virt);
 phys_addr_t sspm_reserve_mem_get_size(unsigned int id)
 {
 	if (id >= NUMS_MEM_ID) {
-		pr_err("[SSPM] no reserve memory for 0x%x", id);
+		pr_no_err("[SSPM] no reserve memory for 0x%x", id);
 		return 0;
 	} else
 		return sspm_reserve_mblock[id].size;
@@ -146,7 +146,7 @@ int sspm_reserve_memory_init(void)
 			ioremap_wc(sspm_mem_base_phys, sspm_mem_size);
 
 #ifdef DEBUG
-	pr_info("[SSPM]reserve mem: virt:0x%llx - 0x%p (0x%llx)\n",
+	pr_no_info("[SSPM]reserve mem: virt:0x%llx - 0x%p (0x%llx)\n",
 			sspm_mem_base_virt,
 			sspm_mem_base_virt + sspm_mem_size,
 			sspm_mem_size);
@@ -165,8 +165,8 @@ int sspm_reserve_memory_init(void)
 
 #ifdef DEBUG
 	for (id = 0; id < NUMS_MEM_ID; id++) {
-		pr_info("[SSPM][mem_reserve-%d] ", id);
-		pr_info("phys:0x%llx, virt:0x%llx,size:0x%llx\n",
+		pr_no_info("[SSPM][mem_reserve-%d] ", id);
+		pr_no_info("phys:0x%llx, virt:0x%llx,size:0x%llx\n",
 			(unsigned long long)sspm_reserve_mem_get_phys(id),
 			(unsigned long long)sspm_reserve_mem_get_virt(id),
 			(unsigned long long)sspm_reserve_mem_get_size(id));
@@ -189,13 +189,13 @@ void __iomem *sspm_base;
 phys_addr_t sspm_sbuf_get(unsigned int offset)
 {
 	if (!is_sspm_ready()) {
-		pr_notice("[SSPM] device resource is not ready\n");
+		pr_no_notice("[SSPM] device resource is not ready\n");
 		return 0;
 	}
 
 	if (offset < SSPM_SHARE_REGION_BASE ||
 		offset > SSPM_SHARE_REGION_BASE + SSPM_SHARE_REGION_SIZE) {
-		pr_notice("[SSPM] illegal sbuf request: 0x%x\n", offset);
+		pr_no_notice("[SSPM] illegal sbuf request: 0x%x\n", offset);
 		return 0;
 	} else {
 		return (phys_addr_t)(sspm_base + offset);

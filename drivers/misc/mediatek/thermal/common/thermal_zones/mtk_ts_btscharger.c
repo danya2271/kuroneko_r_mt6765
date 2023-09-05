@@ -26,13 +26,13 @@
 int __attribute__ ((weak))
 IMM_IsAdcInitReady(void)
 {
-	pr_notice("E_WF: thermal_charger: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: thermal_charger: %s doesn't exist\n", __func__);
 	return 0;
 }
 int __attribute__ ((weak))
 IMM_GetOneChannelValue(int dwChannel, int data[4], int *rawdata)
 {
-	pr_notice("E_WF: thermal_charger: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: thermal_charger: %s doesn't exist\n", __func__);
 	return -1;
 }
 
@@ -42,14 +42,14 @@ IMM_GetOneChannelValue(int dwChannel, int data[4], int *rawdata)
 #define mtktscharger_dprintk(fmt, args...) \
 do { \
 	if (mtktscharger_debug_log) \
-		pr_debug("[Thermal/tzcharger]" fmt, ##args); \
+		pr_no_debug("[Thermal/tzcharger]" fmt, ##args); \
 } while (0)
 
 #define mtktscharger_dprintk_always(fmt, args...) \
-	pr_notice("[Thermal/tzcharger]" fmt, ##args)
+	pr_no_notice("[Thermal/tzcharger]" fmt, ##args)
 
-#define mtktscharger_pr_notice(fmt, args...) \
-	pr_notice("[Thermal/tzcharger]" fmt, ##args)
+#define mtktscharger_pr_no_notice(fmt, args...) \
+	pr_no_notice("[Thermal/tzcharger]" fmt, ##args)
 
 #if defined(CONFIG_MEDIATEK_MT6577_AUXADC)
 struct iio_channel *thermistor_ch2;
@@ -812,10 +812,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 {
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		pr_notice("[Thermal/mtktscharger_sysrst] reset, reset, reset!!!\n");
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		pr_notice("*****************************************\n");
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("[Thermal/mtktscharger_sysrst] reset, reset, reset!!!\n");
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("*****************************************\n");
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.
@@ -885,7 +885,7 @@ void mtkts_btscharger_prepare_table(int table_num)
 		break;
 	}
 
-	pr_notice("[Thermal/TZ/BTSCHARGER] %s table_num=%d\n",
+	pr_no_notice("[Thermal/TZ/BTSCHARGER] %s table_num=%d\n",
 						__func__, table_num);
 }
 static int mtktscharger_read(struct seq_file *m, void *v)
@@ -1273,7 +1273,7 @@ static int mtktscharger_pdrv_probe(struct platform_device *pdev)
 
 	mtktscharger_dir = mtk_thermal_get_proc_drv_therm_dir_entry();
 	if (!mtktscharger_dir) {
-		mtktscharger_pr_notice("%s get /proc/driver/thermal failed\n",
+		mtktscharger_pr_no_notice("%s get /proc/driver/thermal failed\n",
 								__func__);
 	} else {
 		entry = proc_create("tzcharger", 0664, mtktscharger_dir,

@@ -180,10 +180,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 	cl_dev_sysrst_state_tsbif = state;
 
 	if (cl_dev_sysrst_state_tsbif == 1) {
-		pr_notice("%s = 1\n", __func__);
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		pr_notice("*****************************************\n");
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("%s = 1\n", __func__);
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("*****************************************\n");
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.

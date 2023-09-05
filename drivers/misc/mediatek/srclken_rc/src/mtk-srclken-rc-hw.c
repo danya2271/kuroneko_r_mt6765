@@ -151,7 +151,7 @@ static void __srclken_gpio_pull(bool enable)
 	else
 		srclken_write(GPIO_DOUT_CLR, 0x1 << GPIO_PULL_SHFT);
 
-	pr_info("gpio: dir(0x%x) out(0x%x)\n", srclken_read(GPIO_DIR),
+	pr_no_info("gpio: dir(0x%x) out(0x%x)\n", srclken_read(GPIO_DIR),
 		srclken_read(GPIO_DOUT));
 }
 #endif
@@ -162,18 +162,18 @@ static int __srclken_switch_subsys_ctrl(enum sys_id id,
 	u32 bit_mask = SW_SRCLKEN_RC_MSK << SW_SRCLKEN_RC_SHFT;
 
 	if (id >= MAX_SYS_NUM || id < 0) {
-		pr_notice("req_subsys is not available\n");
+		pr_no_notice("req_subsys is not available\n");
 		return -1;
 	}
 
 	if ((mode != HW_MODE) && (mode != SW_MODE)) {
-		pr_notice("req_mode is not allowed\n");
+		pr_no_notice("req_mode is not allowed\n");
 		return -1;
 	}
 
 	if ((req != OFF_REQ) && (req != NO_REQ) &&
 			(req != FPM_REQ) && (req != BBLPM_REQ)) {
-		pr_notice("req_type is not allowed\n");
+		pr_no_notice("req_type is not allowed\n");
 		return -1;
 	}
 
@@ -189,7 +189,7 @@ static int __srclken_switch_subsys_ctrl(enum sys_id id,
 			== (mode | req))
 		return 0;
 
-	pr_info("read back value err.(0x%x)",
+	pr_no_info("read back value err.(0x%x)",
 			srclken_read(RC_M00_SRCLKEN_CFG + 4 * id));
 	return -1;
 
@@ -225,9 +225,9 @@ static ssize_t __subsys_ctl_store(const char *buf, enum sys_id id)
 		__srclken_gpio_pull(true);
 #endif
 	} else {
-		pr_info("bad argument!! please follow correct format\n");
-		pr_info("echo $mode > proc/srclken_rc/$subsys\n");
-		pr_info("mode = {HW, SW_OFF, SW_FPM, SW_BBLPM}\n");
+		pr_no_info("bad argument!! please follow correct format\n");
+		pr_no_info("echo $mode > proc/srclken_rc/$subsys\n");
+		pr_no_info("mode = {HW, SW_OFF, SW_FPM, SW_BBLPM}\n");
 
 		return -EPERM;
 	}
@@ -317,7 +317,7 @@ static u32 __srclken_dump_sta(char *buf, u8 id)
 		len = __subsys_ctl_show(buf, SYS_UFS);
 		break;
 	default:
-		pr_notice("Not valid xo_buf id\n");
+		pr_no_notice("Not valid xo_buf id\n");
 		break;
 	}
 
@@ -332,13 +332,13 @@ void srclken_hw_dump_sta_log(void)
 	u8 id = 0;
 
 	clk_buf_dump_clkbuf_log();
-	pr_notice("%s:\n", __func__);
+	pr_no_notice("%s:\n", __func__);
 	for (id = 0; id < XO_NUMBER; id++) {
 		sta = clk_buf_get_xo_en_sta(id);
 		if (sta) {
 			len = __srclken_dump_sta(buf, id);
 			if (len)
-				pr_notice("%s\n", buf);
+				pr_no_notice("%s\n", buf);
 		}
 	}
 }
@@ -375,7 +375,7 @@ void srclken_hw_dump_cfg_log(void)
 
 	__srclken_dump_cfg(buf);
 
-	pr_notice("%s: %s\n", __func__, buf);
+	pr_no_notice("%s: %s\n", __func__, buf);
 }
 
 static int __srclken_dump_last_sta(char *buf, u8 idx)
@@ -397,12 +397,12 @@ void srclken_hw_dump_last_sta_log(void)
 	char buf[1024];
 	u8 i;
 
-	pr_notice("%s:\n", __func__);
+	pr_no_notice("%s:\n", __func__);
 
 	for (i = 0; i < TRACE_NUM; i++) {
 		__srclken_dump_last_sta(buf, i);
 
-		pr_notice("%s", buf);
+		pr_no_notice("%s", buf);
 	}
 }
 
@@ -817,7 +817,7 @@ static ssize_t debug_ctl_store(struct kobject *kobj,
 
 	return count;
 ERROR_CMD:
-	pr_info("bad argument!! please follow correct format\n");
+	pr_no_info("bad argument!! please follow correct format\n");
 	return -EPERM;
 }
 
@@ -855,7 +855,7 @@ static ssize_t scp_sw_ctl_store(struct kobject *kobj,
 
 	return count;
 ERROR_CMD:
-	pr_info("bad argument!! please follow correct format\n");
+	pr_no_info("bad argument!! please follow correct format\n");
 	return -EPERM;
 }
 
@@ -934,7 +934,7 @@ int srclken_fs_init(void)
 	/* create /sys/kernel/srclken/xxx */
 	r = sysfs_create_group(kernel_kobj, &srclken_attr_group);
 	if (r)
-		pr_err("FAILED TO CREATE /sys/kernel/srclken (%d)\n", r);
+		pr_no_err("FAILED TO CREATE /sys/kernel/srclken (%d)\n", r);
 
 	return r;
 }
@@ -963,19 +963,19 @@ int _srclken_dts_map_internal(struct device_node *node, int idx)
 	if (ret)
 		goto no_property;
 
-	pr_info("%s-[%d]0x%x\n", buf, idx, hw->val[idx]);
+	pr_no_info("%s-[%d]0x%x\n", buf, idx, hw->val[idx]);
 
 	kfree(buf);
 
 	return ret;
 
 no_mem:
-	pr_err("%s can't allocate memory %d\n",
+	pr_no_err("%s can't allocate memory %d\n",
 			__func__, ret);
 	return -ENOMEM;
 no_property:
 	kfree(buf);
-	pr_err("%s can't find property %d\n",
+	pr_no_err("%s can't find property %d\n",
 			__func__, ret);
 	return 0;
 }
@@ -994,7 +994,7 @@ int srclken_dts_map(struct platform_device *pdev)
 	node = of_find_compatible_node(NULL, NULL,
 		"mediatek,srclken");
 	if (!node) {
-		pr_err("%s can't find compatible node %ld\n",
+		pr_no_err("%s can't find compatible node %ld\n",
 			__func__, PTR_ERR(node));
 		return PTR_ERR(node);
 	}
@@ -1017,13 +1017,13 @@ int srclken_dts_map(struct platform_device *pdev)
 						   base_n[i]);
 		if (!res) {
 			hw->base[i] = NULL;
-			pr_info("missing IO resource %s\n", base_n[i]);
+			pr_no_info("missing IO resource %s\n", base_n[i]);
 			continue;
 		}
 
 		hw->base[i] = of_iomap(node, cnt);
 		cnt++;
-		pr_info("base[%d]0x%pR\n", i, hw->base[i]);
+		pr_no_info("base[%d]0x%pR\n", i, hw->base[i]);
 		if (IS_ERR(hw->base[i]))
 			return PTR_ERR(hw->base[i]);
 
@@ -1043,11 +1043,11 @@ val_no_mem:
 base_no_mem:
 	kfree(hw);
 hw_no_mem:
-	pr_err("%s can't allocate memory %d\n",
+	pr_no_err("%s can't allocate memory %d\n",
 			__func__, ret);
 	return -ENOMEM;
 no_property:
-	pr_err("%s can't find property %d\n",
+	pr_no_err("%s can't find property %d\n",
 			__func__, ret);
 	return 0;
 }
@@ -1061,7 +1061,7 @@ int srclken_dts_map(struct platform_device *pdev)
 void srclken_stage_init(void)
 {
 #if SRCLKEN_RC_BRINGUP
-	pr_info("%s: skipped for bring up\n", __func__);
+	pr_no_info("%s: skipped for bring up\n", __func__);
 	return;
 #else
 	u32 cfg;
@@ -1071,7 +1071,7 @@ void srclken_stage_init(void)
 		return;
 
 	for (i = 0; i < DTS_NUM; i++)
-		pr_info("[%d]0x%x\n", i, hw->val[i]);
+		pr_no_info("[%d]0x%x\n", i, hw->val[i]);
 	if ((srclken_read(RC_CENTRAL_CFG1)
 			& (1 << SRCLKEN_RC_EN_SHFT)) == 0) {
 		rc_stage = SRCLKEN_NOT_SUPPORT;
@@ -1081,7 +1081,7 @@ void srclken_stage_init(void)
 	for (i = 0; i < MAX_SYS_NUM; i++) {
 		cfg = srclken_read(RC_M00_SRCLKEN_CFG + i * 4);
 
-		pr_info("cfg[%d]: 0x%x\n", i, cfg);
+		pr_no_info("cfg[%d]: 0x%x\n", i, cfg);
 		if (i == SYS_BT) {
 			if ((cfg & (SW_MODE | BBLPM_REQ))
 					!= (SW_MODE | BBLPM_REQ))
@@ -1144,7 +1144,7 @@ void srclken_stage_init(void)
 		}
 	}
 
-	pr_err("%s: rc went wrong, need to check\n", __func__);
+	pr_no_err("%s: rc went wrong, need to check\n", __func__);
 	rc_stage = SRCLKEN_ERR;
 
 RC_STAGE_DONE:

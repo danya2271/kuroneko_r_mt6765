@@ -82,17 +82,17 @@ int MET_BM_Init(void)
 	if (mt_cen_emi_base_get_symbol) {
 		BaseAddrEMI = mt_cen_emi_base_get_symbol();
 	} else {
-		pr_debug("mt_cen_emi_base_get_symbol = NULL\n");
+		pr_no_debug("mt_cen_emi_base_get_symbol = NULL\n");
 		PR_BOOTMSG_ONCE("mt_cen_emi_base_get_symbol = NULL\n");
 		BaseAddrEMI = 0;
 	}
 
 	if (BaseAddrEMI == 0) {
-		pr_debug("BaseAddrEMI = 0\n");
+		pr_no_debug("BaseAddrEMI = 0\n");
 		PR_BOOTMSG_ONCE("BaseAddrEMI = 0\n");
 		return -1;
 	}
-	pr_debug("MET EMI: map emi to %p\n", BaseAddrEMI);
+	pr_no_debug("MET EMI: map emi to %p\n", BaseAddrEMI);
 	PR_BOOTMSG("MET EMI: map emi to %p\n", BaseAddrEMI);
 
 	return 0;

@@ -30,9 +30,6 @@ void eara_thrm_systrace(pid_t pid, int val, const char *fmt, ...)
 	if (len == 256)
 		log[255] = '\0';
 
-	preempt_disable();
-	event_trace_printk(mark_addr, "C|%d|%s|%d\n", pid, log, val);
-	preempt_enable();
 }
 
 void eara_thrm_tracelog(const char *fmt, ...)
@@ -58,7 +55,7 @@ void eara_thrm_sysfs_create_file(struct kobj_attribute *kobj_attr)
 
 	ret = sysfs_create_file(thrm_kobj, &(kobj_attr->attr));
 	if (ret)
-		pr_debug("Failed to create sysfs file\n");
+		pr_no_debug("Failed to create sysfs file\n");
 }
 
 void eara_thrm_sysfs_remove_file(struct kobj_attribute *kobj_attr)

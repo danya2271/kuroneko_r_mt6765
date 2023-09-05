@@ -88,28 +88,28 @@ void usb20_phy_debugfs_write_width1(u8 offset, u8 shift, char *buf)
 {
 	u32 clr_val = 0, set_val = 0;
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
 					__func__, __LINE__, buf);
 	if (!strncmp(buf, STRNG_0_WIDTH_1, BIT_WIDTH_1)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_0_WIDTH_1);
 		clr_val = VAL_1_WIDTH_1;
 	}
 	if (!strncmp(buf, STRNG_1_WIDTH_1, BIT_WIDTH_1)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_1_WIDTH_1);
 		set_val = VAL_1_WIDTH_1;
 	}
 
 	if (clr_val || set_val) {
 		clr_val = VAL_MAX_WDITH_1 - set_val;
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, before shft\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, before shft\n",
 					__func__, __LINE__,
 					offset, clr_val,
 					set_val);
 		clr_val <<= shift;
 		set_val <<= shift;
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, after shft\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, after shft\n",
 					__func__, __LINE__,
 					offset, clr_val,
 					set_val);
@@ -117,7 +117,7 @@ void usb20_phy_debugfs_write_width1(u8 offset, u8 shift, char *buf)
 		USBPHY_CLR32(offset, clr_val);
 		USBPHY_SET32(offset, set_val);
 	} else {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n"
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n"
 				, __func__, __LINE__);
 	}
 }
@@ -126,36 +126,36 @@ void usb20_phy_debugfs_rev6_write(u8 offset, u8 shift, char *buf)
 {
 	u8 set_val = 0xFF;
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
 				__func__, __LINE__, buf);
 	if (!strncmp(buf, STRNG_0_WIDTH_2, BIT_WIDTH_2)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_0_WIDTH_2);
 		set_val = VAL_0_WIDTH_2;
 	}
 	if (!strncmp(buf, STRNG_1_WIDTH_2, BIT_WIDTH_2)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_1_WIDTH_2);
 		set_val = VAL_1_WIDTH_2;
 	}
 	if (!strncmp(buf, STRNG_2_WIDTH_2, BIT_WIDTH_2)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_2_WIDTH_2);
 		set_val = VAL_2_WIDTH_2;
 	}
 	if (!strncmp(buf, STRNG_3_WIDTH_2, BIT_WIDTH_2)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_3_WIDTH_2);
 		set_val = VAL_3_WIDTH_2;
 	}
 
 	if (set_val <= VAL_MAX_WDITH_2) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> case offset:%x, set_val:%x, before shft\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> case offset:%x, set_val:%x, before shft\n",
 					__func__, __LINE__, offset, set_val);
 		USBPHY_CLR32(offset, (VAL_MAX_WDITH_2<<shift));
 		USBPHY_SET32(offset, (set_val<<shift));
 	} else {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n",
 					__func__, __LINE__);
 	}
 }
@@ -164,62 +164,62 @@ void usb20_phy_debugfs_write_width3(u8 offset, u8 shift, char *buf)
 {
 	u32 clr_val = 0, set_val = 0;
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> s(%s)\n",
 				__func__, __LINE__, buf);
 	if (!strncmp(buf, STRNG_0_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_0_WIDTH_3);
 		clr_val = VAL_7_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_1_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_1_WIDTH_3);
 		set_val = VAL_1_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_2_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_2_WIDTH_3);
 		set_val = VAL_2_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_3_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_3_WIDTH_3);
 		set_val = VAL_3_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_4_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_4_WIDTH_3);
 		set_val = VAL_4_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_5_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_5_WIDTH_3);
 		set_val = VAL_5_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_6_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_6_WIDTH_3);
 		set_val = VAL_6_WIDTH_3;
 	}
 	if (!strncmp(buf, STRNG_7_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 					__func__, __LINE__, STRNG_7_WIDTH_3);
 		set_val = VAL_7_WIDTH_3;
 	}
 
 	if (clr_val || set_val) {
 		clr_val = VAL_MAX_WDITH_3 - set_val;
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, before shft\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, before shft\n",
 				__func__, __LINE__, offset, clr_val, set_val);
 		clr_val <<= shift;
 		set_val <<= shift;
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, after shft\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, clr_val:%x, set_val:%x, after shft\n",
 				__func__, __LINE__, offset, clr_val, set_val);
 
 		USBPHY_CLR32(offset, clr_val);
 		USBPHY_SET32(offset, set_val);
 	} else {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> do nothing\n",
 					__func__, __LINE__);
 	}
 }
@@ -230,13 +230,13 @@ u8 usb20_phy_debugfs_read_val(u8 offset, u8 shft, u8 msk, u8 width, char *str)
 	int i, temp;
 
 	val = USBPHY_READ32(offset);
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
 				__func__, __LINE__, offset, val, shft, msk);
 	val = val >> shft;
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
 				__func__, __LINE__, offset, val, shft, msk);
 	val = val & msk;
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> offset:%x, val:%x, shft:%x, msk:%x\n",
 				__func__, __LINE__, offset, val, shft, msk);
 
 	temp = val;
@@ -246,11 +246,11 @@ u8 usb20_phy_debugfs_read_val(u8 offset, u8 shft, u8 msk, u8 width, char *str)
 			str[i] = '1';
 		else
 			str[i] = '0';
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> str[%d]:%c\n\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> str[%d]:%c\n\n",
 					__func__, __LINE__, i, str[i]);
 		val /= 2;
 	}
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> str(%s)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> str(%s)\n",
 					__func__, __LINE__, str);
 	return val;
 }
@@ -265,42 +265,42 @@ static int usb_driving_capability_show(struct seq_file *s, void *unused)
 				SHFT_RG_USB20_TERM_VREF_SEL,
 				MSK_RG_USB20_TERM_VREF_SEL, BIT_WIDTH_3, str);
 	if (!strncmp(str, STRNG_0_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_0_WIDTH_3);
 		tmp_val = VAL_0_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_1_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_1_WIDTH_3);
 		tmp_val = VAL_1_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_2_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_2_WIDTH_3);
 		tmp_val = VAL_2_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_3_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_3_WIDTH_3);
 		tmp_val = VAL_3_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_4_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_4_WIDTH_3);
 		tmp_val = VAL_4_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_5_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_5_WIDTH_3);
 		tmp_val = VAL_5_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_6_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_6_WIDTH_3);
 		tmp_val = VAL_6_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_7_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_7_WIDTH_3);
 		tmp_val = VAL_7_WIDTH_3;
 	}
@@ -312,47 +312,47 @@ static int usb_driving_capability_show(struct seq_file *s, void *unused)
 					MSK_RG_USB20_VRT_VREF_SEL,
 					BIT_WIDTH_3, str);
 	if (!strncmp(str, STRNG_0_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_0_WIDTH_3);
 		tmp_val = VAL_0_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_1_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_1_WIDTH_3);
 		tmp_val = VAL_1_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_2_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_2_WIDTH_3);
 		tmp_val = VAL_2_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_3_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_3_WIDTH_3);
 		tmp_val = VAL_3_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_4_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_4_WIDTH_3);
 		tmp_val = VAL_4_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_5_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_5_WIDTH_3);
 		tmp_val = VAL_5_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_6_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_6_WIDTH_3);
 		tmp_val = VAL_6_WIDTH_3;
 	}
 	if (!strncmp(str, STRNG_7_WIDTH_3, BIT_WIDTH_3)) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> %s case\n",
 				__func__, __LINE__, STRNG_7_WIDTH_3);
 		tmp_val = VAL_7_WIDTH_3;
 	}
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> combined_val(%d), tmp_val(%d)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> combined_val(%d), tmp_val(%d)\n",
 				__func__, __LINE__, combined_val, tmp_val);
 
 	if ((tmp_val == (combined_val - 1)) || (tmp_val == combined_val))
@@ -360,7 +360,7 @@ static int usb_driving_capability_show(struct seq_file *s, void *unused)
 	else
 		combined_val = tmp_val * (VAL_MAX_WDITH_3 + 1) + combined_val;
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> combined_val(%d), tmp_val(%d)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> combined_val(%d), tmp_val(%d)\n",
 				__func__, __LINE__, combined_val, tmp_val);
 
 	seq_printf(s, "%d", combined_val);
@@ -484,7 +484,7 @@ void val_to_bstring_width3(u8 val, char *str)
 	if (val == VAL_7_WIDTH_3)
 		memcpy(str, STRNG_7_WIDTH_3, BIT_WIDTH_3 + 1);
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> val(%d), str(%s)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> val(%d), str(%s)\n",
 				__func__, __LINE__, val, str);
 }
 
@@ -497,37 +497,37 @@ static ssize_t usb_driving_capability_write(struct file *file,
 	char str_rg_usb20_term_vref_sel[18], str_rg_usb20_vrt_vref_sel[18];
 
 	memset(buf, 0x00, sizeof(buf));
-	pr_notice("\n");
+	pr_no_notice("\n");
 	if (copy_from_user(&buf, ubuf, min_t(size_t, sizeof(buf) - 1, count)))
 		return -EFAULT;
 
 	if (kstrtol(buf, 10, (long *)&val) != 0) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> kstrtol, err(%d)\n)\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> kstrtol, err(%d)\n)\n",
 			__func__, __LINE__, kstrtol(buf, 10, (long *)&val));
 		return count;
 	}
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> kstrtol, val(%d)\n)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> kstrtol, val(%d)\n)\n",
 					__func__, __LINE__, val);
 
 	if (val > VAL_7_WIDTH_3 * 2) {
-		pr_notice("MTK_ICUSB [DBG], <%s(), %d> wrong val set(%d), direct return\n",
+		pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> wrong val set(%d), direct return\n",
 					__func__, __LINE__, val);
 		return count;
 	}
 	tmp_val = val;
 	val /= 2;
 
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> val(%d), tmp_val(%d)\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> val(%d), tmp_val(%d)\n",
 				__func__, __LINE__, val, tmp_val);
 
 	val_to_bstring_width3(tmp_val - val, str_rg_usb20_term_vref_sel);
 	val_to_bstring_width3(val, str_rg_usb20_vrt_vref_sel);
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> Config TERM_VREF_SEL %s\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> Config TERM_VREF_SEL %s\n",
 				__func__, __LINE__, str_rg_usb20_term_vref_sel);
 	usb20_phy_debugfs_write_width3(OFFSET_RG_USB20_TERM_VREF_SEL,
 						SHFT_RG_USB20_TERM_VREF_SEL,
 						str_rg_usb20_term_vref_sel);
-	pr_notice("MTK_ICUSB [DBG], <%s(), %d> Config VRT_VREF_SEL %s\n\n",
+	pr_no_notice("MTK_ICUSB [DBG], <%s(), %d> Config VRT_VREF_SEL %s\n\n",
 				__func__, __LINE__, str_rg_usb20_vrt_vref_sel);
 	usb20_phy_debugfs_write_width3(OFFSET_RG_USB20_VRT_VREF_SEL,
 						SHFT_RG_USB20_VRT_VREF_SEL,

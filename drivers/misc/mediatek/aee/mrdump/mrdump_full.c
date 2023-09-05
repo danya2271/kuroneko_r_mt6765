@@ -125,7 +125,7 @@ static void aee_kdump_cpu_stop(void *arg, void *regs, void *svc_sp)
 #if IS_ENABLED(CONFIG_MEDIATEK_CACHE_API)
 	dis_D_inner_flush_all();
 #else
-	pr_info("dis_D_inner_flush_all invalid");
+	pr_no_info("dis_D_inner_flush_all invalid");
 #endif
 
 	while (1)
@@ -174,7 +174,7 @@ static void mrdump_stop_noncore_cpu(void *unused)
 #if IS_ENABLED(CONFIG_MEDIATEK_CACHE_API)
 	dis_D_inner_flush_all();
 #else
-	pr_info("dis_D_inner_flush_all invalid");
+	pr_no_info("dis_D_inner_flush_all invalid");
 #endif
 
 	while (1)
@@ -194,7 +194,7 @@ static void __mrdump_reboot_stop_all(struct mrdump_crash_record *crash_record)
 		msecs--;
 	}
 	if (atomic_read(&waiting_for_crash_ipi) > 0) {
-		pr_notice("Non-crashing %d CPUs did not react to IPI\n",
+		pr_no_notice("Non-crashing %d CPUs did not react to IPI\n",
 				atomic_read(&waiting_for_crash_ipi));
 	}
 }
@@ -302,23 +302,23 @@ static int __init mrdump_sysfs_init(void)
 	struct kset *p_module_kset = aee_get_module_kset();
 
 	if (!p_module_kset) {
-		pr_notice("MT-RAMDUMP: Cannot find module_kset");
+		pr_no_notice("MT-RAMDUMP: Cannot find module_kset");
 		return -EINVAL;
 	}
 
 	kobj = kset_find_obj(p_module_kset, KBUILD_MODNAME);
 	if (kobj) {
 		if (sysfs_create_group(kobj, &attr_group)) {
-			pr_notice("MT-RAMDUMP: sysfs create sysfs failed\n");
+			pr_no_notice("MT-RAMDUMP: sysfs create sysfs failed\n");
 			return -ENOMEM;
 		}
 	} else {
-		pr_notice("MT-RAMDUMP: Cannot find module %s object\n",
+		pr_no_notice("MT-RAMDUMP: Cannot find module %s object\n",
 				KBUILD_MODNAME);
 		return -EINVAL;
 	}
 
-	pr_info("%s: done.\n", __func__);
+	pr_no_info("%s: done.\n", __func__);
 	return 0;
 }
 #ifndef MODULE
@@ -331,7 +331,7 @@ int __init mrdump_full_init(void)
 	/* Allocate memory for saving cpu registers. */
 	crash_notes = alloc_percpu(note_buf_t);
 	if (!crash_notes) {
-		pr_notice("MT-RAMDUMP: alloc mem fail for cpu registers\n");
+		pr_no_notice("MT-RAMDUMP: alloc mem fail for cpu registers\n");
 		return -ENOMEM;
 	}
 
@@ -339,7 +339,7 @@ int __init mrdump_full_init(void)
 	/* TODO: remove flush APIs after full ramdump support  HW_Reboot*/
 	aee__flush_dcache_area(mrdump_cblock,
 			sizeof(struct mrdump_control_block));
-	pr_info("%s: MT-RAMDUMP enabled done\n", __func__);
+	pr_no_info("%s: MT-RAMDUMP enabled done\n", __func__);
 #if defined(MODULE)
 #if IS_ENABLED(CONFIG_SYSFS)
 	mrdump_sysfs_init();

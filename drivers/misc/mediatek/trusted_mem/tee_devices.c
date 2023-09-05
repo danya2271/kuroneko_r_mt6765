@@ -154,7 +154,7 @@ create_tee_smem_device(enum TRUSTED_MEM_TYPE mem_type,
 
 	t_device = create_trusted_mem_device(mem_type, cfg);
 	if (INVALID(t_device)) {
-		pr_err("create device failed: %d:%s\n", mem_type, dev_name);
+		pr_no_err("create device failed: %d:%s\n", mem_type, dev_name);
 		return NULL;
 	}
 
@@ -168,7 +168,7 @@ create_tee_smem_device(enum TRUSTED_MEM_TYPE mem_type,
 	ret = register_trusted_mem_device(mem_type, t_device);
 	if (ret) {
 		destroy_trusted_mem_device(t_device);
-		pr_err("register device failed: %d:%s\n", mem_type, dev_name);
+		pr_no_err("register device failed: %d:%s\n", mem_type, dev_name);
 		return NULL;
 	}
 
@@ -180,7 +180,7 @@ int tee_smem_devs_init(void)
 	struct trusted_mem_device *t_device;
 	int idx = 0;
 
-	pr_info("%s:%d (%d)\n", __func__, __LINE__,
+	pr_no_info("%s:%d (%d)\n", __func__, __LINE__,
 		(int)TEE_SECURE_MEM_DEVICE_COUNT);
 
 	for (idx = 0; idx < TEE_SECURE_MEM_DEVICE_COUNT; idx++) {
@@ -190,14 +190,14 @@ int tee_smem_devs_init(void)
 			tee_smem_devs[idx].ssmr_feature_id,
 			tee_smem_devs[idx].dev_name);
 		if (INVALID(t_device)) {
-			pr_err("create tee smem device failed: %d:%s\n",
+			pr_no_err("create tee smem device failed: %d:%s\n",
 			       tee_smem_devs[idx].kern_tmem_type,
 			       tee_smem_devs[idx].dev_name);
 			return TMEM_CREATE_DEVICE_FAILED;
 		}
 	}
 
-	pr_info("%s:%d (end)\n", __func__, __LINE__);
+	pr_no_info("%s:%d (end)\n", __func__, __LINE__);
 	return TMEM_OK;
 }
 

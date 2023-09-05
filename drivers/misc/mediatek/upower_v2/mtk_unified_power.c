@@ -837,7 +837,7 @@ void upower_register_perf_domain(void)
 	for_each_possible_cpu(cpu) {
 		policy = cpufreq_cpu_get(cpu);
 		if (!policy) {
-			pr_notice("cpu %d get policy fail\n", cpu);
+			pr_no_notice("cpu %d get policy fail\n", cpu);
 			return;
 		}
 		retv = em_register_perf_domain(policy->cpus,

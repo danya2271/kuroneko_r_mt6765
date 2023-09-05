@@ -143,18 +143,18 @@ static int dvfsrc_dump_info(struct notifier_block *b,
 	mutex_lock(&dump_lock);
 	p = dvfsrc->dump_buf;
 	config->dump_info(dvfsrc, p, dump_size);
-	pr_info("%s", dvfsrc->dump_buf);
+	pr_no_info("%s", dvfsrc->dump_buf);
 	p = dvfsrc->dump_buf;
 	config->dump_reg(dvfsrc, p, dump_size);
-	pr_info("%s", dvfsrc->dump_buf);
+	pr_no_info("%s", dvfsrc->dump_buf);
 	p = dvfsrc->dump_buf;
 	config->dump_record(dvfsrc, p, dump_size);
-	pr_info("%s", dvfsrc->dump_buf);
+	pr_no_info("%s", dvfsrc->dump_buf);
 
 	if (config->dump_spm_info) {
 		p = dvfsrc->dump_buf;
 		config->dump_spm_info(dvfsrc, p, dump_size);
-		pr_info("%s", dvfsrc->dump_buf);
+		pr_no_info("%s", dvfsrc->dump_buf);
 	}
 	mutex_unlock(&dump_lock);
 

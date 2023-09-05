@@ -30,14 +30,14 @@
 #define mtktscharger_dprintk(fmt, args...) \
 do { \
 	if (mtktscharger_debug_log) \
-		pr_debug("[Thermal/tzcharger]" fmt, ##args); \
+		pr_no_debug("[Thermal/tzcharger]" fmt, ##args); \
 } while (0)
 
 #define mtktscharger_dprintk_always(fmt, args...) \
-	pr_debug("[Thermal/tzcharger]" fmt, ##args)
+	pr_no_debug("[Thermal/tzcharger]" fmt, ##args)
 
-#define mtktscharger_pr_notice(fmt, args...) \
-	pr_notice("[Thermal/tzcharger]" fmt, ##args)
+#define mtktscharger_pr_no_notice(fmt, args...) \
+	pr_no_notice("[Thermal/tzcharger]" fmt, ##args)
 
 static kuid_t uid = KUIDT_INIT(0);
 static kgid_t gid = KGIDT_INIT(1000);
@@ -334,10 +334,10 @@ struct thermal_cooling_device *cdev, unsigned long state)
 {
 	cl_dev_sysrst_state = state;
 	if (cl_dev_sysrst_state == 1) {
-		pr_notice("[Thermal/mtktscharger_sysrst] reset, reset, reset!!!\n");
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		pr_notice("*****************************************\n");
-		pr_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("[Thermal/mtktscharger_sysrst] reset, reset, reset!!!\n");
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		pr_no_notice("*****************************************\n");
+		pr_no_notice("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
 
 		/* To trigger data abort to reset the system
 		 * for thermal protection.
@@ -566,7 +566,7 @@ static int mtktscharger_pdrv_probe(struct platform_device *pdev)
 
 	mtktscharger_dir = mtk_thermal_get_proc_drv_therm_dir_entry();
 	if (!mtktscharger_dir) {
-		mtktscharger_pr_notice("%s get /proc/driver/thermal failed\n",
+		mtktscharger_pr_no_notice("%s get /proc/driver/thermal failed\n",
 								__func__);
 	} else {
 		entry = proc_create("tzcharger", 0664, mtktscharger_dir,

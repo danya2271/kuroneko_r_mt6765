@@ -21,13 +21,13 @@ extern void *apu_conn_top;
 #define MDLA_TAG "[mdla]"
 /*#define VPU_DEBUG*/
 #ifdef VPU_DEBUG
-#define LOG_DBG(format, args...)    pr_debug(MDLA_TAG " " format, ##args)
+#define LOG_DBG(format, args...)    pr_no_debug(MDLA_TAG " " format, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
-#define LOG_INF(format, args...)    pr_info(MDLA_TAG " " format, ##args)
-#define LOG_WRN(format, args...)    pr_info(MDLA_TAG "[warn] " format, ##args)
-#define LOG_ERR(format, args...)    pr_info(MDLA_TAG "[error] " format, ##args)
+#define LOG_INF(format, args...)    pr_no_info(MDLA_TAG " " format, ##args)
+#define LOG_WRN(format, args...)    pr_no_info(MDLA_TAG "[warn] " format, ##args)
+#define LOG_ERR(format, args...)    pr_no_info(MDLA_TAG "[error] " format, ##args)
 
 enum MdlaFuncMask {
 	VFM_NEED_WAIT_VCORE		= 0x1,
@@ -109,7 +109,7 @@ enum MDLA_DEBUG_MASK {
 
 extern u32 mdla_klog;
 #define mdla_debug(mask, ...) do { if (mdla_klog & mask) \
-		pr_debug(__VA_ARGS__); \
+		pr_no_debug(__VA_ARGS__); \
 	} while (0)
 void mdla_dump_reg(void);
 void mdla_dump_ce(struct command_entry *ce);

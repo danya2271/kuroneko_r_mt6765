@@ -19,7 +19,7 @@
 	do { \
 		_func_name_##_symbol = (void *)symbol_get(_func_name_); \
 		if (_func_name_##_symbol == NULL) { \
-			pr_debug("MET ext. symbol : %s is not found!\n", #_func_name_); \
+			pr_no_debug("MET ext. symbol : %s is not found!\n", #_func_name_); \
 			PR_BOOTMSG_ONCE("MET ext. symbol : %s is not found!\n", #_func_name_); \
 			ret = -1; \
 		} \

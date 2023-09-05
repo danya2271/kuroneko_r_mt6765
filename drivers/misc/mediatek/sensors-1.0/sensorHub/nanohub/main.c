@@ -651,7 +651,7 @@ static int nanohub_create_devices(struct nanohub_data *data)
 							io, names[i]));
 		if (IS_ERR(io->dev)) {
 			ret = PTR_ERR(io->dev);
-			pr_err("nanohub: device_create failed for %s; err=%d\n",
+			pr_no_err("nanohub: device_create failed for %s; err=%d\n",
 			       names[i], ret);
 			goto fail_dev;
 		}
@@ -719,7 +719,7 @@ static bool nanohub_os_log(char *buffer, int len)
 			mdata--;
 			break;
 		}
-		pr_debug("%snanohub: %s", mtype, mdata);
+		pr_no_debug("%snanohub: %s", mtype, mdata);
 		return true;
 	} else {
 		return false;
@@ -909,7 +909,7 @@ struct iio_dev *nanohub_probe(struct device *dev, struct iio_dev *iio_dev)
 
 	data->ws = wakeup_source_register(NULL, "nanohub_wakelock_read");
 	if (!data->ws) {
-		pr_err("nanohub: wakeup source init fail\n");
+		pr_no_err("nanohub: wakeup source init fail\n");
 		ret = -ENOMEM;
 		goto fail_wakeup;
 	}
@@ -921,7 +921,7 @@ struct iio_dev *nanohub_probe(struct device *dev, struct iio_dev *iio_dev)
 	init_waitqueue_head(&data->wakeup_wait);
 	ret = iio_device_register(iio_dev);
 	if (ret) {
-		pr_err("nanohub: iio_device_register failed\n");
+		pr_no_err("nanohub: iio_device_register failed\n");
 		goto fail_irq;
 	}
 	ret = nanohub_create_devices(data);
@@ -984,7 +984,7 @@ static int __init nanohub_init(void)
 	sensor_class = class_create(THIS_MODULE, "nanohub");
 	if (IS_ERR(sensor_class)) {
 		ret = PTR_ERR(sensor_class);
-		pr_err("nanohub: class_create failed; err=%d\n", ret);
+		pr_no_err("nanohub: class_create failed; err=%d\n", ret);
 	}
 	if (!ret)
 		major = __register_chrdev(0, 0, ID_NANOHUB_MAX, "nanohub",
@@ -993,7 +993,7 @@ static int __init nanohub_init(void)
 	if (major < 0) {
 		ret = major;
 		major = 0;
-		pr_err("nanohub: can't register; err=%d\n", ret);
+		pr_no_err("nanohub: can't register; err=%d\n", ret);
 	}
 
 #ifdef CONFIG_NANOHUB_I2C
@@ -1007,7 +1007,7 @@ static int __init nanohub_init(void)
 #ifdef CONFIG_NANOHUB_MTK_IPI
 		ret = nanohub_ipi_init();
 #endif
-	pr_info("nanohub: loaded; ret=%d\n", ret);
+	pr_no_info("nanohub: loaded; ret=%d\n", ret);
 	return ret;
 }
 

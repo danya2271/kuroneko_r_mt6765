@@ -97,7 +97,7 @@ void bootprof_log_boot(char *str)
 	size_t n;
 
 	if (!str) {
-		pr_info("[BOOTPROF] Null buffer. Skip log.\n");
+		pr_no_info("[BOOTPROF] Null buffer. Skip log.\n");
 		return;
 	}
 
@@ -106,11 +106,11 @@ void bootprof_log_boot(char *str)
 	n = strlen(str) + 1;
 
 	ts = sched_clock();
-	pr_info("BOOTPROF:%10lld.%06ld:%s\n", msec_high(ts), msec_low(ts), str);
+	pr_no_info("BOOTPROF:%10lld.%06ld:%s\n", msec_high(ts), msec_low(ts), str);
 
 	mutex_lock(&bootprof_lock);
 	if (log_count >= (LOGS_PER_BUF * BUF_COUNT)) {
-		pr_info("[BOOTPROF] not enuough bootprof buffer\n");
+		pr_no_info("[BOOTPROF] not enuough bootprof buffer\n");
 		goto out;
 	} else if (log_count && !(log_count % LOGS_PER_BUF)) {
 		bootprof[log_count / LOGS_PER_BUF] =
@@ -118,7 +118,7 @@ void bootprof_log_boot(char *str)
 				GFP_ATOMIC | __GFP_NORETRY | __GFP_NOWARN);
 	}
 	if (!bootprof[log_count / LOGS_PER_BUF]) {
-		pr_info("no memory for bootprof\n");
+		pr_no_info("no memory for bootprof\n");
 		goto out;
 	}
 	p = &bootprof[log_count / LOGS_PER_BUF][log_count % LOGS_PER_BUF];
@@ -154,7 +154,7 @@ static void bootprof_bootloader(void)
 		err |= of_property_read_s32(node, "lk_logo_t",
 						&bootprof_logo_t);
 
-		pr_info("BOOTPROF: DT(Err:0x%x) pl_t=%d, lk_t=%d, lk_logo_t=%d\n",
+		pr_no_info("BOOTPROF: DT(Err:0x%x) pl_t=%d, lk_t=%d, lk_logo_t=%d\n",
 			err, bootprof_pl_t, bootprof_lk_t, bootprof_logo_t);
 	}
 }
@@ -172,7 +172,7 @@ void bootprof_initcall(initcall_t fn, unsigned long long ts)
 			"initcall: %ps %5llu.%06lums",
 			fn, ts, msec_rem);
 		if (len < 0)
-			pr_info("BOOTPROF: initcall - Invalid argument.\n");
+			pr_no_info("BOOTPROF: initcall - Invalid argument.\n");
 		bootprof_log_boot(msgbuf);
 	}
 }
@@ -230,7 +230,7 @@ void bootprof_pdev_register(unsigned long long ts, struct platform_device *pdev)
 			"probe: pdev=%s(%ps) %5llu.%06lums",
 			pdev->name, (void *)pdev, ts, msec_rem);
 	if (len < 0)
-		pr_info("BOOTPROF: pdev - Invalid argument.\n");
+		pr_no_info("BOOTPROF: pdev - Invalid argument.\n");
 
 	bootprof_log_boot(msgbuf);
 }
@@ -247,7 +247,7 @@ static void mt_bootprof_switch(int on)
 	if (enabled ^ on) {
 		unsigned long long ts = sched_clock();
 
-		pr_info("BOOTPROF:%10lld.%06ld: %s\n",
+		pr_no_info("BOOTPROF:%10lld.%06ld: %s\n",
 		       msec_high(ts), msec_low(ts), on ? "ON" : "OFF");
 
 		if (on) {
@@ -298,7 +298,7 @@ static int mt_bootprof_show(struct seq_file *m, void *v)
 	struct log_t *p;
 
 	if (!m) {
-		pr_info("seq_file is Null.\n");
+		pr_no_info("seq_file is Null.\n");
 		return 0;
 	}
 	seq_puts(m, "----------------------------------------\n");
@@ -425,7 +425,7 @@ static void tp_init(void)
 	for_each_kernel_tracepoint(tp_lookup, NULL);
 	for (i = 0; i < sizeof(tp_table) / sizeof(struct bf_tp); i++) {
 		if (!tp_table[i].tp) {
-			pr_info("[BOOTPROF]TP: %s not found\n",
+			pr_no_info("[BOOTPROF]TP: %s not found\n",
 					tp_table[i].name);
 			/* Unload previously loaded */
 			tp_cleanup();
@@ -479,7 +479,7 @@ static void __exit bootprof_exit(void)
 		mutex_unlock(&bootprof_lock);
 	}
 	remove_proc_entry("bootprof", NULL);
-	pr_info("bootprof module exit.\n");
+	pr_no_info("bootprof module exit.\n");
 }
 module_init(bootprof_init);
 module_exit(bootprof_exit);

@@ -41,7 +41,7 @@ static int answer_call_get_data(int *probability, int *status)
 
 	err = sensor_get_data_from_hub(ID_ANSWER_CALL, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp		= data.time_stamp;
@@ -60,7 +60,7 @@ static int answer_call_open_report_data(int open)
 #else
 
 #endif
-	pr_debug("%s : type=%d, open=%d\n", __func__, ID_ANSWER_CALL, open);
+	pr_no_debug("%s : type=%d, open=%d\n", __func__, ID_ANSWER_CALL, open);
 	ret = sensor_enable_to_hub(ID_ANSWER_CALL, open);
 	return ret;
 }
@@ -75,7 +75,7 @@ static int answer_call_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("answer_call do not support flush\n");
+		pr_no_debug("answer_call do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_ANSWER_CALL,
 				(int64_t)event->time_stamp);
@@ -93,20 +93,20 @@ static int ancallhub_local_init(void)
 	ctl.is_support_wake_lock = true;
 	err = situation_register_control_path(&ctl, ID_ANSWER_CALL);
 	if (err) {
-		pr_err("register answer_call control path err\n");
+		pr_no_err("register answer_call control path err\n");
 		goto exit;
 	}
 
 	data.get_data = answer_call_get_data;
 	err = situation_register_data_path(&data, ID_ANSWER_CALL);
 	if (err) {
-		pr_err("register answer_call data path err\n");
+		pr_no_err("register answer_call data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_ANSWER_CALL,
 		answer_call_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -133,7 +133,7 @@ static int __init ancallhub_init(void)
 
 static void __exit ancallhub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(ancallhub_init);

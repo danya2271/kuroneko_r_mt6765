@@ -81,27 +81,27 @@ static int tee_session_open_single_session_unlocked(void)
 	struct TEEC_UUID destination = SECMEM_TL_GP_UUID;
 
 	if (is_sess_ready) {
-		pr_debug("UT_SUITE:Session is already created!\n");
+		pr_no_debug("UT_SUITE:Session is already created!\n");
 		return TMEM_OK;
 	}
 
 	g_sess_data = tee_gp_create_session_data();
 	if (INVALID(g_sess_data)) {
-		pr_err("Create session data failed: out of memory!\n");
+		pr_no_err("Create session data failed: out of memory!\n");
 		return TMEM_TEE_CREATE_SESSION_DATA_FAILED;
 	}
 
 	g_sess_data->wsm_buffer =
 		mld_kmalloc(sizeof(struct secmem_ta_msg_t), GFP_KERNEL);
 	if (INVALID(g_sess_data->wsm_buffer)) {
-		pr_err("Create wsm buffer failed: out of memory!\n");
+		pr_no_err("Create wsm buffer failed: out of memory!\n");
 		goto err_create_wsm_buffer;
 	}
 
 	ret = TEEC_InitializeContext(SECMEM_TL_GP_UUID_STRING,
 				     &g_sess_data->context);
 	if (ret != TEEC_SUCCESS) {
-		pr_err("TEEC_InitializeContext failed: %x\n", ret);
+		pr_no_err("TEEC_InitializeContext failed: %x\n", ret);
 		goto err_initialize_context;
 	}
 
@@ -113,7 +113,7 @@ static int tee_session_open_single_session_unlocked(void)
 	ret = TEEC_RegisterSharedMemory(&g_sess_data->context,
 					&g_sess_data->wsm);
 	if (ret != TEEC_SUCCESS) {
-		pr_err("TEEC_RegisterSharedMemory failed: %x\n", ret);
+		pr_no_err("TEEC_RegisterSharedMemory failed: %x\n", ret);
 		goto err_register_shared_memory;
 	}
 
@@ -121,7 +121,7 @@ static int tee_session_open_single_session_unlocked(void)
 			       &destination, TEEC_LOGIN_PUBLIC, NULL, NULL,
 			       NULL);
 	if (ret != TEEC_SUCCESS) {
-		pr_err("TEEC_OpenSession failed: %x\n", ret);
+		pr_no_err("TEEC_OpenSession failed: %x\n", ret);
 		goto err_open_session;
 	}
 
@@ -129,11 +129,11 @@ static int tee_session_open_single_session_unlocked(void)
 	return TMEM_OK;
 
 err_open_session:
-	pr_err("TEEC_ReleaseSharedMemory\n");
+	pr_no_err("TEEC_ReleaseSharedMemory\n");
 	TEEC_ReleaseSharedMemory(&g_sess_data->wsm);
 
 err_register_shared_memory:
-	pr_err("TEEC_FinalizeContext\n");
+	pr_no_err("TEEC_FinalizeContext\n");
 	TEEC_FinalizeContext(&g_sess_data->context);
 
 err_initialize_context:
@@ -148,7 +148,7 @@ err_create_wsm_buffer:
 static int tee_session_close_single_session_unlocked(void)
 {
 	if (!is_sess_ready) {
-		pr_debug("Session is already closed!\n");
+		pr_no_debug("Session is already closed!\n");
 		return TMEM_OK;
 	}
 
@@ -183,14 +183,14 @@ int tee_session_close(void *tee_data, void *dev_desc)
 	TEE_SESSION_LOCK();
 
 	if (sess_ref_cnt == 0) {
-		pr_err("Session is already closed!\n");
+		pr_no_err("Session is already closed!\n");
 		TEE_SESSION_UNLOCK();
 		return TMEM_OK;
 	}
 
 	sess_ref_cnt--;
 	if (sess_ref_cnt == 0) {
-		pr_debug("Try closing session!\n");
+		pr_no_debug("Try closing session!\n");
 		tee_session_close_single_session_unlocked();
 	}
 
@@ -207,7 +207,7 @@ static int secmem_execute(u32 cmd, struct secmem_param *param)
 	TEE_SESSION_LOCK();
 
 	if (!is_sess_ready) {
-		pr_err("Session is not ready!\n");
+		pr_no_err("Session is not ready!\n");
 		TEE_SESSION_UNLOCK();
 		return TMEM_TEE_SESSION_IS_NOT_READY;
 	}
@@ -228,7 +228,7 @@ static int secmem_execute(u32 cmd, struct secmem_param *param)
 
 	ret = TEEC_InvokeCommand(&g_sess_data->session, cmd, &op, NULL);
 	if (ret != TEEC_SUCCESS) {
-		pr_err("TEEC_InvokeCommand failed! cmd:%d, ret:0x%x\n", cmd,
+		pr_no_err("TEEC_InvokeCommand failed! cmd:%d, ret:0x%x\n", cmd,
 		       ret);
 		TEE_SESSION_UNLOCK();
 		return ret;
@@ -239,7 +239,7 @@ static int secmem_execute(u32 cmd, struct secmem_param *param)
 	param->alignment = msg->alignment;
 	param->size = msg->size;
 
-	pr_debug("shndl=0x%llx refcnt=%d align=0x%llx size=0x%llx\n",
+	pr_no_debug("shndl=0x%llx refcnt=%d align=0x%llx size=0x%llx\n",
 		 (u64)param->sec_handle, param->refcount, (u64)param->alignment,
 		 (u64)param->size);
 
@@ -274,7 +274,7 @@ int tee_alloc(u32 alignment, u32 size, u32 *refcount, u32 *sec_handle,
 
 	ret = secmem_execute(tee_ta_cmd, &param);
 	if (ret == SECMEM_ERROR_OUT_OF_MEMORY) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		return -ENOMEM;
 	} else if (ret) {
 		return TMEM_TEE_ALLOC_CHUNK_FAILED;
@@ -282,7 +282,7 @@ int tee_alloc(u32 alignment, u32 size, u32 *refcount, u32 *sec_handle,
 
 	*refcount = param.refcount;
 	*sec_handle = param.sec_handle;
-	pr_debug("ref cnt: 0x%x, sec_handle: 0x%llx\n", param.refcount,
+	pr_no_debug("ref cnt: 0x%x, sec_handle: 0x%llx\n", param.refcount,
 		 param.sec_handle);
 	return TMEM_OK;
 }
@@ -329,7 +329,7 @@ int tee_mem_reg_add(u64 pa, u32 size, void *tee_data, void *dev_desc)
 		ret = tee_dev_desc->notify_remote_fn(
 			pa, size, tee_dev_desc->mtee_chunks_id);
 		if (ret != 0) {
-			pr_err("[%d] TEE notify reg mem add to MTEE failed:%d\n",
+			pr_no_err("[%d] TEE notify reg mem add to MTEE failed:%d\n",
 			       tee_dev_desc->mtee_chunks_id, ret);
 			return TMEM_TEE_NOTIFY_MEM_ADD_CFG_TO_MTEE_FAILED;
 		}
@@ -357,7 +357,7 @@ int tee_mem_reg_remove(void *tee_data, void *dev_desc)
 		ret = tee_dev_desc->notify_remote_fn(
 			0x0ULL, 0x0, tee_dev_desc->mtee_chunks_id);
 		if (ret != 0) {
-			pr_err("[%d] TEE notify reg mem remove to MTEE failed:%d\n",
+			pr_no_err("[%d] TEE notify reg mem remove to MTEE failed:%d\n",
 			       tee_dev_desc->mtee_chunks_id, ret);
 			return TMEM_TEE_NOTIFY_MEM_REMOVE_CFG_TO_MTEE_FAILED;
 		}
@@ -382,12 +382,12 @@ static int tee_invoke_command(struct trusted_driver_cmd_params *invoke_params,
 		return TMEM_PARAMETER_ERROR;
 
 	if (!VALID_INVOKE_COMMAND(invoke_params->cmd)) {
-		pr_err("%s:%d unsupported cmd:%d!\n", __func__, __LINE__,
+		pr_no_err("%s:%d unsupported cmd:%d!\n", __func__, __LINE__,
 		       invoke_params->cmd);
 		return TMEM_COMMAND_NOT_SUPPORTED;
 	}
 
-	pr_debug("invoke cmd is %d (0x%llx, 0x%llx, 0x%llx, 0x%llx)\n",
+	pr_no_debug("invoke cmd is %d (0x%llx, 0x%llx, 0x%llx, 0x%llx)\n",
 		 invoke_params->cmd, invoke_params->param0,
 		 invoke_params->param1, invoke_params->param2,
 		 invoke_params->param3);
@@ -425,6 +425,6 @@ static struct trusted_driver_operations tee_gp_peer_ops = {
 
 void get_tee_peer_ops(struct trusted_driver_operations **ops)
 {
-	pr_info("SECMEM_TEE_GP_OPS\n");
+	pr_no_info("SECMEM_TEE_GP_OPS\n");
 	*ops = &tee_gp_peer_ops;
 }

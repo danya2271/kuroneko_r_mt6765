@@ -99,16 +99,16 @@ struct DPE_CLK_STRUCT dpe_clk;
 #define MyTag "[DPE]"
 #define IRQTag "KEEPER"
 
-#define LOG_VRB(format,	args...)    pr_debug(MyTag format, ##args)
+#define LOG_VRB(format,	args...)    pr_no_debug(MyTag format, ##args)
 
 #ifdef DPE_DEBUG_USE
-#define log_dbg(format, args...)    pr_debug(MyTag format, ##args)
+#define log_dbg(format, args...)    pr_no_debug(MyTag format, ##args)
 #else
 #define log_dbg(format, args...)
 #endif
-#define LOG_ERR(format, args...)    pr_info(MyTag format,  ##args)
-#define LOG_INF(format, args...)    pr_debug(MyTag format,  ##args)
-#define LOG_NOTICE(format, args...) pr_notice(MyTag format,  ##args)
+#define LOG_ERR(format, args...)    pr_no_info(MyTag format,  ##args)
+#define LOG_INF(format, args...)    pr_no_debug(MyTag format,  ##args)
+#define LOG_NOTICE(format, args...) pr_no_notice(MyTag format,  ##args)
 
 /* For other projects. */
 /* #define DPE_WR32(addr, data)    iowrite32(data, addr) */
@@ -4173,7 +4173,7 @@ int DPE_pm_suspend(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	pr_debug("calling %s()\n", __func__);
+	pr_no_debug("calling %s()\n", __func__);
 	LOG_INF("DPE suspend g_u4EnableClockCount: %d, g_u4DpeCnt: %d",
 		g_u4EnableClockCount, g_u4DpeCnt);
 
@@ -4186,7 +4186,7 @@ int DPE_pm_resume(struct device *device)
 
 	WARN_ON(pdev == NULL);
 
-	pr_debug("calling %s()\n", __func__);
+	pr_no_debug("calling %s()\n", __func__);
 	LOG_INF("DPE resume g_u4EnableClockCount: %d, g_u4DpeCnt: %d",
 		g_u4EnableClockCount, g_u4DpeCnt);
 
@@ -4198,7 +4198,7 @@ int DPE_pm_resume(struct device *device)
 #endif
 int DPE_pm_restore_noirq(struct device *device)
 {
-	pr_debug("calling %s()\n", __func__);
+	pr_no_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 	mt_irq_set_sens(DPE_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);
 	mt_irq_set_polarity(DPE_IRQ_BIT_ID, MT_POLARITY_LOW);
@@ -4477,12 +4477,7 @@ static ssize_t dpe_reg_write(
 
 	} else if (sscanf(desc, "%23s", addrSzBuf) == 1) {
 		pszTmp = strstr(addrSzBuf, "0x");
-	if (pszTmp == NULL) {
-		if (kstrtol(addrSzBuf, 10, (long *)&tempval) != 0)
-			LOG_INF("scan decimal addr is wrong !!:%s", addrSzBuf);
-		else
-			addr = tempval;
-	} else {
+	if (pszTmp != NULL) {
 		if (strlen(addrSzBuf) > 2) {
 			if (sscanf(addrSzBuf + 2, "%x", &addr) != 1)
 				LOG_INF("scan hexadecimal addr is wrong !!:%s",

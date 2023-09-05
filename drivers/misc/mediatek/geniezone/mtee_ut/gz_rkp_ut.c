@@ -48,9 +48,9 @@
 
 #include "gz_rkp_ut.h"
 
-#define KREE_DEBUG(fmt...) pr_debug("[CM_kUT]" fmt)
-#define KREE_INFO(fmt...) pr_info("[CM_kUT]" fmt)
-#define KREE_ERR(fmt...) pr_info("[CM_kUT][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_no_debug("[CM_kUT]" fmt)
+#define KREE_INFO(fmt...) pr_no_info("[CM_kUT]" fmt)
+#define KREE_ERR(fmt...) pr_no_info("[CM_kUT][ERR]" fmt)
 
 
 /*vreg test UT items*/

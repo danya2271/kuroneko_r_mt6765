@@ -197,7 +197,7 @@ int MET_BM_Init(void)
 		PR_BOOTMSG_ONCE("BaseAddrEMI = 0\n");
 		return -1;
 	}
-	pr_debug("MET EMI: map emi to %p\n", BaseAddrEMI);
+	pr_no_debug("MET EMI: map emi to %p\n", BaseAddrEMI);
 	PR_BOOTMSG("MET EMI: map emi to %p\n", BaseAddrEMI);
 
 	/* emi channel */
@@ -3177,7 +3177,7 @@ int met_emi_create_basic(struct kobject *parent, struct metdevice *emi_dev)
 
 	ret = MET_BM_Init();
 	if (ret != 0) {
-		pr_notice("MET_BM_Init failed!!!\n");
+		pr_no_notice("MET_BM_Init failed!!!\n");
 		ret = 0;        /* will retry later */
 	} else {
 		emi_inited = 1;
@@ -3192,7 +3192,7 @@ PR_BOOTMSG("MET sspm_support_list=%X \n",get_sspm_support_feature());
 	do { \
 		ret = sysfs_create_file(kobj_emi, &attr_name ## _attr.attr); \
 		if (ret != 0) { \
-			pr_notice("Failed to create " #attr_name " in sysfs\n"); \
+			pr_no_notice("Failed to create " #attr_name " in sysfs\n"); \
 			return ret; \
 		} \
 	} while (0)
@@ -3270,7 +3270,7 @@ void ondiemet_emi_start_basic(void)
 	if (!emi_inited) {
 		if (MET_BM_Init() != 0) {
 			emi_device->mode = 0;
-			pr_notice("MET_BM_Init failed!!!\n");
+			pr_no_notice("MET_BM_Init failed!!!\n");
 			return;
 		}
 		emi_inited = 1;

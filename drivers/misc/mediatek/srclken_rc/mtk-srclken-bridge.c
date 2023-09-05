@@ -41,7 +41,7 @@ EXPORT_SYMBOL(srclken_export_platform_bridge_unregister);
 enum srclken_config srclken_get_stage(void)
 {
 	if (unlikely(!bridge.get_stage_cb)) {
-		pr_err("get stage not registered\n");
+		pr_no_err("get stage not registered\n");
 		return SRCLKEN_NOT_SUPPORT;
 	}
 
@@ -52,7 +52,7 @@ EXPORT_SYMBOL(srclken_get_stage);
 enum srclken_config srclken_dump_sta_log(void)
 {
 	if (unlikely(!bridge.dump_sta_cb)) {
-		pr_err("dump sta log not registered\n");
+		pr_no_err("dump sta log not registered\n");
 		return SRCLKEN_NOT_SUPPORT;
 	}
 
@@ -65,7 +65,7 @@ EXPORT_SYMBOL(srclken_dump_sta_log);
 enum srclken_config srclken_dump_cfg_log(void)
 {
 	if (unlikely(!bridge.dump_cfg_cb)) {
-		pr_err("dump cfg log not registered\n");
+		pr_no_err("dump cfg log not registered\n");
 		return SRCLKEN_NOT_SUPPORT;
 	}
 
@@ -78,7 +78,7 @@ EXPORT_SYMBOL(srclken_dump_cfg_log);
 enum srclken_config srclken_dump_last_sta_log(void)
 {
 	if (unlikely(!bridge.dump_last_sta_cb)) {
-		pr_err("dump last sta log not registered\n");
+		pr_no_err("dump last sta log not registered\n");
 		return SRCLKEN_NOT_SUPPORT;
 	}
 

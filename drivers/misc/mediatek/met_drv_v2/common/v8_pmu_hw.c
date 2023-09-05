@@ -162,7 +162,7 @@ static int armv8_pmu_hw_check_event(struct met_pmu *pmu, int idx, int event)
 			break;
 	}
 	if (i < idx) {
-		/* pr_debug("++++++ found duplicate event 0x%02x i=%d\n", event, i); */
+		/* pr_no_debug("++++++ found duplicate event 0x%02x i=%d\n", event, i); */
 		return -1;
 	}
 

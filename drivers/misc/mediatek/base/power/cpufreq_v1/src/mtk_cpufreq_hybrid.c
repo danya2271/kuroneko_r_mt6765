@@ -89,8 +89,6 @@ void parse_time_log_content(unsigned int time_stamp_l_log,
 	unsigned int time_stamp_h_log, unsigned int idx)
 {
 	if (idx > MAX_LOG_FETCH) {
-		tag_pr_notice
-		("Error: %s wrong idx %d\n", __func__, idx);
 		idx = 0;
 	}
 
@@ -109,8 +107,6 @@ void parse_log_content(unsigned int *local_buf, unsigned int idx)
 	int i;
 
 	if (idx > MAX_LOG_FETCH) {
-		tag_pr_notice
-		("Error: %s wrong idx %d\n", __func__, idx);
 		idx = 0;
 	}
 
@@ -145,14 +141,12 @@ int Ripi_cpu_dvfs_thread(void *data)
 	unsigned long long tf_sum, t_diff, avg_f;
 	int j;
 
-	/* tag_pr_info("CPU DVFS received thread\n"); */
+	/* tag_pr_no_info("CPU DVFS received thread\n"); */
 	cpufreq_act.data = (void *)cpufreq_buf;
 	ret = sspm_ipi_recv_registration_ex(IPI_ID_CPU_DVFS, &cpudvfs_lock,
 					    &cpufreq_act);
 
 	if (ret != 0) {
-		tag_pr_notice
-		("Error: ipi_recv_registration CPU DVFS error: %d\n", ret);
 		do {
 			msleep(1000);
 		} while (!kthread_should_stop());
@@ -379,22 +373,8 @@ static int dvfs_to_spm2_command(u32 cmd, struct cdvfs_data *cdvfs_d)
 		cpufreq_ver("I'd like to set cluster%d ON/OFF state to %d)\n",
 			cdvfs_d->u.set_fv.arg[0], cdvfs_d->u.set_fv.arg[1]);
 
-		aee_record_cpu_dvfs_cb(6);
 		ret = sspm_ipi_send_sync_new(IPI_ID_CPU_DVFS, IPI_OPT_POLLING,
 		cdvfs_d, len, &ack_data, 1);
-		aee_record_cpu_dvfs_cb(7);
-		if (ret != 0) {
-			tag_pr_notice
-			("ret = %d, set cluster%d ON/OFF state to %d\n",
-				ret, cdvfs_d->u.set_fv.arg[0],
-				cdvfs_d->u.set_fv.arg[1]);
-		} else if (ack_data < 0) {
-			tag_pr_notice
-			("ret = %d, set cluster%d ON/OFF state to %d\n",
-			ret, cdvfs_d->u.set_fv.arg[0],
-			cdvfs_d->u.set_fv.arg[1]);
-		}
-		aee_record_cpu_dvfs_cb(8);
 		break;
 	case IPI_TURBO_MODE:
 		cdvfs_d->cmd = cmd;
@@ -861,7 +841,7 @@ void __init cpuhvfs_pvt_tbl_create(void)
 
 	lv = _mt_cpufreq_get_cpu_level();
 	recordRef = ioremap_nocache(DBG_REPO_TBL_S, PVT_TBL_SIZE);
-	tag_pr_info("DVFS - @(Record)%s----->(%p)\n", __func__, recordRef);
+	tag_pr_no_info("DVFS - @(Record)%s----->(%p)\n", __func__, recordRef);
 	memset_io((u8 *)recordRef, 0x00, PVT_TBL_SIZE);
 
 	recordTbl = xrecordTbl[lv];
@@ -958,7 +938,7 @@ void __init cpuhvfs_pvt_tbl_create(void)
 
 #ifdef CCI_MAP_TBL_SUPPORT
 	record_CCI_Ref = ioremap_nocache(DBG_REPO_CCI_TBL_S, PVT_CCI_TBL_SIZE);
-	tag_pr_info("DVFS - @(Record)%s----->(%p)\n", __func__, record_CCI_Ref);
+	tag_pr_no_info("DVFS - @(Record)%s----->(%p)\n", __func__, record_CCI_Ref);
 	memset_io((u8 *)record_CCI_Ref, 0x00, PVT_CCI_TBL_SIZE);
 
 	record_CCI_Tbl = xrecord_CCI_Tbl[lv];
@@ -1037,7 +1017,7 @@ static int create_cpuhvfs_debug_fs(void)
 	/* create /proc/cpuhvfs */
 	dir = proc_mkdir("cpuhvfs", NULL);
 	if (!dir) {
-		tag_pr_notice("fail to create /proc/cpuhvfs @ %s()\n",
+		tag_pr_no_notice("fail to create /proc/cpuhvfs @ %s()\n",
 								__func__);
 		return -ENOMEM;
 	}
@@ -1045,7 +1025,7 @@ static int create_cpuhvfs_debug_fs(void)
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create_data(entries[i].name, 0664,
 		    dir, entries[i].fops, entries[i].data))
-			tag_pr_notice("%s(), create /proc/cpuhvfs/%s failed\n",
+			tag_pr_no_notice("%s(), create /proc/cpuhvfs/%s failed\n",
 						__func__, entries[i].name);
 	}
 
@@ -1057,13 +1037,13 @@ int cpuhvfs_module_init(void)
 	int r;
 
 	if (!log_repo) {
-		tag_pr_notice("FAILED TO PRE-INIT CPUHVFS\n");
+		tag_pr_no_notice("FAILED TO PRE-INIT CPUHVFS\n");
 		return -ENODEV;
 	}
 
 	r = create_cpuhvfs_debug_fs();
 	if (r) {
-		tag_pr_notice("FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", r);
+		tag_pr_no_notice("FAILED TO CREATE DEBUG FILESYSTEM (%d)\n", r);
 		return r;
 	}
 
@@ -1081,11 +1061,11 @@ static int __init dvfsp_module_init(void)
 
 	r = platform_driver_register(&_mt_dvfsp_pdrv);
 	if (r)
-		tag_pr_notice("fail to register sspm driver @ %s()\n",
+		tag_pr_no_notice("fail to register sspm driver @ %s()\n",
 								__func__);
 
 	if (!dvfsp_probe_done) {
-		tag_pr_notice("FAILED TO PROBE SSPM DEVICE\n");
+		tag_pr_no_notice("FAILED TO PROBE SSPM DEVICE\n");
 		return -ENODEV;
 	}
 
@@ -1137,7 +1117,7 @@ static int __init cpuhvfs_pre_module_init(void)
 
 	r = dvfsp_module_init();
 	if (r) {
-		tag_pr_notice("FAILED TO INIT DVFS SSPM (%d)\n", r);
+		tag_pr_no_notice("FAILED TO INIT DVFS SSPM (%d)\n", r);
 		return r;
 	}
 

@@ -231,7 +231,7 @@ void parse_lcm_params_dt_node(struct device_node *np,
 		struct LCM_PARAMS *lcm_params)
 {
 	if (!lcm_params) {
-		pr_info("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
+		pr_no_info("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
@@ -558,19 +558,19 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	struct LCM_DATA *lcm_data;
 
 	if (!lcm_dts) {
-		pr_info("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
+		pr_no_info("%s:%d, ERROR: Error access to LCM_PARAMS(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	/* parse LCM init table */
 	len = disp_of_getprop_u8(np, "init", dts);
 	if (len <= 0) {
-		pr_info("%s:%d: Cannot find LCM init table, cannot skip it!\n",
+		pr_no_info("%s:%d: Cannot find LCM init table, cannot skip it!\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	if (len > (sizeof(struct LCM_DATA)*INIT_SIZE)) {
-		pr_info("%s:%d: LCM init table overflow: %d\n",
+		pr_no_info("%s:%d: LCM init table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -615,14 +615,14 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 				break;
 
 			default:
-				pr_info("%s/%d: %d\n",
+				pr_no_info("%s/%d: %d\n",
 					__FILE__, __LINE__, lcm_data[i].type);
 				return;
 			}
 			break;
 
 		default:
-			pr_info("%s/%d: %d\n",
+			pr_no_info("%s/%d: %d\n",
 				__FILE__, __LINE__, lcm_data[i].func);
 			return;
 		}
@@ -637,7 +637,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	}
 	lcm_dts->init_size = i + 1;
 	if (lcm_dts->init_size > INIT_SIZE) {
-		pr_info("%s:%d: LCM init table overflow: %d\n",
+		pr_no_info("%s:%d: LCM init table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -645,11 +645,11 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	/* parse LCM compare_id table */
 	len = disp_of_getprop_u8(np, "compare_id", dts);
 	if (len <= 0) {
-		pr_info("%s:%d: Cannot find LCM compare_id table, skip it!\n",
+		pr_no_info("%s:%d: Cannot find LCM compare_id table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*COMPARE_ID_SIZE)) {
-			pr_info("%s:%d: LCM compare_id table overflow: %d\n",
+			pr_no_info("%s:%d: LCM compare_id table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -696,7 +696,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 					break;
 
 				default:
-					pr_info("%s:%d: %d\n",
+					pr_no_info("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						(unsigned int)lcm_data[i].type);
 					return;
@@ -704,7 +704,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 				break;
 
 			default:
-				pr_info("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_info("%s:%d: %d\n", __FILE__, __LINE__,
 				       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -719,7 +719,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 		}
 		lcm_dts->compare_id_size = i + 1;
 		if (lcm_dts->compare_id_size > COMPARE_ID_SIZE) {
-			pr_info("%s:%d: LCM compare_id table overflow: %d\n",
+			pr_no_info("%s:%d: LCM compare_id table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -728,12 +728,12 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	/* parse LCM suspend table */
 	len = disp_of_getprop_u8(np, "suspend", dts);
 	if (len <= 0) {
-		pr_info("%s:%d: Cannot find LCM suspend table, cannot skip it!\n",
+		pr_no_info("%s:%d: Cannot find LCM suspend table, cannot skip it!\n",
 			__FILE__, __LINE__);
 		return;
 	}
 	if (len > (sizeof(struct LCM_DATA)*SUSPEND_SIZE)) {
-		pr_info("%s:%d: LCM suspend table overflow: %d\n",
+		pr_no_info("%s:%d: LCM suspend table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -775,14 +775,14 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 				break;
 
 			default:
-				pr_info("%s:%d: %d\n",
+				pr_no_info("%s:%d: %d\n",
 					__FILE__, __LINE__, lcm_data[i].type);
 				return;
 			}
 			break;
 
 		default:
-			pr_info("%s:%d: %d\n", __FILE__, __LINE__,
+			pr_no_info("%s:%d: %d\n", __FILE__, __LINE__,
 			       (unsigned int)lcm_data[i].func);
 			return;
 		}
@@ -797,7 +797,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	}
 	lcm_dts->suspend_size = i + 1;
 	if (lcm_dts->suspend_size > SUSPEND_SIZE) {
-		pr_info("%s:%d: LCM suspend table overflow: %d\n",
+		pr_no_info("%s:%d: LCM suspend table overflow: %d\n",
 			__FILE__, __LINE__, len);
 		return;
 	}
@@ -805,11 +805,11 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	/* parse LCM backlight table */
 	len = disp_of_getprop_u8(np, "backlight", dts);
 	if (len <= 0) {
-		pr_info("%s:%d: Cannot find LCM backlight table, skip it!\n",
+		pr_no_info("%s:%d: Cannot find LCM backlight table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*BACKLIGHT_SIZE)) {
-			pr_info("%s:%d: LCM backlight table overflow: %d\n",
+			pr_no_info("%s:%d: LCM backlight table overflow: %d\n",
 				__FILE__, __LINE__,	len);
 			return;
 		}
@@ -846,7 +846,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 					break;
 
 				default:
-					pr_info("%s:%d: %d\n",
+					pr_no_info("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						lcm_data[i].type);
 					return;
@@ -854,7 +854,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 				break;
 
 			default:
-				pr_info("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_info("%s:%d: %d\n", __FILE__, __LINE__,
 				       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -869,7 +869,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 		}
 		lcm_dts->backlight_size = i + 1;
 		if (lcm_dts->backlight_size > BACKLIGHT_SIZE) {
-			pr_info("%s:%d: LCM backlight table overflow: %d\n",
+			pr_no_info("%s:%d: LCM backlight table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -878,11 +878,11 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 	/* parse LCM backlight cmdq table */
 	len = disp_of_getprop_u8(np, "backlight_cmdq", dts);
 	if (len <= 0) {
-		pr_info("%s:%d: Cannot find LCM backlight cmdq table, skip it!\n",
+		pr_no_info("%s:%d: Cannot find LCM backlight cmdq table, skip it!\n",
 			__FILE__, __LINE__);
 	} else {
 		if (len > (sizeof(struct LCM_DATA)*BACKLIGHT_CMDQ_SIZE)) {
-			pr_info("%s:%d: LCM backlight cmdq table overflow: %d\n",
+			pr_no_info("%s:%d: LCM backlight cmdq table overflow: %d\n",
 				__FILE__, __LINE__, len);
 			return;
 		}
@@ -919,7 +919,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 					break;
 
 				default:
-					pr_info("%s:%d: %d\n",
+					pr_no_info("%s:%d: %d\n",
 						__FILE__, __LINE__,
 						lcm_data[i].type);
 					return;
@@ -927,7 +927,7 @@ void parse_lcm_ops_dt_node(struct device_node *np,
 				break;
 
 			default:
-				pr_info("%s:%d: %d\n", __FILE__, __LINE__,
+				pr_no_info("%s:%d: %d\n", __FILE__, __LINE__,
 			       (unsigned int)lcm_data[i].func);
 				return;
 			}
@@ -961,7 +961,7 @@ int check_lcm_node_from_DT(void)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np) {
-		pr_info("LCM PARAMS DT node: Not found\n");
+		pr_no_info("LCM PARAMS DT node: Not found\n");
 		return -1;
 	}
 
@@ -971,7 +971,7 @@ int check_lcm_node_from_DT(void)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np) {
-		pr_info("LCM OPS DT node: Not found\n");
+		pr_no_info("LCM OPS DT node: Not found\n");
 		return -1;
 	}
 
@@ -986,7 +986,7 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	struct LCM_DTS *parse_dts = &lcm_dts;
 
 	if (!lcm_drv) {
-		pr_info("%s:%d: Error access to LCM_DRIVER(NULL)\n",
+		pr_no_info("%s:%d: Error access to LCM_DRIVER(NULL)\n",
 			__FILE__, __LINE__);
 		return;
 	}
@@ -999,7 +999,7 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np)
-		pr_info("LCM PARAMS DT node: Not found\n");
+		pr_no_info("LCM PARAMS DT node: Not found\n");
 	else
 		parse_lcm_params_dt_node(np, &(parse_dts->params));
 
@@ -1009,14 +1009,14 @@ void load_lcm_resources_from_DT(struct LCM_DRIVER *lcm_drv)
 	/* Load LCM parameters from DT */
 	np = of_find_compatible_node(NULL, NULL, lcm_node);
 	if (!np)
-		pr_info("LCM OPS DT node: Not found\n");
+		pr_no_info("LCM OPS DT node: Not found\n");
 	else
 		parse_lcm_ops_dt_node(np, parse_dts, tmp_dts);
 
 	if (lcm_drv->parse_dts)
 		lcm_drv->parse_dts(parse_dts, 1);
 	else
-		pr_info("LCM set_params not implemented!!!\n");
+		pr_no_info("LCM set_params not implemented!!!\n");
 }
 #endif
 

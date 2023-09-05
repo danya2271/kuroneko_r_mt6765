@@ -85,7 +85,7 @@ static inline int check_table_tag(int mcnt)
 			spin = &(send_pintable[j]);
 			data = 1;
 		} else {
-			pr_debug("Error: mbox %d has unsupported mode=%d\n",
+			pr_no_debug("Error: mbox %d has unsupported mode=%d\n",
 				i, mbox_table[i].mode);
 			return -2;
 		}
@@ -114,7 +114,7 @@ static inline int check_table_tag(int mcnt)
 			while (n) {
 				sspm_mbox_read(i, k, &check, 1);
 				if (check != data) {
-					pr_debug("Error: IPI Dismatch!! mbox:%d pin:%d slot=%d should be %08X but now %08X\n",
+					pr_no_debug("Error: IPI Dismatch!! mbox:%d pin:%d slot=%d should be %08X but now %08X\n",
 						   i, j, k, data, check);
 					return -3;
 				}
@@ -145,38 +145,38 @@ static void ipi_monitor_dump_timeout(int mid, int opts)
 		}
 	}
 	if (err_pin >= 0) {
-		pr_err("Error: possible error IPI %d pin=%s: t0=%llu\n",
+		pr_no_err("Error: possible error IPI %d pin=%s: t0=%llu\n",
 			   err_pin, pin_name[err_pin], err_ts);
 	}
 #endif /* IPI_MONITOR_TIMESTAMP */
 
-	pr_err("Error: IPI %d pin=%s mode=%d timeout at %lld (lastOK IPI=%d)\n",
+	pr_no_err("Error: IPI %d pin=%s mode=%d timeout at %lld (lastOK IPI=%d)\n",
 		   mid, pin_name[mid], opts, cpu_clock(0), ipi_last);
 
 #ifdef IPI_MONITOR_TIMESTAMP
 	for (i = 0; i < IPI_ID_TOTAL; i++) {
 		if ((ipimon[i].state == 0) || (ipimon[i].state == 3))
-			pr_err("IPI %d: seqno=%d, state=%d, t0=%lld, t4=%lld, t5=%lld\n",
+			pr_no_err("IPI %d: seqno=%d, state=%d, t0=%lld, t4=%lld, t5=%lld\n",
 				i, ipimon[i].seqno, ipimon[i].state,
 				ipimon[i].t0, ipimon[i].t4, ipimon[i].t5);
 		else
-			pr_err("IPI %d: seqno=%d, state_err=%d, t0=%lld, t4=%lld, t5=%lld\n",
+			pr_no_err("IPI %d: seqno=%d, state_err=%d, t0=%lld, t4=%lld, t5=%lld\n",
 				i, ipimon[i].seqno, ipimon[i].state,
 				ipimon[i].t0, ipimon[i].t4, ipimon[i].t5);
 	}
 #else
 	for (i = 0; i < IPI_ID_TOTAL; i++) {
 		if ((ipimon[i].state == 0) || (ipimon[i].state == 3))
-			pr_err("IPI %d: seqno=%d, state=%d\n",
+			pr_no_err("IPI %d: seqno=%d, state=%d\n",
 				   i, ipimon[i].seqno, ipimon[i].state);
 		else
-			pr_err("IPI %d: seqno=%d, state_err=%d\n",
+			pr_no_err("IPI %d: seqno=%d, state_err=%d\n",
 				   i, ipimon[i].seqno, ipimon[i].state);
 	}
 #endif /* IPI_MONITOR_TIMESTAMP */
 
 	spin_unlock_irqrestore(&lock_monitor, flags);
-	pr_err("Error: SSPM IPI=%d timeout\n", mid);
+	pr_no_err("Error: SSPM IPI=%d timeout\n", mid);
 	sspm_ipi_timeout_cb(mid);
 	BUG_ON(1);
 }
@@ -230,7 +230,7 @@ static void ipi_check_ack(int mid, int opts, int ret)
 			int i;
 
 			for (i = 0; i < IPI_TS_TEST_MAX; i++)
-				pr_err("IPI %d: t0=%llu, t4=%llu, t5=%llu\n",
+				pr_no_err("IPI %d: t0=%llu, t4=%llu, t5=%llu\n",
 					   i, ipi_t0[i], ipi_t4[i], ipi_t5[i]);
 			test_cnt = 0;
 		}
@@ -289,7 +289,7 @@ int sspm_ipi_init(void)
 
 	/* IPI HW initialize and ISR registration */
 	if (sspm_mbox_init(IPI_MBOX_MODE, IPI_MBOX_TOTAL, ipi_isr_cb) != 0) {
-		pr_err("Error: sspm_mbox_init failed\n");
+		pr_no_err("Error: sspm_mbox_init failed\n");
 		return -1;
 	}
 
@@ -731,7 +731,7 @@ int sspm_ipi_send_sync(int mid, int opts, void *buffer, int slot,
 
 		if (mutex_is_locked(&pin->mutex_send)) {
 			spin_unlock_irqrestore(&lock_polling[mid], flags);
-			pr_err("Error: IPI pin=%d has been used in WAIT mode\n",
+			pr_no_err("Error: IPI pin=%d has been used in WAIT mode\n",
 				mid);
 			BUG_ON(1);
 			return IPI_USED_IN_WAIT;
@@ -740,7 +740,7 @@ int sspm_ipi_send_sync(int mid, int opts, void *buffer, int slot,
 	} else {                       /* WAIT mode */
 		/* Check if users call in atomic/interrupt/IRQ disabled */
 		if (preempt_count() || in_interrupt() || irqs_disabled()) {
-			pr_err("IPI panic: pin id=%d, atomic=%d, interrupt=%ld, irq disabled=%d\n",
+			pr_no_err("IPI panic: pin id=%d, atomic=%d, interrupt=%ld, irq disabled=%d\n",
 				mid, preempt_count(), in_interrupt(),
 				irqs_disabled());
 			BUG_ON(1);

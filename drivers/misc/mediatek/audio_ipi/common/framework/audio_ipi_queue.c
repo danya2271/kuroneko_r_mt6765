@@ -142,7 +142,7 @@ struct ipi_queue_handler_t *create_ipi_queue_handler(const uint8_t task_scene)
 
 	/* error handling */
 	if (task_scene >= TASK_SCENE_SIZE) {
-		pr_info("task_scene %d invalid!! return NULL", task_scene);
+		pr_no_info("task_scene %d invalid!! return NULL", task_scene);
 		return NULL;
 	}
 
@@ -153,7 +153,7 @@ struct ipi_queue_handler_t *create_ipi_queue_handler(const uint8_t task_scene)
 	if (handler->msg_queue == NULL) {
 		handler->msg_queue = (void *)create_msg_queue(task_scene);
 		if (handler->msg_queue == NULL) {
-			pr_notice("task_scene %d create fail!!", task_scene);
+			pr_no_notice("task_scene %d create fail!!", task_scene);
 			return NULL;
 		}
 	}
@@ -199,7 +199,7 @@ void destroy_msg_queue(struct msg_queue_t *msg_queue)
 {
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return;
 	}
 
@@ -215,7 +215,7 @@ void destroy_ipi_queue_handler(struct ipi_queue_handler_t *handler)
 {
 	/* error handling */
 	if (handler == NULL) {
-		pr_info("handler == NULL!! return");
+		pr_no_info("handler == NULL!! return");
 		return;
 	}
 
@@ -229,7 +229,7 @@ struct ipi_queue_handler_t *get_ipi_queue_handler(const uint8_t task_scene)
 {
 	/* error handling */
 	if (task_scene >= TASK_SCENE_SIZE) {
-		pr_info("task_scene %d invalid!! return NULL", task_scene);
+		pr_no_info("task_scene %d invalid!! return NULL", task_scene);
 		return NULL;
 	}
 
@@ -244,7 +244,7 @@ void disable_ipi_queue_handler(struct ipi_queue_handler_t *handler)
 
 	/* error handling */
 	if (handler == NULL) {
-		pr_info("handler == NULL!! return");
+		pr_no_info("handler == NULL!! return");
 		return;
 	}
 
@@ -265,7 +265,7 @@ int flush_ipi_queue_handler(struct ipi_queue_handler_t *handler)
 
 	/* error handling */
 	if (handler == NULL) {
-		pr_info("handler == NULL!! return");
+		pr_no_info("handler == NULL!! return");
 		return -1;
 	}
 
@@ -320,17 +320,17 @@ int send_message(
 
 	/* error handling */
 	if (handler == NULL) {
-		pr_info("handler == NULL!! return");
+		pr_no_info("handler == NULL!! return");
 		return -1;
 	}
 
 	if (p_ipi_msg == NULL) {
-		pr_info("p_ipi_msg == NULL!! return");
+		pr_no_info("p_ipi_msg == NULL!! return");
 		return -1;
 	}
 
 	if (is_audio_task_dsp_ready(p_ipi_msg->task_scene) == false) {
-		pr_info("dsp not ready!! return");
+		pr_no_info("dsp not ready!! return");
 		return -1;
 	}
 
@@ -343,7 +343,7 @@ int send_message(
 	msg_queue = (struct msg_queue_t *)handler->msg_queue;
 
 	if (msg_queue->enable == false) {
-		pr_info("queue disabled!! return");
+		pr_no_info("queue disabled!! return");
 		return -1;
 	}
 
@@ -354,7 +354,7 @@ int send_message(
 	spin_unlock_irqrestore(&msg_queue->rw_lock, flags);
 
 	if (check_idx_msg_valid(msg_queue, idx_msg) == false) {
-		pr_info("idx_msg %d is invalid!! return", idx_msg);
+		pr_no_info("idx_msg %d is invalid!! return", idx_msg);
 		return -1;
 	}
 
@@ -391,14 +391,14 @@ int send_message(
 				break;
 			}
 			if (retval == 0) {
-				pr_notice("wait ret 0, idx %d/%d, enable %d",
+				pr_no_notice("wait ret 0, idx %d/%d, enable %d",
 					  msg_queue->idx_r,
 					  idx_msg,
 					  msg_queue->enable);
 				break;
 			}
 			if (retval == -ERESTARTSYS) {
-				pr_info("-ERESTARTSYS, #%u, sleep us: %u",
+				pr_no_info("-ERESTARTSYS, #%u, sleep us: %u",
 					try_cnt, k_restart_sleep_min_us);
 				DUMP_IPI_MSG("wait queue head", p_ipi_msg);
 				retval = -EINTR;
@@ -406,17 +406,17 @@ int send_message(
 					     k_restart_sleep_max_us);
 				continue;
 			}
-			pr_notice("retval: %d not handle!!", retval);
+			pr_no_notice("retval: %d not handle!!", retval);
 		}
 
 		if (retval != 0) {
 			DUMP_IPI_MSG("task queue timeout", p_ipi_msg);
-			pr_notice("retval: %d!!", retval);
+			pr_no_notice("retval: %d!!", retval);
 		} else if (msg_queue->idx_r == idx_msg) {
 			retval = process_message_in_queue(
 					 msg_queue, p_ipi_msg, idx_msg);
 		} else {
-			pr_notice("idx %d/%d, enable %d",
+			pr_no_notice("idx %d/%d, enable %d",
 				  msg_queue->idx_r,
 				  idx_msg,
 				  msg_queue->enable);
@@ -439,17 +439,17 @@ int send_message_ack(
 
 	/* error handling */
 	if (handler == NULL) {
-		pr_info("handler == NULL!! return");
+		pr_no_info("handler == NULL!! return");
 		return -1;
 	}
 
 	if (p_ipi_msg_ack == NULL) {
-		pr_notice("p_ipi_msg_ack = NULL, return");
+		pr_no_notice("p_ipi_msg_ack = NULL, return");
 		return -1;
 	}
 
 	if (p_ipi_msg_ack->ack_type != AUDIO_IPI_MSG_ACK_BACK) {
-		pr_notice("ack_type %d invalid, return",
+		pr_no_notice("ack_type %d invalid, return",
 			  p_ipi_msg_ack->ack_type);
 		return -1;
 	}
@@ -460,7 +460,7 @@ int send_message_ack(
 	task_scene = msg_queue->task_scene;
 
 	if (msg_queue->enable == false) {
-		pr_info("queue disabled!! return");
+		pr_no_info("queue disabled!! return");
 		return -1;
 	}
 
@@ -507,17 +507,17 @@ static int process_message_in_queue(
 
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return -1;
 	}
 
 	if (p_ipi_msg == NULL) {
-		pr_info("p_ipi_msg == NULL!! return");
+		pr_no_info("p_ipi_msg == NULL!! return");
 		return -1;
 	}
 
 	if (check_idx_msg_valid(msg_queue, idx_msg) == false) {
-		pr_info("idx_msg %d is invalid!! return", idx_msg);
+		pr_no_info("idx_msg %d is invalid!! return", idx_msg);
 		return -1;
 	}
 
@@ -575,7 +575,7 @@ static int process_message_in_queue(
 				break;
 			}
 			if (retval > 0) {
-				pr_notice("wait ret %d, enable %d",
+				pr_no_notice("wait ret %d, enable %d",
 					  retval,
 					  msg_queue->enable);
 				DUMP_IPI_MSG("ack signal?", p_ipi_msg);
@@ -597,11 +597,11 @@ static int process_message_in_queue(
 					     k_restart_sleep_max_us);
 				continue;
 			}
-			pr_notice("retval: %d not handle!!", retval);
+			pr_no_notice("retval: %d not handle!!", retval);
 		}
 
 		if (timeout_flag == true)
-			pr_info("wait %u x %u ms, retval %d",
+			pr_no_info("wait %u x %u ms, retval %d",
 				k_wait_ms, try_cnt, retval);
 
 		if (retval == -ENODEV)
@@ -676,7 +676,7 @@ inline bool check_queue_empty(const struct msg_queue_t *msg_queue)
 {
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return false;
 	}
 
@@ -690,7 +690,7 @@ inline bool check_queue_to_be_full(const struct msg_queue_t *msg_queue)
 
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return false;
 	}
 
@@ -707,7 +707,7 @@ inline uint8_t get_num_messages_in_queue(const struct msg_queue_t *msg_queue)
 {
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return 0;
 	}
 
@@ -724,18 +724,18 @@ inline int push_msg(struct msg_queue_t *msg_queue, struct ipi_msg_t *p_ipi_msg)
 
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return -1;
 	}
 
 	if (p_ipi_msg == NULL) {
-		pr_notice("p_ipi_msg = NULL, return");
+		pr_no_notice("p_ipi_msg = NULL, return");
 		return -1;
 	}
 
 	/* check queue full */
 	if (check_queue_to_be_full(msg_queue) == true) {
-		pr_info("task: %d, queue overflow, idx_w = %d, idx_r = %d",
+		pr_no_info("task: %d, queue overflow, idx_w = %d, idx_r = %d",
 			p_ipi_msg->task_scene,
 			msg_queue->idx_w,
 			msg_queue->idx_r);
@@ -768,19 +768,19 @@ inline int pop_msg(struct msg_queue_t *msg_queue, struct ipi_msg_t **pp_ipi_msg)
 {
 	/* error handling */
 	if (msg_queue == NULL) {
-		pr_info("msg_queue == NULL!! return");
+		pr_no_info("msg_queue == NULL!! return");
 		return -1;
 	}
 
 	if (pp_ipi_msg == NULL) {
-		pr_info("pp_ipi_msg == NULL!! return");
+		pr_no_info("pp_ipi_msg == NULL!! return");
 		return -1;
 	}
 
 
 	/* check queue empty */
 	if (check_queue_empty(msg_queue) == true) {
-		pr_info("task: %d, queue is empty, idx_r = %d",
+		pr_no_info("task: %d, queue is empty, idx_r = %d",
 			msg_queue->task_scene, msg_queue->idx_r);
 		return -1;
 	}
@@ -793,7 +793,7 @@ inline int pop_msg(struct msg_queue_t *msg_queue, struct ipi_msg_t **pp_ipi_msg)
 
 
 	if (*pp_ipi_msg == NULL) {
-		pr_notice("p_ipi_msg = NULL, return");
+		pr_no_notice("p_ipi_msg = NULL, return");
 		return -1;
 	}
 

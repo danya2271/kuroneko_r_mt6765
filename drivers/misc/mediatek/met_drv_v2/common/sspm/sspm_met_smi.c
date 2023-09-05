@@ -218,7 +218,7 @@ static int met_smi_create(struct kobject *parent)
 do { \
 	ret = sysfs_create_file(kobj_smi, &attr_name##_attr.attr); \
 	if (ret != 0) { \
-		pr_debug("Failed to create " #attr_name " in sysfs\n"); \
+		pr_no_debug("Failed to create " #attr_name " in sysfs\n"); \
 		return ret; \
 	} \
 } while (0)
@@ -226,7 +226,7 @@ do { \
 	int	j;
 	int	ret = 0;
 
-	pr_debug(" met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n");
+	pr_no_debug(" met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n  met_smi_create\n");
 
 	/* Init. */
 
@@ -381,7 +381,7 @@ static int smi_process_argument(const char *__restrict__ arg, int len)
 		idx++;
 	}
 
-	pr_debug("===SMI process argu: args[0](%d), args[1](%d), args[2](%d), args[3](%d), args[4](%d)\n",
+	pr_no_debug("===SMI process argu: args[0](%d), args[1](%d), args[2](%d), args[3](%d), args[4](%d)\n",
 		args[0],
 		args[1],
 		args[2],
@@ -468,7 +468,7 @@ static int smi_process_argument(const char *__restrict__ arg, int len)
 	smi_conf_array[array_index].desttype = smi_conf.desttype;
 	smi_conf_array[array_index].reqtype = smi_conf.reqtype;
 
-	pr_debug("===SMI process argu Master[%d]: parallel_mode = %d, master = %d, port0 = %d, port1 = %d, port2 = %d, port3 = %d, rwtype0 = %d, rwtype1 = %d, rwtype2 = %d, rwtype3 = %d, desttype = %d, reqtype(larb) = %d, reqtype(comm) = %d\n",
+	pr_no_debug("===SMI process argu Master[%d]: parallel_mode = %d, master = %d, port0 = %d, port1 = %d, port2 = %d, port3 = %d, rwtype0 = %d, rwtype1 = %d, rwtype2 = %d, rwtype3 = %d, desttype = %d, reqtype(larb) = %d, reqtype(comm) = %d\n",
 		args[0],
 		parallel_mode,
 		smi_conf.master,

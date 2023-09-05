@@ -133,7 +133,7 @@ static int met_switch_create_subfs(struct kobject *parent)
 	/* register tracepoints */
 #if 0
 	if (MET_REGISTER_TRACE(sched_switch)) {
-		pr_debug("can not register callback of sched_switch\n");
+		pr_no_debug("can not register callback of sched_switch\n");
 		return -ENODEV;
 	}
 #else
@@ -142,13 +142,13 @@ static int met_switch_create_subfs(struct kobject *parent)
 #endif
 #ifdef CPU_IDLE_TRIGGER
 	if (MET_REGISTER_TRACE(cpu_idle)) {
-		pr_debug("can not register callback of irq_handler_entry\n");
+		pr_no_debug("can not register callback of irq_handler_entry\n");
 		return -ENODEV;
 	}
 #endif
 #ifdef IRQ_TRIGGER
 	if (MET_REGISTER_TRACE(irq_handler_entry)) {
-		pr_debug("can not register callback of irq_handler_entry\n");
+		pr_no_debug("can not register callback of irq_handler_entry\n");
 		return -ENODEV;
 	}
 #endif
@@ -161,7 +161,7 @@ static int met_switch_create_subfs(struct kobject *parent)
 	kobj_cpu = parent;
 	ret = sysfs_create_file(kobj_cpu, &default_on_attr.attr);
 	if (ret != 0) {
-		pr_debug("Failed to create default_on in sysfs\n");
+		pr_no_debug("Failed to create default_on in sysfs\n");
 		return -1;
 	}
 #endif

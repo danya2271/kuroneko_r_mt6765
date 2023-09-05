@@ -203,7 +203,7 @@ int musb_otg_send_event(struct usb_otg *otg, enum usb_otg_event event)
 	    module_name, kobject_get_path(&otg->phy->dev->kobj, GFP_KERNEL));
 	ret = kobject_uevent_env(&otg->phy->dev->kobj, KOBJ_CHANGE, envp);
 	if (ret < 0)
-		pr_info("uevent sending failed with ret = %d\n", ret);
+		pr_no_info("uevent sending failed with ret = %d\n", ret);
 	return ret;
 }
 EXPORT_SYMBOL_GPL(musb_otg_send_event);
@@ -730,7 +730,7 @@ static irqreturn_t musb_stage0_irq(struct musb *musb, u8 int_usb, u8 devctl)
 				MUSB_DEV_MODE(musb);
 				break;
 			default:
-				pr_notice("bogus %s RESUME (%s)\n", "host",
+				pr_no_notice("bogus %s RESUME (%s)\n", "host",
 					otg_state_string
 						(musb->xceiv->otg->state));
 			}
@@ -759,7 +759,7 @@ static irqreturn_t musb_stage0_irq(struct musb *musb, u8 int_usb, u8 devctl)
 				musb->int_usb &= ~MUSB_INTR_SUSPEND;
 				break;
 			default:
-				pr_notice("bogus %s RESUME (%s)\n",
+				pr_no_notice("bogus %s RESUME (%s)\n",
 					"peripheral", otg_state_string
 					(musb->xceiv->otg->state));
 			}
@@ -1220,7 +1220,7 @@ b_host:
 			 */
 			if (ep->dwWaitFrame >= frame) {
 				ep->dwWaitFrame = 0;
-				pr_debug("SOF --> periodic TX%s on %d\n",
+				pr_no_debug("SOF --> periodic TX%s on %d\n",
 					 ep->tx_channel ? " DMA" : "", epnum);
 				if (!ep->tx_channel)
 					musb_h_tx_start(musb, epnum);
@@ -1408,7 +1408,7 @@ void musb_flush_dma_transcation(struct musb *musb)
 						MUSB_HSDMA_CONTROL));
 
 		if (val)
-			pr_notice("CH%d(0x%x)=0x%x\n", i,
+			pr_no_notice("CH%d(0x%x)=0x%x\n", i,
 						MUSB_HSDMA_CHANNEL_OFFSET((i),
 						MUSB_HSDMA_CONTROL), val);
 
@@ -1422,7 +1422,7 @@ void musb_flush_dma_transcation(struct musb *musb)
 		val = musb_readl(musb->mregs, MUSB_HSDMA_CHANNEL_OFFSET((i),
 					MUSB_HSDMA_CONTROL));
 		if (val)
-			pr_notice("CH%d(0x%x)=0x%x\n", i,
+			pr_no_notice("CH%d(0x%x)=0x%x\n", i,
 				MUSB_HSDMA_CHANNEL_OFFSET((i),
 				MUSB_HSDMA_CONTROL), val);
 	}
@@ -1496,7 +1496,7 @@ static void musb_shutdown(struct platform_device *pdev)
 	#endif
 
 	DBG(0, "shut down\n");
-	pr_debug("%s, start to shut down\n", __func__);
+	pr_no_debug("%s, start to shut down\n", __func__);
 	pm_runtime_get_sync(musb->controller);
 
 	musb_platform_prepare_clk(musb);
@@ -1510,12 +1510,12 @@ static void musb_shutdown(struct platform_device *pdev)
 	musb_flush_dma_transcation(musb);
 
 	musb_platform_disable(musb);
-	pr_notice("%s, musb has already disable\n", __func__);
+	pr_no_notice("%s, musb has already disable\n", __func__);
 	#ifndef CONFIG_MTK_MUSB_PORT0_LOWPOWER_MODE
 	spin_unlock_irqrestore(&musb->lock, flags);
 	#endif
 	if (musb->is_host) {
-		pr_notice("%s, line %d.\n", __func__, __LINE__);
+		pr_no_notice("%s, line %d.\n", __func__, __LINE__);
 		musb_platform_set_vbus(mtk_musb, 0);
 		usb_remove_hcd(musb_to_hcd(musb));
 	}
@@ -1823,7 +1823,7 @@ static int ep_config_from_hw(struct musb *musb)
 	}
 
 	if (!musb->bulk_ep) {
-		pr_debug("%s: missing bulk\n", musb_driver_name);
+		pr_no_debug("%s: missing bulk\n", musb_driver_name);
 		return -EINVAL;
 	}
 
@@ -1883,7 +1883,7 @@ static int musb_core_init(u16 musb_type, struct musb *musb)
 		musb->is_multipoint = 0;
 		type = "";
 #ifndef	CONFIG_USB_OTG_BLACKLIST_HUB
-		pr_notice("%s: kernel must blacklist external hubs\n"
+		pr_no_notice("%s: kernel must blacklist external hubs\n"
 			, musb_driver_name);
 #endif
 	}
@@ -1897,7 +1897,7 @@ static int musb_core_init(u16 musb_type, struct musb *musb)
 	if (ret < 0)
 		return -EINVAL;
 
-	pr_debug("%s: %sHDRC RTL version %s %s\n"
+	pr_no_debug("%s: %sHDRC RTL version %s %s\n"
 		, musb_driver_name, type, aRevision, aDate);
 
 	/* configure ep0 */
@@ -2308,7 +2308,7 @@ static struct musb *allocate_instance(struct device *dev,
 
 	/*BUG_ON(musb->config->num_eps > MUSB_C_NUM_EPS);*/
 	if (musb->config->num_eps > MUSB_C_NUM_EPS) {
-		pr_notice("[MUSB]EPS ERROR HERE\n");
+		pr_no_notice("[MUSB]EPS ERROR HERE\n");
 		return NULL;
 	}
 
@@ -2432,7 +2432,7 @@ static int musb_init_controller
 	/* resolve CR ALPS01823375 */
 
 	status = musb_platform_init(musb);
-	/* pr_info("musb init controller after allocate\n"); */
+	/* pr_no_info("musb init controller after allocate\n"); */
 #ifdef CONFIG_OF
 	musb->xceiv->io_priv = ctrlp;
 #endif
@@ -2484,16 +2484,16 @@ static int musb_init_controller
 	vbus_polling_tsk =
 		kthread_create(polling_vbus_value, NULL, "polling_vbus_thread");
 	if (IS_ERR(vbus_polling_tsk)) {
-		pr_debug("create polling vbus thread failed!\n");
+		pr_no_debug("create polling vbus thread failed!\n");
 		vbus_polling_tsk = NULL;
 	} else {
-		pr_debug("create polling vbus thread OK!\n");
+		pr_no_debug("create polling vbus thread OK!\n");
 	}
 #endif
 
 	/* Init IRQ workqueue before request_irq */
 	INIT_WORK(&musb->irq_work, musb_irq_work);
-	pr_debug("musb irq number: %d", musb->nIrq);
+	pr_no_debug("musb irq number: %d", musb->nIrq);
 
 #if defined(CONFIG_USBIF_COMPLIANCE)
 	INIT_WORK(&musb->otg_notifier_work, musb_otg_notifier_work);
@@ -2634,7 +2634,7 @@ static int musb_probe(struct platform_device *pdev)
 	if (irq <= 0)
 		return -ENODEV;
 
-	pr_info("%s mac=0x%lx, phy=0x%lx, irq=%d\n"
+	pr_no_info("%s mac=0x%lx, phy=0x%lx, irq=%d\n"
 		, __func__, (unsigned long)base, (unsigned long)pbase, irq);
 	status = musb_init_controller(dev, irq, base, pbase);
 
@@ -2892,7 +2892,7 @@ static int __init musb_init(void)
 	if (usb_disabled())
 		return 0;
 
-	pr_info("%s: version " MUSB_VERSION ", ?dma?, otg (peripheral+host)\n"
+	pr_no_info("%s: version " MUSB_VERSION ", ?dma?, otg (peripheral+host)\n"
 		, musb_driver_name);
 	return platform_driver_register(&musb_driver);
 }

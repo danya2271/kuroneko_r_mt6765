@@ -214,7 +214,7 @@ static int __init mtk_mmdvfs_wrapper_init(void)
 
 	status = platform_driver_register(&mmdvfs_wrapper_drv);
 	if (status) {
-		pr_notice(
+		pr_no_notice(
 			"Failed to register MMDVFS wrapper driver(%d)\n",
 			status);
 		return -ENODEV;
@@ -238,7 +238,7 @@ int set_test_freq(const char *val, const struct kernel_param *kp)
 	s32 ret;
 
 	ret = sscanf(val, "%u %u", &clk_id, &freq);
-	pr_info("%s: ret:%d input:%s", __func__, ret, val);
+	pr_no_info("%s: ret:%d input:%s", __func__, ret, val);
 	if (ret != 2 || clk_id >= CLK_MAX_NUM)
 		return -EINVAL;
 

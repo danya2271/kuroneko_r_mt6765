@@ -153,10 +153,6 @@ void mtk_wcn_consys_gps_memory_reserve(void)
 	gGpsEmiPhyBase = gConEmiPhyBase + GPS_EMI_BASE_ADDR_OFFSET;
 	#endif
 #endif
-	if (gGpsEmiPhyBase)
-		GPS_DBG("Con:0x%zx, Gps:0x%zx\n", (size_t)gConEmiPhyBase, (size_t)gGpsEmiPhyBase);
-	else
-		GPS_DBG("memblock fail\n");
 }
 
 INT32 gps_emi_mpu_set_region_protection(INT32 region)

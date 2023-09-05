@@ -58,7 +58,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "[" DEV_NAME "]" fmt
 
-#define SMIDBG(string, args...) pr_debug(string, ##args)
+#define SMIDBG(string, args...) pr_no_debug(string, ##args)
 
 #if IS_ENABLED(CONFIG_MTK_CMDQ)
 #include <cmdq_helper_ext.h>
@@ -66,15 +66,15 @@
 	do { \
 		if (cmdq != 0) \
 			cmdq_core_save_first_dump(string, ##args); \
-		pr_info(string, ##args); \
+		pr_no_info(string, ##args); \
 	} while (0)
 #else
-#define SMIWRN(cmdq, string, args...) pr_info(string, ##args)
+#define SMIWRN(cmdq, string, args...) pr_no_info(string, ##args)
 #endif
 
 #define SMIERR(string, args...) \
 	do { \
-		pr_notice(string, ##args); \
+		pr_no_notice(string, ##args); \
 		aee_kernel_warning(DEV_NAME, string, ##args); \
 	} while (0)
 

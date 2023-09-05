@@ -187,7 +187,7 @@ int mt_usb_get_vbus_status(struct musb *musb)
 		DBG(0, "VBUS error, devctl=%x, power=%d\n",
 			musb_readb(musb->mregs, MUSB_DEVCTL),
 			musb->power);
-	pr_debug("vbus ready = %d\n", ret);
+	pr_no_debug("vbus ready = %d\n", ret);
 	return ret;
 #endif
 }
@@ -337,7 +337,7 @@ static int otg_tcp_notifier_call(struct notifier_block *nb,
 				noti->typec_state.new_state ==
 					TYPEC_ATTACHED_NORP_SRC) &&
 				in_uart_mode) {
-			pr_info("%s USB cable plugged-in in UART mode.
+			pr_no_info("%s USB cable plugged-in in UART mode.
 					Switch to USB mode.\n", __func__);
 			usb_phy_switch_to_usb();
 #endif

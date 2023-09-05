@@ -110,7 +110,7 @@ int sensor_attr_deregister(struct sensor_attr_t *misc)
 /*
  *static char *sensor_attr_devnode(struct device *dev, umode_t *mode)
  *{
- *	pr_debug("sensor_attr: name :%s\n", dev_name(dev));
+ *	pr_no_debug("sensor_attr: name :%s\n", dev_name(dev));
  *	return kasprintf(GFP_KERNEL, "sensor/%s", dev_name(dev));
  *}
  */
@@ -132,7 +132,7 @@ int __init sensor_attr_init(void)
 	return 0;
 
 fail_printk:
-	pr_err("unable to get major %d for misc devices\n", sensor_attr_major);
+	pr_no_err("unable to get major %d for misc devices\n", sensor_attr_major);
 	class_destroy(sensor_attr_class);
 	return err;
 }

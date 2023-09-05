@@ -152,11 +152,11 @@ static void met_event_start(void)
 		if (!event_gpu_enabled)
 			break;
 		if (MET_REGISTER_TRACE(gpu_sched_switch)) {
-			pr_debug("can not register callback of gpu_sched_switch\n");
+			pr_no_debug("can not register callback of gpu_sched_switch\n");
 			break;
 		}
 		if (MET_REGISTER_TRACE(gpu_job_enqueue)) {
-			pr_debug("can not register callback of gpu_job_enqueue\n");
+			pr_no_debug("can not register callback of gpu_job_enqueue\n");
 			MET_UNREGISTER_TRACE(gpu_sched_switch);
 			break;
 		}
@@ -171,7 +171,7 @@ static void met_event_start(void)
 			break;
 		if (met_export_api_symbol->met_reg_event_power)
 			if (met_export_api_symbol->met_reg_event_power()) {
-				pr_debug("can not register callback of met_reg_event_power\n");
+				pr_no_debug("can not register callback of met_reg_event_power\n");
 				break;
 			}
 		event_power_registered = 1;

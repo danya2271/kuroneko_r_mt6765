@@ -277,12 +277,12 @@ static void lbat_timer_func(struct timer_list *t)
 		deb_prd = user->lv_deb_prd;
 		deb_times = user->lv_deb_times;
 	} else {
-		pr_notice("[%s] LBAT debounce threshold not match\n", __func__);
+		pr_no_notice("[%s] LBAT debounce threshold not match\n", __func__);
 		return;
 	}
 	user->deb_cnt++;
 #if LBAT_SERVICE_DBG
-	pr_info("[%s] name:%s, thd_volt:%d, de-bounce times:%d\n",
+	pr_no_info("[%s] name:%s, thd_volt:%d, de-bounce times:%d\n",
 		__func__, user->name,
 		user->deb_thd_ptr->thd_volt, user->deb_cnt);
 #endif
@@ -373,12 +373,12 @@ struct lbat_user *lbat_user_register(const char *name, unsigned int hv_thd_volt,
 	user->callback = callback;
 	lbat_user_init_timer(user);
 	INIT_WORK(&user->deb_work, lbat_deb_handler);
-	pr_info("[%s] hv=%d, lv1=%d, lv2=%d\n",
+	pr_no_info("[%s] hv=%d, lv1=%d, lv2=%d\n",
 		__func__, hv_thd_volt, lv1_thd_volt, lv2_thd_volt);
 	ret = lbat_user_update(user);
 out:
 	if (ret) {
-		pr_notice("[%s] error ret=%d\n", __func__, ret);
+		pr_no_notice("[%s] error ret=%d\n", __func__, ret);
 		if (ret == -EINVAL)
 			kfree(user);
 		return ERR_PTR(ret);
@@ -431,7 +431,7 @@ static irqreturn_t bat_h_int_handler(int irq, void *data)
 		return IRQ_NONE;
 	}
 	mutex_lock(&lbat_mutex);
-	pr_info("[%s] cur_thd_volt=%d\n", __func__, cur_hv_ptr->thd_volt);
+	pr_no_info("[%s] cur_thd_volt=%d\n", __func__, cur_hv_ptr->thd_volt);
 
 	user = cur_hv_ptr->user;
 	list_del_init(&cur_hv_ptr->list);
@@ -471,7 +471,7 @@ static irqreturn_t bat_l_int_handler(int irq, void *data)
 		return IRQ_NONE;
 	}
 	mutex_lock(&lbat_mutex);
-	pr_info("[%s] cur_thd_volt=%d\n", __func__, cur_lv_ptr->thd_volt);
+	pr_no_info("[%s] cur_thd_volt=%d\n", __func__, cur_lv_ptr->thd_volt);
 
 	user = cur_lv_ptr->user;
 	list_del_init(&cur_lv_ptr->list);

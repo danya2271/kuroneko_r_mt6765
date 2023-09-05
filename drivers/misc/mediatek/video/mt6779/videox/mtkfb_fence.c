@@ -39,15 +39,15 @@ static bool mtkfb_fence_on;
 #define MTKFB_FENCE_LOG(fmt, arg...)				\
 	do {							\
 		if (mtkfb_fence_on)				\
-			pr_debug("DISP/fence " fmt, ##arg);	\
+			pr_no_debug("DISP/fence " fmt, ##arg);	\
 	} while (0)
 
-#define MTKFB_FENCE_LOG_D(fmt, arg...) pr_debug("DISP/fence " fmt, ##arg)
+#define MTKFB_FENCE_LOG_D(fmt, arg...) pr_no_debug("DISP/fence " fmt, ##arg)
 
 #define MTKFB_FENCE_LOG_D_IF(con, fmt, arg...)			\
 	do {							\
 		if (con)					\
-			pr_debug("DISP/fence " fmt, ##arg);	\
+			pr_no_debug("DISP/fence " fmt, ##arg);	\
 	} while (0)
 
 void mtkfb_fence_log_enable(bool enable)
@@ -63,7 +63,7 @@ void mtkfb_fence_log_enable(bool enable)
 	do {							\
 		if (expr)					\
 			break;					\
-		pr_debug("FENCE ASSERT FAILED %s, %d\n",	\
+		pr_no_debug("FENCE ASSERT FAILED %s, %d\n",	\
 			 __FILE__, __LINE__);			\
 		aee_kernel_exception("fence", "[FENCE]error:",	\
 				     __FILE__, __LINE__);	\
@@ -75,7 +75,7 @@ void mtkfb_fence_log_enable(bool enable)
 	do {							\
 		if (expr)					\
 			break;					\
-		pr_debug("FENCE ASSERT FAILED %s, %d\n",	\
+		pr_no_debug("FENCE ASSERT FAILED %s, %d\n",	\
 			 __FILE__, __LINE__);			\
 	} while (0)
 #  endif
@@ -114,7 +114,7 @@ static struct disp_session_sync_info
 	if (DISP_SESSION_TYPE(session) != DISP_SESSION_PRIMARY &&
 	    DISP_SESSION_TYPE(session) != DISP_SESSION_MEMORY &&
 	    DISP_SESSION_TYPE(session) != DISP_SESSION_EXTERNAL) {
-		DISP_PR_ERR("invalid session id:0x%08x\n", session);
+		DISP_pr_no_err("invalid session id:0x%08x\n", session);
 		return NULL;
 	}
 
@@ -265,7 +265,7 @@ static struct disp_session_sync_info
 
 done:
 	if (!s_info)
-		DISP_PR_ERR("wrong session_id:%d(0x%08x)\n", session, session);
+		DISP_pr_no_err("wrong session_id:%d(0x%08x)\n", session, session);
 
 	mutex_unlock(&_disp_fence_mutex);
 	return s_info;
@@ -294,25 +294,25 @@ struct disp_sync_info *__get_layer_sync_info(unsigned int session,
 	mutex_lock(&_disp_fence_mutex);
 
 	if (!s_info) {
-		DISP_PR_ERR("cannot get sync info for session_id:0x%08x\n",
+		DISP_pr_no_err("cannot get sync info for session_id:0x%08x\n",
 			    session);
 		goto done;
 	}
 
 	if (timeline_id >= ARRAY_SIZE(s_info->session_layer_info)) {
-		DISP_PR_ERR("invalid timeline_id:%d\n", timeline_id);
+		DISP_pr_no_err("invalid timeline_id:%d\n", timeline_id);
 		goto done;
 	}
 
 	l_info = &(s_info->session_layer_info[timeline_id]);
 	if (!l_info) {
-		DISP_PR_ERR("cannot get sync info for timeline_id:%d\n",
+		DISP_pr_no_err("cannot get sync info for timeline_id:%d\n",
 			    timeline_id);
 		goto done;
 	}
 
 	if (l_info->inited == 0) {
-		DISP_PR_ERR("layer_info[%d] not inited\n", timeline_id);
+		DISP_pr_no_err("layer_info[%d] not inited\n", timeline_id);
 		goto done;
 	}
 
@@ -340,7 +340,7 @@ static void mtkfb_ion_init(void)
 		ion_client = ion_client_create(g_ion_device, "display");
 
 	if (!ion_client) {
-		pr_err("create ion client failed!\n");
+		pr_no_err("create ion client failed!\n");
 		return;
 	}
 
@@ -366,16 +366,16 @@ static struct ion_handle *mtkfb_ion_import_handle(struct ion_client *client,
 	}
 
 	if (!ion_client) {
-		pr_err("invalid ion client!\n");
+		pr_no_err("invalid ion client!\n");
 		return handle;
 	}
 	if (fd == MTK_FB_INVALID_ION_FD) {
-		pr_err("invalid ion fd!\n");
+		pr_no_err("invalid ion fd!\n");
 		return handle;
 	}
 	handle = ion_import_dma_buf_fd(client, fd);
 	if (IS_ERR(handle)) {
-		pr_err("import ion handle failed!\n");
+		pr_no_err("import ion handle failed!\n");
 		return NULL;
 	}
 
@@ -388,7 +388,7 @@ static void mtkfb_ion_free_handle(struct ion_client *client,
 				  struct ion_handle *handle)
 {
 	if (!ion_client) {
-		pr_err("invalid ion client!\n");
+		pr_no_err("invalid ion client!\n");
 		return;
 	}
 	if (!handle)
@@ -408,7 +408,7 @@ static size_t mtkfb_ion_phys_mmu_addr(struct ion_client *client,
 	struct ion_mm_data mm_data;
 
 	if (!ion_client) {
-		pr_err("invalid ion client!\n");
+		pr_no_err("invalid ion client!\n");
 		return 0;
 	}
 	if (!handle)
@@ -422,7 +422,7 @@ static size_t mtkfb_ion_phys_mmu_addr(struct ion_client *client,
 
 	if (ion_kernel_ioctl(ion_client, ION_CMD_MULTIMEDIA,
 		(unsigned long)&mm_data))
-		pr_info("[DISP][ION] ERR: get iova failed!\n");
+		pr_no_info("[DISP][ION] ERR: get iova failed!\n");
 	*mva = (unsigned int)mm_data.get_phys_param.phy_addr;
 	size = (size_t)mm_data.get_phys_param.len;
 
@@ -449,7 +449,7 @@ static void mtkfb_ion_cache_flush(struct ion_client *client,
 	sys_data.cache_sync_param.sync_type = ION_CACHE_INVALID_BY_RANGE;
 
 	if (ion_kernel_ioctl(client, ION_CMD_SYSTEM, (unsigned long)&sys_data))
-		pr_err("ion cache flush failed!\n");
+		pr_no_err("ion cache flush failed!\n");
 
 	ion_unmap_kernel(client, handle);
 }
@@ -471,14 +471,14 @@ static struct dma_buf *mtkfb_aosp_ion_import_handle(int fd)
 		return handle;
 	}
 	if (fd == MTK_FB_INVALID_ION_FD) {
-		DISP_PR_ERR("%s:%d error! hnd:0x%p, fd:%d\n",
+		DISP_pr_no_err("%s:%d error! hnd:0x%p, fd:%d\n",
 				__func__, __LINE__,
 				handle, fd);
 		return handle;
 	}
 	handle = dma_buf_get(fd);
 	if (IS_ERR(handle)) {
-		DISP_PR_ERR("%s:%d error! hnd:0x%p, fd:%d\n",
+		DISP_pr_no_err("%s:%d error! hnd:0x%p, fd:%d\n",
 				__func__, __LINE__,
 				handle, fd);
 		return NULL;
@@ -528,7 +528,7 @@ static size_t mtkfb_aosp_ion_phys_mmu_addr(struct dma_buf *handle,
 	attach = dma_buf_attach(handle, dev);
 	if (IS_ERR(attach)) {
 		ret = -1;
-		DISP_PR_ERR("%s:%d error! hnd:0x%p, dev:0x%p\n",
+		DISP_pr_no_err("%s:%d error! hnd:0x%p, dev:0x%p\n",
 				__func__, __LINE__,
 				handle, dev);
 		goto fail_put;
@@ -536,7 +536,7 @@ static size_t mtkfb_aosp_ion_phys_mmu_addr(struct dma_buf *handle,
 	sgt = dma_buf_map_attachment(attach, DMA_BIDIRECTIONAL);
 	if (IS_ERR(sgt)) {
 		ret = -1;
-		DISP_PR_ERR("%s:%d error! hnd:0x%p, dev:0x%p\n",
+		DISP_pr_no_err("%s:%d error! hnd:0x%p, dev:0x%p\n",
 				__func__, __LINE__,
 				handle, dev);
 		goto fail_detach;
@@ -569,7 +569,7 @@ unsigned int mtkfb_query_buf_mva(unsigned int session_id, unsigned int layer_id,
 
 	l_info = __get_layer_sync_info(session_id, layer_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return 0;
 	}
 
@@ -598,7 +598,7 @@ unsigned int mtkfb_query_buf_mva(unsigned int session_id, unsigned int layer_id,
 		n += scnprintf(msg + n, len - n,
 			       "timeline_idx=%d, cur_idx=%d!\n",
 			       l_info->timeline_idx, l_info->cur_idx);
-		DISP_PR_ERR("%s", msg);
+		DISP_pr_no_err("%s", msg);
 		return mva;
 	}
 
@@ -641,7 +641,7 @@ unsigned int mtkfb_query_buf_va(unsigned int session_id, unsigned int layer_id,
 
 	l_info = &(s_info->session_layer_info[layer_id]);
 	if (layer_id != l_info->layer_id) {
-		pr_err("wrong layer id %d(rt), %d(in)!\n",
+		pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 		       l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -668,7 +668,7 @@ unsigned int mtkfb_query_buf_va(unsigned int session_id, unsigned int layer_id,
 			       "fence_idx=%d, timeline_idx=%d, cur_idx=%d!\n",
 			       l_info->fence_idx, l_info->timeline_idx,
 			       l_info->cur_idx);
-		pr_err("%s", msg);
+		pr_no_err("%s", msg);
 	}
 
 	return va;
@@ -695,7 +695,7 @@ mtkfb_query_release_idx(unsigned int session_id, unsigned int layer_id,
 	l_info = &(s_info->session_layer_info[layer_id]);
 
 	if (layer_id != l_info->layer_id) {
-		pr_err("wrong layer id %d(rt), %d(in)!\n",
+		pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -759,7 +759,7 @@ mtkfb_update_buf_ticket(unsigned int session_id, unsigned int layer_id,
 		n += scnprintf(msg + n, len - n,
 			      "mtkfb_query_buf_mva layer_id %d !(Warning)\n",
 			      layer_id);
-		DISP_PR_ERR("%s", msg);
+		DISP_pr_no_err("%s", msg);
 		return mva;
 	}
 
@@ -774,7 +774,7 @@ mtkfb_update_buf_ticket(unsigned int session_id, unsigned int layer_id,
 	l_info = &(s_info->session_layer_info[layer_id]);
 
 	if (layer_id != l_info->layer_id) {
-		DISP_PR_ERR("wrong layer id %d(rt), %d(in)!\n",
+		DISP_pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			    l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -810,7 +810,7 @@ unsigned int mtkfb_query_idx_by_ticket(unsigned int session_id,
 	l_info = &(s_info->session_layer_info[layer_id]);
 
 	if (layer_id != l_info->layer_id) {
-		DISP_PR_ERR("wrong layer id %d(rt), %d(in)!\n",
+		DISP_pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			    l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -834,7 +834,7 @@ bool mtkfb_update_buf_info_new(unsigned int session_id, unsigned int mva_offset,
 	unsigned int mva = 0x0;
 
 	if (buf_info->layer_id >= DISP_SESSION_TIMELINE_COUNT) {
-		DISP_PR_INFO("layer_id %d !(Warning)\n", buf_info->layer_id);
+		DISP_pr_no_info("layer_id %d !(Warning)\n", buf_info->layer_id);
 		return mva;
 	}
 
@@ -848,7 +848,7 @@ bool mtkfb_update_buf_info_new(unsigned int session_id, unsigned int mva_offset,
 
 	l_info = &(s_info->session_layer_info[buf_info->layer_id]);
 	if (buf_info->layer_id != l_info->layer_id) {
-		DISP_PR_ERR("wrong layer id %d(rt), %d(in)!\n",
+		DISP_pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			    l_info->layer_id, buf_info->layer_id);
 		return 0;
 	}
@@ -888,7 +888,7 @@ unsigned int mtkfb_query_buf_info(unsigned int session_id,
 
 	l_info = &(s_info->session_layer_info[layer_id]);
 	if (layer_id != l_info->layer_id) {
-		DISP_PR_ERR("wrong layer id %d(rt), %d(in)!\n",
+		DISP_pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			    l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -919,7 +919,7 @@ bool mtkfb_update_buf_info(unsigned int session_id, unsigned int layer_id,
 
 	l_info = __get_layer_sync_info(session_id, layer_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return ret;
 	}
 
@@ -959,7 +959,7 @@ mtkfb_query_frm_seq_by_addr(unsigned int session_id, unsigned int layer_id,
 	l_info = &(s_info->session_layer_info[layer_id]);
 
 	if (layer_id != l_info->layer_id) {
-		pr_err("wrong layer id %d(rt), %d(in)!\n",
+		pr_no_err("wrong layer id %d(rt), %d(in)!\n",
 			l_info->layer_id, layer_id);
 		return 0;
 	}
@@ -1072,7 +1072,7 @@ void mtkfb_release_fence(unsigned int session, unsigned int layer_id,
 
 	l_info = __get_layer_sync_info(session, layer_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return;
 	}
 
@@ -1150,7 +1150,7 @@ void mtkfb_release_fence(unsigned int session, unsigned int layer_id,
 	mutex_unlock(&l_info->sync_lock);
 
 	if (ion_release_count != num_fence)
-		DISP_PR_ERR("released %d fence but %d ion handle freed\n",
+		DISP_pr_no_err("released %d fence but %d ion handle freed\n",
 			    num_fence, ion_release_count);
 }
 
@@ -1161,7 +1161,7 @@ void mtkfb_release_layer_fence(unsigned int session_id, unsigned int layer_id)
 
 	l_info = __get_layer_sync_info(session_id, layer_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return;
 	}
 
@@ -1183,7 +1183,7 @@ void mtkfb_release_session_fence(unsigned int session)
 
 	s_info = __get_session_sync_info(session);
 	if (!s_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return;
 	}
 
@@ -1202,7 +1202,7 @@ void mtkfb_release_present_fence(unsigned int session_id,
 	timeline_id = disp_sync_get_present_timeline_id();
 	layer_info = __get_layer_sync_info(session_id, timeline_id);
 	if (layer_info == NULL) {
-		DISP_PR_INFO("%s, layer_info is null\n", __func__);
+		DISP_pr_no_info("%s, layer_info is null\n", __func__);
 		return;
 	}
 
@@ -1259,7 +1259,7 @@ int disp_sync_get_cached_layer_info(unsigned int session_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_idx);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return 0;
 	}
 
@@ -1288,7 +1288,7 @@ int disp_sync_put_cached_layer_info(unsigned int session_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_idx);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return -1;
 	}
 
@@ -1332,7 +1332,7 @@ disp_sync_convert_input_to_fence_layer_info_v2(struct FENCE_LAYER_INFO *dst,
 			int layer_en, unsigned long mva)
 {
 	if (!dst) {
-		pr_err("%s error!\n", __func__);
+		pr_no_err("%s error!\n", __func__);
 		return -1;
 	}
 
@@ -1356,7 +1356,7 @@ int disp_sync_put_cached_layer_info_v2(unsigned int session_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_idx);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return -1;
 	}
 
@@ -1403,7 +1403,7 @@ static int prepare_ion_buf(struct device *dev,
 		fence_buf->size = mtkfb_ion_phys_mmu_addr(ion_client, handle,
 							  &mva);
 	else
-		DISP_PR_ERR("can't import ion handle for fd:%d\n",
+		DISP_pr_no_err("can't import ion handle for fd:%d\n",
 			    disp_buf->ion_fd);
 
 #else
@@ -1418,7 +1418,7 @@ static int prepare_ion_buf(struct device *dev,
 							  &iova);
 		mva = (unsigned int)iova;
 	} else
-		DISP_PR_ERR("can't import ion handle for fd:%d\n",
+		DISP_pr_no_err("can't import ion handle for fd:%d\n",
 			    disp_buf->ion_fd);
 
 	/* enable_mva(); */
@@ -1451,7 +1451,7 @@ struct mtkfb_fence_buf_info
 	struct disp_session_sync_info *s_info = NULL;
 
 	if (!disp_buf) {
-		DISP_PR_ERR("Prepare Buffer, buf is NULL!\n");
+		DISP_pr_no_err("Prepare Buffer, buf is NULL!\n");
 		return NULL;
 	}
 
@@ -1467,12 +1467,12 @@ struct mtkfb_fence_buf_info
 
 	l_info = __get_layer_sync_info(session, timeline_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return NULL;
 	}
 
 	if (!l_info->inited) {
-		DISP_PR_ERR("sync info not inited,sess_id=0x%08x|layer_id=%d\n",
+		DISP_pr_no_err("sync info not inited,sess_id=0x%08x|layer_id=%d\n",
 			    session, timeline_id);
 		return NULL;
 	}
@@ -1490,7 +1490,7 @@ struct mtkfb_fence_buf_info
 	ret = fence_create(l_info->timeline, &data);
 	if (ret) {
 		/* Does this really happen? */
-		DISP_PR_ERR("%s%d,layer%d create Fence Object failed!\n",
+		DISP_pr_no_err("%s%d,layer%d create Fence Object failed!\n",
 			    disp_session_type_str(session),
 			    DISP_SESSION_DEV(session), timeline_id);
 	}
@@ -1544,7 +1544,7 @@ int disp_sync_find_fence_idx_by_addr(unsigned int session_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return -1;
 	}
 
@@ -1589,7 +1589,7 @@ int disp_sync_find_fence_idx_by_addr(unsigned int session_id,
 					n += scnprintf(msg + n, len - n,
 						       "mva0x%08lx,sz0x%08x\n",
 						       buf->mva, buf->size);
-					DISP_PR_ERR("%s", msg);
+					DISP_pr_no_err("%s", msg);
 				}
 
 				idx = buf->idx - 1;
@@ -1620,7 +1620,7 @@ unsigned int disp_sync_buf_cache_sync(unsigned int session_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_id);
 	if (!l_info) {
-		DISP_PR_ERR("layer_info is null\n");
+		DISP_pr_no_err("layer_info is null\n");
 		return -1;
 	}
 
@@ -1646,10 +1646,10 @@ unsigned int disp_sync_buf_cache_sync(unsigned int session_id,
 	}
 	mutex_unlock(&l_info->sync_lock);
 	if (!found) {
-		DISP_PR_ERR("find no buf for cache sync,sess:%s%d,layer=%d,\n",
+		DISP_pr_no_err("find no buf for cache sync,sess:%s%d,layer=%d,\n",
 			    disp_session_type_str(session_id),
 			    DISP_SESSION_DEV(session_id), timeline_id);
-		DISP_PR_ERR("idx=%d,fence_idx=%d,timeline_idx=%d,cur_idx=%d\n",
+		DISP_pr_no_err("idx=%d,fence_idx=%d,timeline_idx=%d,cur_idx=%d\n",
 			    idx, l_info->fence_idx, l_info->timeline_idx,
 			    l_info->cur_idx);
 	}
@@ -1670,7 +1670,7 @@ __disp_sync_query_buf_info(unsigned int session_id, unsigned int timeline_id,
 
 	l_info = __get_layer_sync_info(session_id, timeline_id);
 	if (!l_info || !mva || !size) {
-		DISP_PR_ERR("layer_info is null,layer_info=%p,mva=%p,size=%p\n",
+		DISP_pr_no_err("layer_info is null,layer_info=%p,mva=%p,size=%p\n",
 			    l_info, mva, size);
 		return -EINVAL;
 	}
@@ -1705,10 +1705,10 @@ __disp_sync_query_buf_info(unsigned int session_id, unsigned int timeline_id,
 				timeline_id, fence_idx, buf->mva);
 	} else {
 		/* FIXME: non-ion buffer need cache sync here? */
-		DISP_PR_ERR("cannot find this buf, session:%s%d, layer=%d,\n",
+		DISP_pr_no_err("cannot find this buf, session:%s%d, layer=%d,\n",
 			    disp_session_type_str(session_id),
 			    DISP_SESSION_DEV(session_id), timeline_id);
-		DISP_PR_ERR("idx=%d,fence_idx=%d,timeline_idx=%d,cur_idx=%d\n",
+		DISP_pr_no_err("idx=%d,fence_idx=%d,timeline_idx=%d,cur_idx=%d\n",
 			    fence_idx, l_info->fence_idx, l_info->timeline_idx,
 			    l_info->cur_idx);
 	}

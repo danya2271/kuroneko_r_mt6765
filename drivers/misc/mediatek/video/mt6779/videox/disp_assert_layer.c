@@ -134,7 +134,7 @@ EXPORT_SYMBOL(DAL_SetScreenColor);
 
 enum DAL_STATUS DAL_Init(unsigned long layerVA, unsigned long layerPA)
 {
-	pr_debug("%s, layerVA=0x%lx, layerPA=0x%lx\n",
+	pr_no_debug("%s, layerVA=0x%lx, layerPA=0x%lx\n",
 		 __func__, layerVA, layerPA);
 
 	dal_fb_addr = (void *)layerVA;
@@ -215,7 +215,7 @@ enum DAL_STATUS DAL_Clean(void)
 	static int dal_clean_cnt;
 	struct MFC_CONTEXT *ctxt = (struct MFC_CONTEXT *)mfc_handle;
 
-	DISP_PR_INFO("[MTKFB_DAL] %s\n", __func__);
+	DISP_pr_no_info("[MTKFB_DAL] %s\n", __func__);
 	if (!mfc_handle)
 		return DAL_STATUS_NOT_READY;
 
@@ -223,7 +223,7 @@ enum DAL_STATUS DAL_Clean(void)
 			 0, 0);
 	DAL_LOCK();
 	if (MFC_ResetCursor(mfc_handle) != MFC_STATUS_OK) {
-		DISP_PR_INFO("mfc_handle = %p\n", mfc_handle);
+		DISP_pr_no_info("mfc_handle = %p\n", mfc_handle);
 		goto end;
 	}
 	ctxt->screen_color = 0;
@@ -232,7 +232,7 @@ enum DAL_STATUS DAL_Clean(void)
 	if (isAEEEnabled == 1) {
 		_show_dal_layer(0);
 		/* DAL disable, switch UI layer to default layer 3 */
-		DISP_PR_INFO("[DDP] isAEEEnabled from 1 to 0, %d\n",
+		DISP_pr_no_info("[DDP] isAEEEnabled from 1 to 0, %d\n",
 			     dal_clean_cnt++);
 		isAEEEnabled = 0;
 		/* restore UI layer to DEFAULT_UI_LAYER */
@@ -285,7 +285,7 @@ enum DAL_STATUS DAL_Printf(const char *fmt, ...)
 			       "ASSERT_LAYER=%d, dal_fb_pa 0x%lx\n",
 			       primary_display_get_option("ASSERT_LAYER"),
 			       dal_fb_pa);
-		DISP_PR_INFO("%s", msg);
+		DISP_pr_no_info("%s", msg);
 
 		isAEEEnabled = 1;
 		/* default_ui_layer config to changed_ui_layer */
@@ -299,7 +299,7 @@ enum DAL_STATUS DAL_Printf(const char *fmt, ...)
 	va_end(args);
 
 	if (i >= ARRAY_SIZE(dal_print_buffer)) {
-		DISP_PR_INFO("[AEE]dal print buffer no space, i=%d\n", i);
+		DISP_pr_no_info("[AEE]dal print buffer no space, i=%d\n", i);
 		return -1;
 	}
 	DAL_CHECK_MFC_RET(MFC_Print(mfc_handle, dal_print_buffer));
@@ -355,7 +355,7 @@ EXPORT_SYMBOL(DAL_SetColor);
 
 enum DAL_STATUS DAL_Clean(void)
 {
-	DISP_PR_INFO("[MTKFB_DAL] %s is not implemented\n", __func__);
+	DISP_pr_no_info("[MTKFB_DAL] %s is not implemented\n", __func__);
 	return DAL_STATUS_OK;
 }
 EXPORT_SYMBOL(DAL_Clean);
@@ -363,7 +363,7 @@ EXPORT_SYMBOL(DAL_Clean);
 enum DAL_STATUS DAL_Printf(const char *fmt, ...)
 {
 	NOT_REFERENCED(fmt);
-	DISP_PR_INFO("[MTKFB_DAL] %s is not implemented\n", __func__);
+	DISP_pr_no_info("[MTKFB_DAL] %s is not implemented\n", __func__);
 	return DAL_STATUS_OK;
 }
 EXPORT_SYMBOL(DAL_Printf);

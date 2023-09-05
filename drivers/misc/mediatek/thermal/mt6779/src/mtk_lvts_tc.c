@@ -221,19 +221,19 @@ static void lvts_set_tc_trigger_hw_protect(
 	void __attribute__ ((weak))
 mt_ptp_lock(unsigned long *flags)
 {
-	pr_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
+	pr_no_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
 }
 
 	void __attribute__ ((weak))
 mt_ptp_unlock(unsigned long *flags)
 {
-	pr_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
+	pr_no_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
 }
 
 	int __attribute__ ((weak))
 get_wd_api(struct wd_api **obj)
 {
-	pr_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
+	pr_no_err("[Power/CPU_Thermal]%s doesn't exist\n", __func__);
 	return -1;
 }
 
@@ -1329,7 +1329,7 @@ void lvts_sodi3_release_thermal_controller(void)
 	}
 
 	if (cnt == 50)
-		pr_notice("Err: SODI3 failed to wait LVTS TC %d idle, LVTSMSRCTL1[10,7,0] = %d,%d,%d\n",
+		pr_no_notice("Err: SODI3 failed to wait LVTS TC %d idle, LVTSMSRCTL1[10,7,0] = %d,%d,%d\n",
 				cnt + 1, (temp >> 16),
 				((temp & _BIT_(2)) >> 2),
 				((temp & _BIT_(1)) >> 1),

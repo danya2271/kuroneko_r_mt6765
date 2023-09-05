@@ -1365,7 +1365,7 @@ static inline int check_length_of_para(
 		break;
 	}
 	if (ret != 0)
-		pr_err(
+		pr_no_err(
 			"check length failed, feature ctrl id = %d, length = %d\n",
 			FeatureId,
 			length);
@@ -2919,16 +2919,16 @@ static ssize_t imgsensor_name_show(struct device *dev, struct device_attribute *
 		if(src_name != NULL)
 		{
 			len = strlen(src_name);
-			pr_info("[chenxy] len:%d\n", len);
+			pr_no_info("[chenxy] len:%d\n", len);
 			if(len > 0){
 				for(i=0; ((i < 4) && (src_name != NULL)); i++) {
-					pr_info("[chenxy] src_name :%s \n", src_name);
+					pr_no_info("[chenxy] src_name :%s \n", src_name);
 					dst[i] = strsep(&src_name, ";");
-					pr_info("[chenxy] dst[%d]:%s \n", i,  dst[i]);
+					pr_no_info("[chenxy] dst[%d]:%s \n", i,  dst[i]);
 				}
 			}
 
-		pr_info("[chenxy] i:%d\n", i);
+		pr_no_info("[chenxy] i:%d\n", i);
 		    for(j=0; j < i; j++) {
 			if(!strcmp("hynix_hi1337_i", dst[j]) || !strcmp("hynix_hi1337_ii", dst[j]) || !strcmp("hynix_hi1337_iii", dst[j]) || !strcmp("hynix_hi1337_iiii", dst[j])){
 			    num1 = sprintf(buf, "WIDE=%s\n", dst[j]);
@@ -2962,7 +2962,7 @@ static ssize_t imgsensor_name_show(struct device *dev, struct device_attribute *
 		    }
 
 		} else {
-			pr_info("[chenxy] imgsensorname is NULL");
+			pr_no_info("[chenxy] imgsensorname is NULL");
 		}
 	}
 	ret = strlen(buf) + 1;
@@ -3029,12 +3029,12 @@ static int __init imgsensor_init(void)
 #endif
 	sensor_kobject = kobject_create_and_add("android_camera", NULL);
 	if (sensor_kobject == NULL) {
-		pr_info("[imgsensor_init]Big error: sensor_kobject_create_sysfs_ failed\n");
+		pr_no_info("[imgsensor_init]Big error: sensor_kobject_create_sysfs_ failed\n");
 	} else {
 		ret = sysfs_create_file(sensor_kobject, &dev_attr_sensor.attr);
 		ret = sysfs_create_file(sensor_kobject, &dev_attr_sensorid.attr);
 		if (ret) {
-			pr_info("%s failed \n", __func__);
+			pr_no_info("%s failed \n", __func__);
 			kobject_del(sensor_kobject);
 		}
 	}

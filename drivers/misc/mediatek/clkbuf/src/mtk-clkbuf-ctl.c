@@ -33,7 +33,7 @@ static struct clk_buf *clk_buf_core;
 static bool _clk_buf_check(void)
 {
 	if (!clk_buf_core || !clk_buf_core->ops) {
-		pr_err("Not register operand yet\n");
+		pr_no_err("Not register operand yet\n");
 		return false;
 	}
 
@@ -157,7 +157,7 @@ static int mtk_clkbuf_probe(struct platform_device *pdev)
 			pdev->name, ret);
 
 	if (!clk_buf_core || !clk_buf_core->ops) {
-		pr_err("Not register operand yet\n");
+		pr_no_err("Not register operand yet\n");
 		return -ENODEV;
 	}
 
@@ -166,13 +166,13 @@ static int mtk_clkbuf_probe(struct platform_device *pdev)
 
 	ret = clk_buf_core->ops->dts_init(pdev);
 	if (ret) {
-		pr_err("%s: failed due to chip DTS failed\n", __func__);
+		pr_no_err("%s: failed due to chip DTS failed\n", __func__);
 		return ret;
 	}
 
 	ret = clk_buf_core->ops->fs_init();
 	if (ret) {
-		pr_err("%s: failed due to file operation failed\n", __func__);
+		pr_no_err("%s: failed due to file operation failed\n", __func__);
 		return ret;
 	}
 

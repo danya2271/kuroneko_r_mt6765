@@ -270,13 +270,13 @@ int mtk_cpuidle_register_driver(void)
 
 	ret = cpuidle_register_driver(&mtk_cpuidle_driver_set_0);
 	if (ret) {
-		pr_info("Failed to register cpuidle driver 0\n");
+		pr_no_info("Failed to register cpuidle driver 0\n");
 		return ret;
 	}
 
 	ret = cpuidle_register_driver(&mtk_cpuidle_driver_set_1);
 	if (ret) {
-		pr_info("Failed to register cpuidle driver 1\n");
+		pr_no_info("Failed to register cpuidle driver 1\n");
 		return ret;
 	}
 

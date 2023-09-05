@@ -99,7 +99,7 @@ void adsp_A_register_notify(struct notifier_block *nb)
 	mutex_lock(&adsp_A_notify_mutex);
 	blocking_notifier_chain_register(&adsp_A_notifier_list, nb);
 
-	pr_debug("[ADSP] register adsp A notify callback..\n");
+	pr_no_debug("[ADSP] register adsp A notify callback..\n");
 
 	if (is_adsp_ready(ADSP_A_ID) == 1)
 		nb->notifier_call(nb, ADSP_EVENT_READY, NULL);
@@ -170,7 +170,7 @@ void adsp_sys_reset_ws(struct work_struct *ws)
 	/* wake lock AP*/
 	__pm_stay_awake(adsp_reset_lock);
 
-	pr_info("%s(): adsp_aed_reset\n", __func__);
+	pr_no_info("%s(): adsp_aed_reset\n", __func__);
 	if (adsp_reset_type == ADSP_RESET_TYPE_AWAKE)
 		adsp_aed_reset(EXCEP_KERNEL, ADSP_A_ID);
 	else
@@ -179,10 +179,10 @@ void adsp_sys_reset_ws(struct work_struct *ws)
 	/*wait adsp ee finished in 10s*/
 	if (wait_for_completion_interruptible_timeout(&adsp_sys_reset_cp,
 					msecs_to_jiffies(10000)) == 0) {
-		pr_info("%s: adsp ee time out\n", __func__);
+		pr_no_info("%s: adsp ee time out\n", __func__);
 		/*timeout check adsp status again*/
 		if (is_adsp_ready(ADSP_A_ID) != -1) {
-			pr_info("%s: adsp reset state incorrect\n", __func__);
+			pr_no_info("%s: adsp reset state incorrect\n", __func__);
 			return;
 		}
 	}
@@ -201,7 +201,7 @@ void adsp_sys_reset_ws(struct work_struct *ws)
 	}
 
 	if (adsp_reset_type == ADSP_RESET_TYPE_AWAKE)
-		pr_info("%s(): adsp awake fail, wait system back\n", __func__);
+		pr_no_info("%s(): adsp awake fail, wait system back\n", __func__);
 
 	/* make sure adsp is in idle state */
 	while (--timeout) {
@@ -218,7 +218,7 @@ void adsp_sys_reset_ws(struct work_struct *ws)
 
 	if (!adsp_reset_flag) {
 		if (readl(ADSP_DBG_PEND_CNT))
-			pr_info("%s(): failed, bypass and wait\n", __func__);
+			pr_no_info("%s(): failed, bypass and wait\n", __func__);
 		else
 			adsp_reset();
 	}
@@ -286,7 +286,7 @@ static void adsp_timeout_ws(struct work_struct *ws)
 	if (adsp_timeout_times < 5) {
 		adsp_timeout_times++;
 		__pm_relax(adsp_reset_lock);
-		pr_debug("%s(): cnt (%d)\n", __func__, adsp_timeout_times);
+		pr_no_debug("%s(): cnt (%d)\n", __func__, adsp_timeout_times);
 		adsp_send_reset_wq(ADSP_RESET_TYPE_AWAKE, ADSP_A_ID);
 	} else
 		WARN_ON(1); /* reboot */
@@ -326,7 +326,7 @@ void adsp_A_ready_ipi_handler(int id, void *data, unsigned int len)
 	}
 	/* verify adsp image size */
 	if (adsp_image_size != ADSP_A_TCM_SIZE) {
-		pr_info("[ADSP]image size ERROR! AP=0x%zx,ADSP=0x%x\n",
+		pr_no_info("[ADSP]image size ERROR! AP=0x%zx,ADSP=0x%x\n",
 			ADSP_A_TCM_SIZE, adsp_image_size);
 		WARN_ON(1);
 	}
@@ -364,7 +364,7 @@ uint32_t adsp_power_on(uint32_t enable)
 		adsp_set_clock_freq(CLK_DEFAULT_26M_CK);
 		adsp_disable_clock();
 	}
-	pr_debug("-%s (%x)\n", __func__, enable);
+	pr_no_debug("-%s (%x)\n", __func__, enable);
 	return 1;
 }
 
@@ -604,10 +604,10 @@ void adsp_update_memory_protect_info(void)
 void adsp_enable_dsp_clk(bool enable)
 {
 	if (enable) {
-		pr_debug("enable dsp clk\n");
+		pr_no_debug("enable dsp clk\n");
 		adsp_enable_clock();
 	} else {
-		pr_debug("disable dsp clk\n");
+		pr_no_debug("disable dsp clk\n");
 		adsp_disable_clock();
 	}
 }
@@ -685,12 +685,12 @@ static int adsp_user_event_notify(struct notifier_block *nb,
 		ret = kobject_uevent(&dev->kobj, KOBJ_ONLINE);
 		break;
 	default:
-		pr_info("%s, ignore event %lu", __func__, event);
+		pr_no_info("%s, ignore event %lu", __func__, event);
 		break;
 	}
 
 	if (ret)
-		pr_info("%s, uevent(%lu) fail, ret %d", __func__, event, ret);
+		pr_no_info("%s, uevent(%lu) fail, ret %d", __func__, event, ret);
 
 	return NOTIFY_OK;
 }
@@ -810,13 +810,13 @@ static int __init adsp_init(void)
 	adsp_enable = 0;
 	ret = platform_driver_register(&mtk_adsp_device);
 	if (unlikely(ret != 0)) {
-		pr_err("[ADSP] platform driver register fail\n");
+		pr_no_err("[ADSP] platform driver register fail\n");
 		return ret;
 	}
 
 	ret = misc_register(&adsp_device);
 	if (unlikely(ret != 0)) {
-		pr_err("[ADSP] misc register failed\n");
+		pr_no_err("[ADSP] misc register failed\n");
 		return ret;
 	}
 
@@ -831,7 +831,7 @@ static int __init adsp_module_init(void)
 	int ret = 0;
 
 	if (!adsp_enable) {
-		pr_info("[adsp] core 0 is not enabled\n");
+		pr_no_info("[adsp] core 0 is not enabled\n");
 		return ret;
 	}
 
@@ -885,11 +885,11 @@ static int __init adsp_module_init(void)
 	queue_delayed_work(adsp_workqueue, &adsp_timeout_work,
 			jiffies + ADSP_READY_TIMEOUT);
 #endif
-	pr_debug("[ADSP] driver_init_done\n");
+	pr_no_debug("[ADSP] driver_init_done\n");
 	return ret;
 
 ERROR:
-	pr_info("%s fail ret(%d)\n", __func__, ret);
+	pr_no_info("%s fail ret(%d)\n", __func__, ret);
 	return ret;
 }
 
@@ -916,7 +916,7 @@ static void __exit adsp_exit(void)
 static int __init adsp_late_init(void)
 {
 	adsp_set_emimpu_region();
-	pr_info("[ADSP] late_init done\n");
+	pr_no_info("[ADSP] late_init done\n");
 	return 0;
 }
 

@@ -49,7 +49,7 @@
 /****************************   Modify end    *******************************************/
 #define GC8034_DEBUG
 #if defined(GC8034_DEBUG)
-#define LOG_INF(format, args...)    pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...)    pr_no_debug(PFX "[%s] " format, __func__, ##args)
 #else
 #define LOG_INF(format, args...)
 #endif
@@ -1447,7 +1447,7 @@ static void slim_video_setting(void)
 
 static kal_uint32 streaming_control(kal_bool enable)
 {
-	pr_info("streaming_enable(0=Standby,1=streaming): %d\n", enable);
+	pr_no_info("streaming_enable(0=Standby,1=streaming): %d\n", enable);
 	if (enable) {
 		write_cmos_sensor(0xfe, 0x00);
 		write_cmos_sensor(0x3f, 0x91);
@@ -2158,11 +2158,11 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM
 						  (MUINT32 *)(uintptr_t)(*(feature_data + 1)));
 		break;
 	case SENSOR_FEATURE_SET_STREAMING_SUSPEND:
-		pr_info("SENSOR_FEATURE_SET_STREAMING_SUSPEND\n");
+		pr_no_info("SENSOR_FEATURE_SET_STREAMING_SUSPEND\n");
 		streaming_control(KAL_FALSE);
 		break;
 	case SENSOR_FEATURE_SET_STREAMING_RESUME:
-		pr_info("SENSOR_FEATURE_SET_STREAMING_RESUME, shutter:%llu\n",
+		pr_no_info("SENSOR_FEATURE_SET_STREAMING_RESUME, shutter:%llu\n",
 				*feature_data);
 		if (*feature_data != 0)
 			set_shutter(*feature_data);

@@ -431,7 +431,7 @@ static int mboot_params_check_header(struct mboot_params_buffer *buffer)
 		|| buffer->off_pl + ALIGN(buffer->sz_pl, 64) != buffer->off_lpl
 		|| buffer->off_lk + ALIGN(buffer->sz_lk, 64)
 			!= buffer->off_llk) {
-		pr_notice("mboot_params: ilegal header.");
+		pr_no_notice("mboot_params: ilegal header.");
 		return -1;
 	} else
 		return 0;
@@ -440,21 +440,21 @@ static int mboot_params_check_header(struct mboot_params_buffer *buffer)
 static void aee_rr_show_in_log(void)
 {
 	if (mboot_params_check_header(mboot_params_old))
-		pr_notice("mboot_params: no valid data\n");
+		pr_no_notice("mboot_params: no valid data\n");
 	else {
-		pr_notice("pmic & external buck: 0x%x\n",
+		pr_no_notice("pmic & external buck: 0x%x\n",
 				LAST_RRR_VAL(pmic_ext_buck));
-		pr_notice("mboot_params: CPU notifier status: %d, %d, 0x%llx, %llu\n",
+		pr_no_notice("mboot_params: CPU notifier status: %d, %d, 0x%llx, %llu\n",
 				LAST_RRR_VAL(hotplug_cpu_event),
 				LAST_RRR_VAL(hotplug_cb_index),
 				LAST_RRR_VAL(hotplug_cb_fp),
 				LAST_RRR_VAL(hotplug_cb_times));
-		pr_notice("mboot_params: CPU HPS footprint: %llu, 0x%x, %d, %llu\n",
+		pr_no_notice("mboot_params: CPU HPS footprint: %llu, 0x%x, %d, %llu\n",
 				LAST_RRR_VAL(hps_cb_enter_times),
 				LAST_RRR_VAL(hps_cb_cpu_bitmask),
 				LAST_RRR_VAL(hps_cb_footprint),
 				LAST_RRR_VAL(hps_cb_fp_times));
-		pr_notice("mboot_params: last init function: 0x%lx\n",
+		pr_no_notice("mboot_params: last init function: 0x%lx\n",
 				LAST_RRR_VAL(last_init_func));
 	}
 }
@@ -485,7 +485,7 @@ static int __init mboot_params_init(struct mboot_params_buffer *buffer,
 		old_wdt_status = LAST_RRPL_BUF_VAL(buffer, wdt_status);
 	}
 	if (mboot_params_save_old(buffer, buffer_size))
-		pr_notice("mboot_params: failed to creat old buffer\n");
+		pr_no_notice("mboot_params: failed to creat old buffer\n");
 	if (buffer->sz_lk != 0 && buffer->off_lk + ALIGN(buffer->sz_lk, 64) ==
 			buffer->off_llk)
 		buffer->off_linux = buffer->off_llk + ALIGN(buffer->sz_lk, 64);
@@ -502,7 +502,7 @@ static int __init mboot_params_init(struct mboot_params_buffer *buffer,
 	mboot_params_init_val();
 	mbootlog_buf = kzalloc(SZ_128K, GFP_KERNEL);
 	if (!mbootlog_buf)
-		pr_notice("mboot_params: mbootlog_buf(SYS_LAST_KMSG) invalid");
+		pr_no_notice("mboot_params: mbootlog_buf(SYS_LAST_KMSG) invalid");
 	mboot_params_init_done = 1;
 	return 0;
 }
@@ -528,7 +528,7 @@ static int __init dt_get_mboot_params(struct mem_desc_t *data)
 						    "ram_console",
 						    NULL);
 	if (sram) {
-		pr_notice("mboot_params:[DT] 0x%x@0x%x, 0x%x(0x%x)\n",
+		pr_no_notice("mboot_params:[DT] 0x%x@0x%x, 0x%x(0x%x)\n",
 				sram->size, sram->start,
 				sram->def_type, sram->offset);
 		*data = *sram;
@@ -567,7 +567,7 @@ struct mboot_params_memory_info {
 
 static void mboot_params_fatal(const char *str)
 {
-	pr_info("mboot_params: FATAL:%s\n", str);
+	pr_no_info("mboot_params: FATAL:%s\n", str);
 }
 
 extern void mrdump_mini_set_addr_size(unsigned int addr, unsigned int size);
@@ -585,7 +585,7 @@ static void mboot_params_parse_memory_info(struct mem_desc_t *sram,
 		memory_info = ioremap_wc((sram->start + sram->offset),
 				sizeof(struct mboot_params_memory_info));
 		if (!memory_info) {
-			pr_info("mboot_params: [DT] offset:0x%x not map\n",
+			pr_no_info("mboot_params: [DT] offset:0x%x not map\n",
 					sram->offset);
 			mboot_params_fatal("memory_info not map");
 			return;
@@ -601,21 +601,21 @@ static void mboot_params_parse_memory_info(struct mem_desc_t *sram,
 
 		if (magic1 == MEM_MAGIC1 && magic2 == MEM_MAGIC2) {
 			mrdump_mini_set_addr_size(mini_addr, mini_size);
-			pr_notice("mboot_params: [DT] 0x%x@0x%x\n",
+			pr_no_notice("mboot_params: [DT] 0x%x@0x%x\n",
 					mini_size, mini_addr);
 			memcpy(p_memory_info, memory_info,
 				sizeof(struct mboot_params_memory_info));
 		} else {
-			pr_info("[DT] self (0x%x@0x%x)-0x%x@0x%x\n",
+			pr_no_info("[DT] self (0x%x@0x%x)-0x%x@0x%x\n",
 					magic1, magic2,
 					dram_size, dram_addr);
-			pr_info("[DT] mrdump 0x%x@0x%x-0x%x@0x%x\n",
+			pr_no_info("[DT] mrdump 0x%x@0x%x-0x%x@0x%x\n",
 					mini_size, mini_addr,
 					mrdump_size, mrdump_addr);
 			mboot_params_fatal("illegal magic number");
 		}
 	} else {
-		pr_info("mboot_params: [DT] offset:0x%x illegal\n",
+		pr_no_info("mboot_params: [DT] offset:0x%x illegal\n",
 			sram->offset);
 		mboot_params_fatal("illegal offset");
 	}
@@ -633,12 +633,12 @@ static int __init mboot_params_early_init(void)
 	if (dt_get_mboot_params(&sram)) {
 		mboot_params_parse_memory_info(&sram, &memory_info_data);
 		if (sram.def_type == MBOOT_PARAMS_DEF_SRAM) {
-			pr_info("mboot_params: using sram:0x%x\n", sram.start);
+			pr_no_info("mboot_params: using sram:0x%x\n", sram.start);
 			start = sram.start;
 			size  = sram.size;
 			bufp = ioremap_wc(sram.start, sram.size);
 		} else {
-			pr_info("mboot_params: unknown def type:%d\n",
+			pr_no_info("mboot_params: unknown def type:%d\n",
 					sram.def_type);
 			mboot_params_fatal("unknown def type");
 			return -ENODEV;
@@ -655,12 +655,12 @@ static int __init mboot_params_early_init(void)
 		if (bufp) {
 			buffer_size = size;
 			if (bufp->sig != REBOOT_REASON_SIG) {
-				pr_info("mboot_params: illegal sig:0x%x\n",
+				pr_no_info("mboot_params: illegal sig:0x%x\n",
 						bufp->sig);
 				mboot_params_fatal("illegal sig");
 			}
 		} else {
-			pr_info("mboot_params: ioremap failed, [0x%x, 0x%x]\n",
+			pr_no_info("mboot_params: ioremap failed, [0x%x, 0x%x]\n",
 					start, size);
 			mboot_params_fatal("ioremap failed");
 		}
@@ -668,10 +668,10 @@ static int __init mboot_params_early_init(void)
 		mboot_params_fatal("OF not found property in dts");
 	}
 #else
-	pr_notice("mboot_params: CONFIG_OF not set\n")
+	pr_no_notice("mboot_params: CONFIG_OF not set\n")
 #endif
 
-	pr_notice("mboot_params: buffer start: 0x%lx, size: 0x%zx\n",
+	pr_no_notice("mboot_params: buffer start: 0x%lx, size: 0x%zx\n",
 			(unsigned long)bufp, buffer_size);
 	mtk_cpu_num = num_present_cpus();
 	if (bufp)
@@ -1589,7 +1589,7 @@ void aee_rr_rec_etc_mode(u8 val)
 int aee_rr_init_thermal_temp(int num)
 {
 	if (num < 0 || num >= THERMAL_RESERVED_TZS) {
-		pr_notice("%s num= %d\n", __func__, num);
+		pr_no_notice("%s num= %d\n", __func__, num);
 		return -1;
 	}
 
@@ -1603,7 +1603,7 @@ int aee_rr_rec_thermal_temp(int index, s8 val)
 		return -1;
 
 	if (index < 0 || index >= thermal_num) {
-		pr_notice("%s index= %d\n", __func__, index);
+		pr_no_notice("%s index= %d\n", __func__, index);
 		return -1;
 	}
 
@@ -1701,7 +1701,7 @@ void aee_rr_rec_ocp_target_limit(int id, u32 val)
 		return;
 
 	if (id < 0 || id >= 4) {
-		pr_notice("%s: Invalid ocp id = %d\n", __func__, id);
+		pr_no_notice("%s: Invalid ocp id = %d\n", __func__, id);
 		return;
 	}
 

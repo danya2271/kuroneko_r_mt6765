@@ -50,23 +50,23 @@ static int systracker_probe(struct platform_device *pdev)
 	void __iomem *infra_ao_base;
 	unsigned int bus_dbg_con_offset;
 
-	pr_notice("systracker probe\n");
+	pr_no_notice("systracker probe\n");
 
 	/* iomap register */
 	BUS_DBG_BASE = of_iomap(pdev->dev.of_node, 0);
 	if (!BUS_DBG_BASE) {
-		pr_notice("can't of_iomap for systracker!!\n");
+		pr_no_notice("can't of_iomap for systracker!!\n");
 		return -ENOMEM;
 	}
 
-	pr_notice("of_iomap for systracker @ 0x%p\n", BUS_DBG_BASE);
+	pr_no_notice("of_iomap for systracker @ 0x%p\n", BUS_DBG_BASE);
 
 	infra_ao_base = of_iomap(pdev->dev.of_node, 1);
 	if (!infra_ao_base) {
-		pr_notice("[systracker] bus_dbg_con is in infra\n");
+		pr_no_notice("[systracker] bus_dbg_con is in infra\n");
 		BUS_DBG_INFRA_BASE = BUS_DBG_BASE;
 	} else {
-		pr_notice("[systracker] bus_dbg_con is in infra_ao\n");
+		pr_no_notice("[systracker] bus_dbg_con is in infra_ao\n");
 		if (of_property_read_u32
 			(pdev->dev.of_node, "mediatek,bus_dbg_con_offset",
 			&bus_dbg_con_offset)) {
@@ -288,7 +288,7 @@ int systracker_test_init(void)
 	if (mt_systracker_drv.systracker_test_init)
 		return mt_systracker_drv.systracker_test_init();
 
-	pr_notice("mt_systracker_drv.%s is NULL", __func__);
+	pr_no_notice("mt_systracker_drv.%s is NULL", __func__);
 	return -1;
 }
 
@@ -493,7 +493,7 @@ static ssize_t set_wp_address_store
 	int ret;
 
 	ret = kstrtou32(buf, 16, &value);
-	pr_debug("watch address:0x%x, ret = %d\n", value, ret);
+	pr_no_debug("watch address:0x%x, ret = %d\n", value, ret);
 	systracker_set_watchpoint_addr(value);
 
 	return count;
@@ -507,7 +507,7 @@ static ssize_t tracker_entry_dump_show
 	int ret = tracker_dump(buf);
 
 	if (ret == -1)
-		pr_notice("Dump error in %s, %d\n", __func__, __LINE__);
+		pr_no_notice("Dump error in %s, %d\n", __func__, __LINE__);
 
 	return strlen(buf);
 }
@@ -580,9 +580,9 @@ static int __init systracker_init(void)
 	ret |= driver_create_file(&mt_systracker_drv.driver.driver,
 		&driver_attr_tracker_last_status);
 	if (ret)
-		pr_notice("Fail to create systracker_drv sysfs files");
+		pr_no_notice("Fail to create systracker_drv sysfs files");
 
-	pr_debug("systracker init done\n");
+	pr_no_debug("systracker init done\n");
 
 	return 0;
 }

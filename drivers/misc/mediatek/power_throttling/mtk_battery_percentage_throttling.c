@@ -40,22 +40,22 @@ void register_battery_percent_notify(
 	BATTERY_PERCENT_PRIO prio_val)
 {
 	if (prio_val >= BPCB_MAX_NUM || prio_val < 0) {
-		pr_info("[%s] prio_val=%d, out of boundary\n",
+		pr_no_info("[%s] prio_val=%d, out of boundary\n",
 			__func__, prio_val);
 		return;
 	}
 
 	bpcb_tb[prio_val].bpcb = bp_cb;
-	pr_info("[%s] prio_val=%d\n", __func__, prio_val);
+	pr_no_info("[%s] prio_val=%d\n", __func__, prio_val);
 
 	if ((g_battery_percent_stop == 0) && (g_battery_percent_level == 1)) {
 #if !IS_ENABLED(CONFIG_MTK_PBM)
-		pr_info("[%s] level 1 happen\n", __func__);
+		pr_no_info("[%s] level 1 happen\n", __func__);
 		if (bp_cb != NULL)
 			bp_cb(BATTERY_PERCENT_LEVEL_1);
 #else
 		if (prio_val == BATTERY_PERCENT_PRIO_FLASHLIGHT) {
-			pr_info("[%s at DLPT] level l happen\n", __func__);
+			pr_no_info("[%s at DLPT] level l happen\n", __func__);
 			if (bp_cb != NULL)
 				bp_cb(BATTERY_PERCENT_LEVEL_1);
 		}
@@ -69,14 +69,14 @@ void exec_battery_percent_callback(
 	int i = 0;
 
 	if (g_battery_percent_stop == 1) {
-		pr_info("[%s] g_battery_percent_stop=%d\n"
+		pr_no_info("[%s] g_battery_percent_stop=%d\n"
 			, __func__, g_battery_percent_stop);
 	} else {
 #if !IS_ENABLED(CONFIG_MTK_PBM)
 		for (i = 0; i < BPCB_MAX_NUM; i++) {
 			if (bpcb_tb[i].bpcb != NULL) {
 				bpcb_tb[i].bpcb(battery_percent_level);
-				pr_info("[%s] prio_val=%d, battery_percent_level=%d\n"
+				pr_no_info("[%s] prio_val=%d, battery_percent_level=%d\n"
 					, __func__, i, battery_percent_level);
 			}
 		}
@@ -84,10 +84,10 @@ void exec_battery_percent_callback(
 		if (bpcb_tb[BATTERY_PERCENT_PRIO_FLASHLIGHT].bpcb != NULL) {
 			bpcb_tb[BATTERY_PERCENT_PRIO_FLASHLIGHT].bpcb(
 				battery_percent_level);
-			pr_info("[%s] prio_val=%d, battery_percent_level=%d\n"
+			pr_no_info("[%s] prio_val=%d, battery_percent_level=%d\n"
 					, __func__, i, battery_percent_level);
 		} else
-			pr_notice("[%s]BATTERY_PERCENT_PRIO_FLASHLIGHT is null\n"
+			pr_no_notice("[%s]BATTERY_PERCENT_PRIO_FLASHLIGHT is null\n"
 				, __func__);
 #endif
 	}
@@ -141,7 +141,7 @@ int bp_psy_event(struct notifier_block *nb, unsigned long event, void *v)
 		g_battery_percent_level = BATTERY_PERCENT_LEVEL_1;
 		bat_percent_notify_flag = true;
 		wake_up_interruptible(&bat_percent_notify_waiter);
-		pr_info("bat_percent_notify called, l=%d s=%d soc=%d\n",
+		pr_no_info("bat_percent_notify called, l=%d s=%d soc=%d\n",
 			g_battery_percent_level, bat_status, uisoc);
 	} else if (((bat_status == POWER_SUPPLY_STATUS_CHARGING) ||
 		(uisoc > BAT_PERCENT_LIMIT)) &&
@@ -149,7 +149,7 @@ int bp_psy_event(struct notifier_block *nb, unsigned long event, void *v)
 		g_battery_percent_level = BATTERY_PERCENT_LEVEL_0;
 		bat_percent_notify_flag = true;
 		wake_up_interruptible(&bat_percent_notify_waiter);
-		pr_info("bat_percent_notify called, l=%d s=%d soc=%d\n",
+		pr_no_info("bat_percent_notify called, l=%d s=%d soc=%d\n",
 			g_battery_percent_level, bat_status, uisoc);
 	}
 
@@ -178,12 +178,12 @@ static ssize_t mtk_battery_percent_protect_ut_proc_write
 
 	if (kstrtoint(desc, 10, &val) == 0) {
 		if (val == 0 || val == 1) {
-			pr_info("[%s] your input is %d\n", __func__, val);
+			pr_no_info("[%s] your input is %d\n", __func__, val);
 			exec_battery_percent_callback(val);
 		} else
-			pr_info("[%s] wrong number (%d)\n", __func__, val);
+			pr_no_info("[%s] wrong number (%d)\n", __func__, val);
 	} else
-		pr_info("[%s] wrong input (%s)\n", __func__, desc);
+		pr_no_info("[%s] wrong input (%s)\n", __func__, desc);
 
 	return count;
 }
@@ -212,9 +212,9 @@ static ssize_t mtk_battery_percent_protect_stop_proc_write
 		if (val == 0 || val == 1)
 			g_battery_percent_stop = val;
 		else
-			pr_info("[%s] wrong number (%d)\n", __func__, val);
+			pr_no_info("[%s] wrong number (%d)\n", __func__, val);
 	} else
-		pr_info("[%s] wrong input (%s)\n", __func__, desc);
+		pr_no_info("[%s] wrong input (%s)\n", __func__, desc);
 
 	return count;
 }
@@ -278,14 +278,14 @@ static int battery_percent_create_procfs(void)
 	dir = proc_mkdir("bat_per_pt", NULL);
 
 	if (!dir) {
-		pr_notice("fail to create /proc/bat_per_pt\n");
+		pr_no_notice("fail to create /proc/bat_per_pt\n");
 		return -ENOMEM;
 	}
 
 	for (i = 0; i < ARRAY_SIZE(entries); i++) {
 		if (!proc_create
 		    (entries[i].name, 0664, dir, entries[i].fops))
-			pr_notice("@%s: create /proc/pt_bat_per/%s failed\n",
+			pr_no_notice("@%s: create /proc/pt_bat_per/%s failed\n",
 				__func__, entries[i].name);
 	}
 
@@ -297,13 +297,13 @@ void bat_percent_notify_init(void)
 	bat_percent_notify_lock = wakeup_source_register(NULL, 
 		"bat_percent_notify_lock wakelock");
 	if (!bat_percent_notify_lock)
-		pr_notice("bat_percent_notify_lock wakeup source fail\n");
+		pr_no_notice("bat_percent_notify_lock wakeup source fail\n");
 
 	bat_percent_notify_thread =
 		kthread_run(bat_percent_notify_handler, 0,
 			"bat_percent_notify_thread");
 	if (IS_ERR(bat_percent_notify_thread))
-		pr_notice("Failed to create bat_percent_notify_thread\n");
+		pr_no_notice("Failed to create bat_percent_notify_thread\n");
 
 	bp_nb.notifier_call = bp_psy_event;
 	power_supply_reg_notifier(&bp_nb);

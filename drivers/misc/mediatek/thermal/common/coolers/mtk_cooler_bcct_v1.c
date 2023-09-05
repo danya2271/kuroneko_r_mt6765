@@ -27,12 +27,12 @@ static int cl_bcct_klog_on;
 /* ************************************ */
 
 #define mtk_cooler_bcct_dprintk_always(fmt, args...) \
-	pr_notice("[Thermal/TC/bcct]" fmt, ##args)
+	pr_no_notice("[Thermal/TC/bcct]" fmt, ##args)
 
 #define mtk_cooler_bcct_dprintk(fmt, args...) \
 	do { \
 		if (cl_bcct_klog_on == 1) \
-			pr_notice("[Thermal/TC/bcct]" fmt, ##args); \
+			pr_no_notice("[Thermal/TC/bcct]" fmt, ##args); \
 	}  while (0)
 
 #define MAX_NUM_INSTANCE_MTK_COOLER_BCCT  3
@@ -176,7 +176,7 @@ static void chrlmt_set_limit_handler(struct work_struct *work)
 		POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
 		&prop);
 	if (ret != 0)
-		pr_notice("%s bat curr fail\n", __func__);
+		pr_no_notice("%s bat curr fail\n", __func__);
 
 	if (chrlmt_chr_input_curr_limit != -1)
 		prop.intval = chrlmt_chr_input_curr_limit * 1000;
@@ -185,7 +185,7 @@ static void chrlmt_set_limit_handler(struct work_struct *work)
 	ret = power_supply_set_property(chg_psy,
 		POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT, &prop);
 	if (ret != 0)
-		pr_notice("%s input curr fail\n", __func__);
+		pr_no_notice("%s input curr fail\n", __func__);
 
 	/* High Voltage (Vbus) control*/
 	/*Only master charger need to control Vbus*/
@@ -196,14 +196,14 @@ static void chrlmt_set_limit_handler(struct work_struct *work)
 		ret = power_supply_set_property(chg_psy,
 			POWER_SUPPLY_PROP_VOLTAGE_MAX, &prop);
 		if (ret != 0)
-			pr_notice("%s vbus fail\n", __func__);
+			pr_no_notice("%s vbus fail\n", __func__);
 	}
 	if (chrlmt_bat_chr_curr_limit == -1) {
 		prop.intval = 1;
 		ret = power_supply_set_property(chg_psy,
 			POWER_SUPPLY_PROP_VOLTAGE_MAX, &prop);
 		if (ret != 0)
-			pr_notice("%s set vbus fail\n",
+			pr_no_notice("%s set vbus fail\n",
 			__func__);
 	}
 
@@ -421,7 +421,7 @@ static void bat_chg_info_update(void)
 
 	psy = power_supply_get_by_name("battery");
 	if (psy == NULL) {
-		pr_notice("%s Couldn't get psy\n", __func__);
+		pr_no_notice("%s Couldn't get psy\n", __func__);
 	} else {
 		ret = power_supply_get_property(psy,
 			POWER_SUPPLY_PROP_VOLTAGE_NOW, &prop);
@@ -446,7 +446,7 @@ static void bat_chg_info_update(void)
 
 	chr_psy = power_supply_get_by_name("mtk-master-charger");
 	if (chr_psy == NULL) {
-		pr_notice("%s Couldn't get chr_psy\n", __func__);
+		pr_no_notice("%s Couldn't get chr_psy\n", __func__);
 	} else {
 		ret = power_supply_get_property(chr_psy,
 			POWER_SUPPLY_PROP_VOLTAGE_NOW, &prop);

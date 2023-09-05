@@ -48,13 +48,13 @@ static void convert_kernel_time(char *tee_timestamp, char *output,
 	int err;
 
 	if (!tee_timestamp || !output || !output_sz) {
-		pr_err(PFX "param check failed\n");
+		pr_no_err(PFX "param check failed\n");
 		return;
 	}
 
 	err = kstrtou64(tee_timestamp, 10, &tee_time_us);
 	if (err) {
-		pr_err(PFX "kstrtou64 failed\n");
+		pr_no_err(PFX "kstrtou64 failed\n");
 		return;
 	}
 
@@ -82,7 +82,7 @@ int32_t mtk_tee_log_tracing(u32 cpuid, u16 tee_pid, char *line, u32 line_len)
 	bool trace_end = false;
 
 	if (unlikely(line == NULL)) {
-		pr_err(PFX "%s:%d NULL pointer\n", __func__, __LINE__);
+		pr_no_err(PFX "%s:%d NULL pointer\n", __func__, __LINE__);
 		return TEE_TRACE_PREFIX_NOT_MATCH;
 	}
 
@@ -106,19 +106,19 @@ int32_t mtk_tee_log_tracing(u32 cpuid, u16 tee_pid, char *line, u32 line_len)
 	trace_buf_ptr = trace_buf;
 	prefix = strsep(&trace_buf_ptr, delim);
 	if (!prefix) {
-		pr_err(PFX "strsep prefix failed\n");
+		pr_no_err(PFX "strsep prefix failed\n");
 		return TEE_TRACE_PARSE_FAILED;
 	}
 
 	timestamp = strsep(&trace_buf_ptr, delim);
 	if (!timestamp) {
-		pr_err(PFX "strsep timestamp failed\n");
+		pr_no_err(PFX "strsep timestamp failed\n");
 		return TEE_TRACE_PARSE_FAILED;
 	}
 
 	postfix = strsep(&trace_buf_ptr, delim);
 	if (!postfix) {
-		pr_err(PFX "strsep postfix failed\n");
+		pr_no_err(PFX "strsep postfix failed\n");
 		return TEE_TRACE_PARSE_FAILED;
 	}
 
@@ -146,28 +146,28 @@ static void tee_ut(uint32_t cmd)
 {
 	struct arm_smccc_res res;
 
-	pr_info(PFX "%s, cmd=0x%x\n", __func__, cmd);
+	pr_no_info(PFX "%s, cmd=0x%x\n", __func__, cmd);
 	if (cmd == TEE_UT_READ_INTR) {
-		pr_info(PFX "tee_sanity_hwirq:0x%x\n", tee_sanity_hwirq);
+		pr_no_info(PFX "tee_sanity_hwirq:0x%x\n", tee_sanity_hwirq);
 		enable_read_hwirq = true;
 
 	} else if (cmd == TEE_UT_TRIGGER_INTR) {
-		pr_info(PFX "trigger interrupt(0x%x)...\n", tee_sanity_hwirq);
+		pr_no_info(PFX "trigger interrupt(0x%x)...\n", tee_sanity_hwirq);
 
 		arm_smccc_smc(MTK_SIP_KERNEL_TEE_CONTROL, TEE_OP_ID_SET_PENDING,
 				0, 0, 0, 0, 0, 0, &res);
 
-		pr_info(PFX "trigger interrupt done!\n");
+		pr_no_info(PFX "trigger interrupt done!\n");
 
 	} else {
-		pr_err(PFX "%s, cmd=0x%x is not supported\n", __func__, cmd);
+		pr_no_err(PFX "%s, cmd=0x%x is not supported\n", __func__, cmd);
 	}
 }
 
 static irqreturn_t tee_sanity_isr(int intr, void *args)
 {
 	if (intr == tee_sanity_irq)
-		pr_info(PFX "receive interrupt success!\n");
+		pr_no_info(PFX "receive interrupt success!\n");
 
 	return IRQ_HANDLED;
 }
@@ -213,7 +213,7 @@ ssize_t tee_sanity_dbg_write(struct file *file, const char __user *buffer,
 
 	len = (count < (sizeof(input) - 1)) ? count : (sizeof(input) - 1);
 	if (copy_from_user(input, buffer, len)) {
-		pr_err(PFX "copy from user failed!\n");
+		pr_no_err(PFX "copy from user failed!\n");
 		return -EFAULT;
 	}
 
@@ -234,7 +234,7 @@ ssize_t tee_sanity_dbg_write(struct file *file, const char __user *buffer,
 
 	if (!strncmp(cmd_str, "enable_ut", sizeof("enable_ut"))) {
 		enable_ut = (param != 0);
-		pr_info(PFX "enable_ut = %s\n",
+		pr_no_info(PFX "enable_ut = %s\n",
 			enable_ut ? "enable" : "disable");
 		return count;
 
@@ -242,7 +242,7 @@ ssize_t tee_sanity_dbg_write(struct file *file, const char __user *buffer,
 		if (enable_ut)
 			tee_ut(param);
 		else
-			pr_info(PFX "enable_ut is not enabled\n");
+			pr_no_info(PFX "enable_ut is not enabled\n");
 
 		return count;
 
@@ -269,32 +269,32 @@ static int tee_sanity_probe(struct platform_device *pdev)
 	struct device_node *node = pdev->dev.of_node;
 	int ret;
 
-	pr_info(PFX "driver registered\n");
+	pr_no_info(PFX "driver registered\n");
 
 	if (IS_ERR(node)) {
-		pr_err(PFX "cannot find device node\n");
+		pr_no_err(PFX "cannot find device node\n");
 		return -ENODEV;
 	}
 
 	tee_sanity_irq = irq_of_parse_and_map(node, 0);
 	if (!tee_sanity_irq) {
-		pr_err(PFX "Failed to parse and map the interrupt.\n");
+		pr_no_err(PFX "Failed to parse and map the interrupt.\n");
 		return -EINVAL;
 	}
 
 #if defined(CONFIG_MTK_GIC_V3_EXT)
 	tee_sanity_hwirq = virq_to_hwirq(tee_sanity_irq);
-	pr_debug(PFX "tee_sanity_irq: 0x%x, hwirq: 0x%x\n",
+	pr_no_debug(PFX "tee_sanity_irq: 0x%x, hwirq: 0x%x\n",
 			tee_sanity_irq, tee_sanity_hwirq);
 #else
-	pr_err(PFX "MTK_GIC_V3_EXT is not supported\n");
+	pr_no_err(PFX "MTK_GIC_V3_EXT is not supported\n");
 #endif
 
 	ret = devm_request_irq(&pdev->dev, tee_sanity_irq,
 			(irq_handler_t)tee_sanity_isr,
 			IRQF_TRIGGER_RISING, "tee_sanity", NULL);
 	if (ret) {
-		pr_err(PFX "Failed to request tee_sanity irq, ret(%d)\n", ret);
+		pr_no_err(PFX "Failed to request tee_sanity irq, ret(%d)\n", ret);
 		return ret;
 	}
 

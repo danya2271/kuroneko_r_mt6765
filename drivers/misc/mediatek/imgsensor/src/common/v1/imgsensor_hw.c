@@ -76,7 +76,7 @@ enum IMGSENSOR_RETURN imgsensor_hw_init(struct IMGSENSOR_HW *phw)
 			of_node,
 			str_prop_name,
 			&phw->enable_sensor_by_index[i]) < 0) {
-			pr_info("Property cust-sensor not defined\n");
+			pr_no_info("Property cust-sensor not defined\n");
 			phw->enable_sensor_by_index[i] = NULL;
 		}
 	}
@@ -121,7 +121,7 @@ static enum IMGSENSOR_RETURN imgsensor_hw_power_sequence(
 		if (pwr_status == IMGSENSOR_HW_POWER_STATUS_ON &&
 		   ppwr_info->pin != IMGSENSOR_HW_PIN_UNDEF) {
 			pdev = phw->pdev[psensor_pwr->id[ppwr_info->pin]];
-		/*pr_debug(
+		/*pr_no_debug(
 		 *  "sensor_idx = %d, pin=%d, pin_state_on=%d, hw_id =%d\n",
 		 *  sensor_idx,
 		 *  ppwr_info->pin,
@@ -179,7 +179,7 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 	char str_index[LENGTH_FOR_SNPRINTF];
 	int ret = 0;
 
-	pr_info(
+	pr_no_info(
 		"sensor_idx %d, power %d curr_sensor_name %s, enable list %s\n",
 		sensor_idx,
 		pwr_status,
@@ -195,7 +195,7 @@ enum IMGSENSOR_RETURN imgsensor_hw_power(
 
 	ret = snprintf(str_index, sizeof(str_index), "%d", sensor_idx);
 	if (ret == 0) {
-		pr_info("Error! snprintf allocate 0");
+		pr_no_info("Error! snprintf allocate 0");
 		ret = IMGSENSOR_RETURN_ERROR;
 		return ret;
 	}

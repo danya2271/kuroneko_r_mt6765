@@ -25,7 +25,7 @@ static ssize_t scpctl_store(struct device *kobj
 
 	if (sscanf(buf, "%d %d %d", &magic, &type, &op) != 3)
 		return -EINVAL;
-	pr_notice("%s %d %d %d\n", prompt, magic, type, op);
+	pr_no_notice("%s %d %d %d\n", prompt, magic, type, op);
 
 	if (magic != 666)
 		return -EINVAL;
@@ -46,7 +46,7 @@ static ssize_t scpctl_store(struct device *kobj
 	return n;
 
 _err:
-	pr_notice("%s failed, %d\n", prompt, ret);
+	pr_no_notice("%s failed, %d\n", prompt, ret);
 	return -EIO;
 }
 

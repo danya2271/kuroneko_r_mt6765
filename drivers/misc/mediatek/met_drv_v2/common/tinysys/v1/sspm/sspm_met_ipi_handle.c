@@ -111,7 +111,7 @@ void start_sspm_ipi_recv_thread()
 	ret = mtk_ipi_register(sspm_ipidev_symbol, IPIS_C_MET, NULL,
 				NULL, (void *)&ackdata);
 	if (ret) {
-		pr_debug("[MET] ipi_register:%d failed:%d\n", IPIS_C_MET, ret);
+		pr_no_debug("[MET] ipi_register:%d failed:%d\n", IPIS_C_MET, ret);
 	} else {
 		PR_BOOTMSG("mtk_ipi_register IPIS_C_MET success \n");
 	}
@@ -121,7 +121,7 @@ void start_sspm_ipi_recv_thread()
 		_sspm_recv_task = kthread_run(_sspm_recv_thread,
 						NULL, "sspmsspm_recv");
 		if (IS_ERR(_sspm_recv_task)) {
-			pr_debug("MET: Can not create sspmsspm_recv\n");
+			pr_no_debug("MET: Can not create sspmsspm_recv\n");
 		} else {
 			sspm_ipi_thread_started = 1;
 		}
@@ -277,7 +277,7 @@ int met_ipi_to_sspm_command(
 	if (ret != 0) {
 		PR_BOOTMSG("%s 0x%X, 0x%X, 0x%X, 0x%X\n", __FUNCTION__,
 			buffer[0], buffer[1], buffer[2], buffer[3]);
-		pr_debug("met_ipi_to_sspm_command error(%d)\n", ret);
+		pr_no_debug("met_ipi_to_sspm_command error(%d)\n", ret);
 	}
 
 	return ret;
@@ -305,7 +305,7 @@ int met_ipi_to_sspm_command_async(
 	if (ret != 0) {
 		PR_BOOTMSG("%s 0x%X, 0x%X, 0x%X, 0x%X\n", __FUNCTION__,
 			buffer[0], buffer[1], buffer[2], buffer[3]);
-		pr_debug("met_ipi_to_sspm_command error(%d)\n", ret);
+		pr_no_debug("met_ipi_to_sspm_command error(%d)\n", ret);
 	}
 
 	return ret;
@@ -389,7 +389,7 @@ static int _sspm_recv_thread(void *data)
 	do {
 		ret = mtk_ipi_recv_reply(sspm_ipidev_symbol, IPIR_C_MET, (void *)&rdata, 1);
 		if (ret) {
-			pr_debug("[MET] ipi_register:%d failed:%d\n", IPIR_C_MET, ret);
+			pr_no_debug("[MET] ipi_register:%d failed:%d\n", IPIR_C_MET, ret);
 		}
 
 		if (sspm_recv_thread_comp == 1) {

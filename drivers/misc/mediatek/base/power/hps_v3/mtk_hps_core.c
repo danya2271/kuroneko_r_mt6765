@@ -45,9 +45,9 @@ static void  _hps_timer_callback(struct timer_list *t)
 	if (hps_ctxt.tsk_struct_ptr) {
 		ret = wake_up_process(hps_ctxt.tsk_struct_ptr);
 		if (!ret)
-			pr_notice("[INFO] hps task has waked up[%d]\n", ret);
+			pr_no_notice("[INFO] hps task has waked up[%d]\n", ret);
 	} else {
-		pr_notice("hps ptr is NULL\n");
+		pr_no_notice("hps ptr is NULL\n");
 	}
 }
 
@@ -145,19 +145,13 @@ ACAO_HPS_START:
 	aee_rr_rec_hps_cb_footprint(2);
 	aee_rr_rec_hps_cb_fp_times((u64) ktime_to_ms(ktime_get()));
 	/*Debgu message dump*/
-	for (i = 0 ; i < 8 ; i++) {
-		if (cpumask_test_cpu(i, hps_ctxt.online_core))
-			pr_info("CPU %d ==>1\n", i);
-		else
-			pr_info("CPU %d ==>0\n", i);
-	}
 
 	if (!cpumask_empty(hps_ctxt.online_core)) {
 		aee_rr_rec_hps_cb_footprint(3);
 		aee_rr_rec_hps_cb_fp_times((u64) ktime_to_ms(ktime_get()));
 		first_cpu = cpumask_first(hps_ctxt.online_core);
 		if (first_cpu >= setup_max_cpus) {
-			pr_notice("PPM request without first cpu online!\n");
+			pr_no_notice("PPM request without first cpu online!\n");
 			goto ACAO_HPS_END;
 		}
 
@@ -267,7 +261,7 @@ void hps_task_wakeup_nolock(void)
 			HPS_PERIODICAL_BY_HR_TIMER)) {
 			ret = wake_up_process(hps_ctxt.tsk_struct_ptr);
 			if (!ret) {
-				pr_notice(
+				pr_no_notice(
 				"[%s]hps task is in running state, ret = %d\n",
 				__func__, ret);
 				atomic_set(&hps_ctxt.is_ondemand, 0);

@@ -53,8 +53,8 @@
 #endif
 
 static int pwm_dbg_en;
-#define PWM_ERR(fmt, arg...) pr_notice("[PWM] %s: " fmt "\n", __func__, ##arg)
-#define PWM_NOTICE(fmt, arg...) pr_info("[PWM] %s: " fmt "\n", __func__, ##arg)
+#define PWM_ERR(fmt, arg...) pr_no_notice("[PWM] %s: " fmt "\n", __func__, ##arg)
+#define PWM_NOTICE(fmt, arg...) pr_no_info("[PWM] %s: " fmt "\n", __func__, ##arg)
 #define PWM_MSG(fmt, arg...) pr_no_debug("[PWM] %s: " fmt "\n", __func__, ##arg)
 #define PWM_DBG(fmt, arg...) \
 	do { if (pwm_dbg_en) pr_no_debug("[PWM] %s: " fmt "\n", __func__, ##arg); \
@@ -489,14 +489,6 @@ static void disp_pwm_log(int level_1024, int log_type)
 	}
 
 	spin_unlock(&g_pwm_log_lock);
-
-	if (print_log == 1) {
-		if (log_type == MSG_LOG)
-			PWM_MSG("%s", buffer);
-		else
-			PWM_NOTICE("%s", buffer);
-	}
-
 }
 #endif				/* not define CONFIG_FPGA_EARLY_PORTING */
 

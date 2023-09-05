@@ -82,14 +82,14 @@ static int _do_wait_fence(struct sync_fence **src_fence, int session_id,
 		n += scnprintf(msg + n, len - n,
 			      "ret%d,layer%d,fd%d,idx%d ==>\n",
 			      ret, timeline, fence_fd, buf_idx);
-		DISP_PR_ERR("%s", msg);
+		DISP_pr_no_err("%s", msg);
 	} else if (ret != 0) {
 		n = scnprintf(msg, len,
 			     "== display fence wait status error. ");
 		n += scnprintf(msg + n, len - n,
 			      "ret%d,layer%d,fd%d,idx%d ==>\n",
 			      ret, timeline, fence_fd, buf_idx);
-		DISP_PR_ERR("%s", msg);
+		DISP_pr_no_err("%s", msg);
 	} else {
 		n = scnprintf(msg, len,
 			     "== display fence wait done! ");
@@ -125,7 +125,7 @@ static int frame_wait_all_fence(struct disp_frame_cfg_t *cfg)
 				     present_fence_idx, present_fence_idx);
 
 		if (tmp) {
-			DISP_PR_ERR("wait present fence fail!\n");
+			DISP_pr_no_err("wait present fence fail!\n");
 			ret = -1;
 		}
 	}
@@ -161,7 +161,7 @@ static int frame_wait_all_fence(struct disp_frame_cfg_t *cfg)
 			present_fence_idx);
 
 		if (tmp) {
-			DISP_PR_ERR("wait output fence fail!\n");
+			DISP_pr_no_err("wait output fence fail!\n");
 			ret = -1;
 		}
 		disp_sync_buf_cache_sync(session_id,
@@ -243,11 +243,11 @@ struct frame_queue_head_t *get_frame_queue_head(int session_id)
 	disp_aee_print("cannot find frame_q_head!! session_id=0x%08x ===>\n",
 		       session_id);
 
-	pr_info("frame queue pool sesion id:");
+	pr_no_info("frame queue pool sesion id:");
 	for (i = 0; i < ARRAY_SIZE(frame_q_head); i++)
-		pr_info("0x%x,", frame_q_head[i].session_id);
+		pr_no_info("0x%x,", frame_q_head[i].session_id);
 
-	pr_info("\n");
+	pr_no_info("\n");
 
 out:
 	mutex_unlock(&frame_q_head_lock);
@@ -349,7 +349,7 @@ int frame_queue_push(struct frame_queue_head_t *head,
 		 * So SF/HWC can do some error handling
 		 */
 		mutex_unlock(&head->lock);
-		DISP_PR_ERR("block HWC because jobs=%d >=5\n", frame_queue_sz);
+		DISP_pr_no_err("block HWC because jobs=%d >=5\n", frame_queue_sz);
 		wait_event_killable(head->wq, list_empty(&head->queue));
 		mutex_lock(&head->lock);
 	}

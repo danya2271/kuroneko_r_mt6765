@@ -50,7 +50,7 @@ static int __init mt6779_sspm_module_init(void)
 	if (atomic_inc_return(&sspm_inited) != 1)
 		return 0;
 
-	pr_info("[SSPM] mt6779-sspm_module_init.\n");
+	pr_no_info("[SSPM] mt6779-sspm_module_init.\n");
 
 	/* static initialise */
 	sspm_ready = 0;
@@ -58,13 +58,13 @@ static int __init mt6779_sspm_module_init(void)
 	mt6779_sspm_workqueue = create_workqueue("mt6779-SSPM_WQ");
 
 	if (!mt6779_sspm_workqueue) {
-		pr_err("[SSPM] Workqueue Create Failed\n");
+		pr_no_err("[SSPM] Workqueue Create Failed\n");
 		goto error;
 	}
 
 #ifdef CONFIG_OF_RESERVED_MEM
 	if (sspm_reserve_memory_init()) {
-		pr_err("[SSPM] Reserved Memory Failed\n");
+		pr_no_err("[SSPM] Reserved Memory Failed\n");
 		goto error;
 	}
 #endif
@@ -72,29 +72,29 @@ static int __init mt6779_sspm_module_init(void)
 	sspm_ready = 1;
 
 	if (sspm_sysfs_init()) {
-		pr_err("[SSPM] Sysfs Init Failed\n");
+		pr_no_err("[SSPM] Sysfs Init Failed\n");
 		return -1;
 	}
 
 	if (sspm_ipi_init()) {
-		pr_err("[SSPM] IPI Init Failed\n");
+		pr_no_err("[SSPM] IPI Init Failed\n");
 		return -1;
 	}
 
-	pr_info("SSPM is ready to service IPI\n");
+	pr_no_info("SSPM is ready to service IPI\n");
 
 
 #if SSPM_PLT_SERV_SUPPORT
 	if (sspm_plt_init()) {
-		pr_err("[SSPM] Platform Init Failed\n");
+		pr_no_err("[SSPM] Platform Init Failed\n");
 		return -1;
 	}
-	pr_info("SSPM platform service is ready\n");
+	pr_no_info("SSPM platform service is ready\n");
 #endif
 
 #if SSPM_TIMESYNC_SUPPORT
 	if (sspm_timesync_init()) {
-		pr_err("SSPM timesync init fail\n");
+		pr_no_err("SSPM timesync init fail\n");
 		return -1;
 	}
 #endif
@@ -122,7 +122,7 @@ static int __init sspm_clk_en(struct device *dev, const char *id)
 	return 0;
 
 error:
-	pr_err("[SSPM] Enable sspm clock fail: %s.\n", id);
+	pr_no_err("[SSPM] Enable sspm clock fail: %s.\n", id);
 	return -1;
 }
 
@@ -133,13 +133,13 @@ static int __init mt6779_sspm_probe(struct platform_device *pdev)
 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "cfgreg");
 	if (!res) {
-		pr_err("[SSPM] cfgreg IO resource not found\n");
+		pr_no_err("[SSPM] cfgreg IO resource not found\n");
 		return -ENODEV;
 	}
 
 	sspmreg.cfg = devm_ioremap_resource(dev, res);
 	if (IS_ERR((void const *) sspmreg.cfg)) {
-		pr_err("[SSPM] Unable to ioremap registers\n");
+		pr_no_err("[SSPM] Unable to ioremap registers\n");
 		return -1;
 	}
 
@@ -147,11 +147,11 @@ static int __init mt6779_sspm_probe(struct platform_device *pdev)
 
 	sspmreg.irq = platform_get_irq_byname(pdev, "ipc");
 	if (sspmreg.irq < 0) {
-		pr_err("[SSPM] Unable to get IRQ\n");
+		pr_no_err("[SSPM] Unable to get IRQ\n");
 		return -1;
 	}
 
-	pr_info("[SSPM] mt6779-sspm irq=%d, cfgreg=0x%p\n",
+	pr_no_info("[SSPM] mt6779-sspm irq=%d, cfgreg=0x%p\n",
 			sspmreg.irq, sspmreg.cfg);
 
 	if (sspm_clk_en(dev, "sspm_26m"))
@@ -167,7 +167,7 @@ static int __init mt6779_sspm_probe(struct platform_device *pdev)
 
 #ifdef SSPM_SHARE_BUFFER_SUPPORT
 	if (sspm_sbuf_init()) {
-		pr_err("[SSPM] Shared Buffer Init Failed\n");
+		pr_no_err("[SSPM] Shared Buffer Init Failed\n");
 		return -1;
 	}
 #endif
@@ -179,7 +179,7 @@ static int __init mt6779_sspm_probe(struct platform_device *pdev)
 
 	sspm_reserve_mblock = mt6779_sspm_reserve_mblock;
 
-	pr_info("[SSPM] mt6779-sspm_probe Done.\n");
+	pr_no_info("[SSPM] mt6779-sspm_probe Done.\n");
 
 	mt6779_sspm_module_init();
 
@@ -242,7 +242,7 @@ static int __init mt6779_sspm_init(void)
 
 static void __exit mt6779_sspm_exit(void)
 {
-	pr_info("[SSPM] mt6779-sspm Exit.\n");
+	pr_no_info("[SSPM] mt6779-sspm Exit.\n");
 }
 
 MODULE_DESCRIPTION("MEDIATEK Module SSPM driver");

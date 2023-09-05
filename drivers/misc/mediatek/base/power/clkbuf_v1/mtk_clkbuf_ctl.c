@@ -48,7 +48,7 @@ void __attribute__((weak)) clk_buf_dump_dts_log(void)
 
 int __attribute__((weak)) clk_buf_fs_init(void)
 {
-	pr_info("%s: dummy func\n", __func__);
+	pr_no_info("%s: dummy func\n", __func__);
 	return 0;
 }
 
@@ -139,7 +139,7 @@ static int mtk_clk_buf_probe(struct platform_device *pdev)
 		return -1;
 
 	if (clk_buf_dts_map()) {
-		pr_err("%s: failed due to DTS failed\n", __func__);
+		pr_no_err("%s: failed due to DTS failed\n", __func__);
 		return -1;
 	}
 

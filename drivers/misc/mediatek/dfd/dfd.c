@@ -30,7 +30,7 @@ int dfd_setup(int version)
 		if (!drv->check_dfd_support)
 			return -EINVAL;
 
-		pr_info("dfd setup\n");
+		pr_no_info("dfd setup\n");
 
 		ret = mtk_dbgtop_dfd_count_en(1);
 		ret = mtk_dbgtop_dfd_therm1_dis(1);
@@ -88,7 +88,7 @@ static int __init dfd_init(void)
 	if (!drv)
 		return -ENOMEM;
 
-	pr_info("In dfd init\n");
+	pr_no_info("In dfd init\n");
 
 	/* get dfd settings */
 	dev_node = of_find_compatible_node(NULL, NULL, "mediatek,dfd");
@@ -96,18 +96,18 @@ static int __init dfd_init(void)
 
 		if (of_property_read_u32(dev_node,
 					"mediatek,dfd_latch_offset", &val)) {
-			pr_info("%s: Latch offset not found.\n", __func__);
+			pr_no_info("%s: Latch offset not found.\n", __func__);
 			return -ENODATA;
 		}
 
 		tmp = of_find_compatible_node(NULL, NULL, "mediatek,toprgu");
 		toprgu_base = of_iomap(tmp, 0);
 		if (!toprgu_base)
-			pr_info("RGU base not found.\n");
+			pr_no_info("RGU base not found.\n");
 		else
 			get_dfd_base(toprgu_base, val);
 
-		pr_info("get topdbg base\n");
+		pr_no_info("get topdbg base\n");
 
 		if (of_property_read_u32(dev_node, "mediatek,enabled", &val))
 			drv->enabled = 0;

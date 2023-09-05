@@ -64,9 +64,9 @@
 #endif
 #endif
 
-#define KREE_DEBUG(fmt...) pr_debug("[CM_kUT]" fmt)
-#define KREE_INFO(fmt...) pr_info("[CM_kUT]" fmt)
-#define KREE_ERR(fmt...) pr_info("[CM_kUT][ERR]" fmt)
+#define KREE_DEBUG(fmt...) pr_no_debug("[CM_kUT]" fmt)
+#define KREE_INFO(fmt...) pr_no_info("[CM_kUT]" fmt)
+#define KREE_ERR(fmt...) pr_no_info("[CM_kUT][ERR]" fmt)
 
 
 #if ssmr_ready_for_mcm

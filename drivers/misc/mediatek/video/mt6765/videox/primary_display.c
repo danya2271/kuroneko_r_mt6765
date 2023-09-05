@@ -589,17 +589,17 @@ int dynamic_debug_msg_print(unsigned int mva, int w, int h, int pitch,
 		ret = m4u_query_mva_info(mva, layer_size,
 					&real_mva, &real_size);
 		if (ret < 0) {
-			pr_debug("m4u_query_mva_info error\n");
+			pr_no_debug("m4u_query_mva_info error\n");
 			return -1;
 		}
 		ret = m4u_mva_map_kernel(real_mva, real_size,
 			&kva, &mapped_size);
 		if (ret < 0) {
-			pr_debug("m4u_mva_map_kernel fail.\n");
+			pr_no_debug("m4u_mva_map_kernel fail.\n");
 			return -1;
 		}
 		if (layer_size > mapped_size) {
-			pr_debug("warning: layer size > mapped size\n");
+			pr_no_debug("warning: layer size > mapped size\n");
 			goto err1;
 		}
 
@@ -701,7 +701,7 @@ static int _fps_ctx_reset(struct fps_ctx_t *fps_ctx, int reserve_num)
 	int i;
 
 	if (reserve_num >= FPS_ARRAY_SZ) {
-		pr_info("%s error to reset, reserve=%d\n",
+		pr_no_info("%s error to reset, reserve=%d\n",
 			__func__, reserve_num);
 		WARN_ON(1);
 	}
@@ -749,7 +749,7 @@ static int fps_ctx_init(struct fps_ctx_t *fps_ctx, int wnd_sz)
 	mutex_init(&fps_ctx->lock);
 
 	if (wnd_sz > FPS_ARRAY_SZ) {
-		pr_info("%s error: wnd_sz = %d\n", __func__, wnd_sz);
+		pr_no_info("%s error: wnd_sz = %d\n", __func__, wnd_sz);
 		wnd_sz = FPS_ARRAY_SZ;
 	}
 	fps_ctx->wnd_sz = wnd_sz;
@@ -2728,7 +2728,7 @@ static int init_decouple_buffers(void)
 	decouple_wdma_config.dstPitch = width * Bpp;
 	decouple_wdma_config.security = DISP_NORMAL_BUFFER;
 
-	pr_info("%s done\n", __func__);
+	pr_no_info("%s done\n", __func__);
 	return 0;
 }
 
@@ -7901,15 +7901,15 @@ int primary_display_vsync_switch(int method)
 	int ret = 0;
 
 	if (method == 0) {
-		pr_debug("Vsync map RDMA %d\n", method);
+		pr_no_debug("Vsync map RDMA %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 			DISP_PATH_EVENT_IF_VSYNC, DDP_IRQ_RDMA0_DONE);
 	} else if (method == 1) {
-		pr_debug("Vsync map DSI TE %d\n", method);
+		pr_no_debug("Vsync map DSI TE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 			DISP_PATH_EVENT_IF_VSYNC, DDP_IRQ_DSI0_EXT_TE);
 	} else if (method == 2) {
-		pr_debug("Vsync map DSI FRAME DONE %d\n", method);
+		pr_no_debug("Vsync map DSI FRAME DONE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 			DISP_PATH_EVENT_IF_VSYNC, DDP_IRQ_DSI0_FRAME_DONE);
 	}
@@ -8581,7 +8581,7 @@ UINT32 DISP_GetVRamSizeBoot(char *cmdline)
 
 	vramsize = mtkfb_get_fb_size();
 	if (!vramsize)
-		pr_info("get fb size fail, size=0x%08x|%d\n",
+		pr_no_info("get fb size fail, size=0x%08x|%d\n",
 			vramsize, vramsize);
 	DISPCHECK("[DT]display vram size = 0x%08x|%d\n",
 		vramsize, vramsize);
@@ -8598,7 +8598,7 @@ unsigned int primary_display_get_option(const char *option)
 		return disp_helper_get_option(DISP_OPT_USE_M4U);
 
 	/* ASSERT(0); */
-	pr_info("%s, invalid option\n", __func__);
+	pr_no_info("%s, invalid option\n", __func__);
 	return -1;
 }
 
@@ -8653,12 +8653,12 @@ static int Panel_Master_primary_display_config_dsi(const char *name,
 
 	/* modify below for config dsi */
 	if (!strcmp(name, "PM_CLK")) {
-		pr_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
+		pr_no_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
 		data_config->dispif_config.dsi.PLL_CLOCK = config_value;
 	} else if (!strcmp(name, "PM_SSC")) {
 		data_config->dispif_config.dsi.ssc_range = config_value;
 	}
-	pr_debug("Pmaster_config_dsi: will Run path_config()\n");
+	pr_no_debug("Pmaster_config_dsi: will Run path_config()\n");
 	ret = dpmgr_path_config(pgc->dpmgr_handle, data_config, NULL);
 
 	return ret;
@@ -9396,7 +9396,7 @@ err0:
 
 int display_exit_tui(void)
 {
-	pr_info("[TUI-HAL] display_exit_tui() start\n");
+	pr_no_info("[TUI-HAL] display_exit_tui() start\n");
 	mmprofile_log_ex(ddp_mmp_get_events()->tui,
 		MMPROFILE_FLAG_PULSE, 1, 1);
 
@@ -9421,7 +9421,7 @@ int display_exit_tui(void)
 
 	mmprofile_log_ex(ddp_mmp_get_events()->tui, MMPROFILE_FLAG_END, 0, 0);
 	DISPMSG("TDDP: %s\n", __func__);
-	pr_info("[TUI-HAL] display_exit_tui() done\n");
+	pr_no_info("[TUI-HAL] display_exit_tui() done\n");
 	return 0;
 }
 
@@ -9497,7 +9497,7 @@ int primary_display_set_scenario(int scenario)
 	if (scenario != DISP_SCENARIO_NORMAL &&
 	    pgc->primary_display_scenario != DISP_SCENARIO_NORMAL) {
 		/* every scenario should start from NORMAL !! */
-		pr_info("%s set scenario %d fail ! current scenario is %d\n",
+		pr_no_info("%s set scenario %d fail ! current scenario is %d\n",
 			__func__, scenario, pgc->primary_display_scenario);
 		return -EINVAL;
 	}

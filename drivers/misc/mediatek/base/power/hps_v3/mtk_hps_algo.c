@@ -530,7 +530,7 @@ HPS_ALGO_END:
 		&target_cache_shared_state_bitmask);
 
 	/*
-	 * pr_notice("[%s] iccs_target_power_state_bitmask: 0x%x\n",
+	 * pr_no_notice("[%s] iccs_target_power_state_bitmask: 0x%x\n",
 	 * __func__, iccs_target_power_state_bitmask);
 	 */
 
@@ -542,7 +542,7 @@ HPS_ALGO_END:
 			(((iccs_target_power_state_bitmask >> i) & 1) << 0);
 
 		/*
-		 * pr_notice("[%s] cluster: 0x%x iccs_state: 0x%x\n",
+		 * pr_no_notice("[%s] cluster: 0x%x iccs_state: 0x%x\n",
 		 * __func__, i, hps_sys.cluster_info[i].iccs_state);
 		 */
 
@@ -597,7 +597,7 @@ HPS_ALGO_END:
 		}
 	}
 	/*
-	 * pr_notice("[%s] iccs_target_power_state_bitmask: 0x%x\n",
+	 * pr_no_notice("[%s] iccs_target_power_state_bitmask: 0x%x\n",
 	 * __func__, iccs_target_power_state_bitmask);
 	 */
 	iccs_set_target_power_state_bitmask(iccs_target_power_state_bitmask);

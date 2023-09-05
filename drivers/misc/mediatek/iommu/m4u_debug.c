@@ -34,14 +34,14 @@
 	aee_kernel_warning_api(__FILE__, __LINE__, \
 		DB_OPT_MMPROFILE_BUFFER | DB_OPT_DUMP_DISPLAY, \
 		m4u_name, "[M4U] error"string, ##args); \
-	pr_err("[M4U] error:"string, ##args);  \
+	pr_no_err("[M4U] error:"string, ##args);  \
 	} while (0)
 
 #else
 #define m4u_aee_print(string, args...) do {\
 		char m4u_name[100];\
 		snprintf(m4u_name, 100, "[M4U]"string, ##args); \
-	pr_err("[M4U] error:"string, ##args);  \
+	pr_no_err("[M4U] error:"string, ##args);  \
 	} while (0)
 #endif
 
@@ -326,7 +326,7 @@ void mtk_iova_dbg_dump(struct seq_file *s)
 	if (s)
 		seq_printf(s, "%18s %8s %18s\n", "iova", "size", "dev");
 	else
-		pr_info("%18s %8s %18s\n", "iova", "size", "dev");
+		pr_no_info("%18s %8s %18s\n", "iova", "size", "dev");
 	list_for_each_entry_safe(plist, n, &iova_list.head,
 				 list_node) {
 		if (s)
@@ -335,7 +335,7 @@ void mtk_iova_dbg_dump(struct seq_file *s)
 				   plist->size,
 				   dev_name(plist->dev));
 		else
-			pr_info("%pa %8zu %18s\n",
+			pr_no_info("%pa %8zu %18s\n",
 				   &plist->iova,
 				   plist->size,
 				   dev_name(plist->dev));
@@ -386,7 +386,7 @@ bool report_custom_iommu_fault(
 
 	idx = mtk_iommu_get_tf_port_idx(fault_id);
 	if (idx >= m4u_data->plat_data->port_nr) {
-		pr_err("fail,iova:0x%x, port:0x%x\n",
+		pr_no_err("fail,iova:0x%x, port:0x%x\n",
 			fault_iova, fault_id);
 		return false;
 	}
@@ -413,7 +413,7 @@ int mtk_iommu_register_fault_callback(int port,
 	int idx = mtk_iommu_port_idx(port);
 
 	if (idx >= m4u_data->plat_data->port_nr) {
-		pr_info("%s fail, port=%d\n", __func__, port);
+		pr_no_info("%s fail, port=%d\n", __func__, port);
 		return -1;
 	}
 	m4u_data->m4u_cb[idx].fault_fn = fn;
@@ -427,7 +427,7 @@ int mtk_iommu_unregister_fault_callback(int port)
 	int idx = mtk_iommu_port_idx(port);
 
 	if (idx >= m4u_data->plat_data->port_nr) {
-		pr_info("%s fail, port=%d\n", __func__, port);
+		pr_no_info("%s fail, port=%d\n", __func__, port);
 		return -1;
 	}
 	m4u_data->m4u_cb[idx].fault_fn = NULL;
@@ -438,7 +438,7 @@ EXPORT_SYMBOL(mtk_iommu_unregister_fault_callback);
 
 static int m4u_debug_set(void *data, u64 val)
 {
-	pr_info("%s:val=%llu\n", __func__, val);
+	pr_no_info("%s:val=%llu\n", __func__, val);
 
 	switch (val) {
 	case 1: /* translation fault test */
@@ -454,7 +454,7 @@ static int m4u_debug_set(void *data, u64 val)
 	break;
 	}
 	default:
-		pr_err("%s error,val=%llu\n", __func__, val);
+		pr_no_err("%s error,val=%llu\n", __func__, val);
 	}
 
 	return 0;
@@ -475,13 +475,13 @@ static int m4u_debug_init(struct mtk_m4u_data *data)
 	data->debug_root = debugfs_create_dir("m4u", NULL);
 
 	if (IS_ERR_OR_NULL(data->debug_root))
-		pr_err("failed to create debug dir.\n");
+		pr_no_err("failed to create debug dir.\n");
 
 	debug_file = debugfs_create_file("debug",
 		0644, data->debug_root, NULL, &m4u_debug_fops);
 
 	if (IS_ERR_OR_NULL(debug_file))
-		pr_err("failed to create debug files 2.\n");
+		pr_no_err("failed to create debug files 2.\n");
 
 	return 0;
 }

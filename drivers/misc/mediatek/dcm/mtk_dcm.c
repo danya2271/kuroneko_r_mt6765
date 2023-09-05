@@ -47,7 +47,7 @@ void dcm_set_default(unsigned int type)
 	int i;
 	struct DCM *dcm;
 
-	dcm_pr_info("[%s]type:0x%08x, init_dcm_type=0x%x, INIT_DCM_TYPE_BY_K=0x%x\n",
+	dcm_pr_no_info("[%s]type:0x%08x, init_dcm_type=0x%x, INIT_DCM_TYPE_BY_K=0x%x\n",
 		 __func__, type, common_init_dcm_type,
 		 common_init_dcm_type_by_k);
 
@@ -64,7 +64,7 @@ void dcm_set_default(unsigned int type)
 				dcm->func(dcm->current_state);
 			}
 
-			dcm_pr_info("[%16s 0x%08x] current state:%d (%d)\n",
+			dcm_pr_no_info("[%16s 0x%08x] current state:%d (%d)\n",
 				 dcm->name, dcm->typeid, dcm->current_state,
 				 dcm->disable_refcnt);
 		}
@@ -81,7 +81,7 @@ void dcm_set_state(unsigned int type, int state)
 	struct DCM *dcm;
 	unsigned int init_dcm_type_pre = common_init_dcm_type;
 
-	dcm_pr_info("[%s]type:0x%08x, set:%d, init_dcm_type_pre=0x%x\n",
+	dcm_pr_no_info("[%s]type:0x%08x, set:%d, init_dcm_type_pre=0x%x\n",
 		 __func__, type, state, init_dcm_type_pre);
 
 	mutex_lock(&dcm_lock);
@@ -102,7 +102,7 @@ void dcm_set_state(unsigned int type, int state)
 				dcm->func(dcm->current_state);
 			}
 
-			dcm_pr_info("[%16s 0x%08x] current state:%d (%d)\n",
+			dcm_pr_no_info("[%16s 0x%08x] current state:%d (%d)\n",
 				 dcm->name, dcm->typeid, dcm->current_state,
 				 dcm->disable_refcnt);
 
@@ -110,7 +110,7 @@ void dcm_set_state(unsigned int type, int state)
 	}
 
 	if (init_dcm_type_pre != common_init_dcm_type) {
-		dcm_pr_info("[%s]type:0x%08x, set:%d, init_dcm_type=0x%x->0x%x\n",
+		dcm_pr_no_info("[%s]type:0x%08x, set:%d, init_dcm_type=0x%x->0x%x\n",
 			__func__, type, state,
 			init_dcm_type_pre,
 			common_init_dcm_type);
@@ -126,7 +126,7 @@ void dcm_disable(unsigned int type)
 	struct DCM *dcm;
 	unsigned int init_dcm_type_pre = common_init_dcm_type;
 
-	dcm_pr_info("[%s]type:0x%08x\n", __func__, type);
+	dcm_pr_no_info("[%s]type:0x%08x\n", __func__, type);
 
 	mutex_lock(&dcm_lock);
 
@@ -140,7 +140,7 @@ void dcm_disable(unsigned int type)
 				common_init_dcm_type &= ~(dcm->typeid);
 			dcm->func(dcm->current_state);
 
-			dcm_pr_info("[%16s 0x%08x] current state:%d (%d)\n",
+			dcm_pr_no_info("[%16s 0x%08x] current state:%d (%d)\n",
 				 dcm->name, dcm->typeid, dcm->current_state,
 				 dcm->disable_refcnt);
 
@@ -148,7 +148,7 @@ void dcm_disable(unsigned int type)
 	}
 
 	if (init_dcm_type_pre != common_init_dcm_type) {
-		dcm_pr_info("[%s]type:0x%08x, init_dcm_type=0x%x->0x%x\n",
+		dcm_pr_no_info("[%s]type:0x%08x, init_dcm_type=0x%x->0x%x\n",
 			 __func__, type, init_dcm_type_pre,
 			 common_init_dcm_type);
 		/*dcm_smc_msg_send(common_init_dcm_type);*/
@@ -164,7 +164,7 @@ void dcm_restore(unsigned int type)
 	struct DCM *dcm;
 	unsigned int init_dcm_type_pre = common_init_dcm_type;
 
-	dcm_pr_info("[%s]type:0x%08x\n", __func__, type);
+	dcm_pr_no_info("[%s]type:0x%08x\n", __func__, type);
 
 	mutex_lock(&dcm_lock);
 
@@ -185,7 +185,7 @@ void dcm_restore(unsigned int type)
 				dcm->func(dcm->current_state);
 			}
 
-			dcm_pr_info("[%16s 0x%08x] current state:%d (%d)\n",
+			dcm_pr_no_info("[%16s 0x%08x] current state:%d (%d)\n",
 				 dcm->name, dcm->typeid, dcm->current_state,
 				 dcm->disable_refcnt);
 
@@ -193,7 +193,7 @@ void dcm_restore(unsigned int type)
 	}
 
 	if (init_dcm_type_pre != common_init_dcm_type) {
-		dcm_pr_info("[%s]type:0x%08x, init_dcm_type=0x%x->0x%x\n",
+		dcm_pr_no_info("[%s]type:0x%08x, init_dcm_type=0x%x->0x%x\n",
 			 __func__, type, init_dcm_type_pre,
 			 common_init_dcm_type);
 		/*dcm_smc_msg_send(common_init_dcm_type);*/
@@ -208,10 +208,10 @@ void dcm_dump_state(int type)
 	int i;
 	struct DCM *dcm;
 
-	dcm_pr_info("\n******** dcm dump state *********\n");
+	dcm_pr_no_info("\n******** dcm dump state *********\n");
 	for (i = 0, dcm = &common_dcm_array[0]; i < NR_DCM_TYPE; i++, dcm++) {
 		if (type & dcm->typeid) {
-			dcm_pr_info("[%-16s 0x%08x] current state:%d (%d)\n",
+			dcm_pr_no_info("[%-16s 0x%08x] current state:%d (%d)\n",
 				 dcm->name, dcm->typeid, dcm->current_state,
 				 dcm->disable_refcnt);
 		}
@@ -296,25 +296,14 @@ static ssize_t dcm_state_store(struct kobject *kobj,
 				mask &= common_all_dcm_type;
 
 				dcm_set_state(mask, mode);
-
-				/*
-				 * Log for stallDCM switching
-				 * in Performance/Normal mode
-				 */
-				if (mask & STALL_DCM_TYPE) {
-					if (mode)
-						dcm_pr_info("stall dcm is enabled for Default(Normal) mode started\n");
-					else
-						dcm_pr_info("stall dcm is disabled for Performance(Sports) mode started\n");
-				}
 			}
 		} else {
-			dcm_pr_info("SORRY, do not support your command: %s\n",
+			dcm_pr_no_info("SORRY, do not support your command: %s\n",
 				    cmd);
 		}
 		ret = n;
 	} else {
-		dcm_pr_info("SORRY, do not support your command.\n");
+		dcm_pr_no_info("SORRY, do not support your command.\n");
 		ret = -EINVAL;
 	}
 
@@ -338,9 +327,9 @@ int mt_dcm_common_init(void)
 	unsigned int default_type;
 	int default_state;
 	int err = 0;
-	/*dcm_pr_info("[%s]: dcm common init\n", __func__);*/
+	/*dcm_pr_no_info("[%s]: dcm common init\n", __func__);*/
 	if (common_dcm_ops == NULL) {
-		dcm_pr_notice("[%s] dcm common ops null\n",
+		dcm_pr_no_notice("[%s] dcm common ops null\n",
 					__func__);
 		return -1;
 	}
@@ -363,14 +352,14 @@ int mt_dcm_common_init(void)
 
 		err = sysfs_create_file(kobj, &dcm_state_attr.attr);
 		if (err)
-			dcm_pr_notice("[%s]: fail to create sysfs\n", __func__);
+			dcm_pr_no_notice("[%s]: fail to create sysfs\n", __func__);
 	}
 
 #ifdef DCM_DEBUG_MON
 	{
 		err = sysfs_create_file(power_kobj, &dcm_debug_mon_attr.attr);
 		if (err)
-			dcm_pr_notice("[%s]: fail to create sysfs\n", __func__);
+			dcm_pr_no_notice("[%s]: fail to create sysfs\n", __func__);
 	}
 #endif /* #ifdef DCM_DEBUG_MON */
 #endif /* #ifdef CONFIG_PM */

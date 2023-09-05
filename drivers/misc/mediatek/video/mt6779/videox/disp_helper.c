@@ -170,7 +170,7 @@ enum DISP_HELPER_OPT disp_helper_name_to_opt(const char *name)
 		if (strcmp(name, opt_name) == 0)
 			return i;
 	}
-	DISP_PR_INFO("%s: unknown name: %s\n", __func__, name);
+	DISP_pr_no_info("%s: unknown name: %s\n", __func__, name);
 	return DISP_OPT_NUM;
 }
 
@@ -182,14 +182,14 @@ int disp_helper_set_option(enum DISP_HELPER_OPT option, int value)
 	if (option == DISP_OPT_FPS_CALC_WND) {
 		ret = primary_fps_ctx_set_wnd_sz(value);
 		if (ret) {
-			DISP_PR_INFO("%s error to set fps_wnd_sz to %d\n",
+			DISP_pr_no_info("%s error to set fps_wnd_sz to %d\n",
 				     __func__, value);
 			return ret;
 		}
 	}
 
 	if (option >= DISP_OPT_NUM) {
-		DISP_PR_INFO("wrong option: %d\n", option);
+		DISP_pr_no_info("wrong option: %d\n", option);
 		return -EINVAL;
 	}
 
@@ -222,7 +222,7 @@ int disp_helper_get_option(enum DISP_HELPER_OPT option)
 	int ret = 0;
 
 	if (option >= DISP_OPT_NUM) {
-		DISP_PR_INFO("%s: option invalid %d\n", __func__, option);
+		DISP_pr_no_info("%s: option invalid %d\n", __func__, option);
 		return -1;
 	}
 
@@ -236,7 +236,7 @@ int disp_helper_get_option(enum DISP_HELPER_OPT option)
 		else if (_is_early_porting_stage())
 			return 0;
 
-		DISP_PR_INFO("%s,get option MIPITX fail\n", __FILE__);
+		DISP_pr_no_info("%s,get option MIPITX fail\n", __FILE__);
 		return -1;
 	}
 	case DISP_OPT_FAKE_LCM_X:
@@ -246,7 +246,7 @@ int disp_helper_get_option(enum DISP_HELPER_OPT option)
 #ifdef CONFIG_CUSTOM_LCM_X
 		ret = kstrtoint(CONFIG_CUSTOM_LCM_X, 0, &x);
 		if (ret) {
-			pr_err("%s error to parse x: %s\n",
+			pr_no_err("%s error to parse x: %s\n",
 			       __func__, CONFIG_CUSTOM_LCM_X);
 			x = 0;
 		}
@@ -260,7 +260,7 @@ int disp_helper_get_option(enum DISP_HELPER_OPT option)
 #ifdef CONFIG_CUSTOM_LCM_Y
 		ret = kstrtoint(CONFIG_CUSTOM_LCM_Y, 0, &y);
 		if (ret) {
-			pr_err("%s error to parse x: %s\n",
+			pr_no_err("%s error to parse x: %s\n",
 			       __func__, CONFIG_CUSTOM_LCM_Y);
 			y = 0;
 		}

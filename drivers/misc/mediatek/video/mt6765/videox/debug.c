@@ -982,7 +982,7 @@ static void process_dbg_opt(const char *opt)
 				     &WR_mode, &loop_mode, &test_len,
 				     &burst_len, &latency);
 			if (ret != 5) {
-				pr_debug("%d error to parse cmd %s\n",
+				pr_no_debug("%d error to parse cmd %s\n",
 					__LINE__, opt);
 				return;
 			}
@@ -1758,42 +1758,42 @@ void DBG_Init(void)
 				NULL,
 				&debug_fops);
 	if (!mtkfb_procfs) {
-		pr_info("[%s %d]failed to create mtkfb in /proc/disp_ddp\n",
+		pr_no_info("[%s %d]failed to create mtkfb in /proc/disp_ddp\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	disp_lowpower_proc = proc_mkdir("displowpower", NULL);
 	if (!disp_lowpower_proc) {
-		pr_info("[%s %d]failed to create dir: /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create dir: /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("kickdump", S_IFREG | 0444,
 		disp_lowpower_proc, &kickidle_fops)) {
-		pr_info("[%s %d]failed to create kickdump in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create kickdump in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("partial", S_IFREG | 0444,
 		disp_lowpower_proc, &partial_fops)) {
-		pr_info("[%s %d]failed to create partial in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create partial in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("idletime", S_IFREG | 0444,
 		disp_lowpower_proc, &idletime_fops)) {
-		pr_info("[%s %d]failed to create idletime in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create idletime in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("idlevfp", S_IFREG | 0444,
 		disp_lowpower_proc, &idlevfp_fops)) {
-		pr_info("[%s %d]failed to create idlevfp in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create idlevfp in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}

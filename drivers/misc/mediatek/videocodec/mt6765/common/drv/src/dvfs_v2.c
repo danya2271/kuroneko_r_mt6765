@@ -143,7 +143,7 @@ int free_hist_(struct codec_history **head, struct codec_history *target)
 			temp->next = target->next;
 			kfree(target);
 		} else {
-			pr_info("VCODEC free history %p not found",
+			pr_no_info("VCODEC free history %p not found",
 				target->handle);
 			return -1;
 		}
@@ -260,7 +260,7 @@ long long est_next_submit(struct codec_history *hist)
 		return (hist->submit[prev_idx] + MIN_SUBMIT_GAP * 2);
 
 #if SHOW_ALGO_INFO
-	pr_info("%s first_idx %d(%lld) prev_idx %d(%lld)",
+	pr_no_info("%s first_idx %d(%lld) prev_idx %d(%lld)",
 		__func__, first_idx, hist->submit[first_idx],
 		prev_idx, hist->submit[prev_idx]);
 #endif
@@ -274,7 +274,7 @@ long long est_next_submit(struct codec_history *hist)
 
 	if (next_submit > MAX_SUBMIT * 2) {
 #if SHOW_ALGO_INFO
-		pr_info("%s %lld -> MAX SUBMIT(%d)",
+		pr_no_info("%s %lld -> MAX SUBMIT(%d)",
 			__func__, next_submit, MAX_SUBMIT);
 #endif
 		next_submit = MAX_SUBMIT * 2;
@@ -318,7 +318,7 @@ int est_next_job(long long now_us, long long *t_us, int *kcy, int *min_mhz,
 	hist = find_hist(job->handle, head);
 
 #if SHOW_ALGO_INFO
-	pr_info("%s find_hist %p handle %p\n", __func__, hist,
+	pr_no_info("%s find_hist %p handle %p\n", __func__, hist,
 		(hist == 0) ? 0 : hist->handle);
 #endif
 
@@ -327,7 +327,7 @@ int est_next_job(long long now_us, long long *t_us, int *kcy, int *min_mhz,
 		/* Set *t_us = now_us to signal full speed */
 		*t_us = now_us;
 #if SHOW_ALGO_INFO
-		pr_info("%s not history yet, full speed\n", __func__);
+		pr_no_info("%s not history yet, full speed\n", __func__);
 #endif
 	} else {
 		*kcy += est_new_kcy(hist);
@@ -361,12 +361,12 @@ int est_next_job(long long now_us, long long *t_us, int *kcy, int *min_mhz,
 			*t_us = now_us;
 
 #if SHOW_ALGO_INFO
-		pr_info("%s deadline %llu, kcy %d\n", __func__, deadline, *kcy);
+		pr_no_info("%s deadline %llu, kcy %d\n", __func__, deadline, *kcy);
 #endif
 	}
 
 #if SHOW_ALGO_INFO
-	pr_info("%s now_us %lld, target_us %lld, min_mhz %d\n",
+	pr_no_info("%s now_us %lld, target_us %lld, min_mhz %d\n",
 		__func__, now_us, *t_us, *min_mhz);
 #endif
 
@@ -389,7 +389,7 @@ int update_hist_item(struct codec_job *job, struct codec_history *hist)
 	int prev_idx;
 
 	if (job->handle != hist->handle) {
-		pr_info("VCODEC dvfs job - history mismatch\n");
+		pr_no_info("VCODEC dvfs job - history mismatch\n");
 		return -1;
 	}
 
@@ -400,7 +400,7 @@ int update_hist_item(struct codec_job *job, struct codec_history *hist)
 	if (hist->cur_cnt > 1 &&
 		(job->submit - hist->submit[prev_idx]) > MAX_SUBMIT_GAP) {
 #if SHOW_ALGO_INFO
-		pr_info("%s %p, gap (%lld), reset hist\n",
+		pr_no_info("%s %p, gap (%lld), reset hist\n",
 			__func__, hist->handle,
 			(job->submit-hist->submit[prev_idx]));
 #endif
@@ -430,7 +430,7 @@ int update_hist_item(struct codec_job *job, struct codec_history *hist)
 				(hist->end[hist_idx] - hist->start[hist_idx]) +
 				(job->end - job->start);
 #if SHOW_ALGO_INFO
-		pr_info("%s 1 kcy %d, time %llu\n",
+		pr_no_info("%s 1 kcy %d, time %llu\n",
 			__func__, hist->tot_kcy, hist->tot_time);
 #endif
 	} else {
@@ -439,7 +439,7 @@ int update_hist_item(struct codec_job *job, struct codec_history *hist)
 			(int)div_64(job->mhz * (job->end - job->start), 1000);
 		hist->tot_time = hist->tot_time + (job->end - job->start);
 #if SHOW_ALGO_INFO
-		pr_info("%s 2 kcy %d, time %llu, cnt %d\n",
+		pr_no_info("%s 2 kcy %d, time %llu, cnt %d\n",
 			__func__, hist->tot_kcy, hist->tot_time, hist->cur_cnt);
 #endif
 	}
@@ -451,7 +451,7 @@ int update_hist_item(struct codec_job *job, struct codec_history *hist)
 	hist->end[hist_idx] = job->end;
 
 #if SHOW_ALGO_INFO
-	pr_info("%s %p, mhz %d, sub %lld, start %lld, end %lld\n",
+	pr_no_info("%s %p, mhz %d, sub %lld, start %lld, end %lld\n",
 		__func__, hist->handle, job->mhz,
 		job->submit, job->start, job->end);
 #endif
@@ -481,7 +481,7 @@ int update_hist(struct codec_job *job, struct codec_history **head)
 
 		target->handle = job->handle;
 #if SHOW_ALGO_INFO
-		pr_info("%s new history %p head %p\n", __func__, target, *head);
+		pr_no_info("%s new history %p head %p\n", __func__, target, *head);
 #endif
 	}
 
@@ -489,7 +489,7 @@ int update_hist(struct codec_job *job, struct codec_history **head)
 	if (ret == 1) {
 		/* Long pause, start over */
 #if SHOW_ALGO_INFO
-		pr_info("VCODEC dvfs start over for handle %p", job->handle);
+		pr_no_info("VCODEC dvfs start over for handle %p", job->handle);
 #endif
 	}
 
@@ -523,7 +523,7 @@ int add_job_(struct codec_job *job, struct codec_job **head)
 	last_job = *head;
 	while (last_job->next != 0) {
 		if (last_job->handle == job->handle) {
-			pr_info("VCODEC dvfs multiple jobs from same instance");
+			pr_no_info("VCODEC dvfs multiple jobs from same instance");
 			return -1;
 		}
 		last_job = last_job->next;
@@ -627,18 +627,18 @@ int est_freq(void *handle, struct codec_job **job, struct codec_history *head)
 
 	/* Error case, just run at max freq */
 	if (target_job == 0) {
-		pr_info("%s job not found!\n", __func__);
+		pr_no_info("%s job not found!\n", __func__);
 		return DEFAULT_MHZ;
 	}
 
 	if (target_job != *job)
-		pr_info("%s target_job != job queue head\n", __func__);
+		pr_no_info("%s target_job != job queue head\n", __func__);
 
 	est_res = est_next_job(cur_time, &end_time, &kcy, &min_mhz, target_job,
 				head);
 
 #if SHOW_ALGO_INFO
-	pr_info("%s res %d, min_mhz %d\n", __func__, est_res, min_mhz);
+	pr_no_info("%s res %d, min_mhz %d\n", __func__, est_res, min_mhz);
 #endif
 
 	/* Error case or do it ASAP */
@@ -674,7 +674,7 @@ u64 match_freq(int target_mhz, u64 *freq_list, u32 freq_cnt)
 		res_mhz = freq_list[0];
 
 #if SHOW_ALGO_INFO
-	pr_info("%s %d -> %llu\n", __func__, target_mhz, res_mhz);
+	pr_no_info("%s %d -> %llu\n", __func__, target_mhz, res_mhz);
 #endif
 	return res_mhz;
 }

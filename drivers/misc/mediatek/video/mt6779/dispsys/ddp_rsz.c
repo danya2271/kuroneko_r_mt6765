@@ -106,7 +106,7 @@ static unsigned long rsz_base_addr(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_RSZ0:
 		return DISPSYS_RSZ0_BASE;
 	default:
-		DDP_PR_ERR("invalid rsz module:%s\n",
+		DDP_pr_no_err("invalid rsz module:%s\n",
 			   ddp_get_module_name(module));
 		break;
 	}
@@ -175,7 +175,7 @@ static int rsz_check_params(struct RSZ_CONFIG_STRUCT *rsz_config)
 	if ((rsz_config->frm_in_w != rsz_config->frm_out_w ||
 	     rsz_config->frm_in_h != rsz_config->frm_out_h) &&
 	    rsz_config->frm_in_w > RSZ_TILE_LENGTH) {
-		DISP_PR_ERR("%s:need rsz but input width(%u) > limit(%u)\n",
+		DISP_pr_no_err("%s:need rsz but input width(%u) > limit(%u)\n",
 			    __func__, rsz_config->frm_in_w, RSZ_TILE_LENGTH);
 		return -EINVAL;
 	}
@@ -241,7 +241,7 @@ static int rsz_config(enum DISP_MODULE_ENUM module,
 		static bool dump;
 		struct OVL_CONFIG_STRUCT *c = &pconfig->ovl_config[0];
 
-		DISP_PR_ERR("%s:L%d:en%d:(%u,%u,%ux%u)->(%u,%u,%ux%u)\n",
+		DISP_pr_no_err("%s:L%d:en%d:(%u,%u,%ux%u)->(%u,%u,%ux%u)\n",
 			    __func__, c->layer, c->layer_en,
 			    c->src_x, c->src_y, c->src_w, c->src_h,
 			    c->dst_x, c->dst_y, c->dst_w, c->dst_h);
@@ -267,7 +267,7 @@ static int rsz_config(enum DISP_MODULE_ENUM module,
 	if (in_w > out_w || in_h > out_h) {
 		static bool dump;
 
-		DDP_PR_ERR("DISP_RSZ only supports scale-up,(%ux%u)->(%ux%u)\n",
+		DDP_pr_no_err("DISP_RSZ only supports scale-up,(%ux%u)->(%ux%u)\n",
 			   in_w, in_h, out_w, out_h);
 		if (!dump) {
 			dump = true;

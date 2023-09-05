@@ -173,7 +173,7 @@ static int ptpod_create(struct kobject *parent)
 	do { \
 		ret = sysfs_create_file(kobj_ptpod, &attr_name ## _attr.attr); \
 		if (ret != 0) { \
-			pr_notice("Failed to create " #attr_name " in sysfs\n"); \
+			pr_no_notice("Failed to create " #attr_name " in sysfs\n"); \
 			return ret; \
 		} \
 	} while (0)

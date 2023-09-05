@@ -26,12 +26,12 @@
 #define THERMAL_USE_IIO_CHANNEL
 
 #define mtktspmic_info(fmt, args...)   \
-pr_notice("[Thermal/TZ/PMIC] " fmt, ##args)
+pr_no_notice("[Thermal/TZ/PMIC] " fmt, ##args)
 
 #define mtktspmic_dprintk(fmt, args...)   \
 	do {								\
 		if (mtktspmic_debug_log == 1) {				\
-			pr_notice("[Thermal/TZ/PMIC] " fmt, ##args); \
+			pr_no_notice("[Thermal/TZ/PMIC] " fmt, ##args); \
 		}							\
 	} while (0)
 

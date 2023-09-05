@@ -73,7 +73,7 @@ static int __get_cmdq_slots(cmdqBackupSlotHandle Slot,
 
 	/* cmdq get slot fail */
 	if (ret)
-		DISP_PR_ERR("DISP CMDQ get slot failed:%d\n", ret);
+		DISP_pr_no_err("DISP CMDQ get slot failed:%d\n", ret);
 
 	return ret;
 }
@@ -155,7 +155,7 @@ static int __set_hrt_bw(enum DISP_MODULE_ENUM module,
 		request = &wdma0_hrt_request;
 		break;
 	default:
-		DISP_PR_ERR("unsupport module id %s(%d)\n",
+		DISP_pr_no_err("unsupport module id %s(%d)\n",
 			ddp_get_module_name(module), module);
 		return -1;
 	}
@@ -189,7 +189,7 @@ static int __set_bw(enum DISP_MODULE_ENUM module,
 		request = &wdma0_request;
 		break;
 	default:
-		DISP_PR_ERR("unsupport module id %s(%d)\n",
+		DISP_pr_no_err("unsupport module id %s(%d)\n",
 			ddp_get_module_name(module), module);
 		return -1;
 	}
@@ -218,7 +218,7 @@ static int __set_fbdc_bw(enum DISP_MODULE_ENUM module,
 		request = &ovl0_2l_fbdc_request;
 		break;
 	default:
-		DISP_PR_ERR("unsupport module id %s(%d)\n",
+		DISP_pr_no_err("unsupport module id %s(%d)\n",
 			ddp_get_module_name(module), module);
 		return -1;
 	}
@@ -381,7 +381,7 @@ int disp_pm_qos_set_ovl_bw(unsigned long long in_fps,
 
 	/* cmdq get slot fail */
 	if (ret) {
-		DISP_PR_ERR("DISP CMDQ get slot failed:%d\n", ret);
+		DISP_pr_no_err("DISP CMDQ get slot failed:%d\n", ret);
 		disp_pm_qos_set_default_bw(bandwidth);
 	} else {
 		if (is_dc)
@@ -467,7 +467,7 @@ int disp_pm_qos_set_rdma_bw(unsigned long long out_fps,
 
 	/* cmdq get slot fail */
 	if (ret) {
-		DISP_PR_ERR("DISP CMDQ get slot failed:%d\n", ret);
+		DISP_pr_no_err("DISP CMDQ get slot failed:%d\n", ret);
 		disp_pm_qos_set_default_bw(bandwidth);
 	} else {
 		*bandwidth = (unsigned long long)rdma0_bw *

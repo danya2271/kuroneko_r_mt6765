@@ -1020,17 +1020,17 @@ bool dp_parse_svid_data(
 		pd_port->tcpc_dev->dev.of_node, "displayport");
 	if (np == NULL) {
 		pd_port->svid_data_cnt = 0;
-		pr_err("%s get displayport data fail\n", __func__);
+		pr_no_err("%s get displayport data fail\n", __func__);
 		return false;
 	}
 
-	pr_info("dp, svid\r\n");
+	pr_no_info("dp, svid\r\n");
 	svid_data->svid = USB_SID_DISPLAYPORT;
 	ufp_np = of_find_node_by_name(np, "ufp_d");
 	dfp_np = of_find_node_by_name(np, "dfp_d");
 
 	if (ufp_np) {
-		pr_info("dp, ufp_np\n");
+		pr_no_info("dp, ufp_np\n");
 		for (i = 0; i < ARRAY_SIZE(supported_dp_pin_modes) - 1; i++) {
 			if (of_property_read_bool(ufp_np,
 				supported_dp_pin_modes[i].prop_name))
@@ -1040,7 +1040,7 @@ bool dp_parse_svid_data(
 	}
 
 	if (dfp_np) {
-		pr_info("dp, dfp_np\n");
+		pr_no_info("dp, dfp_np\n");
 		for (i = 0; i < ARRAY_SIZE(supported_dp_pin_modes); i++) {
 			if (of_property_read_bool(dfp_np,
 				supported_dp_pin_modes[i].prop_name))
@@ -1068,7 +1068,7 @@ bool dp_parse_svid_data(
 	pd_port->dp_second_connected = DEFAULT_DP_SECOND_CONNECTED;
 
 	if (of_property_read_string(np, "1st_connection", &connection) == 0) {
-		pr_info("dp, 1st_connection\n");
+		pr_no_info("dp, 1st_connection\n");
 		for (i = 0; i < ARRAY_SIZE(dp_connect_mode); i++) {
 			if (strcasecmp(connection,
 				dp_connect_mode[i].conn_mode) == 0) {
@@ -1080,7 +1080,7 @@ bool dp_parse_svid_data(
 	}
 
 	if (of_property_read_string(np, "2nd_connection", &connection) == 0) {
-		pr_info("dp, 2nd_connection\n");
+		pr_no_info("dp, 2nd_connection\n");
 		for (i = 0; i < ARRAY_SIZE(dp_connect_mode); i++) {
 			if (strcasecmp(connection,
 				dp_connect_mode[i].conn_mode) == 0) {

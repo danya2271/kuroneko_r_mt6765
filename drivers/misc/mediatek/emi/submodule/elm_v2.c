@@ -64,7 +64,7 @@ void elm_init(struct platform_driver *emi_ctrl, struct platform_device *pdev)
 	unsigned int mbw_buf_h, mbw_buf_l;
 	phys_addr_t mbw_buf_start;
 
-	pr_info("[ELM] initialize EMI ELMv2\n");
+	pr_no_info("[ELM] initialize EMI ELMv2\n");
 
 #if DBG_INFO_READY
 	LAST_EMI_BASE = get_dbg_info_base(0xE31C);
@@ -72,7 +72,7 @@ void elm_init(struct platform_driver *emi_ctrl, struct platform_device *pdev)
 	LAST_EMI_BASE = NULL;
 #endif
 	if (!LAST_EMI_BASE) {
-		pr_err("[ELM] get LAST_EMI_BASE fail\n");
+		pr_no_err("[ELM] get LAST_EMI_BASE fail\n");
 		return;
 	}
 
@@ -87,19 +87,19 @@ void elm_init(struct platform_driver *emi_ctrl, struct platform_device *pdev)
 #endif
 		mbw_dram_buf = ioremap_wc(mbw_buf_start, MBW_BUF_LEN);
 		elm_enabled = true;
-		pr_info("[ELM] enable mbw_buf dump\n");
+		pr_no_info("[ELM] enable mbw_buf dump\n");
 	}
 
 	emi_mbw_dir = debugfs_create_dir("emi_mbw", NULL);
 	if (!emi_mbw_dir) {
-		pr_err("[ELM] create dir fail\n");
+		pr_no_err("[ELM] create dir fail\n");
 		return;
 	}
 
 	dump_buf = debugfs_create_file("dump_buf", 0444,
 		emi_mbw_dir, NULL, &dump_buf_fops);
 	if (!dump_buf) {
-		pr_err("[ELM] create dump_buf fail\n");
+		pr_no_err("[ELM] create dump_buf fail\n");
 		return;
 	}
 }

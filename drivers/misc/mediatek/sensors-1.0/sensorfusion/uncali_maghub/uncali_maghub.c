@@ -105,7 +105,7 @@ static int uncali_maghub_local_init(void)
 #endif
 	err = fusion_register_control_path(&ctl, ID_MAGNETIC_UNCALIBRATED);
 	if (err) {
-		pr_err("register uncali_mag control path err\n");
+		pr_no_err("register uncali_mag control path err\n");
 		goto exit;
 	}
 
@@ -113,13 +113,13 @@ static int uncali_maghub_local_init(void)
 	data.vender_div = 100;
 	err = fusion_register_data_path(&data, ID_MAGNETIC_UNCALIBRATED);
 	if (err) {
-		pr_err("register uncali_mag data path err\n");
+		pr_no_err("register uncali_mag data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_MAGNETIC_UNCALIBRATED,
 		uncali_mag_recv_data);
 	if (err < 0) {
-		pr_err("SCP_sensorHub_data_registration failed\n");
+		pr_no_err("SCP_sensorHub_data_registration failed\n");
 		goto exit;
 	}
 	return 0;
@@ -145,7 +145,7 @@ static int __init uncali_maghub_init(void)
 
 static void __exit uncali_maghub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(uncali_maghub_init);

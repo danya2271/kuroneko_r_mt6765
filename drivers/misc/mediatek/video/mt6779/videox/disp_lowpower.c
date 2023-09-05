@@ -256,7 +256,7 @@ int _blocking_flush(void)
 
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 	if (ret) {
-		DISP_PR_ERR("%s:%d, create cmdq handle fail! ret=%d\n",
+		DISP_pr_no_err("%s:%d, create cmdq handle fail! ret=%d\n",
 			    __func__, __LINE__, ret);
 		return -1;
 	}
@@ -271,7 +271,7 @@ int _blocking_flush(void)
 		ret = cmdqRecCreate(CMDQ_SCENARIO_DISP_VFP_CHANGE,
 			&handle_vfp);
 		if (ret) {
-			DISP_PR_INFO("%s:%d, create cmdq handle fail!ret=%d\n",
+			DISP_pr_no_info("%s:%d, create cmdq handle fail!ret=%d\n",
 				__func__, __LINE__, ret);
 			return -1;
 		}
@@ -512,7 +512,7 @@ static int __switch_mmsys_clk(int mmsys_clk_old, int mmsys_clk_new)
 		return ret;
 
 	if (primary_get_state() != DISP_ALIVE || is_mipi_enterulps()) {
-		DISP_PR_ERR("[LP]%s: when display suspend old=%d & new=%d\n",
+		DISP_pr_no_err("[LP]%s: when display suspend old=%d & new=%d\n",
 			    __func__, mmsys_clk_old, mmsys_clk_new);
 		return ret;
 	}
@@ -601,7 +601,7 @@ static void _primary_display_disable_mmsys_clk(void)
 	DISPINFO("[LP]2.primary display path stop[end]\n");
 
 	if (dpmgr_path_is_busy(phandle)) {
-		DISP_PR_ERR("[LP]2.stop display path failed, still busy\n");
+		DISP_pr_no_err("[LP]2.stop display path failed, still busy\n");
 		dpmgr_path_reset(phandle, CMDQ_DISABLE);
 		/* even path is busy(stop fail), we still need to continue
 		 * power off other module/devices
@@ -618,7 +618,7 @@ static void _primary_display_disable_mmsys_clk(void)
 			dpmgr_path_power_off(primary_get_ovl2mem_handle(),
 					     CMDQ_DISABLE);
 		else
-			DISP_PR_ERR("DC but ovl2mem_path_handle is null\n");
+			DISP_pr_no_err("DC but ovl2mem_path_handle is null\n");
 
 		DISPINFO("[LP]3.1.power off ovl2men path[end]\n");
 	}
@@ -650,7 +650,7 @@ static void _primary_display_enable_mmsys_clk(void)
 	gset_arg.dst_mod_type = dpmgr_path_get_dst_module_type(phandle);
 	if (primary_display_is_decouple_mode()) {
 		if (ovl2mem_phandle == NULL) {
-			DISP_PR_ERR("DC but ovl2mem_path_handle is null\n");
+			DISP_pr_no_err("DC but ovl2mem_path_handle is null\n");
 			return;
 		}
 
@@ -708,7 +708,7 @@ static void _primary_display_enable_mmsys_clk(void)
 	DISPINFO("[LP]3.dpmgr path start[end]\n");
 
 	if (dpmgr_path_is_busy(phandle))
-		DISP_PR_ERR("[LP]3.didn't trigger display but already busy\n");
+		DISP_pr_no_err("[LP]3.didn't trigger display but already busy\n");
 
 	if (disp_helper_get_option(DISP_OPT_USE_CMDQ)) {
 		DISPDBG("[LP]4.start cmdq[begin]\n");
@@ -1586,7 +1586,7 @@ int _ext_blocking_flush(void)
 
 	ret = cmdqRecCreate(CMDQ_SCENARIO_MHL_DISP, &qhandle);
 	if (ret) {
-		DISP_PR_ERR("%s:%d, create cmdq handle fail! ret=%d\n",
+		DISP_pr_no_err("%s:%d, create cmdq handle fail! ret=%d\n",
 			    __func__, __LINE__, ret);
 		return -1;
 	}
@@ -1659,7 +1659,7 @@ static void _external_display_enable_mmsys_clk(void)
 	DISPINFO("[LP]3.external dpmgr path start[end]\n");
 
 	if (dpmgr_path_is_busy(ext_disp_get_dpmgr_handle()))
-		DISP_PR_ERR("[LP]3.didn't trigger ext path but already busy\n");
+		DISP_pr_no_err("[LP]3.didn't trigger ext path but already busy\n");
 
 	if (ext_disp_cmdq_enabled()) {
 		DISPINFO("[LP]4.start external cmdq[begin]\n");

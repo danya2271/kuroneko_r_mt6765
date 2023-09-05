@@ -27,30 +27,30 @@ MODULE_PARM_DESC(egn_debug, " activates debug info");
 
 #define MyTag "[STALN]"
 #define LOG_VRB(format, args...)				 \
-	pr_debug(MyTag "[%s] " format, __func__, ##args)
+	pr_no_debug(MyTag "[%s] " format, __func__, ##args)
 
 #define LOG_DBG(format, args...)				 \
 	do {							 \
 		if (egn_debug >= 2)				 \
-			pr_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 #define LOG_INF(format, args...)				 \
 	do {							 \
 		if (egn_debug >= 1)				 \
-			pr_info(MyTag "[%s] " format, __func__, ##args);\
+			pr_no_info(MyTag "[%s] " format, __func__, ##args);\
 	} while (0)
 
 #define LOG_WRN(format, args...)				 \
 	do {							 \
 		if (egn_debug >= 0)				 \
-			pr_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 #define LOG_ERR(format, args...)				 \
 	do {							 \
 		if (egn_debug >= 0)				 \
-			pr_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 

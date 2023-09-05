@@ -39,13 +39,13 @@ static int sar_factory_enable_sensor(bool enabledisable,
 		err = sensor_set_delay_to_hub(ID_SAR,
 					      sample_periods_ms);
 		if (err) {
-			pr_err("sensor_set_delay_to_hub failed!\n");
+			pr_no_err("sensor_set_delay_to_hub failed!\n");
 			return -1;
 		}
 	}
 	err = sensor_enable_to_hub(ID_SAR, enabledisable);
 	if (err) {
-		pr_err("sensor_enable_to_hub failed!\n");
+		pr_no_err("sensor_enable_to_hub failed!\n");
 		return -1;
 	}
 	return 0;
@@ -82,7 +82,7 @@ static int sar_factory_get_cali(int32_t data[3])
 	err = wait_for_completion_timeout(&obj->calibration_done,
 					  msecs_to_jiffies(3000));
 	if (!err) {
-		pr_err("sar factory get cali fail!\n");
+		pr_no_err("sar factory get cali fail!\n");
 		return -1;
 	}
 	spin_lock(&calibration_lock);
@@ -92,7 +92,7 @@ static int sar_factory_get_cali(int32_t data[3])
 	status = obj->cali_status;
 	spin_unlock(&calibration_lock);
 	if (status != 0) {
-		pr_debug("sar cali fail!\n");
+		pr_no_debug("sar cali fail!\n");
 		return -2;
 	}
 	return 0;
@@ -191,7 +191,7 @@ static int sarhub_local_init(void)
 
 	struct sarhub_ipi_data *obj;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
 		err = -ENOMEM;
@@ -210,27 +210,27 @@ static int sarhub_local_init(void)
 	ctl.is_support_batch = false;
 	err = situation_register_control_path(&ctl, ID_SAR);
 	if (err) {
-		pr_err("register sar control path err\n");
+		pr_no_err("register sar control path err\n");
 		goto exit;
 	}
 
 	data.get_data = sar_get_data;
 	err = situation_register_data_path(&data, ID_SAR);
 	if (err) {
-		pr_err("register sar data path err\n");
+		pr_no_err("register sar data path err\n");
 		goto exit;
 	}
 
 	err = sar_factory_device_register(&sarhub_factory_device);
 	if (err) {
-		pr_err("sar_factory_device register failed\n");
+		pr_no_err("sar_factory_device register failed\n");
 		goto exit;
 	}
 
 	err = scp_sensorHub_data_registration(ID_SAR,
 		sar_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit;
 	}
 	return 0;
@@ -256,7 +256,7 @@ static int __init sarhub_init(void)
 
 static void __exit sarhub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(sarhub_init);

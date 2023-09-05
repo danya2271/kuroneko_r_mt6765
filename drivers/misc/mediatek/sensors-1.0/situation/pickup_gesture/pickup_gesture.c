@@ -44,7 +44,7 @@ static int pickup_gesture_get_data(int *probability, int *status)
 
 	err = sensor_get_data_from_hub(ID_PICK_UP_GESTURE, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp = data.time_stamp;
@@ -79,7 +79,7 @@ static int pickup_gesture_recv_data(struct data_unit_t *event,
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("pickup_gesture do not support flush\n");
+		pr_no_debug("pickup_gesture do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_PICK_UP_GESTURE,
 				(int64_t)event->time_stamp);
@@ -97,20 +97,20 @@ static int pkuphub_local_init(void)
 	ctl.is_support_wake_lock = true;
 	err = situation_register_control_path(&ctl, ID_PICK_UP_GESTURE);
 	if (err) {
-		pr_err("register pickup_gesture control path err\n");
+		pr_no_err("register pickup_gesture control path err\n");
 		goto exit;
 	}
 
 	data.get_data = pickup_gesture_get_data;
 	err = situation_register_data_path(&data, ID_PICK_UP_GESTURE);
 	if (err) {
-		pr_err("register pickup_gesture data path err\n");
+		pr_no_err("register pickup_gesture data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_PICK_UP_GESTURE,
 		pickup_gesture_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -138,7 +138,7 @@ static int __init pkuphub_init(void)
 
 static void __exit pkuphub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(pkuphub_init);

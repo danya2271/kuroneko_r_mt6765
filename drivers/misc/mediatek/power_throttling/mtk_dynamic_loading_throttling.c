@@ -104,7 +104,7 @@ static void update_dlpt_imix_r(void)
 {
 	if (!PTR_ERR_OR_ZERO(dlpt.chan_imix_r))
 		iio_read_channel_raw(dlpt.chan_imix_r, &dlpt.imix_r);
-	pr_info("[dlpt] imix_r=%d\n", dlpt.imix_r);
+	pr_no_info("[dlpt] imix_r=%d\n", dlpt.imix_r);
 }
 
 static int dlpt_adc_chan_init(struct platform_device *pdev)
@@ -115,7 +115,7 @@ static int dlpt_adc_chan_init(struct platform_device *pdev)
 	ret = PTR_ERR_OR_ZERO(dlpt.chan_ptim);
 	if (ret) {
 		if (ret != -EPROBE_DEFER)
-			pr_notice("%s ptim fail, ret=%d\n", __func__, ret);
+			pr_no_notice("%s ptim fail, ret=%d\n", __func__, ret);
 		return ret;
 	}
 
@@ -123,7 +123,7 @@ static int dlpt_adc_chan_init(struct platform_device *pdev)
 	ret = PTR_ERR_OR_ZERO(dlpt.chan_imix_r);
 	if (ret) {
 		if (ret != -EPROBE_DEFER)
-			pr_notice("%s imix_r fail, ret=%d\n", __func__, ret);
+			pr_no_notice("%s imix_r fail, ret=%d\n", __func__, ret);
 		return ret;
 	}
 	update_dlpt_imix_r();
@@ -136,7 +136,7 @@ static int dlpt_adc_chan_init(struct platform_device *pdev)
 	ret = PTR_ERR_OR_ZERO(dlpt.chan_zcv);
 	if (ret) {
 		if (ret != -EPROBE_DEFER)
-			pr_notice("%s pmic_zcv fail, ret=%d\n", __func__, ret);
+			pr_no_notice("%s pmic_zcv fail, ret=%d\n", __func__, ret);
 		return ret;
 	}
 
@@ -150,15 +150,15 @@ void register_dlpt_notify(dlpt_callback dlpt_cb,
 			  enum DLPT_PRIO_TAG prio_val)
 {
 	if (prio_val >= DLPTCB_MAX_NUM || prio_val < 0) {
-		pr_notice("[%s] prio_val=%d, out of boundary\n",
+		pr_no_notice("[%s] prio_val=%d, out of boundary\n",
 			  __func__, prio_val);
 		return;
 	}
 	dlptcb_tb[prio_val].dlptcb = dlpt_cb;
-	pr_info("[%s] prio_val=%d\n", __func__, prio_val);
+	pr_no_info("[%s] prio_val=%d\n", __func__, prio_val);
 
 	if (dlpt.imix != 0) {
-		pr_notice("[%s] happen\n", __func__);
+		pr_no_notice("[%s] happen\n", __func__);
 		if (dlpt_cb != NULL)
 			dlpt_cb(dlpt.imix);
 	}
@@ -172,7 +172,7 @@ static void exec_dlpt_callback(int dlpt_val)
 		if (dlptcb_tb[i].dlptcb)
 			dlptcb_tb[i].dlptcb(dlpt_val);
 	}
-	pr_debug("[%s] dlpt imix_val=%d\n", __func__, dlpt_val);
+	pr_no_debug("[%s] dlpt imix_val=%d\n", __func__, dlpt_val);
 }
 
 static int dlpt_get_rgs_chrdet(void)
@@ -182,7 +182,7 @@ static int dlpt_get_rgs_chrdet(void)
 
 	ret = regmap_read(dlpt.regmap, dlpt.regs->rgs_chrdet.addr, &regval);
 	if (ret != 0) {
-		pr_info("%s Failed to get chrdet status\n", __func__);
+		pr_no_info("%s Failed to get chrdet status\n", __func__);
 		return ret;
 	}
 	if (regval & dlpt.regs->rgs_chrdet.mask)
@@ -202,7 +202,7 @@ static int dlpt_check_power_off(void)
 		else
 			ret = 1; /* 2nd time get VBAT < 3.1V */
 		dlpt_power_off_cnt++;
-		pr_info("[%s] %d ret:%d\n", __func__, dlpt_power_off_cnt, ret);
+		pr_no_info("[%s] %d ret:%d\n", __func__, dlpt_power_off_cnt, ret);
 	} else
 		dlpt_power_off_cnt = 0;
 
@@ -228,7 +228,7 @@ static struct power_supply *get_mtk_gauge_psy(void)
 	if (!psy) {
 		psy = power_supply_get_by_name("mtk-gauge");
 		if (!psy) {
-			pr_info("%s psy is not rdy\n", __func__);
+			pr_no_info("%s psy is not rdy\n", __func__);
 			return NULL;
 		}
 	}
@@ -255,7 +255,7 @@ static void dlpt_set_shutdown_condition(void)
 	ret = power_supply_set_property(psy, POWER_SUPPLY_PROP_ENERGY_EMPTY,
 					&prop);
 	if (ret)
-		pr_info("%s fail\n", __func__);
+		pr_no_info("%s fail\n", __func__);
 }
 
 static int dlpt_get_uisoc(void)
@@ -290,12 +290,12 @@ static int get_dlpt_imix_charging(void)
 
 	ret = iio_read_channel_processed(dlpt.chan_zcv, &zcv_val);
 	if (ret < 0) {
-		pr_notice("[%s] iio_read_channel_processed error\n",
+		pr_no_notice("[%s] iio_read_channel_processed error\n",
 			  __func__);
 		return 0;
 	}
 	imix = (zcv_val - vsys_min_1_val) * 1000 / dlpt.imix_r * 9 / 10;
-	pr_debug("[%s] %d %d %d %d\n", __func__,
+	pr_no_debug("[%s] %d %d %d %d\n", __func__,
 		 imix, zcv_val, vsys_min_1_val, dlpt.imix_r);
 
 	return imix;
@@ -313,7 +313,7 @@ static int get_dlpt_imix(void)
 		ret = iio_read_channel_attribute(dlpt.chan_ptim, &vbat, &ibat,
 						 IIO_CHAN_INFO_PROCESSED);
 		if (ret < 0) {
-			pr_notice("[%s] iio_read_channel_processed error\n",
+			pr_no_notice("[%s] iio_read_channel_processed error\n",
 				  __func__);
 			return 0;
 		}
@@ -330,11 +330,11 @@ static int get_dlpt_imix(void)
 
 	imix = (curr_avg + (volt_avg - lbatInt1) * 1000 / dlpt.imix_r) / 10;
 
-	pr_info("[%s] %d,%d,%d,%d\n"
+	pr_no_info("[%s] %d,%d,%d,%d\n"
 		, __func__, volt_avg, curr_avg, dlpt.imix_r, imix);
 
 	if (imix < 0) {
-		pr_notice("[dlpt] imix= %d < 0\n", imix);
+		pr_no_notice("[dlpt] imix= %d < 0\n", imix);
 		return dlpt.imix;
 	}
 	return imix;
@@ -363,9 +363,9 @@ static int dlpt_notify_handler(void *unused)
 		cur_ui_soc = dlpt_get_uisoc();
 
 		if (dlpt.imix_r == 0)
-			pr_info("[DLPT] imix_r==0, skip\n");
+			pr_no_info("[DLPT] imix_r==0, skip\n");
 		else if (!get_mtk_gauge_psy())
-			pr_info("[DLPT] gauge disabled, skip\n");
+			pr_no_info("[DLPT] gauge disabled, skip\n");
 		else {
 			if (dlpt_get_rgs_chrdet())
 				dlpt.imix = get_dlpt_imix_charging();
@@ -376,7 +376,7 @@ static int dlpt_notify_handler(void *unused)
 				dlpt.imix = IMAX_MAX_VALUE;
 			exec_dlpt_callback(dlpt.imix);
 
-			pr_info("[DLPT_final] %d,%d,%d,%d\n"
+			pr_no_info("[DLPT_final] %d,%d,%d,%d\n"
 				, dlpt.imix, pre_ui_soc
 				, cur_ui_soc, IMAX_MAX_VALUE);
 		}
@@ -387,7 +387,7 @@ static int dlpt_notify_handler(void *unused)
 		if (dlpt_check_power_off()) {
 			/* notify battery driver to power off by SOC=0 */
 			dlpt_set_shutdown_condition();
-			pr_info("[DLPT] notify battery SOC=0 to power off.\n");
+			pr_no_info("[DLPT] notify battery SOC=0 to power off.\n");
 		}
 		mutex_unlock(&dlpt.notify_lock);
 		__pm_relax(dlpt.notify_ws);
@@ -416,12 +416,12 @@ static void dlpt_notify_init(void)
 	dlpt.notify_ws = wakeup_source_register(NULL,
 						"dlpt_notify_ws wakelock");
 	if (!dlpt.notify_ws)
-		pr_notice("dlpt_notify_ws wakeup source fail\n");
+		pr_no_notice("dlpt_notify_ws wakeup source fail\n");
 
 	dlpt.notify_thread = kthread_run(dlpt_notify_handler, 0,
 					 "dlpt_notify_thread");
 	if (IS_ERR(dlpt.notify_thread))
-		pr_notice("Failed to create dlpt_notify_thread\n");
+		pr_no_notice("Failed to create dlpt_notify_thread\n");
 
 	register_low_battery_notify(&dlpt_low_battery_cb,
 				    LOW_BATTERY_PRIO_DLPT);
@@ -462,13 +462,13 @@ static void pmic_uvlo_init(int uvlo_level)
 		break;
 	default:
 		val = 0;
-		pr_notice("[dlpt] Invalid uvlo_level (%d)\n", uvlo_level);
+		pr_no_notice("[dlpt] Invalid uvlo_level (%d)\n", uvlo_level);
 		break;
 	}
 	regmap_update_bits(dlpt.regmap, dlpt.regs->uvlo_reg.addr,
 			   dlpt.regs->uvlo_reg.mask,
 			   val << dlpt.regs->uvlo_reg.shift);
-	pr_info("[dlpt] UVLO_VOLT_LEVEL = %d, RG_UVLO_VTHL = 0x%x\n"
+	pr_no_info("[dlpt] UVLO_VOLT_LEVEL = %d, RG_UVLO_VTHL = 0x%x\n"
 		, uvlo_level, val);
 }
 

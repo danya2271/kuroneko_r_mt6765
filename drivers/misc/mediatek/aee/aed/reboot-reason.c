@@ -44,7 +44,7 @@ static const char *mrdump_get_cmd(void)
 	set_fs(KERNEL_DS);
 	fd = filp_open("/proc/cmdline", O_RDONLY, 0);
 	if (IS_ERR(fd)) {
-		pr_info("kedump: Unable to open /proc/cmdline (%ld)",
+		pr_no_info("kedump: Unable to open /proc/cmdline (%ld)",
 			PTR_ERR(fd));
 		set_fs(fs);
 		return aee_cmdline;
@@ -75,7 +75,7 @@ void aee_rr_proc_init(struct proc_dir_entry *aed_proc_dir)
 	aee_rr_file = proc_create(RR_PROC_NAME, 0440, aed_proc_dir,
 			&aee_rr_reboot_reason_proc_fops);
 	if (!aee_rr_file)
-		pr_notice("%s: Can't create rr proc entry\n", __func__);
+		pr_no_notice("%s: Can't create rr proc entry\n", __func__);
 }
 EXPORT_SYMBOL(aee_rr_proc_init);
 

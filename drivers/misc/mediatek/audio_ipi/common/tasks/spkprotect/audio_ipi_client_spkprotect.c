@@ -168,26 +168,26 @@ int spkprotect_open_dump_file(void)
 
 	sprintf(path_decode_pcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_decode_pcm);
-	pr_debug("%s(), path_decode_pcm= %s\n", __func__, path_decode_pcm);
+	pr_no_debug("%s(), path_decode_pcm= %s\n", __func__, path_decode_pcm);
 	sprintf(path_decode_ivpcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_iv_pcm);
-	pr_debug("%s(), path_decode_iv_pcm= %s\n",
+	pr_no_debug("%s(), path_decode_iv_pcm= %s\n",
 		 __func__, path_decode_ivpcm);
 	sprintf(path_decode_debugpcm, "%s/%s_%s",
 		DUMP_SMARTPA_PCM_DATA_PATH, string_time, string_debug_pcm);
-	pr_debug("%s(), path_decode_debug_pcm= %s\n", __func__,
+	pr_no_debug("%s(), path_decode_debug_pcm= %s\n", __func__,
 		 path_decode_debugpcm);
 
 	file_spk_pcm = filp_open(path_decode_pcm, O_CREAT | O_WRONLY, 0644);
 	if (IS_ERR(file_spk_pcm)) {
-		pr_info("%s(), %s file open error: %ld\n",
+		pr_no_info("%s(), %s file open error: %ld\n",
 			__func__, path_decode_pcm, PTR_ERR(file_spk_pcm));
 		return PTR_ERR(file_spk_pcm);
 	}
 
 	file_spk_iv = filp_open(path_decode_ivpcm, O_CREAT | O_WRONLY, 0644);
 	if (IS_ERR(file_spk_iv)) {
-		pr_info("%s(), %s file open error: %ld\n",
+		pr_no_info("%s(), %s file open error: %ld\n",
 			__func__, path_decode_ivpcm, PTR_ERR(file_spk_iv));
 		return PTR_ERR(file_spk_iv);
 	}
@@ -195,7 +195,7 @@ int spkprotect_open_dump_file(void)
 	file_spk_debug = filp_open(path_decode_debugpcm,
 				   O_CREAT | O_WRONLY, 0644);
 	if (IS_ERR(file_spk_debug)) {
-		pr_info("%s(), %s file open error: %ld\n",
+		pr_no_info("%s(), %s file open error: %ld\n",
 			__func__, path_decode_debugpcm,
 			PTR_ERR(file_spk_debug));
 		return PTR_ERR(file_spk_debug);
@@ -212,7 +212,7 @@ int spkprotect_open_dump_file(void)
 						   NULL,
 						   "spkprotect_dump_kthread");
 		if (IS_ERR(speaker_dump_task))
-			pr_notice("can not create speaker_dump_task kthread\n");
+			pr_no_notice("can not create speaker_dump_task kthread\n");
 
 		b_enable_dump = true;
 		wake_up_process(speaker_dump_task);
@@ -231,13 +231,13 @@ void spkprotect_close_dump_file(void)
 
 	b_enable_dump = false;
 
-	pr_debug("%s(), pass: %d\n", __func__, dump_data_routine_cnt_pass);
+	pr_no_debug("%s(), pass: %d\n", __func__, dump_data_routine_cnt_pass);
 
 	if (speaker_dump_task) {
 		kthread_stop(speaker_dump_task);
 		speaker_dump_task = NULL;
 	}
-	pr_debug("dump_queue = %p\n", dump_queue);
+	pr_no_debug("dump_queue = %p\n", dump_queue);
 	kfree(dump_queue);
 	dump_queue = NULL;
 
@@ -340,7 +340,7 @@ void spkprotect_dump_message(struct ipi_msg_t *ipi_msg)
 	dump_idx = *temp_payload;
 
 	if (ipi_msg == NULL) {
-		pr_info("%s err\n", __func__);
+		pr_no_info("%s err\n", __func__);
 		return;
 	} else if (ipi_msg->msg_id == SPK_PROTECT_PCMDUMP_OK) {
 		dump_work[dump_idx].data_size  = *(temp_payload + 1);
@@ -350,7 +350,7 @@ void spkprotect_dump_message(struct ipi_msg_t *ipi_msg)
 		if (ret == 0)
 			dump_data_routine_cnt_pass++;
 	} else
-		pr_info("%s unknown command\n", __func__);
+		pr_no_info("%s unknown command\n", __func__);
 
 }
 
@@ -568,7 +568,7 @@ static int spkprotect_dump_kthread(void *data)
 
 	sched_setscheduler(current, SCHED_RR, &param);
 
-	/* pr_debug("dump_queue = %p\n", dump_queue); */
+	/* pr_no_debug("dump_queue = %p\n", dump_queue); */
 
 	while (b_enable_dump && !kthread_should_stop()) {
 		spin_lock_irqsave(&dump_queue_lock, flags);
@@ -604,7 +604,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_debug("pcm_dump = %p writedata = %d,
+				/* pr_no_debug("pcm_dump = %p writedata = %d,
 				 *          current_idx = %d\n",
 				 *          pcm_dump, writedata, current_idx);
 				 */
@@ -631,7 +631,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_debug("pcm_dump = %p writedata = %d\n",
+				/* pr_no_debug("pcm_dump = %p writedata = %d\n",
 				 *          pcm_dump, writedata);
 				 */
 				if (!IS_ERR(file_spk_iv)) {
@@ -657,7 +657,7 @@ static int spkprotect_dump_kthread(void *data)
 				    dump_package->rw_idx);
 
 			while (size > 0) {
-				/* pr_debug("pcm_dump = %p writedata = %d\n",
+				/* pr_no_debug("pcm_dump = %p writedata = %d\n",
 				 *          pcm_dump, writedata);
 				 */
 				if (!IS_ERR(file_spk_debug)) {
@@ -676,7 +676,7 @@ static int spkprotect_dump_kthread(void *data)
 			break;
 		}
 		default: {
-			pr_info("current_idx = %d, idx_r = %d, idx_w = %d, type = %d\n",
+			pr_no_info("current_idx = %d, idx_r = %d, idx_w = %d, type = %d\n",
 				current_idx,
 				dump_queue->idx_r, dump_queue->idx_w,
 				dump_package->dump_data_type);
@@ -684,7 +684,7 @@ static int spkprotect_dump_kthread(void *data)
 		}
 		}
 	}
-	/* pr_debug("%s exit\n", __func__); */
+	/* pr_no_debug("%s exit\n", __func__); */
 	return 0;
 }
 
@@ -697,21 +697,21 @@ void audio_ipi_client_spkprotect_init(void)
 
 	dump_workqueue[DUMP_PCM_PRE] = create_workqueue("dump_spkprotect_pcm");
 	if (dump_workqueue[DUMP_PCM_PRE] == NULL)
-		pr_notice("dump_workqueue[dump_spkprotect_pcm] = %p\n",
+		pr_no_notice("dump_workqueue[dump_spkprotect_pcm] = %p\n",
 			  dump_workqueue[DUMP_PCM_PRE]);
 	AUD_ASSERT(dump_workqueue[DUMP_PCM_PRE] != NULL);
 
 	dump_workqueue[DUMP_IV_DATA] =
 		create_workqueue("dump_spkprotect_ivpcm");
 	if (dump_workqueue[DUMP_IV_DATA] == NULL)
-		pr_notice("dump_workqueue[dump_spkprotect_ivpcm] = %p\n",
+		pr_no_notice("dump_workqueue[dump_spkprotect_ivpcm] = %p\n",
 			  dump_workqueue[DUMP_IV_DATA]);
 	AUD_ASSERT(dump_workqueue[DUMP_IV_DATA] != NULL);
 
 	dump_workqueue[DUMP_DEBUG_DATA] =
 		create_workqueue("dump_spkprotect_debug_pcm");
 	if (dump_workqueue[DUMP_DEBUG_DATA] == NULL)
-		pr_notice("dump_workqueue[dump_spkprotect_debug_pcm] = %p\n",
+		pr_no_notice("dump_workqueue[dump_spkprotect_debug_pcm] = %p\n",
 			  dump_workqueue[DUMP_DEBUG_DATA]);
 	AUD_ASSERT(dump_workqueue[DUMP_DEBUG_DATA] != NULL);
 

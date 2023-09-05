@@ -107,11 +107,11 @@ ssize_t sspm_log_read(char __user *data, size_t len)
 	if (tmp_buf) {
 		memcpy_fromio(tmp_buf, buf, len);
 		if (copy_to_user(data, tmp_buf, len))
-			pr_debug("sspm logger: copy data failed !!!\n");
+			pr_no_debug("sspm logger: copy data failed !!!\n");
 
 		kfree(tmp_buf);
 	} else {
-		pr_debug("sspm logger: create log buffer failed !!!\n");
+		pr_no_debug("sspm logger: create log buffer failed !!!\n");
 		goto error;
 	}
 
@@ -152,12 +152,12 @@ static unsigned int sspm_log_enable_set(unsigned int enable)
 		ret = sspm_ipi_send_sync(IPI_ID_PLATFORM, IPI_OPT_WAIT,
 		    &ipi_data, sizeof(ipi_data) / MBOX_SLOT_SIZE, &ackdata, 1);
 		if (ret != 0) {
-			pr_err("SSPM: logger IPI fail ret=%d\n", ret);
+			pr_no_err("SSPM: logger IPI fail ret=%d\n", ret);
 			goto error;
 		}
 
 		if (enable != ackdata) {
-			pr_err("SSPM: %s fail ret=%d\n", __func__, ackdata);
+			pr_no_err("SSPM: %s fail ret=%d\n", __func__, ackdata);
 			goto error;
 		}
 
@@ -222,7 +222,7 @@ unsigned int __init sspm_logger_init(phys_addr_t start, phys_addr_t limit)
 	last_ofs += log_ctl->buff_size;
 
 	if (last_ofs >= limit) {
-		pr_err("SSPM:%s() initial fail, last_ofs=%u, limit=%u\n",
+		pr_no_err("SSPM:%s() initial fail, last_ofs=%u, limit=%u\n",
 			__func__, last_ofs, (unsigned int) limit);
 		goto error;
 	}

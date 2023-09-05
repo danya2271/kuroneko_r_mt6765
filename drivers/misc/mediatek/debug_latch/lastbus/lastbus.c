@@ -68,7 +68,7 @@ infra_event_store(struct device_driver *driver, const char *buf, size_t count)
 		ret = lastbus_ctrl->infrasys_ops.set_event(lastbus_ctrl, buf);
 
 	if (ret < 0)
-		pr_notice("lastbus: peri-event set error\n");
+		pr_no_notice("lastbus: peri-event set error\n");
 
 	return count;
 }
@@ -81,7 +81,7 @@ static ssize_t infra_event_show(struct device_driver *driver, char *buf)
 		len = lastbus_ctrl->infrasys_ops.get_event(lastbus_ctrl, buf);
 
 	if (len < 0)
-		pr_notice("lastbus: peri-event get event error\n");
+		pr_no_notice("lastbus: peri-event get event error\n");
 
 	return len;
 }
@@ -100,7 +100,7 @@ lastbus_timeout_store(struct device_driver *driver,
 		ret = lastbus_ctrl->infrasys_ops.set_timeout(lastbus_ctrl, buf);
 
 	if (ret < 0)
-		pr_notice("lastbus: set timeout error\n");
+		pr_no_notice("lastbus: set timeout error\n");
 
 	return count;
 }
@@ -113,7 +113,7 @@ static ssize_t lastbus_timeout_show(struct device_driver *driver, char *buf)
 		len = lastbus_ctrl->infrasys_ops.get_timeout(lastbus_ctrl, buf);
 
 	if (len < 0)
-		pr_notice("lastbus: get timeout error\n");
+		pr_no_notice("lastbus: get timeout error\n");
 
 	return len;
 }
@@ -132,7 +132,7 @@ peri_event_store(struct device_driver *driver,
 		ret = lastbus_ctrl->perisys_ops.set_event(lastbus_ctrl, buf);
 
 	if (ret < 0)
-		pr_notice("lastbus: peri-event set error\n");
+		pr_no_notice("lastbus: peri-event set error\n");
 
 	return count;
 }
@@ -145,7 +145,7 @@ static ssize_t peri_event_show(struct device_driver *driver, char *buf)
 		len = lastbus_ctrl->perisys_ops.get_event(lastbus_ctrl, buf);
 
 	if (len < 0)
-		pr_notice("lastbus: peri-event get event error\n");
+		pr_no_notice("lastbus: peri-event get event error\n");
 
 	return len;
 }
@@ -159,25 +159,25 @@ static int lastbus_probe(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	pr_debug("%s:%d: enter\n", __func__, __LINE__);
+	pr_no_debug("%s:%d: enter\n", __func__, __LINE__);
 	if (lastbus_ctrl->init)
 		lastbus_ctrl->init(lastbus_ctrl);
 	else {
 		lastbus_ctrl->infra_base = of_iomap(pdev->dev.of_node, 0);
 		if (!lastbus_ctrl->infra_base) {
-			pr_info("can't of_iomap for infra lastbus!!\n");
+			pr_no_info("can't of_iomap for infra lastbus!!\n");
 			return -ENOMEM;
 		}
 
 		lastbus_ctrl->peri_base = of_iomap(pdev->dev.of_node, 1);
 		if (!lastbus_ctrl->peri_base) {
-			pr_info("can't of_iomap for peri lastbus!!\n");
+			pr_no_info("can't of_iomap for peri lastbus!!\n");
 			return -ENOMEM;
 		}
 
 		lastbus_ctrl->spm_flag_base = of_iomap(pdev->dev.of_node, 2);
 		if (!lastbus_ctrl->peri_base) {
-			pr_info("can't of_iomap for peri lastbus!!\n");
+			pr_no_info("can't of_iomap for peri lastbus!!\n");
 			return -ENOMEM;
 		}
 	}
@@ -193,7 +193,7 @@ static int lastbus_probe(struct platform_device *pdev)
 			&driver_attr_lastbus_timeout);
 
 	if (ret)
-		pr_info("last bus create file failed\n");
+		pr_no_info("last bus create file failed\n");
 
 	return 0;
 }
@@ -203,7 +203,7 @@ static int __init lastbus_init(void)
 	int err = 0;
 
 	if (lastbus_ctrl == NULL) {
-		pr_notice("kernel lastbus dump not support");
+		pr_no_notice("kernel lastbus dump not support");
 		return -1;
 	}
 

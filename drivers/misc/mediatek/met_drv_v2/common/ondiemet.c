@@ -27,7 +27,7 @@ int ondiemet_attr_init(struct device *dev)
 
 	ret = sspm_attr_init(dev);
 	if (ret != 0) {
-		pr_debug("can not create device file: sspm related\n");
+		pr_no_debug("can not create device file: sspm related\n");
 		return ret;
 	}
 
@@ -41,7 +41,7 @@ int ondiemet_attr_uninit(struct device *dev)
 
 	ret = sspm_attr_uninit(dev);
 	if (ret != 0) {
-		pr_debug("can not delete device file: sspm related\n");
+		pr_no_debug("can not delete device file: sspm related\n");
 		return ret;
 	}
 

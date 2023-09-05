@@ -314,7 +314,7 @@ static int met_pmu_cpu_notify(enum met_action action, unsigned int cpu)
 		dbg_met_tag_oneshot(0, "met_online check", cpu);
 
 		if (cpu_related_cnt == 0) {
-			/*pr_info("%s, %d: curr_polling_cpu is alive = %d\n",
+			/*pr_no_info("%s, %d: curr_polling_cpu is alive = %d\n",
 			 *		__func__, __LINE__, online_cpu_map & (1 << curr_polling_cpu));
 			 */
 
@@ -338,7 +338,7 @@ static int met_pmu_cpu_notify(enum met_action action, unsigned int cpu)
 											__met_hrtimer_register, NULL, 1);
 				}
 			} else {
-				/*pr_info("%s, %d: curr_polling_cpu is alive = %d\n",
+				/*pr_no_info("%s, %d: curr_polling_cpu is alive = %d\n",
 				 *		__func__, __LINE__, online_cpu_map & (1 << curr_polling_cpu));
 				 */
 
@@ -377,11 +377,11 @@ static int met_pmu_cpu_notify(enum met_action action, unsigned int cpu)
 		online_cpu_map &= ~(1 << cpu);
 		dbg_met_tag_oneshot(0, "met_offline cpu", cpu);
 		if (cpu == curr_polling_cpu) {
-			/* pr_info("%s, %d: curr_polling_cpu %d is down\n",
+			/* pr_no_info("%s, %d: curr_polling_cpu %d is down\n",
 			 *		__func__, __LINE__, curr_polling_cpu);
 			 */
 			preferred_polling_cpu = calc_preferred_polling_cpu(online_cpu_map);
-			/* pr_info("%s, %d: preferred_polling_cpu = %d\n",
+			/* pr_no_info("%s, %d: preferred_polling_cpu = %d\n",
 			 *		__func__, __LINE__, preferred_polling_cpu);
 			 */
 			if (preferred_polling_cpu != -1) {
@@ -389,7 +389,7 @@ static int met_pmu_cpu_notify(enum met_action action, unsigned int cpu)
 				dbg_met_tag_oneshot(0, "met_curr polling cpu", curr_polling_cpu);
 
 				if (cpu_related_cnt == 0) {
-					/* pr_info("%s, %d: start cpu %d hrtimer start\n",
+					/* pr_no_info("%s, %d: start cpu %d hrtimer start\n",
 					 *		__func__, __LINE__, curr_polling_cpu);
 					 */
 					if (met_export_api_symbol->met_smp_call_function_single)

@@ -119,7 +119,7 @@ static int lm3644_pinctrl_init(struct platform_device *pdev)
 	/* get pinctrl */
 	lm3644_pinctrl = devm_pinctrl_get(&pdev->dev);
 	if (IS_ERR(lm3644_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_no_info("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(lm3644_pinctrl);
 		return ret;
 	}
@@ -128,14 +128,14 @@ static int lm3644_pinctrl_init(struct platform_device *pdev)
 	lm3644_hwen_high = pinctrl_lookup_state(
 			lm3644_pinctrl, LM3644_PINCTRL_STATE_HWEN_HIGH);
 	if (IS_ERR(lm3644_hwen_high)) {
-		pr_info("Failed to init (%s)\n",
+		pr_no_info("Failed to init (%s)\n",
 			LM3644_PINCTRL_STATE_HWEN_HIGH);
 		ret = PTR_ERR(lm3644_hwen_high);
 	}
 	lm3644_hwen_low = pinctrl_lookup_state(
 			lm3644_pinctrl, LM3644_PINCTRL_STATE_HWEN_LOW);
 	if (IS_ERR(lm3644_hwen_low)) {
-		pr_info("Failed to init (%s)\n", LM3644_PINCTRL_STATE_HWEN_LOW);
+		pr_no_info("Failed to init (%s)\n", LM3644_PINCTRL_STATE_HWEN_LOW);
 		ret = PTR_ERR(lm3644_hwen_low);
 	}
 
@@ -147,7 +147,7 @@ static int lm3644_pinctrl_set(int pin, int state)
 	int ret = 0;
 
 	if (IS_ERR(lm3644_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_no_info("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -160,13 +160,13 @@ static int lm3644_pinctrl_set(int pin, int state)
 				!IS_ERR(lm3644_hwen_high))
 			pinctrl_select_state(lm3644_pinctrl, lm3644_hwen_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_no_info("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_no_info("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
-	pr_debug("pin(%d) state(%d)\n", pin, state);
+	pr_no_debug("pin(%d) state(%d)\n", pin, state);
 
 	return ret;
 }
@@ -236,7 +236,7 @@ static int lm3644_write_reg(struct i2c_client *client, u8 reg, u8 val)
 	mutex_unlock(&chip->lock);
 
 	if (ret < 0)
-		pr_info("failed writing at 0x%02x\n", reg);
+		pr_no_info("failed writing at 0x%02x\n", reg);
 
 	return ret;
 }
@@ -295,7 +295,7 @@ static int lm3644_enable(int channel)
 	else if (channel == LM3644_CHANNEL_CH2)
 		lm3644_enable_ch2();
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -344,7 +344,7 @@ static int lm3644_disable(int channel)
 	else if (channel == LM3644_CHANNEL_CH2)
 		lm3644_disable_ch2();
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -409,7 +409,7 @@ static int lm3644_set_level(int channel, int level)
 	else if (channel == LM3644_CHANNEL_CH2)
 		lm3644_set_level_ch2(level);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -428,7 +428,7 @@ int lm3644_init(void)
 
 	/* get silicon revision */
 	is_lm3644tt = lm3644_read_reg(lm3644_i2c_client, LM3644_REG_DEVICE_ID);
-	pr_info("LM3644(TT) revision(%d).\n", is_lm3644tt);
+	pr_no_info("LM3644(TT) revision(%d).\n", is_lm3644tt);
 
 	/* clear enable register */
 	reg = LM3644_REG_ENABLE;
@@ -469,13 +469,13 @@ static unsigned int lm3644_timeout_ms[LM3644_CHANNEL_NUM];
 
 static void lm3644_work_disable_ch1(struct work_struct *data)
 {
-	pr_debug("ht work queue callback\n");
+	pr_no_debug("ht work queue callback\n");
 	lm3644_disable_ch1();
 }
 
 static void lm3644_work_disable_ch2(struct work_struct *data)
 {
-	pr_debug("lt work queue callback\n");
+	pr_no_debug("lt work queue callback\n");
 	lm3644_disable_ch2();
 }
 
@@ -498,7 +498,7 @@ static int lm3644_timer_start(int channel, ktime_t ktime)
 	else if (channel == LM3644_CHANNEL_CH2)
 		hrtimer_start(&lm3644_timer_ch2, ktime, HRTIMER_MODE_REL);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -512,7 +512,7 @@ static int lm3644_timer_cancel(int channel)
 	else if (channel == LM3644_CHANNEL_CH2)
 		hrtimer_cancel(&lm3644_timer_ch2);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -536,25 +536,25 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 
 	/* verify channel */
 	if (channel < 0 || channel >= LM3644_CHANNEL_NUM) {
-		pr_info("Failed with error channel\n");
+		pr_no_info("Failed with error channel\n");
 		return -EINVAL;
 	}
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_timeout_ms[channel] = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		lm3644_set_level(channel, fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		if (fl_arg->arg == 1) {
 			if (lm3644_timeout_ms[channel]) {
@@ -572,29 +572,29 @@ static int lm3644_ioctl(unsigned int cmd, unsigned long arg)
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = LM3644_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = LM3644_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = lm3644_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = lm3644_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = LM3644_HW_TIMEOUT;
 		break;
 
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_no_info("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -624,14 +624,14 @@ static int lm3644_set_driver(int set)
 		if (!use_count)
 			ret = lm3644_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = lm3644_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&lm3644_mutex);
 
@@ -686,13 +686,13 @@ static int lm3644_parse_dt(struct device *dev,
 
 	pdata->channel_num = of_get_child_count(np);
 	if (!pdata->channel_num) {
-		pr_info("Parse no dt, node.\n");
+		pr_no_info("Parse no dt, node.\n");
 		return 0;
 	}
-	pr_info("Channel number(%d).\n", pdata->channel_num);
+	pr_no_info("Channel number(%d).\n", pdata->channel_num);
 
 	if (of_property_read_u32(np, "decouple", &decouple))
-		pr_info("Parse no dt, decouple.\n");
+		pr_no_info("Parse no dt, decouple.\n");
 
 	pdata->dev_id = devm_kzalloc(dev,
 			pdata->channel_num *
@@ -713,7 +713,7 @@ static int lm3644_parse_dt(struct device *dev,
 		pdata->dev_id[i].channel = i;
 		pdata->dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_no_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				pdata->dev_id[i].type, pdata->dev_id[i].ct,
 				pdata->dev_id[i].part, pdata->dev_id[i].name,
 				pdata->dev_id[i].channel,
@@ -735,11 +735,11 @@ static int lm3644_i2c_probe(
 	int err;
 	int i;
 
-	pr_debug("i2c probe start.\n");
+	pr_no_debug("i2c probe start.\n");
 
 	/* check i2c */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		pr_info("Failed to check i2c functionality.\n");
+		pr_no_info("Failed to check i2c functionality.\n");
 		err = -ENODEV;
 		goto err_out;
 	}
@@ -762,10 +762,10 @@ static int lm3644_i2c_probe(
 	lm3644_chip_init(chip);
 
 	/* check flashlight device */
-	pr_info("lm3644 LM3644_DEVICE_ID = %d\n",
+	pr_no_info("lm3644 LM3644_DEVICE_ID = %d\n",
 		lm3644_read_reg(lm3644_i2c_client, LM3644_DEVICE_ID));
 	if (lm3644_read_reg(lm3644_i2c_client, LM3644_DEVICE_ID) != 0x02) {
-		pr_info("lm3644 in not available\n");
+		pr_no_info("lm3644 in not available\n");
 		if (lm3644_pdata->channel_num) {
 			for (i = 0; i < lm3644_pdata->channel_num; i++)
 				flashlight_dev_unregister_by_device_id(
@@ -777,7 +777,7 @@ static int lm3644_i2c_probe(
 		goto err_free;
 	}
 
-	pr_debug("i2c probe done.\n");
+	pr_no_debug("i2c probe done.\n");
 
 	return 0;
 err_free:
@@ -791,14 +791,14 @@ static int lm3644_i2c_remove(struct i2c_client *client)
 {
 	struct lm3644_chip_data *chip = i2c_get_clientdata(client);
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	client->dev.platform_data = NULL;
 
 	/* free resource */
 	kfree(chip);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -837,16 +837,16 @@ static int lm3644_probe(struct platform_device *pdev)
 	int err;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	/* init pinctrl */
 	if (lm3644_pinctrl_init(pdev)) {
-		pr_debug("Failed to init pinctrl.\n");
+		pr_no_debug("Failed to init pinctrl.\n");
 		return -1;
 	}
 
 	if (i2c_add_driver(&lm3644_i2c_driver)) {
-		pr_debug("Failed to add i2c driver.\n");
+		pr_no_debug("Failed to add i2c driver.\n");
 		return -1;
 	}
 
@@ -895,7 +895,7 @@ static int lm3644_probe(struct platform_device *pdev)
 		}
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 err_free:
@@ -907,7 +907,7 @@ static int lm3644_remove(struct platform_device *pdev)
 	struct lm3644_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	i2c_del_driver(&lm3644_i2c_driver);
 
@@ -925,7 +925,7 @@ static int lm3644_remove(struct platform_device *pdev)
 	flush_work(&lm3644_work_ch1);
 	flush_work(&lm3644_work_ch2);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -964,34 +964,34 @@ static int __init flashlight_lm3644_init(void)
 {
 	int ret;
 
-	pr_debug("Init start.\n");
+	pr_no_debug("Init start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&lm3644_platform_device);
 	if (ret) {
-		pr_info("Failed to register platform device\n");
+		pr_no_info("Failed to register platform device\n");
 		return ret;
 	}
 #endif
 
 	ret = platform_driver_register(&lm3644_platform_driver);
 	if (ret) {
-		pr_info("Failed to register platform driver\n");
+		pr_no_info("Failed to register platform driver\n");
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_lm3644_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&lm3644_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 module_init(flashlight_lm3644_init);

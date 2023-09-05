@@ -39,14 +39,14 @@ static unsigned int options_flag;
 
 #ifdef ERRF_ENABLE
 #define MSG_ERR			"Error:["DEVICE_NAME"]"
-#define ERRF(args...)	pr_debug(MSG_ERR args)
+#define ERRF(args...)	pr_no_debug(MSG_ERR args)
 #else
 #define ERRF(args...)
 #endif
 
 #ifdef DEBF_ENABLE
 #define MSG_IFO			"Info :["DEVICE_NAME"]"
-#define DEBF(args...)	pr_debug(MSG_IFO args)
+#define DEBF(args...)	pr_no_debug(MSG_IFO args)
 #else
 #define DEBF(args...)
 #endif

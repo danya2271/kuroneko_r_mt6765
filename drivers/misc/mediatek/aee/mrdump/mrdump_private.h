@@ -101,7 +101,7 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 
 __weak void dis_D_inner_flush_all(void)
 {
-	pr_notice("%s:weak function.\n", __func__);
+	pr_no_notice("%s:weak function.\n", __func__);
 }
 
 #if IS_ENABLED(CONFIG_MEDIATEK_CACHE_API)

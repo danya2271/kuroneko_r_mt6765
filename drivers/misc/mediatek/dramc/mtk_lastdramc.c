@@ -62,7 +62,7 @@ static int __init set_single_channel_test_angent(int channel)
 
 	emi_base = get_emi_base();
 	if (emi_base == NULL) {
-		pr_err("[LastDRAMC] can't find EMI base\n");
+		pr_no_err("[LastDRAMC] can't find EMI base\n");
 		return -1;
 	}
 	emi_cona = readl(IOMEM(emi_base+0x000));
@@ -71,14 +71,14 @@ static int __init set_single_channel_test_angent(int channel)
 	channel_num = mt_dramc_chn_get(emi_cona);
 
 	if (channel < 0 || channel >= channel_num) {
-		pr_err("[LastDRAMC] invalid channel: %d\n", channel);
+		pr_no_err("[LastDRAMC] invalid channel: %d\n", channel);
 		return -1;
 	}
 
 	dramc_ao_base = mt_dramc_chn_base_get(channel);
 
 	if (!dramc_ao_base) {
-		pr_err("[LastDRAMC] no dramc_ao_base, skip channel %d\n",
+		pr_no_err("[LastDRAMC] no dramc_ao_base, skip channel %d\n",
 			channel);
 		return -1;
 	}
@@ -86,7 +86,7 @@ static int __init set_single_channel_test_angent(int channel)
 	rank_max = mt_dramc_ta_support_ranks();
 
 	if (rank_max > 2) {
-		pr_err("[LastDRAMC] invalid rank num, rank_max %u\n",
+		pr_no_err("[LastDRAMC] invalid rank num, rank_max %u\n",
 			rank_max);
 		return -1;
 	}
@@ -97,7 +97,7 @@ static int __init set_single_channel_test_angent(int channel)
 		rank_base = mt_dramc_rankbase_get(rank);
 
 		if (!rank_base) {
-			pr_err("[LastDRAMC] invalid base, rank %u\n",
+			pr_no_err("[LastDRAMC] invalid base, rank %u\n",
 				rank);
 			return -1;
 		}
@@ -105,7 +105,7 @@ static int __init set_single_channel_test_angent(int channel)
 		test_agent_base = mt_dramc_ta_reserve_addr(rank);
 
 		if (!test_agent_base) {
-			pr_err("[LastDRAMC] invalid addr, rank %u\n",
+			pr_no_err("[LastDRAMC] invalid addr, rank %u\n",
 				rank);
 			return -1;
 		}
@@ -113,7 +113,7 @@ static int __init set_single_channel_test_angent(int channel)
 		test_agent_base = (test_agent_base - rank_base) & 0xFFFFFFFF;
 
 		/* calculate DRAM base address (test_agent_base) */
-		/* pr_info("[LastDRAMC] reserved address before emi: */
+		/* pr_no_info("[LastDRAMC] reserved address before emi: */
 		/* %llx\n", test_agent_base); */
 		for (bit_scramble = 11; bit_scramble < 17; bit_scramble++) {
 			bit_xor = (emi_conf >> (4*(bit_scramble-11))) & 0xf;
@@ -123,7 +123,7 @@ static int __init set_single_channel_test_angent(int channel)
 					<< bit_scramble;
 		}
 
-		/* pr_info("[LastDRAMC] reserved address after emi: %llx\n", */
+		/* pr_no_info("[LastDRAMC] reserved address after emi: %llx\n", */
 		/* test_agent_base); */
 
 		if (channel_num > 1) {
@@ -142,7 +142,7 @@ static int __init set_single_channel_test_angent(int channel)
 			test_agent_base = temp |
 				(test_agent_base & ((0x1<<channel_position)-1));
 		}
-		/* pr_info("[LastDRAMC] reserved address after emi: %llx\n", */
+		/* pr_no_info("[LastDRAMC] reserved address after emi: %llx\n", */
 		/* test_agent_base); */
 
 		/* set base address for test agent */
@@ -153,7 +153,7 @@ static int __init set_single_channel_test_angent(int channel)
 				platform_support_dram_type())
 			temp |= (test_agent_base) & 0xFFFFFFF0;
 		else {
-			pr_err("[LastDRAMC] undefined DRAM type\n");
+			pr_no_err("[LastDRAMC] undefined DRAM type\n");
 			return -1;
 		}
 
@@ -178,13 +178,13 @@ static int __init last_dramc_test_agent_init(void)
 
 	get_emi_base = (void __iomem *)symbol_get(mt_emi_base_get);
 	if (get_emi_base == NULL) {
-		pr_err("[LastDRAMC] mt_emi_base_get is NULL\n");
+		pr_no_err("[LastDRAMC] mt_emi_base_get is NULL\n");
 		return 0;
 	}
 
 	emi_base = get_emi_base();
 	if (emi_base == NULL) {
-		pr_err("[LastDRAMC] can't find EMI base\n");
+		pr_no_err("[LastDRAMC] can't find EMI base\n");
 		return 0;
 	}
 	emi_cona = readl(IOMEM(emi_base+0x000));
@@ -211,7 +211,7 @@ static int dram_calib_perf_check_probe(struct platform_device *pdev)
 	if (node) {
 		DRAMC_SRAM_DEBUG_BASE_ADDR = of_iomap(node, 0);
 	} else {
-		pr_err("can't find compatible node for dram_calib_perf_check\n");
+		pr_no_err("can't find compatible node for dram_calib_perf_check\n");
 		return -ENODEV;
 	}
 
@@ -228,7 +228,7 @@ static int dram_calib_perf_check_probe(struct platform_device *pdev)
 	}
 
 	if (last_dramc_ofs == DBG_INFO_TYPE_MAX) {
-		pr_err("[DRAMC] lastdramc with sram mgr not found\n");
+		pr_no_err("[DRAMC] lastdramc with sram mgr not found\n");
 		return 0;
 	}
 
@@ -240,14 +240,14 @@ static int dram_calib_perf_check_probe(struct platform_device *pdev)
 	val = Reg_Readl(DRAMC_SRAM_DEBUG_BASE_ADDR +
 		last_dramc_ofs + DRAMC_STORAGE_API_ERR_OFFSET);
 	if ((val & STORAGE_READ_API_MASK) == ERR_PL_UPDATED) {
-		pr_err("[DRAMC] k time too long: PL updated (0x%08lx)\n", val);
+		pr_no_err("[DRAMC] k time too long: PL updated (0x%08lx)\n", val);
 	} else if (val != 0) {
 		aee_kernel_warning_api(__FILE__, __LINE__,
 			DB_OPT_DUMMY_DUMP, "DRAM Calibration Time",
 			"k time too long: api error (0x%08lx)\n", val);
-		pr_err("[DRAMC] k time too long: api error (0x%08lx)\n", val);
+		pr_no_err("[DRAMC] k time too long: api error (0x%08lx)\n", val);
 	} else {
-		pr_info("[DRAMC] k time optimized\n");
+		pr_no_info("[DRAMC] k time optimized\n");
 	}
 
 	return 0;
@@ -274,7 +274,7 @@ static int __init dram_calib_perf_check(void)
 
 	ret = platform_driver_register(&dramc_sram_debug_drv);
 	if (ret) {
-		pr_err("%s:%d: platform_driver_register failed\n",
+		pr_no_err("%s:%d: platform_driver_register failed\n",
 			__func__, __LINE__);
 		return -ENODEV;
 	}

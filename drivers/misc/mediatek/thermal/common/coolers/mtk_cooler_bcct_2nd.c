@@ -23,12 +23,12 @@
 
 
 #define mtk_cooler_bcct_2nd_dprintk_always(fmt, args...) \
-	pr_notice("[Thermal/TC/bcct_2nd]" fmt, ##args)
+	pr_no_notice("[Thermal/TC/bcct_2nd]" fmt, ##args)
 
 #define mtk_cooler_bcct_2nd_dprintk(fmt, args...) \
 	do { \
 		if (cl_bcct_2nd_klog_on == 1) \
-			pr_notice("[Thermal/TC/bcct_2nd]" fmt, ##args); \
+			pr_no_notice("[Thermal/TC/bcct_2nd]" fmt, ##args); \
 	}  while (0)
 
 #define MAX_NUM_INSTANCE_MTK_COOLER_BCCT_2ND  3
@@ -171,7 +171,7 @@ static void x_chrlmt_set_limit_handler(struct work_struct *work)
 		POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
 				&prop);
 	if (ret != 0) {
-		pr_notice("%s bacur limit fail\n",
+		pr_no_notice("%s bacur limit fail\n",
 			__func__);
 		return;
 	}
@@ -435,7 +435,7 @@ struct thermal_cooling_device *cdev, unsigned long temp)
 	if (chg_psy == NULL)
 		chg_psy = power_supply_get_by_name("mtk-slave-charger");
 	if (chg_psy == NULL || IS_ERR(chg_psy)) {
-		pr_notice("%s Couldn't get chg_psy\n", __func__);
+		pr_no_notice("%s Couldn't get chg_psy\n", __func__);
 		return 0;
 	}
 

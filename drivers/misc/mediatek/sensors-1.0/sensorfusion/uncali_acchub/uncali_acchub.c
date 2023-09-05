@@ -78,7 +78,7 @@ static int uncali_acchub_local_init(void)
 	ctl.is_support_batch = false;
 	err = fusion_register_control_path(&ctl, ID_ACCELEROMETER_UNCALIBRATED);
 	if (err) {
-		pr_err("register uncali_acc control path err\n");
+		pr_no_err("register uncali_acc control path err\n");
 		goto exit;
 	}
 
@@ -86,13 +86,13 @@ static int uncali_acchub_local_init(void)
 	data.vender_div = 1000;
 	err = fusion_register_data_path(&data, ID_ACCELEROMETER_UNCALIBRATED);
 	if (err) {
-		pr_err("register uncali_acc data path err\n");
+		pr_no_err("register uncali_acc data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_ACCELEROMETER_UNCALIBRATED,
 		uncali_acc_recv_data);
 	if (err < 0) {
-		pr_err("SCP_sensorHub_data_registration failed\n");
+		pr_no_err("SCP_sensorHub_data_registration failed\n");
 		goto exit;
 	}
 	return 0;
@@ -119,7 +119,7 @@ static int __init uncali_acchub_init(void)
 
 static void __exit uncali_acchub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(uncali_acchub_init);

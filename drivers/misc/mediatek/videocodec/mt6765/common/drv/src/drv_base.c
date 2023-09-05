@@ -64,12 +64,12 @@ int search_slot_byHdl(unsigned long ulpa, unsigned long handle)
 	}
 
 	/* dump debug info */
-	pr_info("search_slot_byHdl");
+	pr_no_info("search_slot_byHdl");
 	for (i = 0; i < VCODEC_INST_NUM / 2; i++) {
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[%d] 0x%lx", i, hw_ctx[i].pvHandle);
+		pr_no_info("[%d] 0x%lx", i, hw_ctx[i].pvHandle);
 	}
 
 	return -1;
@@ -116,7 +116,7 @@ struct VAL_VCODEC_OAL_HW_CONTEXT_T *set_slot(unsigned long ulpa,
 		}
 	}
 
-	pr_info("[VCODEC] %s All %d Slots unavaliable\n",
+	pr_no_info("[VCODEC] %s All %d Slots unavaliable\n",
 			__func__, VCODEC_INST_NUM);
 	hw_ctx[0].u4VCodecThreadNum = VCODEC_THREAD_MAX_NUM - 1;
 	for (i = 0; i < hw_ctx[0].u4VCodecThreadNum; i++) {
@@ -165,7 +165,7 @@ struct VAL_VCODEC_OAL_HW_CONTEXT_T
 				k++) {
 					if (hw_ctx[i].u4VCodecThreadID[j] ==
 					a_prVcodecThreadID.u4VCodecThreadID[k]) {
-						pr_info("already exists in %d slot",
+						pr_no_info("already exists in %d slot",
 								i);
 						*a_prIndex = i;
 						return &hw_ctx[i];
@@ -193,7 +193,7 @@ struct VAL_VCODEC_OAL_HW_CONTEXT_T
 	}
 
 	{
-		pr_info("%s All %d Slots unavaliable\n",
+		pr_no_info("%s All %d Slots unavaliable\n",
 				__func__, VCODEC_INST_NUM);
 		hw_ctx[0].u4VCodecThreadNum =
 				a_prVcodecThreadID.u4VCodecThreadNum;
@@ -238,7 +238,7 @@ struct VAL_VCODEC_OAL_HW_CONTEXT_T *free_slot(unsigned long ulpa)
 		}
 	}
 
-	pr_info("[VCODEC][ERROR] %s can't find pid in HWLockSlot\n", __func__);
+	pr_no_info("[VCODEC][ERROR] %s can't find pid in HWLockSlot\n", __func__);
 	return 0;
 }
 
@@ -289,7 +289,7 @@ void add_ncmem(unsigned long a_ulKVA,
 		/* Add one line comment for avoid kernel coding style,
 		 *  WARNING:BRACES:
 		 */
-		pr_info("CAN'T ADD %s, List is FULL!!\n", __func__);
+		pr_no_info("CAN'T ADD %s, List is FULL!!\n", __func__);
 	}
 
 	pr_no_debug("%s -\n", __func__);
@@ -332,7 +332,7 @@ void free_ncmem(unsigned long a_ulKVA, unsigned long a_ulKPA)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("CAN'T Free %s, Address is not find!!\n", __func__);
+		pr_no_info("CAN'T Free %s, Address is not find!!\n", __func__);
 	}
 
 	pr_no_debug("%s -\n", __func__);
@@ -418,7 +418,7 @@ unsigned long search_ncmem_byKPA(unsigned long a_ulKPA)
 	}
 
 	if (u4I == VCODEC_INST_NUM_x_10) {
-		pr_info("CAN'T Find address %s", __func__);
+		pr_no_info("CAN'T Find address %s", __func__);
 		return ncache_mem_list[0].ulKVA + ulVA_Offset;
 	}
 

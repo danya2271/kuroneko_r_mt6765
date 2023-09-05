@@ -39,21 +39,21 @@ static int trusted_mem_region_poweron(struct trusted_mem_device *mem_device)
 	ret = ssmr_ops->offline(&region_pa, &region_size, ssmr_feature_id,
 				mem_device->dev_desc);
 	if (ret) {
-		pr_err("SSMR offline failed!\n");
+		pr_no_err("SSMR offline failed!\n");
 		goto err_get_ssmr_failed;
 	}
 
 	ret = peer_mgr->mgr_sess_open(drv_ops, peer_mgr_data,
 				      mem_device->dev_desc);
 	if (ret && (ret != TMEM_MGR_SESSION_IS_ALREADY_OPEN)) {
-		pr_err("open trusted mem session failed!\n");
+		pr_no_err("open trusted mem session failed!\n");
 		goto err_open_mtee_failed;
 	}
 
 	ret = peer_mgr->mgr_sess_mem_add(region_pa, region_size, drv_ops,
 					 peer_mgr_data, mem_device->dev_desc);
 	if (ret) {
-		pr_err("add memory to trusted mem failed!\n");
+		pr_no_err("add memory to trusted mem failed!\n");
 		goto err_add_mem_failed;
 	}
 
@@ -83,20 +83,20 @@ static int trusted_mem_region_poweroff(struct trusted_mem_device *mem_device)
 	ret = peer_mgr->mgr_sess_mem_remove(drv_ops, peer_mgr_data,
 					    mem_device->dev_desc);
 	if (ret) {
-		pr_err("reclaim memory from trusted mem failed!\n");
+		pr_no_err("reclaim memory from trusted mem failed!\n");
 		return ret;
 	}
 
 	ret = peer_mgr->mgr_sess_close(is_session_keep_alive, drv_ops,
 				       peer_mgr_data, mem_device->dev_desc);
 	if (ret && (ret != TMEM_MGR_SESSION_IS_ALREADY_CLOSE)) {
-		pr_err("close trusted mem session failed!\n");
+		pr_no_err("close trusted mem session failed!\n");
 		return ret;
 	}
 
 	ret = ssmr_ops->online(ssmr_feature_id, mem_device->dev_desc);
 	if (ret) {
-		pr_err("SSMR online failed!\n");
+		pr_no_err("SSMR online failed!\n");
 		return ret;
 	}
 
@@ -137,19 +137,19 @@ static int regmgr_try_on(struct region_mgr_desc *mgr_desc,
 	struct trusted_mem_device *mem_device =
 		get_trusted_mem_device(try_mem_type);
 
-	pr_debug("%s:%d\n", __func__, __LINE__);
+	pr_no_debug("%s:%d\n", __func__, __LINE__);
 
 	if (is_region_on(mgr_desc->state)) {
-		pr_debug("trusted mem is already onlined\n");
+		pr_no_debug("trusted mem is already onlined\n");
 		return TMEM_OK;
 	}
 
 	if (trusted_mem_region_poweron(mem_device)) {
-		pr_err("trusted mem poweron failed!\n");
+		pr_no_err("trusted mem poweron failed!\n");
 		return TMEM_REGION_POWER_ON_FAILED;
 	}
 
-	pr_debug("set device:%d to busy\n", try_mem_type);
+	pr_no_debug("set device:%d to busy\n", try_mem_type);
 
 	mgr_desc->active_mem_type = try_mem_type;
 	mgr_desc->mem_device = mem_device;
@@ -163,19 +163,19 @@ static int regmgr_try_off(struct region_mgr_desc *mgr_desc)
 	struct trusted_mem_device *mem_device =
 		(struct trusted_mem_device *)mgr_desc->mem_device;
 
-	pr_debug("%s:%d\n", __func__, __LINE__);
+	pr_no_debug("%s:%d\n", __func__, __LINE__);
 
 	if (!is_region_on(mgr_desc->state)) {
-		pr_debug("trusted mem is already offlined\n");
+		pr_no_debug("trusted mem is already offlined\n");
 		return TMEM_OK;
 	}
 
 	if (trusted_mem_region_poweroff(mem_device)) {
-		pr_err("trusted mem poweroff failed!\n");
+		pr_no_err("trusted mem poweroff failed!\n");
 		return TMEM_REGION_POWER_OFF_FAILED;
 	}
 
-	pr_debug("set device:%d to idle\n", mem_device->mem_type);
+	pr_no_debug("set device:%d to idle\n", mem_device->mem_type);
 
 	mem_device->is_device_busy = false;
 	mgr_desc->active_mem_type = TRUSTED_MEM_INVALID;
@@ -259,7 +259,7 @@ void regmgr_region_ref_dec(struct region_mgr_desc *mgr_desc)
 {
 	REGMGR_LOCK();
 	if (IS_ZERO(mgr_desc->valid_ref_count))
-		pr_err("invalid regmgr ref cnt decrease\n");
+		pr_no_err("invalid regmgr ref cnt decrease\n");
 	else
 		mgr_desc->valid_ref_count--;
 	REGMGR_UNLOCK();
@@ -294,7 +294,7 @@ create_reg_mgr_desc(enum TRUSTED_MEM_TYPE register_type,
 
 	t_mgr_desc = mld_kmalloc(sizeof(struct region_mgr_desc), GFP_KERNEL);
 	if (INVALID(t_mgr_desc)) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		return NULL;
 	}
 

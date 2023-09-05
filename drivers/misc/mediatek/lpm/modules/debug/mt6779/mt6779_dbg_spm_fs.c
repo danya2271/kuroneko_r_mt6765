@@ -1040,7 +1040,7 @@ static ssize_t mt6779_store_pwr_ctrl(int id,	const char *buf, size_t count)
 
 	if (sscanf(buf, "%63s %x", cmd, &val) != 2)
 		return -EPERM;
-	pr_info("[SPM] pwr_ctrl: cmd = %s, val = 0x%x\n", cmd, val);
+	pr_no_info("[SPM] pwr_ctrl: cmd = %s, val = 0x%x\n", cmd, val);
 	if (!strcmp(cmd,
 		mt6779_pwr_ctrl_str[PW_PCM_FLAGS])) {
 		mtk_lpm_smc_spm_dbg(id, MT_LPM_SMC_ACT_SET,
@@ -1959,7 +1959,7 @@ int mt6779_dbg_spm_fs_init(void)
 	/* create /sys/power/spm/xxx */
 	r = mtk_spm_sysfs_power_create_group(&pwrctrl_attr_group);
 	if (r)
-		pr_info("[SPM] FAILED TO CREATE /sys/power/spm (%d)\n", r);
+		pr_no_info("[SPM] FAILED TO CREATE /sys/power/spm (%d)\n", r);
 	return r;
 }
 

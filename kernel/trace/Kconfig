@@ -842,11 +842,8 @@ config MTK_FTRACE_DEFAULT_ENABLE
 
 endif # TRACING
 
-if TRACING
 config FK_LOG
 	bool "FK_LOG"
 	help
 		FK LOG
-endif # TRACING
-
 

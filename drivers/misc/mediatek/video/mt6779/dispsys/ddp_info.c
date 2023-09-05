@@ -466,7 +466,7 @@ unsigned int is_reg_addr_valid(unsigned int isVa, unsigned long addr)
 		return i;
 	}
 
-	DDP_PR_ERR("%s: fail, isVa=0x%x, addr=0x%08lx!\n",
+	DDP_pr_no_err("%s: fail, isVa=0x%x, addr=0x%08lx!\n",
 		   __func__, isVa, addr);
 	return 0;
 }

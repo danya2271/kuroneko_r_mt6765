@@ -32,7 +32,7 @@ static unsigned int is_secure(unsigned long long vio_addr)
 	arm_smccc_smc(MTK_SIP_KERNEL_TMEM_CONTROL, addr_h, addr_l, 0, 0, 0, 0,
 		      0, &smc_res);
 
-	pr_debug("%s:%d 0x%X%X, %ld, %ld, %ld, %ld\n", __func__, __LINE__,
+	pr_no_debug("%s:%d 0x%X%X, %ld, %ld, %ld, %ld\n", __func__, __LINE__,
 		 addr_h, addr_l, smc_res.a0, smc_res.a1, smc_res.a2,
 		 smc_res.a3);
 
@@ -69,7 +69,7 @@ static irqreturn_t tmem_mpu_vio_handler(unsigned int emi_id,
 	}
 
 	if (!mput && !mput_2nd) {
-		pr_err("%s:%d failed to get violation from emi\n", __func__,
+		pr_no_err("%s:%d failed to get violation from emi\n", __func__,
 		       __LINE__);
 		return IRQ_NONE;
 	}
@@ -87,7 +87,7 @@ static irqreturn_t tmem_mpu_vio_handler(unsigned int emi_id,
 	if ((wr_vio == 2) && (wr_oo_vio == 0)
 	    && ((port_id == 0) || (port_id == 1))) {
 		if (is_secure(vio_addr)) {
-			pr_info("%s:%d vio msg ignored at emi%d (0x%x,%d,%d,%d,%d)\n",
+			pr_no_info("%s:%d vio msg ignored at emi%d (0x%x,%d,%d,%d,%d)\n",
 				__func__, __LINE__, emi_id, master_id,
 				domain_id, wr_vio, wr_oo_vio, port_id);
 			return IRQ_HANDLED;
@@ -105,12 +105,12 @@ int tmem_mpu_vio_init(void)
 #if IS_ENABLED(CONFIG_MTK_EMI)
 	ret = mtk_emimpu_register_callback(tmem_mpu_vio_handler);
 	if (ret) {
-		pr_err("%s:%d failed to register emi tmem handler, ret=%d!\n",
+		pr_no_err("%s:%d failed to register emi tmem handler, ret=%d!\n",
 		       __func__, __LINE__, ret);
 		return ret;
 	}
 #else
-	pr_info("%s:%d vio checker is not registered!\n", __func__, __LINE__);
+	pr_no_info("%s:%d vio checker is not registered!\n", __func__, __LINE__);
 #endif
 
 	return 0;

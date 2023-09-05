@@ -33,7 +33,7 @@ static int qos_ipi_recv_thread(void *arg)
 	ret = sspm_ipi_recv_registration(IPI_ID_QOS, &qos_isr);
 
 	if (ret) {
-		pr_err("failed to register sspm recv ipi: %u\n", ret);
+		pr_no_err("failed to register sspm recv ipi: %u\n", ret);
 		return 0;
 	}
 
@@ -50,7 +50,7 @@ static int qos_ipi_recv_thread(void *arg)
 					get_qos_bound());
 			break;
 		default:
-			pr_err("wrong QoS IPI command: %d\n", qos_ipi_d.cmd);
+			pr_no_err("wrong QoS IPI command: %d\n", qos_ipi_d.cmd);
 		}
 	} while (!kthread_should_stop());
 
@@ -65,7 +65,7 @@ int qos_ipi_to_sspm_command(void *buffer, int slot)
 	int ret = sspm_ipi_send_sync(IPI_ID_QOS, IPI_OPT_POLLING,
 			buffer, slot, &ack_data, 1);
 	if (ret != 0)
-		pr_err("qos_ipi_to_sspm error(%d)\n", ret);
+		pr_no_err("qos_ipi_to_sspm error(%d)\n", ret);
 #endif
 	return ack_data;
 }

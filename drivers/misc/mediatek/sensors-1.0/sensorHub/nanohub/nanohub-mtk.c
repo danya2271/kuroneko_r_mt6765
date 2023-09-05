@@ -78,13 +78,13 @@ void mtk_ipi_scp_isr_sim(int got_size)
 
 static void nano_ipi_start(void)
 {
-	pr_info("%s notify\n", __func__);
+	pr_no_info("%s notify\n", __func__);
 	WRITE_ONCE(scp_nano_ipi_status, 1);
 }
 
 static void nano_ipi_stop(void)
 {
-	pr_info("%s notify\n", __func__);
+	pr_no_info("%s notify\n", __func__);
 	WRITE_ONCE(scp_nano_ipi_status, 0);
 }
 
@@ -113,10 +113,10 @@ int nanohub_ipi_write(void *data, u8 *tx, int length, int timeout)
 #if CHRE_IPI_DEBUG
 	int i;
 
-	pr_info("AP->(%d) ", length);
+	pr_no_info("AP->(%d) ", length);
 	for (i = 0; i < length; i++)
-		pr_info("%02x ", tx[i]);
-	pr_info("\n");
+		pr_no_info("%02x ", tx[i]);
+	pr_no_info("\n");
 #endif
 	ret = SCP_IPI_ERROR;
 	while (retry-- && (READ_ONCE(scp_nano_ipi_status) == 1)) {
@@ -127,7 +127,7 @@ int nanohub_ipi_write(void *data, u8 *tx, int length, int timeout)
 	}
 
 	if (ret == SCP_IPI_BUSY)
-		pr_info("%s ipi busy, ret=%d\n", __func__, ret);
+		pr_no_info("%s ipi busy, ret=%d\n", __func__, ret);
 
 	if (ret == SCP_IPI_DONE)
 		return length;
@@ -154,7 +154,7 @@ int nanohub_ipi_read(void *data, u8 *rx, int max_length, int timeout)
 		mtk_ipi_scp_isr_sim(ret);
 	}
 #if CHRE_IPI_DEBUG
-	pr_info("%s ret %d\n", __func__, ret);
+	pr_no_info("%s ret %d\n", __func__, ret);
 #endif
 	return ret;	/* return packet size */
 }
@@ -226,10 +226,10 @@ void scp_to_ap_ipi_handler(int id, void *data, unsigned int len)
 	int i;
 	unsigned char *data_p = data;
 
-	pr_info("->AP(%d):", len);
+	pr_no_info("->AP(%d):", len);
 	for (i = 0; i < len; i++)
-		pr_info("%02x ", data_p[i]);
-	pr_info("\n");
+		pr_no_info("%02x ", data_p[i]);
+	pr_no_info("\n");
 #endif
 	nanohub_ipi_rx.copy_size = len;
 	memcpy(g_nanohub_data_p->comms.rx_buffer, data, len);
@@ -285,13 +285,13 @@ int __init nanohub_ipi_init(void)
 
 	ret = platform_device_register(&nanohub_ipi_pdev);
 	if (ret) {
-		pr_debug("nanohub_ipi_pdev fail\n");
+		pr_no_debug("nanohub_ipi_pdev fail\n");
 		goto _nanohub_ipi_init_exit;
 	}
 
 	ret = platform_driver_register(&nanohub_ipi_pdrv);
 	if (ret) {
-		pr_debug("nanohub_ipi_pdrv fail\n");
+		pr_no_debug("nanohub_ipi_pdrv fail\n");
 		platform_device_unregister(&nanohub_ipi_pdev);
 		goto _nanohub_ipi_init_exit;
 	}

@@ -192,7 +192,7 @@ static int calc_layer_num_with_arm_ext(struct disp_frame_cfg_t *cfg)
 	return total_phy_layer;
 
 error:
-	DISP_PR_INFO("%s failed: ovl_idx=%d, cur_phy=%d, cur_ext=%d\n",
+	DISP_pr_no_info("%s failed: ovl_idx=%d, cur_phy=%d, cur_ext=%d\n",
 		     __func__, ovl_idx, cur_phy_num, cur_ext_num);
 	for (i = 1; i < cfg->input_layer_num; i++)
 		dump_input_cfg_info(&cfg->input_cfg[i],
@@ -322,7 +322,7 @@ static int alloc_buffer_from_ion(size_t size, struct test_buf_info *buf_info)
 
 	handle = ion_alloc(client, size, 0, ION_HEAP_MULTIMEDIA_MASK, 0);
 	if (IS_ERR(buf_info->handle)) {
-		DISP_PR_INFO("Fatal Error, ion_alloc for size %zu failed\n",
+		DISP_pr_no_info("Fatal Error, ion_alloc for size %zu failed\n",
 			     size);
 		ion_client_destroy(client);
 		return -1;
@@ -330,7 +330,7 @@ static int alloc_buffer_from_ion(size_t size, struct test_buf_info *buf_info)
 
 	buf_info->buf_va = ion_map_kernel(client, handle);
 	if (buf_info->buf_va == NULL) {
-		DISP_PR_INFO("ion_map_kernrl failed\n");
+		DISP_pr_no_info("ion_map_kernrl failed\n");
 		ion_free(client, handle);
 		ion_client_destroy(client);
 		return -1;
@@ -340,7 +340,7 @@ static int alloc_buffer_from_ion(size_t size, struct test_buf_info *buf_info)
 	mm_data.mm_cmd = ION_MM_GET_IOVA;
 	if (ion_kernel_ioctl(client, ION_CMD_MULTIMEDIA,
 		(unsigned long)&mm_data) < 0) {
-		DISP_PR_INFO("ion_test_drv: Config buffer failed.\n");
+		DISP_pr_no_info("ion_test_drv: Config buffer failed.\n");
 		ion_free(client, handle);
 		ion_client_destroy(client);
 		return -1;
@@ -348,7 +348,7 @@ static int alloc_buffer_from_ion(size_t size, struct test_buf_info *buf_info)
 
 	buf_info->buf_mva = (unsigned int)mm_data.get_phys_param.phy_addr;
 	if (buf_info->buf_mva == 0) {
-		DISP_PR_INFO("Fatal Error, get mva failed\n");
+		DISP_pr_no_info("Fatal Error, get mva failed\n");
 		ion_free(client, handle);
 		ion_client_destroy(client);
 		return -1;
@@ -390,7 +390,7 @@ static int alloc_buffer_from_dma(size_t size, struct test_buf_info *buf_info)
 
 		ret = sg_alloc_table(sg_table, 1, GFP_KERNEL);
 		if (ret) {
-			DISP_PR_INFO("%s alloc_sgtable fail, ret:%d\n",
+			DISP_pr_no_info("%s alloc_sgtable fail, ret:%d\n",
 				     __func__, ret);
 			dma_free_coherent(disp_get_device(), size,
 					  buf_info->buf_va,
@@ -402,14 +402,14 @@ static int alloc_buffer_from_dma(size_t size, struct test_buf_info *buf_info)
 		sg_dma_len(sg_table->sgl) = size_align;
 		buf_info->m4u_client = m4u_create_client();
 		if (IS_ERR_OR_NULL(buf_info->m4u_client))
-			DISP_PR_INFO("create client fail!\n");
+			DISP_pr_no_info("create client fail!\n");
 
 		ret = m4u_alloc_mva(buf_info->m4u_client,
 				    DISP_M4U_PORT_DISP_OVL0, 0, sg_table,
 				    size_align, M4U_PROT_READ | M4U_PROT_WRITE,
 				    0, &mva);
 		if (ret)
-			DISP_PR_INFO("m4u_alloc_mva returns fail: %d\n", ret);
+			DISP_pr_no_info("m4u_alloc_mva returns fail: %d\n", ret);
 #endif
 	}
 #else /* !CONFIG_MTK_IOMMU_V2 */
@@ -420,7 +420,7 @@ static int alloc_buffer_from_dma(size_t size, struct test_buf_info *buf_info)
 	size_align = round_up(size, PAGE_SIZE);
 	ion_display_client = disp_ion_create("disp_cap_ovl");
 	if (ion_display_client == NULL) {
-		DISP_PR_INFO("primary capture:Fail to create ion\n");
+		DISP_pr_no_info("primary capture:Fail to create ion\n");
 		ret = -1;
 		goto out;
 	}
@@ -429,7 +429,7 @@ static int alloc_buffer_from_dma(size_t size, struct test_buf_info *buf_info)
 					    ION_HEAP_MULTIMEDIA_PA2MVA_MASK,
 					    buf_info->buf_pa, size_align);
 	if (ret != 0) {
-		DISP_PR_INFO("primary capture:Fail to allocate buffer\n");
+		DISP_pr_no_info("primary capture:Fail to allocate buffer\n");
 		ret = -1;
 		goto out;
 	}
@@ -475,7 +475,7 @@ static int test_alloc_buffer(size_t size, struct test_buf_info *buf_info)
 		ret = alloc_buffer_from_dma(size, buf_info);
 
 	if (ret)
-		DISP_PR_INFO("fail to alloc buffer size = %lu\n",
+		DISP_pr_no_info("fail to alloc buffer size = %lu\n",
 			     (unsigned long)size);
 	return ret;
 }
@@ -494,12 +494,12 @@ static int __maybe_unused compare_dsi_checksum(unsigned long unused)
 
 	ret = cmdqBackupReadSlot(cksum_slot, 0, &cksum);
 	if (ret) {
-		DISP_PR_INFO("Fail to read cksum from cmdq slot\n");
+		DISP_pr_no_info("Fail to read cksum from cmdq slot\n");
 		return -1;
 	}
 
 	if (cksum_golden != cksum)
-		DISP_PR_INFO("%s fail, cksum=0x%08x, golden=0x%08x\n",
+		DISP_pr_no_info("%s fail, cksum=0x%08x, golden=0x%08x\n",
 			     __func__, cksum, cksum_golden);
 
 	return 0;
@@ -515,13 +515,13 @@ static int __maybe_unused check_dsi_checksum(void)
 
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 	if (ret) {
-		DISP_PR_INFO("Fail to create cmdq handle\n");
+		DISP_pr_no_info("Fail to create cmdq handle\n");
 		return -1;
 	}
 	if (!cksum_slot) {
 		ret = cmdqBackupAllocateSlot(&cksum_slot, 1);
 		if (ret) {
-			DISP_PR_INFO("Fail to alloc cmd slot\n");
+			DISP_pr_no_info("Fail to alloc cmd slot\n");
 			cmdqRecDestroy(handle);
 			return -1;
 		}
@@ -655,7 +655,7 @@ primary_display_basic_test(int layer_num, unsigned int layer_en_mask,
 		check_dsi_checksum();
 
 		if (unlikely(basic_test_cancel)) {
-			DISP_PR_INFO("%s stop because fatal signal\n",
+			DISP_pr_no_info("%s stop because fatal signal\n",
 				     __func__);
 			break;
 		}
@@ -744,7 +744,7 @@ static void process_dbg_opt(const char *opt)
 		tmp += i + 1;
 		ret = sscanf(tmp, "%d\n", &value);
 		if (ret != 1) {
-			DISP_PR_INFO("error to parse cmd %s: %s %s ret=%d\n",
+			DISP_pr_no_info("error to parse cmd %s: %s %s ret=%d\n",
 				     opt, option, tmp, ret);
 			return;
 		}
@@ -771,7 +771,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "switch_mode:%d\n", &sess_mode);
 		if (ret != 1) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -792,7 +792,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &pattern);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -818,7 +818,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &blank);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -832,7 +832,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "force_fps:%d,%d\n", &keep, &skip);
 		if (ret != 2) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -898,7 +898,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "lfr_setting:%d,%d\n", &enable, &mode);
 		if (ret != 2) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -920,7 +920,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &method);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -931,7 +931,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &clk);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -941,7 +941,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &mode);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -953,7 +953,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &mode);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -969,7 +969,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &option);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -980,7 +980,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &maxlayer);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -988,7 +988,7 @@ static void process_dbg_opt(const char *opt)
 		if (maxlayer)
 			primary_display_set_max_layer(maxlayer);
 		else
-			DISP_PR_INFO("can't set max layer to 0\n");
+			DISP_pr_no_info("can't set max layer to 0\n");
 	} else if (strncmp(opt, "primary_reset", 13) == 0) {
 		primary_display_reset();
 	} else if (strncmp(opt, "esd_check", 9) == 0) {
@@ -997,7 +997,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &enable);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1010,7 +1010,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &mode);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1044,7 +1044,7 @@ static void process_dbg_opt(const char *opt)
 				&gCapturePriLayerDownX, &gCapturePriLayerDownY,
 				&gCapturePriLayerNum);
 			if (ret != 3) {
-				DISP_PR_INFO("%d error to parse cmd %s\n",
+				DISP_pr_no_info("%d error to parse cmd %s\n",
 					     __LINE__, opt);
 				return;
 			}
@@ -1071,7 +1071,7 @@ static void process_dbg_opt(const char *opt)
 				     &gCapturePriLayerDownX,
 				     &gCapturePriLayerDownY);
 			if (ret != 2) {
-				DISP_PR_INFO("%d error to parse cmd %s\n",
+				DISP_pr_no_info("%d error to parse cmd %s\n",
 					     __LINE__, opt);
 				return;
 			}
@@ -1096,7 +1096,7 @@ static void process_dbg_opt(const char *opt)
 				     &gCapturePriLayerDownX,
 				     &gCapturePriLayerDownY);
 			if (ret != 2) {
-				DISP_PR_INFO("%d error to parse cmd %s\n",
+				DISP_pr_no_info("%d error to parse cmd %s\n",
 					     __LINE__, opt);
 				return;
 			}
@@ -1120,7 +1120,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = kstrtouint(p, 0, &flg);
 		if (ret) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1139,7 +1139,7 @@ static void process_dbg_opt(const char *opt)
 		ret = kstrtoul(p, 10, &disp_mode);
 		gTriggerDispMode = (int)disp_mode;
 		if (ret)
-			DISP_PR_INFO("DISP/%s: errno %d\n", __func__, ret);
+			DISP_pr_no_info("DISP/%s: errno %d\n", __func__, ret);
 
 		DISPMSG("DDP: gTriggerDispMode=%d\n", gTriggerDispMode);
 	} else if (strncmp(opt, "disp_set_fps:", 13) == 0) {
@@ -1192,7 +1192,7 @@ static void process_dbg_opt(const char *opt)
 			     &fmt, &frame_num, &vsync_num,
 			     &x, &y, &r, &g, &b, &a, &mode, &cksum);
 		if (ret != 14 && ret != 1) {
-			DISP_PR_INFO("error to parse cmd %s, ret=%d\n",
+			DISP_pr_no_info("error to parse cmd %s, ret=%d\n",
 				     opt, ret);
 			return;
 		}
@@ -1222,7 +1222,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "pan_disp_test:%d,%d\n", &frame_num, &bpp);
 		if (ret != 2) {
-			DISP_PR_ERR("%d error to parse cmd %s\n",
+			DISP_pr_no_err("%d error to parse cmd %s\n",
 				    __LINE__, opt);
 			return;
 		}
@@ -1252,7 +1252,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "scenario:%d\n", &scen);
 		if (ret != 1) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1261,7 +1261,7 @@ static void process_dbg_opt(const char *opt)
 		ret = sscanf(opt, "layout_noncontinuous:%d\n",
 			     &layer_layout_allow_non_continuous);
 		if (ret != 1) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1270,7 +1270,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "idle_wait:%llu\n", &idle_check_interval);
 		if (ret != 1) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1282,7 +1282,7 @@ static void process_dbg_opt(const char *opt)
 		ret = sscanf(opt, "layer_statistic:%d\n",
 			     &layer_statistic_enable);
 		if (ret != 1) {
-			DISP_PR_INFO("%d error to parse cmd %s\n",
+			DISP_pr_no_info("%d error to parse cmd %s\n",
 				     __LINE__, opt);
 			return;
 		}
@@ -1295,7 +1295,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "force_ultra:%u,0x%x\n", &larb, &value);
 		if (ret != 2)
-			DISP_PR_INFO("%d error to parse cmd %s", __LINE__, opt);
+			DISP_pr_no_info("%d error to parse cmd %s", __LINE__, opt);
 		else
 			enable_smi_ultra(larb, value);
 	} else if (strncmp(opt, "force_preultra:", 15) == 0) {
@@ -1303,7 +1303,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "force_preultra:%u,0x%x\n", &larb, &value);
 		if (ret != 2)
-			DISP_PR_INFO("%d error to parse cmd %s", __LINE__, opt);
+			DISP_pr_no_info("%d error to parse cmd %s", __LINE__, opt);
 		else
 			enable_smi_preultra(larb, value);
 	} else if (strncmp(opt, "disable_ultra:", 14) == 0) {
@@ -1311,7 +1311,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "disable_ultra:%u,0x%x\n", &larb, &value);
 		if (ret != 2)
-			DISP_PR_INFO("%d error to parse cmd %s", __LINE__, opt);
+			DISP_pr_no_info("%d error to parse cmd %s", __LINE__, opt);
 		else
 			disable_smi_ultra(larb, value);
 	} else if (strncmp(opt, "disable_preultra:", 17) == 0) {
@@ -1319,7 +1319,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "disable_preultra:%u,0x%x\n", &larb, &value);
 		if (ret != 2)
-			DISP_PR_INFO("%d error to parse cmd %s", __LINE__, opt);
+			DISP_pr_no_info("%d error to parse cmd %s", __LINE__, opt);
 		else
 			disable_smi_preultra(larb, value);
 	} else if (strncmp(opt, "MIPI_CLK:", 9) == 0) {
@@ -1333,7 +1333,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "ovl_bgcolor:0x%x\n", &bg_color);
 		if (ret != 1) {
-			DDP_PR_ERR("%s:%d:error to parse cmd %s\n",
+			DDP_pr_no_err("%s:%d:error to parse cmd %s\n",
 				   __func__, __LINE__, opt);
 			return;
 		}
@@ -1346,7 +1346,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "ovl_dimcolor:0x%x\n", &dim_color);
 		if (ret != 1) {
-			DDP_PR_ERR("%s:%d:error to parse cmd %s\n",
+			DDP_pr_no_err("%s:%d:error to parse cmd %s\n",
 				   __func__, __LINE__, opt);
 			return;
 		}
@@ -1367,7 +1367,7 @@ static void process_dbg_opt(const char *opt)
 				&preultra_cnt, &ultra_cnt);
 
 		if (ret != 7) {
-			DISP_PR_ERR("%d error to parse cmd %s\n",
+			DISP_pr_no_err("%d error to parse cmd %s\n",
 				__LINE__, opt);
 			return;
 		}
@@ -1384,7 +1384,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "fake_layer:0x%x\n", &mask);
 		if (ret != 1) {
-			DISP_PR_ERR("%d error to parse cmd %s\n",
+			DISP_pr_no_err("%d error to parse cmd %s\n",
 				__LINE__, opt);
 			return;
 		}
@@ -1397,7 +1397,7 @@ static void process_dbg_opt(const char *opt)
 
 		ret = sscanf(opt, "fake_layer_overwrite:%d\n", &overwrite);
 		if (ret != 1) {
-			DISP_PR_ERR("%d error to parse cmd %s\n",
+			DISP_pr_no_err("%d error to parse cmd %s\n",
 				__LINE__, opt);
 			return;
 		}
@@ -1620,42 +1620,42 @@ void DBG_Init(void)
 				NULL,
 				&debug_fops);
 	if (!mtkfb_procfs) {
-		pr_info("[%s %d]failed to create mtkfb in /proc/disp_ddp\n",
+		pr_no_info("[%s %d]failed to create mtkfb in /proc/disp_ddp\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	disp_lowpower_proc = proc_mkdir("displowpower", NULL);
 	if (!disp_lowpower_proc) {
-		pr_info("[%s %d]failed to create dir: /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create dir: /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("kickdump", S_IFREG | 0444,
 		disp_lowpower_proc, &kickidle_fops)) {
-		pr_info("[%s %d]failed to create kickdump in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create kickdump in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("partial", S_IFREG | 0444,
 		disp_lowpower_proc, &partial_fops)) {
-		pr_info("[%s %d]failed to create partial in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create partial in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("idletime", S_IFREG | 0444,
 		disp_lowpower_proc, &idletime_fops)) {
-		pr_info("[%s %d]failed to create idletime in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create idletime in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}
 
 	if (!proc_create("idlevfp", S_IFREG | 0444,
 		disp_lowpower_proc, &idlevfp_fops)) {
-		pr_info("[%s %d]failed to create idlevfp in /proc/displowpower\n",
+		pr_no_info("[%s %d]failed to create idlevfp in /proc/displowpower\n",
 			__func__, __LINE__);
 		goto out;
 	}

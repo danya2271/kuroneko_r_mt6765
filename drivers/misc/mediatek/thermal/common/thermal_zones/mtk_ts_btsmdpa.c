@@ -37,14 +37,14 @@
 int __attribute__ ((weak))
 IMM_IsAdcInitReady(void)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return 0;
 }
 
 int __attribute__ ((weak))
 IMM_GetOneChannelValue(int dwChannel, int data[4], int *rawdata)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return -1;
 }
 #endif
@@ -92,12 +92,12 @@ static int polling_factor2 = 10000;
 #define mtkts_btsmdpa_dprintk(fmt, args...)   \
 do {                                    \
 	if (mtkts_btsmdpa_debug_log) {                \
-		pr_notice("[Thermal/TZ/BTSMDPA]" fmt, ##args); \
+		pr_no_notice("[Thermal/TZ/BTSMDPA]" fmt, ##args); \
 	}                                   \
 } while (0)
 
 #define mtkts_btsmdpa_printk(fmt, args...) \
-pr_notice("[Thermal/TZ/BTSMDPA]" fmt, ##args)
+pr_no_notice("[Thermal/TZ/BTSMDPA]" fmt, ##args)
 
 
 #if defined(CONFIG_MEDIATEK_MT6577_AUXADC)
@@ -1129,7 +1129,7 @@ void mtkts_btsmdpa_prepare_table(int table_num)
 		break;
 	}
 
-	pr_notice("[Thermal/TZ/BTSMDPA] %s table_num=%d\n",
+	pr_no_notice("[Thermal/TZ/BTSMDPA] %s table_num=%d\n",
 						__func__, table_num);
 
 }

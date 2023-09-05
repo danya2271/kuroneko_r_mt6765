@@ -306,7 +306,7 @@ void __init mtk_idle_procfs_control_dir_init(struct proc_dir_entry *parent)
 	dir = proc_mkdir("control", parent);
 
 	if (!dir) {
-		pr_notice("fail to create procfs @ %s()\n", __func__);
+		pr_no_notice("fail to create procfs @ %s()\n", __func__);
 		return;
 	}
 

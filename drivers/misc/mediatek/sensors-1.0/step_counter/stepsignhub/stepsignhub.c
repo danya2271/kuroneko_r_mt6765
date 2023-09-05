@@ -32,14 +32,14 @@ static ssize_t trace_store(struct device_driver *ddri,
 	int trace = 0;
 
 	if (obj == NULL) {
-		pr_err("obj is null!!\n");
+		pr_no_err("obj is null!!\n");
 		return 0;
 	}
 
 	if (sscanf(buf, "0x%x", &trace) == 1) {
 		atomic_set(&obj->trace, trace);
 	} else {
-		pr_err("invalid content: '%s', length = %zu\n",
+		pr_no_err("invalid content: '%s', length = %zu\n",
 			buf, count);
 		return 0;
 	}
@@ -64,7 +64,7 @@ static int step_chub_create_attr(struct device_driver *driver)
 	for (idx = 0; idx < num; idx++) {
 		err = driver_create_file(driver, step_chub_attr_list[idx]);
 		if (err != 0) {
-			pr_err("driver_create_file (%s) = %d\n",
+			pr_no_err("driver_create_file (%s) = %d\n",
 				     step_chub_attr_list[idx]->attr.name, err);
 			break;
 		}
@@ -224,7 +224,7 @@ static int step_counter_get_data(uint32_t *counter, int *status)
 
 	err = sensor_get_data_from_hub(ID_STEP_COUNTER, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp = data.time_stamp;
@@ -262,7 +262,7 @@ static int floor_counter_get_data(uint32_t *counter, int *status)
 
 	err = sensor_get_data_from_hub(ID_FLOOR_COUNTER, &data);
 	if (err < 0) {
-		pr_err("%s fail!!\n", __func__);
+		pr_no_err("%s fail!!\n", __func__);
 		return -1;
 	}
 	time_stamp = data.time_stamp;
@@ -306,7 +306,7 @@ static int sign_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_err("sign do not support flush\n");
+		pr_no_err("sign do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = step_notify_t(TYPE_SIGNIFICANT,
 			(int64_t)event->time_stamp);
@@ -337,7 +337,7 @@ static int step_chub_local_init(void)
 
 	err = step_chub_create_attr(&paddr->driver);
 	if (err) {
-		pr_err("create attribute err = %d\n", err);
+		pr_no_err("create attribute err = %d\n", err);
 		goto exit_create_attr_failed;
 	}
 	ctl.open_report_data = step_cds_open_report_data;
@@ -362,7 +362,7 @@ static int step_chub_local_init(void)
 	ctl.is_smd_support_batch = false;
 	err = step_c_register_control_path(&ctl);
 	if (err) {
-		pr_err("register step_cds control path err\n");
+		pr_no_err("register step_cds control path err\n");
 		goto exit;
 	}
 
@@ -372,32 +372,32 @@ static int step_chub_local_init(void)
 	data.get_data_floor_c = floor_counter_get_data;
 	err = step_c_register_data_path(&data);
 	if (err) {
-		pr_err("register step_cds data path err\n");
+		pr_no_err("register step_cds data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_STEP_DETECTOR,
 		step_detect_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	err =
 	    scp_sensorHub_data_registration(ID_SIGNIFICANT_MOTION,
 					   sign_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	err = scp_sensorHub_data_registration(ID_STEP_COUNTER,
 		step_count_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	err = scp_sensorHub_data_registration(ID_FLOOR_COUNTER,
 		floor_count_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -426,7 +426,7 @@ static int __init step_chub_init(void)
 
 static void __exit step_chub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(step_chub_init);

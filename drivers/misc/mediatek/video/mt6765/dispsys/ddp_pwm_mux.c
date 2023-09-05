@@ -107,21 +107,21 @@ static int disp_pwm_get_muxbase(void)
 	struct device_node *node;
 
 	if (disp_pmw_mux_base != NULL) {
-		pr_debug("[PWM]TOPCKGEN node exist");
+		pr_no_debug("[PWM]TOPCKGEN node exist");
 		return 0;
 	}
 
 	node = of_find_compatible_node(NULL, NULL, DTSI_TOPCKGEN);
 	if (!node) {
-		pr_info("[PWM]DISP find TOPCKGEN node failed\n");
+		pr_no_info("[PWM]DISP find TOPCKGEN node failed\n");
 		return -1;
 	}
 	disp_pmw_mux_base = of_iomap(node, 0);
 	if (!disp_pmw_mux_base) {
-		pr_info("[PWM]DISP TOPCKGEN base failed\n");
+		pr_no_info("[PWM]DISP TOPCKGEN base failed\n");
 		return -1;
 	}
-	pr_debug("[PWM]find TOPCKGEN node");
+	pr_no_debug("[PWM]find TOPCKGEN node");
 	return ret;
 }
 
@@ -132,7 +132,7 @@ static unsigned int disp_pwm_get_pwmmux(void)
 	if (MUX_DISPPWM_ADDR != NULL)
 		regsrc = clk_readl(MUX_DISPPWM_ADDR);
 	else
-		pr_info("[PWM]mux addr illegal");
+		pr_no_info("[PWM]mux addr illegal");
 
 	return regsrc;
 }
@@ -152,7 +152,7 @@ int disp_pwm_set_pwmmux(unsigned int clk_req)
 	disp_pwm_get_muxbase();
 	reg_before = disp_pwm_get_pwmmux();
 
-	pr_debug("[PWM]clk_req=%d clkid=%d", clk_req, clkid);
+	pr_no_debug("[PWM]clk_req=%d clkid=%d", clk_req, clkid);
 
 	if (clkid != -1) {
 		ddp_clk_prepare_enable(MUX_PWM);
@@ -162,7 +162,7 @@ int disp_pwm_set_pwmmux(unsigned int clk_req)
 
 	reg_after = disp_pwm_get_pwmmux();
 	g_pwm_mux_clock_source = (reg_after>>24) & 0x3;
-	pr_debug("[PWM]PWM_MUX %x->%x", reg_before, reg_after);
+	pr_no_debug("[PWM]PWM_MUX %x->%x", reg_before, reg_after);
 
 	return 0;
 }
@@ -180,18 +180,18 @@ static int get_ulposc_base(void)
 	struct device_node *node;
 
 	if (disp_pmw_osc_base != NULL) {
-		pr_debug("[PWM]SLEEP node exist");
+		pr_no_debug("[PWM]SLEEP node exist");
 		return 0;
 	}
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek,sleep");
 	if (!node) {
-		pr_info("[PWM]DISP find SLEEP node failed\n");
+		pr_no_info("[PWM]DISP find SLEEP node failed\n");
 		return -1;
 	}
 	disp_pmw_osc_base = of_iomap(node, 0);
 	if (!disp_pmw_osc_base) {
-		pr_info("[PWM]DISP find SLEEP base failed\n");
+		pr_no_info("[PWM]DISP find SLEEP base failed\n");
 		return -1;
 	}
 
@@ -204,16 +204,16 @@ static int get_ulposc_status(void)
 	int ret = -1;
 
 	if (get_ulposc_base() == -1) {
-		pr_info("[PWM]get ULPOSC status fail");
+		pr_no_info("[PWM]get ULPOSC status fail");
 		return ret;
 	}
 
 	regosc = clk_readl(OSC_ULPOSC_ADDR);
 	if ((regosc & 0x5) != 0x5) {
-		pr_debug("[PWM]ULPOSC is off (%x)", regosc);
+		pr_no_debug("[PWM]ULPOSC is off (%x)", regosc);
 		ret = 0;
 	} else {
-		pr_debug("[PWM]ULPOSC is on (%x)", regosc);
+		pr_no_debug("[PWM]ULPOSC is on (%x)", regosc);
 		ret = 1;
 	}
 
@@ -233,11 +233,11 @@ static int ulposc_on(void)
 		return -1;
 
 	regosc = clk_readl(OSC_ULPOSC_ADDR);
-	/* pr_debug("[PWM]ULPOSC config : 0x%08x", regosc); */
+	/* pr_no_debug("[PWM]ULPOSC config : 0x%08x", regosc); */
 
 	regosc = regosc | 0x1;
 	clk_writel(OSC_ULPOSC_ADDR, regosc);
-	/* pr_debug("[PWM]ULPOSC config : 0x%08x after en", regosc); */
+	/* pr_no_debug("[PWM]ULPOSC config : 0x%08x after en", regosc); */
 	udelay(150);
 
 	regosc = clk_readl(OSC_ULPOSC_ADDR);
@@ -245,7 +245,7 @@ static int ulposc_on(void)
 	clk_writel(OSC_ULPOSC_ADDR, regosc);
 	/* udelay(150); */
 	/* regosc = clk_readl(OSC_ULPOSC_ADDR); */
-	/* pr_debug("[PWM]ULPOSC config : 0x%08x after rst 1", regosc); */
+	/* pr_no_debug("[PWM]ULPOSC config : 0x%08x after rst 1", regosc); */
 
 	return 0;
 }
@@ -264,13 +264,13 @@ static int ulposc_off(void)
 
 	udelay(150);
 	regosc = clk_readl(OSC_ULPOSC_ADDR);
-	/* pr_debug("[PWM]ULPOSC config : 0x%08x after cg_en", regosc); */
+	/* pr_no_debug("[PWM]ULPOSC config : 0x%08x after cg_en", regosc); */
 
 	regosc = regosc & (~0x1);
 	clk_writel(OSC_ULPOSC_ADDR, regosc);
 	/* udelay(150); */
 	/* regosc = clk_readl(OSC_ULPOSC_ADDR); */
-	/* pr_debug("[PWM]ULPOSC config : 0x%08x after en", regosc); */
+	/* pr_no_debug("[PWM]ULPOSC config : 0x%08x after en", regosc); */
 
 	return 0;
 }

@@ -34,7 +34,7 @@ static const struct file_operations idle_proc_ ## name ## _fops = {            \
 #define PROC_CREATE_NODE(dir, entry)                                           \
 do {                                                                           \
 	if (!proc_create(entry.name, 0644, dir, entry.fops))                   \
-		pr_notice("%s(), create procfs cpuidle node %s failed\n",      \
+		pr_no_notice("%s(), create procfs cpuidle node %s failed\n",      \
 			__func__, entry.name);                                 \
 } while (0)
 

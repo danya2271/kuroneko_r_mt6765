@@ -44,7 +44,7 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				 _IOC_SIZE(cmd));
 
 	if (err) {
-		pr_err("access error: %08X, (%2d, %2d)\n", cmd,
+		pr_no_err("access error: %08X, (%2d, %2d)\n", cmd,
 			   _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -57,13 +57,13 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->enable_sensor != NULL) {
 			err = accel_factory.fops->enable_sensor(flag, 5);
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_INIT fail!\n");
+				pr_no_err("GSENSOR_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_debug("GSENSOR_IOCTL_INIT, enable: %d, s_p:%dms\n",
+			pr_no_debug("GSENSOR_IOCTL_INIT, enable: %d, s_p:%dms\n",
 				flag, 5);
 		} else {
-			pr_debug("GSENSOR_IOCTL_INIT NULL\n");
+			pr_no_debug("GSENSOR_IOCTL_INIT NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -74,18 +74,18 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->get_data != NULL) {
 			err = accel_factory.fops->get_data(data_buf, &status);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GSENSOR_READ_SENSORDATA read fail!\n");
 				return -EINVAL;
 			}
 			sprintf(strbuf, "%x %x %x", data_buf[0], data_buf[1],
 				data_buf[2]);
-			pr_debug("GSENSOR_READ_SENSORDATA read strbuf : (%s)!\n",
+			pr_no_debug("GSENSOR_READ_SENSORDATA read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
 				return -EFAULT;
 		} else {
-			pr_debug("GSENSOR_IOCTL_READ_SENSORDATA NULL\n");
+			pr_no_debug("GSENSOR_IOCTL_READ_SENSORDATA NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -94,18 +94,18 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->get_raw_data != NULL) {
 			err = accel_factory.fops->get_raw_data(data_buf);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GSENSOR_READ_RAW_DATA read fail!\n");
 				return -EINVAL;
 			}
 			sprintf(strbuf, "%x %x %x", data_buf[0], data_buf[1],
 				data_buf[2]);
-			pr_debug("GSENSOR_SENSORDATA_RAW read strbuf : (%s)!\n",
+			pr_no_debug("GSENSOR_SENSORDATA_RAW read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
 				return -EFAULT;
 		} else {
-			pr_debug("GSENSOR_IOCTL_READ_SENSORDATA_RAW NULL\n");
+			pr_no_debug("GSENSOR_IOCTL_READ_SENSORDATA_RAW NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -115,17 +115,17 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		data_buf[0] = sensor_data.x;
 		data_buf[1] = sensor_data.y;
 		data_buf[2] = sensor_data.z;
-		pr_debug("GSENSOR_IOCTL_SET_CALI: (%d, %d, %d)!\n", data_buf[0],
+		pr_no_debug("GSENSOR_IOCTL_SET_CALI: (%d, %d, %d)!\n", data_buf[0],
 			data_buf[1], data_buf[2]);
 		if (accel_factory.fops != NULL &&
 		    accel_factory.fops->set_cali != NULL) {
 			err = accel_factory.fops->set_cali(data_buf);
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_SET_CALI FAIL!\n");
+				pr_no_err("GSENSOR_IOCTL_SET_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_debug("GSENSOR_IOCTL_SET_CALI NULL\n");
+			pr_no_debug("GSENSOR_IOCTL_SET_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -134,11 +134,11 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->clear_cali != NULL) {
 			err = accel_factory.fops->clear_cali();
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_CLR_CALI FAIL!\n");
+				pr_no_err("GSENSOR_IOCTL_CLR_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GSENSOR_IOCTL_CLR_CALI NULL\n");
+			pr_no_err("GSENSOR_IOCTL_CLR_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -147,14 +147,14 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->get_cali != NULL) {
 			err = accel_factory.fops->get_cali(data_buf);
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_GET_CALI FAIL!\n");
+				pr_no_err("GSENSOR_IOCTL_GET_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GSENSOR_IOCTL_GET_CALI NULL\n");
+			pr_no_err("GSENSOR_IOCTL_GET_CALI NULL\n");
 			return -EINVAL;
 		}
-		pr_debug("GSENSOR_IOCTL_GET_CALI: (%d, %d, %d)!\n", data_buf[0],
+		pr_no_debug("GSENSOR_IOCTL_GET_CALI: (%d, %d, %d)!\n", data_buf[0],
 			data_buf[1], data_buf[2]);
 		sensor_data.x = data_buf[0];
 		sensor_data.y = data_buf[1];
@@ -167,11 +167,11 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->enable_calibration != NULL) {
 			err = accel_factory.fops->enable_calibration();
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_ENABLE_CALI FAIL!\n");
+				pr_no_err("GSENSOR_IOCTL_ENABLE_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GSENSOR_IOCTL_ENABLE_CALI NULL\n");
+			pr_no_err("GSENSOR_IOCTL_ENABLE_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -180,16 +180,16 @@ static long acc_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    accel_factory.fops->do_self_test != NULL) {
 			err = accel_factory.fops->do_self_test();
 			if (err < 0) {
-				pr_err("GSENSOR_IOCTL_SELF_TEST FAIL!\n");
+				pr_no_err("GSENSOR_IOCTL_SELF_TEST FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GSENSOR_IOCTL_SELF_TEST NULL\n");
+			pr_no_err("GSENSOR_IOCTL_SELF_TEST NULL\n");
 			return -EINVAL;
 		}
 		return 0;
 	default:
-		pr_err("unknown IOCTL: 0x%08x\n", cmd);
+		pr_no_err("unknown IOCTL: 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 
@@ -201,7 +201,7 @@ static long compat_acc_factory_unlocked_ioctl(struct file *filp,
 					unsigned int cmd, unsigned long arg)
 {
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl) {
-		pr_err(
+		pr_no_err(
 			"compat_ioctl has no f_op or no unlocked_ioctl.\n");
 		return -ENOTTY;
 	}
@@ -218,12 +218,12 @@ static long compat_acc_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_GSENSOR_IOCTL_GET_CALI:
 	case COMPAT_GSENSOR_IOCTL_ENABLE_CALI:
 	case COMPAT_GSENSOR_IOCTL_SELF_TEST:
-		pr_debug("compat_ioctl : GSENSOR_IOCTL command is 0x%x\n", cmd);
+		pr_no_debug("compat_ioctl : GSENSOR_IOCTL command is 0x%x\n", cmd);
 		return filp->f_op->unlocked_ioctl(
 			filp, cmd, (unsigned long)compat_ptr(arg));
 
 	default:
-		pr_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
+		pr_no_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 }
@@ -255,7 +255,7 @@ int accel_factory_device_register(struct accel_factory_public *dev)
 	accel_factory.fops = dev->fops;
 	err = misc_register(&accel_factory_device);
 	if (err) {
-		pr_err("accel_factory_device register failed\n");
+		pr_no_err("accel_factory_device register failed\n");
 		err = -1;
 	}
 	return err;

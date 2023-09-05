@@ -80,7 +80,7 @@ static char *get_feature_name(const uint8_t task_scene)
 	case TASK_SCENE_VOIP:
 	case TASK_SCENE_SPEAKER_PROTECTION:
 	default: {
-		pr_notice("%s not support task %d", __func__, task_scene);
+		pr_no_notice("%s not support task %d", __func__, task_scene);
 		break;
 	}
 	}
@@ -111,7 +111,7 @@ static char *get_do_name(const uint8_t task_scene)
 	case TASK_SCENE_VOIP:
 	case TASK_SCENE_SPEAKER_PROTECTION:
 	default: {
-		pr_notice("%s not support task %d", __func__, task_scene);
+		pr_no_notice("%s not support task %d", __func__, task_scene);
 		break;
 	}
 	}
@@ -202,7 +202,7 @@ int audio_load_task(const uint8_t task_scene)
 	char *target_do_name = NULL;
 	int retval = 0;
 
-	pr_debug("%s(+), task_scene: %d", __func__, task_scene);
+	pr_no_debug("%s(+), task_scene: %d", __func__, task_scene);
 	if (task_scene >= TASK_SCENE_SIZE)
 		return -1;
 
@@ -237,7 +237,7 @@ int audio_load_task(const uint8_t task_scene)
 audio_load_task_exit:
 	mutex_unlock(&audio_load_task_mutex);
 
-	pr_debug("%s(-), task_scene: %d\n", __func__, task_scene);
+	pr_no_debug("%s(-), task_scene: %d\n", __func__, task_scene);
 	return retval;
 #endif /* end of CONFIG_MTK_DO */
 }

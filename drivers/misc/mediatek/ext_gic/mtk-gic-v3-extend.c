@@ -100,7 +100,7 @@ bool mt_get_irq_gic_targets(struct irq_data *d, cpumask_t *mask)
 	/* if target all, target_mask should indicate all CPU */
 	if (routing_val & GICD_IROUTER_SPI_MODE_ANY) {
 		target_mask = (1<<num_possible_cpus())-1;
-		pr_debug("%s:%d: irq(%d) targets all\n",
+		pr_no_debug("%s:%d: irq(%d) targets all\n",
 				__func__, __LINE__, gic_irq(d));
 	} else {
 		/* if not target all,
@@ -114,7 +114,7 @@ bool mt_get_irq_gic_targets(struct irq_data *d, cpumask_t *mask)
 		 */
 		target_mask = 1<<(cluster*4 + cpu);
 
-		pr_debug("%s:%d: irq(%d) target_mask(0x%llx)\n",
+		pr_no_debug("%s:%d: irq(%d) target_mask(0x%llx)\n",
 				__func__, __LINE__, gic_irq(d), target_mask);
 	}
 
@@ -134,7 +134,7 @@ u32 mt_irq_get_pol_hw(u32 hwirq)
 	void __iomem *base = INT_POL_CTL0;
 
 	if (hwirq < 32) {
-		pr_notice("Fail to set polarity of interrupt %d\n", hwirq);
+		pr_no_notice("Fail to set polarity of interrupt %d\n", hwirq);
 		return 0;
 	}
 
@@ -145,7 +145,7 @@ u32 mt_irq_get_pol_hw(u32 hwirq)
 	 */
 	if ((reg_len_pol0 != 0) && (reg >= reg_len_pol0)) {
 		if (!INT_POL_CTL1) {
-			pr_notice("MUST have 2nd INT_POL_CTRL\n");
+			pr_no_notice("MUST have 2nd INT_POL_CTRL\n");
 			/* is a bug */
 			WARN_ON(1);
 		}
@@ -359,7 +359,7 @@ void mt_irq_unmask_for_sleep_ex(unsigned int virq)
 	mask = 1 << (hwirq % 32);
 
 	if (hwirq < 16) {
-		pr_notice("Fail to enable interrupt %d\n", hwirq);
+		pr_no_notice("Fail to enable interrupt %d\n", hwirq);
 		return;
 	}
 
@@ -382,7 +382,7 @@ void mt_irq_unmask_for_sleep(unsigned int hwirq)
 	dist_base = GIC_DIST_BASE;
 
 	if (hwirq < 16) {
-		pr_notice("Fail to enable interrupt %d\n", hwirq);
+		pr_no_notice("Fail to enable interrupt %d\n", hwirq);
 		return;
 	}
 
@@ -406,7 +406,7 @@ void mt_irq_mask_for_sleep(unsigned int irq)
 	dist_base = GIC_DIST_BASE;
 
 	if (irq < 16) {
-		pr_notice("Fail to enable interrupt %d\n", irq);
+		pr_no_notice("Fail to enable interrupt %d\n", irq);
 		return;
 	}
 
@@ -487,7 +487,7 @@ void mt_irq_dump_status(int irq)
 		return;
 
 	if (mt_irq_dump_status_buf(irq, buf))
-		pr_notice("%s", buf);
+		pr_no_notice("%s", buf);
 
 	kfree(buf);
 }
@@ -504,7 +504,7 @@ void _mt_irq_set_polarity(unsigned int hwirq, unsigned int polarity)
 	void __iomem *base = INT_POL_CTL0;
 
 	if (hwirq < 32) {
-		pr_notice("Fail to set polarity of interrupt %d\n", hwirq);
+		pr_no_notice("Fail to set polarity of interrupt %d\n", hwirq);
 		return;
 	}
 
@@ -516,7 +516,7 @@ void _mt_irq_set_polarity(unsigned int hwirq, unsigned int polarity)
 	 */
 	if ((reg_len_pol0 != 0) && (reg >= reg_len_pol0)) {
 		if (!INT_POL_CTL1) {
-			pr_notice("MUST have 2nd INT_POL_CTRL\n");
+			pr_no_notice("MUST have 2nd INT_POL_CTRL\n");
 			/* is a bug */
 			WARN_ON(1);
 		}
@@ -614,7 +614,7 @@ void irq_sw_mode_init(void)
 	struct device_node *node;
 
 	if (irq_sw_mode_support() != 1) {
-		pr_notice("### IRQ SW mode not support ###\n");
+		pr_no_notice("### IRQ SW mode not support ###\n");
 		return;
 	}
 	node = of_find_compatible_node(NULL, NULL, "mediatek,mcucfg");
@@ -629,7 +629,7 @@ int __init mt_gic_ext_init(void)
 
 	node = of_find_compatible_node(NULL, NULL, "arm,gic-v3");
 	if (!node) {
-		pr_notice("[gic_ext] find arm,gic-v3 node failed\n");
+		pr_no_notice("[gic_ext] find arm,gic-v3 node failed\n");
 		return -EINVAL;
 	}
 
@@ -656,7 +656,7 @@ int __init mt_gic_ext_init(void)
 		reg_len_pol0 = 0;
 
 	irq_sw_mode_init();
-	pr_notice("### gic-v3 init done. ###\n");
+	pr_no_notice("### gic-v3 init done. ###\n");
 
 	return 0;
 }

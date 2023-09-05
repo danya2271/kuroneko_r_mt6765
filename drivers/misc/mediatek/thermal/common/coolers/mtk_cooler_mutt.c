@@ -195,7 +195,7 @@ static int triggered;
 unsigned long __attribute__ ((weak))
 ccci_get_md_boot_count(int md_id)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return 0;
 }
 
@@ -203,17 +203,17 @@ int __attribute__ ((weak))
 exec_ccci_kern_func_by_md_id(
 int md_id, unsigned int id, char *buf, unsigned int len)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 	return -316;
 }
 
 #define mtk_cooler_mutt_dprintk_always(fmt, args...) \
-pr_debug("[Thermal/TC/mutt]" fmt, ##args)
+pr_no_debug("[Thermal/TC/mutt]" fmt, ##args)
 
 #define mtk_cooler_mutt_dprintk(fmt, args...) \
 do { \
 	if (cl_mutt_klog_on == 1) \
-		pr_debug("[Thermal/TC/mutt]" fmt, ##args); \
+		pr_no_debug("[Thermal/TC/mutt]" fmt, ##args); \
 } while (0)
 
 /* State of "MD off & noIMS" are not included. */
@@ -1122,7 +1122,7 @@ static struct thermal_cooling_device_ops mtk_cl_adp_mutt_ops = {
  *do { \
  *	dentry_f = debugfs_create_u32(#name, S_IWUSR | S_IRUGO, _d, &name); \
  *	if (IS_ERR_OR_NULL(dentry_f)) {	\
- *		pr_notice("Unable to create debugfsfile: " #name "\n"); \
+ *		pr_no_notice("Unable to create debugfsfile: " #name "\n"); \
  *		return; \
  *	} \
  *} while (0)
@@ -1134,7 +1134,7 @@ static struct thermal_cooling_device_ops mtk_cl_adp_mutt_ops = {
  *
  *	_d = debugfs_create_dir("cl_adp_mutt", NULL);
  *	if (IS_ERR_OR_NULL(_d)) {
- *		pr_info("unable to create debugfs directory\n");
+ *		pr_no_info("unable to create debugfs directory\n");
  *		return;
  *	}
  *

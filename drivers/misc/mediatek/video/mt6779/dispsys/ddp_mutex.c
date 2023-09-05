@@ -77,7 +77,7 @@ static int ddp_get_mutex_src(enum DISP_MODULE_ENUM dest_module,
 			"get mutex sof, invalid param dst module = %s(%d), dsi mode %s\n",
 			ddp_get_module_name(dest_module), dest_module,
 			ddp_get_mode_name(ddp_mode));
-		DDP_PR_ERR("%s", msg);
+		DDP_pr_no_err("%s", msg);
 		WARN_ON(1);
 	}
 
@@ -161,7 +161,7 @@ static int ddp_mutex_set_l(int mutex_id, int *module_list,
 	int module_num = ddp_get_module_num_l(module_list);
 
 	if (mutex_id < DISP_MUTEX_DDP_FIRST || mutex_id > DISP_MUTEX_DDP_LAST) {
-		DDP_PR_ERR("exceed mutex max (0 ~ %d)\n", DISP_MUTEX_DDP_LAST);
+		DDP_pr_no_err("exceed mutex max (0 ~ %d)\n", DISP_MUTEX_DDP_LAST);
 		return -1;
 	}
 
@@ -314,7 +314,7 @@ void ddp_mutex_clear(int mutex_id, void *handle)
 int ddp_mutex_set_sof_wait(int mutex_id, struct cmdqRecStruct *handle, int wait)
 {
 	if (mutex_id < DISP_MUTEX_DDP_FIRST || mutex_id > DISP_MUTEX_DDP_LAST) {
-		DDP_PR_ERR("exceed mutex max (0 ~ %d)\n", DISP_MUTEX_DDP_LAST);
+		DDP_pr_no_err("exceed mutex max (0 ~ %d)\n", DISP_MUTEX_DDP_LAST);
 		return -1;
 	}
 
@@ -343,7 +343,7 @@ int ddp_mutex_set(int mutex_id, enum DDP_SCENARIO_ENUM scenario,
 		return ddp_mutex_set_l(mutex_id, module_list_scenario[scenario],
 				       mode, handle);
 
-	DDP_PR_ERR("Invalid scenario %d when setting mutex\n", scenario);
+	DDP_pr_no_err("Invalid scenario %d when setting mutex\n", scenario);
 	return -1;
 }
 

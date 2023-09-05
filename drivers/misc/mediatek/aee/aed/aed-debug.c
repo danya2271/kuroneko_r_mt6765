@@ -35,7 +35,7 @@ static struct task_struct *wk_tsk[AEE_MTK_CPU_NUMS];
 static int force_panic_hang(struct notifier_block *this, unsigned long event,
 				void *ptr)
 {
-	pr_notice("\n ==> force panic flow hang\n");
+	pr_no_notice("\n ==> force panic flow hang\n");
 	while (1)
 		;
 	return 0;
@@ -50,7 +50,7 @@ void notrace wdt_atf_hang(void)
 {
 	int cpu = get_HW_cpuid();
 
-	pr_notice(" CPU %d : %s\n", cpu, __func__);
+	pr_no_notice(" CPU %d : %s\n", cpu, __func__);
 
 	preempt_disable();
 	local_irq_disable();
@@ -65,39 +65,39 @@ static int kwdt_thread_test(void *arg)
 
 	sched_setscheduler(current, SCHED_FIFO, &param);
 	set_current_state(TASK_INTERRUPTIBLE);
-	pr_notice("\n ==> %s on CPU %d, test_case = %d\n",
+	pr_no_notice("\n ==> %s on CPU %d, test_case = %d\n",
 						__func__, cpu, test_case);
 	msleep(1000);
 
 	if (test_case == 1) {
 		if (cpu == test_cpu) {
-			pr_notice("\n CPU %d : disable preemption and local IRQ forever"
+			pr_no_notice("\n CPU %d : disable preemption and local IRQ forever"
 								, cpu);
 			preempt_disable();
 			local_irq_disable();
 			while (1)
 				;
 		} else {
-			pr_notice("\n CPU %d : Do nothing and exit\n ", cpu);
+			pr_no_notice("\n CPU %d : Do nothing and exit\n ", cpu);
 		}
 	} else if (test_case == 2) {
 		if (cpu == test_cpu) {
 			msleep(1000);
-			pr_notice("\n CPU %d : disable preemption and local IRQ forever"
+			pr_no_notice("\n CPU %d : disable preemption and local IRQ forever"
 								, cpu);
 			preempt_disable();
 			local_irq_disable();
 			while (1)
 				;
 		} else {
-			pr_notice("\n CPU %d : disable irq\n ", cpu);
+			pr_no_notice("\n CPU %d : disable irq\n ", cpu);
 			local_irq_disable();
 			while (1)
 				;
 		}
 	} else if (test_case == 3) {
 		if (cpu == test_cpu) {
-			pr_notice("\n CPU %d : register panic notifier and force hang\n"
+			pr_no_notice("\n CPU %d : register panic notifier and force hang\n"
 								, cpu);
 			atomic_notifier_chain_register(&panic_notifier_list,
 							&panic_test);
@@ -106,24 +106,24 @@ static int kwdt_thread_test(void *arg)
 			while (1)
 				;
 		} else {
-			pr_notice("\n CPU %d : Do nothing and exit\n ", cpu);
+			pr_no_notice("\n CPU %d : Do nothing and exit\n ", cpu);
 		}
 	} else if (test_case == 4) {
-		pr_notice("\n CPU %d : disable preemption and local IRQ forever\n "
+		pr_no_notice("\n CPU %d : disable preemption and local IRQ forever\n "
 								, cpu);
 		preempt_disable();
 		local_irq_disable();
 		while (1)
 			;
 	} else if (test_case == 5) {
-		pr_notice("\n CPU %d : disable preemption and local IRQ/FIQ forever\n "
+		pr_no_notice("\n CPU %d : disable preemption and local IRQ/FIQ forever\n "
 								, cpu);
 		preempt_disable();
 		local_irq_disable();
 		while (1)
 			;
 	} else if (test_case == 6) {
-		pr_notice("\n CPU %d : disable preemption and local IRQ/FIQ forever\n "
+		pr_no_notice("\n CPU %d : disable preemption and local IRQ/FIQ forever\n "
 								, cpu);
 		preempt_disable();
 		local_irq_disable();
@@ -142,35 +142,35 @@ static ssize_t proc_generate_wdt_write(struct file *file,
 	struct arm_smccc_res res;
 
 	if ((size < 2) || (size > sizeof(msg))) {
-		pr_notice("\n size = %zx\n", size);
+		pr_no_notice("\n size = %zx\n", size);
 		return -EINVAL;
 	}
 	if (copy_from_user(msg, buf, size)) {
-		pr_notice("copy_from_user error");
+		pr_no_notice("copy_from_user error");
 		return -EFAULT;
 	}
 	test_case = (unsigned int)msg[0] - '0';
 	test_cpu = (unsigned int)msg[2] - '0';
-	pr_notice("test_case = %d, test_cpu = %d", test_case, test_cpu);
+	pr_no_notice("test_case = %d, test_cpu = %d", test_case, test_cpu);
 	if ((msg[1] != ':') || (test_case < 1) || (test_case > 6)
 	    || (test_cpu < 0) || (test_cpu > nr_cpu_ids)) {
-		pr_notice("WDT test - Usage: [test case number(1~6):test cpu(0~%d)]\n"
+		pr_no_notice("WDT test - Usage: [test case number(1~6):test cpu(0~%d)]\n"
 								, nr_cpu_ids);
 		return -EINVAL;
 	}
 
 	if (test_case == 1) {
-		pr_notice("Test 1 : One CPU WDT timeout (smp_send_stop succeed)\n");
+		pr_no_notice("Test 1 : One CPU WDT timeout (smp_send_stop succeed)\n");
 	} else if (test_case == 2) {
-		pr_notice("Test 2 : One CPU WDT timeout, other CPU disable irq (smp_send_stop fail in old design)\n");
+		pr_no_notice("Test 2 : One CPU WDT timeout, other CPU disable irq (smp_send_stop fail in old design)\n");
 	} else if (test_case == 3) {
-		pr_notice("Test 3 : WDT timeout and loop in panic flow\n");
+		pr_no_notice("Test 3 : WDT timeout and loop in panic flow\n");
 	} else if (test_case == 4) {
-		pr_notice("Test 4 : All CPU WDT timeout (other CPU stop in the loop)\n");
+		pr_no_notice("Test 4 : All CPU WDT timeout (other CPU stop in the loop)\n");
 	} else if (test_case == 5) {
-		pr_notice("Test 5 : Disable ALL CPU IRQ/FIQ (FIQ : HW_reboot, ATF : HWT\n");
+		pr_no_notice("Test 5 : Disable ALL CPU IRQ/FIQ (FIQ : HW_reboot, ATF : HWT\n");
 	} else if (test_case == 6) {
-		pr_notice("Test 6 : (For ATF) HW_REBOOT : change SMC call back function and while loop\n");
+		pr_no_notice("Test 6 : (For ATF) HW_REBOOT : change SMC call back function and while loop\n");
 #ifdef CONFIG_ARM64
 		arm_smccc_smc(MTK_SIP_KERNEL_WDT, (u64) &wdt_atf_hang, 0, 0, 0,
 								0, 0, 0, &res);
@@ -180,14 +180,14 @@ static ssize_t proc_generate_wdt_write(struct file *file,
 								0, 0, 0, &res);
 #endif
 	} else {
-		pr_notice("\n Unknown test_case %d\n", test_case);
+		pr_no_notice("\n Unknown test_case %d\n", test_case);
 		return -EINVAL;
 	}
 
 	/* create kernel threads and bind on every cpu */
 	for (i = 0; i < nr_cpu_ids; i++) {
 		sprintf(name, "wd-test-%d", i);
-		pr_notice("[WDK]thread name: %s\n", name);
+		pr_no_notice("[WDK]thread name: %s\n", name);
 		wk_tsk[i] = kthread_create(kwdt_thread_test, NULL, name);
 		if (IS_ERR(wk_tsk[i])) {
 			int ret = PTR_ERR(wk_tsk[i]);
@@ -199,7 +199,7 @@ static ssize_t proc_generate_wdt_write(struct file *file,
 	}
 
 	for (i = 0; i < nr_cpu_ids; i++) {
-		pr_notice(" wake_up_process(wk_tsk[%d])\n", i);
+		pr_no_notice(" wake_up_process(wk_tsk[%d])\n", i);
 		wake_up_process(wk_tsk[i]);
 	}
 
@@ -213,11 +213,11 @@ static ssize_t proc_generate_wdt_read(struct file *file,
 	int len = snprintf(buffer, BUFSIZE,
 			   "WDT test - Usage: [test case number:test cpu]\n");
 	if (len < 0)
-		pr_notice("%s: snprintf failed\n", __func__);
+		pr_no_notice("%s: snprintf failed\n", __func__);
 	if (*ppos)
 		return 0;
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -230,7 +230,7 @@ static ssize_t proc_generate_wdt_read(struct file *file,
 /* kprobe pre_handler: called just before the probed instruction is executed */
 static int handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-	pr_info("process_name:[%s], pid = %d.\n", current->comm, current->pid);
+	pr_no_info("process_name:[%s], pid = %d.\n", current->comm, current->pid);
 	return 0;
 }
 
@@ -261,9 +261,9 @@ static struct kprobe kp_kpd_irq_handler = {
  */
 static int handler_fault(struct kprobe *p, struct pt_regs *regs, int trapnr)
 {
-	pr_notice("fault_handler: p->addr = 0x%p, trap #%dn", p->addr, trapnr);
+	pr_no_notice("fault_handler: p->addr = 0x%p, trap #%dn", p->addr, trapnr);
 	unregister_kprobe(&kp_kpd_irq_handler);
-	pr_notice("kprobe at %p unregistered\n", kp_kpd_irq_handler.addr);
+	pr_no_notice("kprobe at %p unregistered\n", kp_kpd_irq_handler.addr);
 
 	/* Return 0 because we don't handle the fault. */
 	return 0;
@@ -276,9 +276,9 @@ static int register_kprobe_kpd_irq_handler(void)
 	/* All set to register with Kprobes */
 	ret = register_kprobe(&kp_kpd_irq_handler);
 	if (ret < 0)
-		pr_info("register_kprobe failed, returned %d\n", ret);
+		pr_no_info("register_kprobe failed, returned %d\n", ret);
 	else
-		pr_info("Planted kprobe at %p, press Vol+/- to trigger.\n",
+		pr_no_info("Planted kprobe at %p, press Vol+/- to trigger.\n",
 				kp_kpd_irq_handler.addr);
 	return ret;
 }
@@ -301,16 +301,16 @@ static noinline void buffer_over_flow(void)
 {
 	int n;
 
-	pr_info("test case : buffer overflow\n");
+	pr_no_info("test case : buffer overflow\n");
 	n = stack_overflow_routine(10, 1, 22);
-	pr_info("%s: %d\n", __func__, n);
+	pr_no_info("%s: %d\n", __func__, n);
 }
 
 static noinline void access_null_pointer(void)
 {
 	void *p = NULL;
 
-	pr_info("test case : derefence Null pointer\n");
+	pr_no_info("test case : derefence Null pointer\n");
 	*((unsigned int *)p) = 0xDEAD;
 }
 
@@ -322,12 +322,12 @@ static noinline void double_free(void)
 	if (p == NULL)
 		return;
 
-	pr_info("test case : double free\n");
+	pr_no_info("test case : double free\n");
 	for (i = 0; i < 32; i++)
 		p[i] = (char)i;
-	pr_info("aee_ut_ke: call free\n");
+	pr_no_info("aee_ut_ke: call free\n");
 	kfree(p);
-	pr_info("aee_ut_ke: call free again\n");
+	pr_no_info("aee_ut_ke: call free again\n");
 	kfree(p);
 }
 
@@ -336,9 +336,9 @@ static noinline void devide_by_0(void)
 	int ZERO = 0;
 	int number;
 
-	pr_info("test case: division by %d\n", ZERO);
+	pr_no_info("test case: division by %d\n", ZERO);
 	number = 100 / ZERO;
-	pr_info("%s: %d\n", __func__, number);
+	pr_no_info("%s: %d\n", __func__, number);
 }
 
 /**********END panic case**********/
@@ -351,9 +351,9 @@ static ssize_t proc_generate_oops_read(struct file *file,
 
 	len = snprintf(buffer, BUFSIZE, "Oops Generated!\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len))
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 
 	BUG();
 	return len;
@@ -366,18 +366,18 @@ static ssize_t proc_generate_oops_write(struct file *file,
 	int test_case, test_subcase, test_cpu;
 
 	if ((size < 2) || (size > sizeof(msg))) {
-		pr_notice("%s: count = %zx\n", __func__, size);
+		pr_no_notice("%s: count = %zx\n", __func__, size);
 		return -EINVAL;
 	}
 	if (copy_from_user(msg, buf, size)) {
-		pr_notice("%s: error\n", __func__);
+		pr_no_notice("%s: error\n", __func__);
 		return -EFAULT;
 	}
 
 	test_case = (unsigned int)msg[0] - '0';
 	test_subcase = (unsigned int)msg[2] - '0';
 	test_cpu = (unsigned int)msg[4] - '0';
-	pr_notice("test_case = %d-%d, test_cpu = %d\n", test_case,
+	pr_no_notice("test_case = %d-%d, test_cpu = %d\n", test_case,
 						test_subcase, test_cpu);
 	switch (test_case) {
 	case 1:
@@ -413,7 +413,7 @@ static ssize_t proc_generate_oops_write(struct file *file,
 static int nested_panic(struct notifier_block *this, unsigned long event,
 								void *ptr)
 {
-	pr_notice("\n => force nested panic\n");
+	pr_no_notice("\n => force nested panic\n");
 	BUG();
 	return 0;
 }
@@ -427,7 +427,7 @@ static ssize_t proc_generate_nested_ke_read(struct file *file, char __user *buf,
 						size_t size, loff_t *ppos)
 {
 	atomic_notifier_chain_register(&panic_notifier_list, &panic_blk);
-	pr_notice("\n => panic_notifier_list registered\n");
+	pr_no_notice("\n => panic_notifier_list registered\n");
 	BUG();
 
 	return 0;
@@ -440,17 +440,17 @@ static ssize_t proc_generate_nested_ke_write(struct file *file,
 	int test_case, test_subcase, test_cpu;
 
 	if ((size < 2) || (size > sizeof(msg))) {
-		pr_notice("%s: count = %zx\n", __func__, size);
+		pr_no_notice("%s: count = %zx\n", __func__, size);
 		return -EINVAL;
 	}
 	if (copy_from_user(msg, buf, size)) {
-		pr_notice("%s: error\n", __func__);
+		pr_no_notice("%s: error\n", __func__);
 		return -EFAULT;
 	}
 	test_case = (unsigned int)msg[0] - '0';
 	test_subcase = (unsigned int)msg[2] - '0';
 	test_cpu = (unsigned int)msg[4] - '0';
-	pr_notice("test_case = %d-%d, test_cpu = %d\n", test_case,
+	pr_no_notice("test_case = %d-%d, test_cpu = %d\n", test_case,
 						test_subcase, test_cpu);
 	switch (test_case) {
 	case 1:
@@ -493,9 +493,9 @@ static ssize_t proc_generate_ee_read(struct file *file, char __user *buf,
 
 	len = snprintf(buffer, BUFSIZE, "Modem EE Generated\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -529,9 +529,9 @@ static ssize_t proc_generate_combo_read(struct file *file, char __user *buf,
 
 	len = snprintf(buffer, BUFSIZE, "Combo EE Generated\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -561,16 +561,16 @@ static ssize_t proc_generate_md32_read(struct file *file, char __user *buf,
 		ptr[i] = (i % 26) + 'a';
 
 	if (sprintf(buffer, "MD32 EE log here\n") < 0)
-		pr_info("%s: sprintf failed\n", __func__);
+		pr_no_info("%s: sprintf failed\n", __func__);
 	aed_md32_exception((int *)buffer, (int)sizeof(buffer), (int *)ptr,
 			TEST_MD32_PHY_SIZE, __FILE__);
 	vfree(ptr);
 
 	len = snprintf(buffer, BUFSIZE, "MD32 EE Generated\n");
 	if (len < 0)
-		pr_info("%s: snprintf failed\n", __func__);
+		pr_no_info("%s: snprintf failed\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -602,16 +602,16 @@ static ssize_t proc_generate_scp_read(struct file *file,
 		ptr[i] = (i % 26) + 'a';
 
 	if (sprintf(buffer, "SCP EE log here\n") < 0)
-		pr_info("%s: sprintf failed\n", __func__);
+		pr_no_info("%s: sprintf failed\n", __func__);
 	aed_scp_exception((int *)buffer, (int)sizeof(buffer), (int *)ptr,
 						TEST_SCP_PHY_SIZE, __FILE__);
 	vfree(ptr);
 
 	len = snprintf(buffer, BUFSIZE, "SCP EE Generated\n");
 	if (len < 0)
-		pr_info("%s: snprintf failed\n", __func__);
+		pr_no_info("%s: snprintf failed\n", __func__);
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -634,11 +634,11 @@ static ssize_t proc_generate_kernel_notify_read(struct file *file,
 	int len = snprintf(buffer, BUFSIZE,
 			   "Usage: write message with format \"R|W|E:Tag:You Message\" into this file to generate kernel warning\n");
 	if (len <= 0)
-		pr_debug("%s: snprintf error\n", __func__);
+		pr_no_debug("%s: snprintf error\n", __func__);
 	if (*ppos)
 		return 0;
 	if (copy_to_user(buf, buffer, len)) {
-		pr_notice("%s fail to output info.\n", __func__);
+		pr_no_notice("%s fail to output info.\n", __func__);
 		return -EFAULT;
 	}
 	*ppos += len;
@@ -657,13 +657,13 @@ static ssize_t proc_generate_kernel_notify_write(struct file *file,
 		return -EINVAL;
 
 	if ((size < 5) || (size >= sizeof(msg))) {
-		pr_notice("aed: %s size sould be >= 5 and <= %zx bytes.\n",
+		pr_no_notice("aed: %s size sould be >= 5 and <= %zx bytes.\n",
 				__func__, sizeof(msg));
 		return -EINVAL;
 	}
 
 	if (copy_from_user(msg, buf, size)) {
-		pr_notice("aed: %s unable to read message\n", __func__);
+		pr_no_notice("aed: %s unable to read message\n", __func__);
 		return -EFAULT;
 	}
 	/* Be safe */
@@ -673,7 +673,7 @@ static ssize_t proc_generate_kernel_notify_write(struct file *file,
 		return -EINVAL;
 	colon_ptr = strchr(&msg[2], ':');
 	if (!colon_ptr || ((colon_ptr - msg) > 32)) {
-		pr_notice("aed: %s cannot find valid module name\n", __func__);
+		pr_no_notice("aed: %s cannot find valid module name\n", __func__);
 		return -EINVAL;
 	}
 	*colon_ptr = 0;

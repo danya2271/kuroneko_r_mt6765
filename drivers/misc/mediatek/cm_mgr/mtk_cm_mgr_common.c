@@ -117,14 +117,14 @@ static int cm_mgr_fb_notifier_callback(struct notifier_block *self,
 
 	switch (blank) {
 	case FB_BLANK_UNBLANK:
-		pr_info("#@# %s(%d) SCREEN ON\n", __func__, __LINE__);
+		pr_no_info("#@# %s(%d) SCREEN ON\n", __func__, __LINE__);
 		cm_mgr_blank_status = 0;
 #if defined(CONFIG_MTK_TINYSYS_SSPM_SUPPORT) && defined(USE_CM_MGR_AT_SSPM)
 		cm_mgr_to_sspm_command(IPI_CM_MGR_BLANK, 0);
 #endif /* CONFIG_MTK_TINYSYS_SSPM_SUPPORT && defined(USE_CM_MGR_AT_SSPM) */
 		break;
 	case FB_BLANK_POWERDOWN:
-		pr_info("#@# %s(%d) SCREEN OFF\n", __func__, __LINE__);
+		pr_no_info("#@# %s(%d) SCREEN OFF\n", __func__, __LINE__);
 		cm_mgr_blank_status = 1;
 		cm_mgr_dram_opp_base = -1;
 		cm_mgr_perf_platform_set_status(0);
@@ -186,7 +186,7 @@ int cm_mgr_to_sspm_command(u32 cmd, int val)
 	struct cm_mgr_data cm_mgr_d;
 
 	if (cm_sspm_ready != 1) {
-		pr_info("#@# %s(%d) sspm not ready(%d) to receive cmd(%d)\n",
+		pr_no_info("#@# %s(%d) sspm not ready(%d) to receive cmd(%d)\n",
 			__func__, __LINE__, cm_sspm_ready, cmd);
 		ret = -1;
 		return ret;
@@ -222,16 +222,16 @@ int cm_mgr_to_sspm_command(u32 cmd, int val)
 		ret = mtk_ipi_send_compl(&sspm_ipidev, IPIS_C_CM,
 		IPI_SEND_POLLING, &cm_mgr_d, CM_MGR_D_LEN, 2000);
 		if (ret != 0) {
-			pr_info("#@# %s(%d) cmd(%d) error, return %d\n",
+			pr_no_info("#@# %s(%d) cmd(%d) error, return %d\n",
 					__func__, __LINE__, cmd, ret);
 		} else if (!cm_ipi_ackdata) {
 			ret = cm_ipi_ackdata;
-			pr_info("#@# %s(%d) cmd(%d) ack fail %d\n",
+			pr_no_info("#@# %s(%d) cmd(%d) ack fail %d\n",
 					__func__, __LINE__, cmd, ret);
 		}
 	break;
 	default:
-		pr_info("#@# %s(%d) wrong cmd(%d)!!!\n",
+		pr_no_info("#@# %s(%d) wrong cmd(%d)!!!\n",
 			__func__, __LINE__, cmd);
 	break;
 	}
@@ -272,16 +272,16 @@ int cm_mgr_to_sspm_command(u32 cmd, int val)
 		ret = sspm_ipi_send_sync(IPI_ID_CM, IPI_OPT_POLLING,
 				&cm_mgr_d, CM_MGR_D_LEN, &ack_data, 1);
 		if (ret != 0) {
-			pr_info("#@# %s(%d) cmd(%d) error, return %d\n",
+			pr_no_info("#@# %s(%d) cmd(%d) error, return %d\n",
 					__func__, __LINE__, cmd, ret);
 		} else if (ack_data < 0) {
 			ret = ack_data;
-			pr_info("#@# %s(%d) cmd(%d) return %d\n",
+			pr_no_info("#@# %s(%d) cmd(%d) return %d\n",
 					__func__, __LINE__, cmd, ret);
 		}
 		break;
 	default:
-		pr_info("#@# %s(%d) wrong cmd(%d)!!!\n",
+		pr_no_info("#@# %s(%d) wrong cmd(%d)!!!\n",
 				__func__, __LINE__, cmd);
 		break;
 	}
@@ -593,17 +593,17 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 	cm_mgr_base = devm_ioremap_resource(dev, res);
 
 	if (IS_ERR((void const *) cm_mgr_base)) {
-		pr_info("[CM_MGR] Unable to ioremap registers\n");
+		pr_no_info("[CM_MGR] Unable to ioremap registers\n");
 		return -1;
 	}
 
-	pr_info("[CM_MGR] platform-cm_mgr cm_mgr_base=%p\n",
+	pr_no_info("[CM_MGR] platform-cm_mgr cm_mgr_base=%p\n",
 			cm_mgr_base);
 
 	/* cm_mgr_cpu_opp_to_dram */
 	opp_count = of_count_phandle_with_args(node,
 			"cm_mgr_cpu_opp_to_dram", NULL);
-	pr_info("#@# %s(%d) opp_count %d\n",
+	pr_no_info("#@# %s(%d) opp_count %d\n",
 			__func__, __LINE__, opp_count);
 
 	if (opp_count > 0)
@@ -632,7 +632,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_enable = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_enable %d\n",
+	pr_no_info("#@# %s(%d) cm_mgr_enable %d\n",
 			__func__, __LINE__, cm_mgr_enable);
 
 	ret = of_property_read_string(node,
@@ -643,7 +643,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_bcpu_weight = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_bcpu_weight %d\n",
+	pr_no_info("#@# %s(%d) cm_mgr_use_bcpu_weight %d\n",
 			__func__, __LINE__, cm_mgr_use_bcpu_weight);
 
 	ret = of_property_read_string(node,
@@ -654,7 +654,7 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_cpu_to_dram_map = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map %d\n",
+	pr_no_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map %d\n",
 			__func__, __LINE__, cm_mgr_use_cpu_to_dram_map);
 
 	ret = of_property_read_string(node,
@@ -665,21 +665,21 @@ int cm_mgr_check_dts_setting(struct platform_device *pdev)
 		else
 			cm_mgr_use_cpu_to_dram_map_new = 0;
 	}
-	pr_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map_new %d\n",
+	pr_no_info("#@# %s(%d) cm_mgr_use_cpu_to_dram_map_new %d\n",
 			__func__, __LINE__, cm_mgr_use_cpu_to_dram_map_new);
 
 	ret = of_property_read_s32(node, "cpu_power_bcpu_weight_max",
 			&cpu_power_bcpu_weight_max);
 	if (!ret)
 		cpu_power_bcpu_weight_max = 100;
-	pr_info("#@# %s(%d) cpu_power_bcpu_weight_max %d\n",
+	pr_no_info("#@# %s(%d) cpu_power_bcpu_weight_max %d\n",
 			__func__, __LINE__, cpu_power_bcpu_weight_max);
 
 	ret = of_property_read_s32(node, "cpu_power_bcpu_weight_min",
 			&cpu_power_bcpu_weight_min);
 	if (!ret)
 		cpu_power_bcpu_weight_min = 100;
-	pr_info("#@# %s(%d) cpu_power_bcpu_weight_min %d\n",
+	pr_no_info("#@# %s(%d) cpu_power_bcpu_weight_min %d\n",
 			__func__, __LINE__, cpu_power_bcpu_weight_min);
 
 	/* cm_mgr args */
@@ -730,7 +730,7 @@ int cm_mgr_common_init(void)
 
 	ret = sysfs_create_group(cm_mgr_kobj, &attr_group);
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO CREATE FILESYSTEM (%d)\n", ret);
+		pr_no_info("[CM_MGR] FAILED TO CREATE FILESYSTEM (%d)\n", ret);
 		kobject_put(cm_mgr_kobj);
 
 		return ret;
@@ -738,7 +738,7 @@ int cm_mgr_common_init(void)
 
 	ret = fb_register_client(&cm_mgr_fb_notifier);
 	if (ret) {
-		pr_info("[CM_MGR] FAILED TO REGISTER FB CLIENT (%d)\n", ret);
+		pr_no_info("[CM_MGR] FAILED TO REGISTER FB CLIENT (%d)\n", ret);
 		return ret;
 	}
 
@@ -785,6 +785,6 @@ void cm_mgr_common_exit(void)
 
 	ret = fb_unregister_client(&cm_mgr_fb_notifier);
 	if (ret)
-		pr_info("[CM_MGR] FAILED TO UNREGISTER FB CLIENT (%d)\n", ret);
+		pr_no_info("[CM_MGR] FAILED TO UNREGISTER FB CLIENT (%d)\n", ret);
 }
 EXPORT_SYMBOL_GPL(cm_mgr_common_exit);

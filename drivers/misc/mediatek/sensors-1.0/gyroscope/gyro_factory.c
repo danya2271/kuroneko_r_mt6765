@@ -44,7 +44,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				 _IOC_SIZE(cmd));
 
 	if (err) {
-		pr_err("access error: %08X, (%2d, %2d)\n", cmd,
+		pr_no_err("access error: %08X, (%2d, %2d)\n", cmd,
 			    _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -58,14 +58,14 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			err = gyro_factory.fops->enable_sensor(flag,
 							       5); /* 5ms */
 			if (err < 0) {
-				pr_err("GYROSCOPE_IOCTL_INIT fail!\n");
+				pr_no_err("GYROSCOPE_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_debug(
+			pr_no_debug(
 				"GYROSCOPE_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 5);
 		} else {
-			pr_err("GYROSCOPE_IOCTL_INIT NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_INIT NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -79,7 +79,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->get_data != NULL) {
 			err = gyro_factory.fops->get_data(data_buf, &status);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GYROSCOPE_IOCTL_READ_SENSORDATA read data fail!\n");
 				return -EINVAL;
 			}
@@ -89,13 +89,13 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if (len <= 0)
 				return -EINVAL;
 
-			pr_debug(
+			pr_no_debug(
 				"GYROSCOPE_IOCTL_READ_SENSORDATA read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
 				return -EFAULT;
 		} else {
-			pr_err("GYROSCOPE_IOCTL_READ_SENSORDATA NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_READ_SENSORDATA NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -104,7 +104,7 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->get_raw_data != NULL) {
 			err = gyro_factory.fops->get_raw_data(data_buf);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GSENSOR_IOCTL_READ_RAW_DATA read data fail!\n");
 				return -EINVAL;
 			}
@@ -114,13 +114,13 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			if (len <= 0)
 				return -EINVAL;
 
-			pr_debug(
+			pr_no_debug(
 				"GYROSCOPE_IOCTL_READ_SENSORDATA_RAW read strbuf : (%s)!\n",
 				strbuf);
 			if (copy_to_user(ptr, strbuf, strlen(strbuf) + 1))
 				return -EFAULT;
 		} else {
-			pr_err(
+			pr_no_err(
 				"GYROSCOPE_IOCTL_READ_SENSORDATA_RAW NULL\n");
 			return -EINVAL;
 		}
@@ -131,17 +131,17 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		data_buf[0] = sensor_data.x;
 		data_buf[1] = sensor_data.y;
 		data_buf[2] = sensor_data.z;
-		pr_debug("GYROSCOPE_IOCTL_SET_CALI: (%d, %d, %d)!\n",
+		pr_no_debug("GYROSCOPE_IOCTL_SET_CALI: (%d, %d, %d)!\n",
 			 data_buf[0], data_buf[1], data_buf[2]);
 		if (gyro_factory.fops != NULL &&
 		    gyro_factory.fops->set_cali != NULL) {
 			err = gyro_factory.fops->set_cali(data_buf);
 			if (err < 0) {
-				pr_err("GYROSCOPE_IOCTL_SET_CALI FAIL!\n");
+				pr_no_err("GYROSCOPE_IOCTL_SET_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GYROSCOPE_IOCTL_SET_CALI NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_SET_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -150,11 +150,11 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->clear_cali != NULL) {
 			err = gyro_factory.fops->clear_cali();
 			if (err < 0) {
-				pr_err("GYROSCOPE_IOCTL_CLR_CALI FAIL!\n");
+				pr_no_err("GYROSCOPE_IOCTL_CLR_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GYROSCOPE_IOCTL_CLR_CALI NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_CLR_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -163,14 +163,14 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->get_cali != NULL) {
 			err = gyro_factory.fops->get_cali(data_buf);
 			if (err < 0) {
-				pr_err("GYROSCOPE_IOCTL_GET_CALI FAIL!\n");
+				pr_no_err("GYROSCOPE_IOCTL_GET_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GYROSCOPE_IOCTL_GET_CALI NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_GET_CALI NULL\n");
 			return -EINVAL;
 		}
-		pr_debug("GYROSCOPE_IOCTL_GET_CALI: (%d, %d, %d)!\n",
+		pr_no_debug("GYROSCOPE_IOCTL_GET_CALI: (%d, %d, %d)!\n",
 			 data_buf[0], data_buf[1], data_buf[2]);
 		sensor_data.x = data_buf[0];
 		sensor_data.y = data_buf[1];
@@ -183,12 +183,12 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->enable_calibration != NULL) {
 			err = gyro_factory.fops->enable_calibration();
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GYROSCOPE_IOCTL_ENABLE_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GYROSCOPE_IOCTL_ENABLE_CALI NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_ENABLE_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -197,17 +197,17 @@ static long gyro_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    gyro_factory.fops->do_self_test != NULL) {
 			err = gyro_factory.fops->do_self_test();
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"GYROSCOPE_IOCTL_SELF_TEST FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("GYROSCOPE_IOCTL_SELF_TEST NULL\n");
+			pr_no_err("GYROSCOPE_IOCTL_SELF_TEST NULL\n");
 			return -EINVAL;
 		}
 		return 0;
 	default:
-		pr_err("unknown IOCTL: 0x%08x\n", cmd);
+		pr_no_err("unknown IOCTL: 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 
@@ -220,7 +220,7 @@ static long compat_gyro_factory_unlocked_ioctl(struct file *filp,
 					       unsigned long arg)
 {
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl) {
-		pr_err(
+		pr_no_err(
 			"compat_ion_ioctl file has no f_op or no f_op->unlocked_ioctl.\n");
 		return -ENOTTY;
 	}
@@ -236,13 +236,13 @@ static long compat_gyro_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_GYROSCOPE_IOCTL_GET_CALI:
 	case COMPAT_GYROSCOPE_IOCTL_ENABLE_CALI:
 	case COMPAT_GYROSCOPE_IOCTL_SELF_TEST:
-		pr_debug(
+		pr_no_debug(
 			"compat_ion_ioctl : GYROSCOPE_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(
 			filp, cmd, (unsigned long)compat_ptr(arg));
 	default:
-		pr_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
+		pr_no_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 }
@@ -275,7 +275,7 @@ int gyro_factory_device_register(struct gyro_factory_public *dev)
 	gyro_factory.fops = dev->fops;
 	err = misc_register(&gyro_factory_device);
 	if (err) {
-		pr_err("gyro_factory_device register failed\n");
+		pr_no_err("gyro_factory_device register failed\n");
 		err = -1;
 	}
 	return err;

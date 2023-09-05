@@ -39,7 +39,7 @@ static int inpocket_get_data(int *probability, int *status)
 
 	err = sensor_get_data_from_hub(ID_IN_POCKET, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp		= data.time_stamp;
@@ -58,7 +58,7 @@ static int inpocket_open_report_data(int open)
 #else
 
 #endif
-	pr_debug("%s : type=%d, open=%d\n", __func__, ID_IN_POCKET, open);
+	pr_no_debug("%s : type=%d, open=%d\n", __func__, ID_IN_POCKET, open);
 	ret = sensor_enable_to_hub(ID_IN_POCKET, open);
 	return ret;
 }
@@ -73,7 +73,7 @@ static int inpocket_recv_data(struct data_unit_t *event, void *reserved)
 	int err = 0;
 
 	if (event->flush_action == FLUSH_ACTION)
-		pr_debug("inpocket do not support flush\n");
+		pr_no_debug("inpocket do not support flush\n");
 	else if (event->flush_action == DATA_ACTION)
 		err = situation_notify_t(ID_IN_POCKET,
 				(int64_t)event->time_stamp);
@@ -86,26 +86,26 @@ static int inpocket_local_init(void)
 	struct situation_data_path data = {0};
 	int err = 0;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 
 	ctl.open_report_data = inpocket_open_report_data;
 	ctl.batch = inpocket_batch;
 	ctl.is_support_wake_lock = true;
 	err = situation_register_control_path(&ctl, ID_IN_POCKET);
 	if (err) {
-		pr_err("register in_pocket control path err\n");
+		pr_no_err("register in_pocket control path err\n");
 		goto exit;
 	}
 
 	data.get_data = inpocket_get_data;
 	err = situation_register_data_path(&data, ID_IN_POCKET);
 	if (err) {
-		pr_err("register in_pocket data path err\n");
+		pr_no_err("register in_pocket data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_IN_POCKET, inpocket_recv_data);
 	if (err) {
-		pr_err("SCP_sensorHub_data_registration fail!!\n");
+		pr_no_err("SCP_sensorHub_data_registration fail!!\n");
 		goto exit_create_attr_failed;
 	}
 	return 0;
@@ -132,7 +132,7 @@ static int __init inpocket_init(void)
 
 static void __exit inpocket_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(inpocket_init);

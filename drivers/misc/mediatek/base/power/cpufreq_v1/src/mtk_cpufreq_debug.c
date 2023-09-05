@@ -87,7 +87,7 @@ void aee_record_cpu_volt(struct mt_cpu_dvfs *p, unsigned int volt)
 	struct buck_ctrl_t *vproc_p = id_to_buck_ctrl(p->Vproc_buck_id);
 
 	if (vproc_p == NULL) {
-		tag_pr_notice("%s get buck ctrl id failed\n", __func__);
+		tag_pr_no_notice("%s get buck ctrl id failed\n", __func__);
 		return;
 	}
 

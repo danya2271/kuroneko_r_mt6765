@@ -93,7 +93,7 @@ static unsigned int cbt_mode_rank[2];
 #define DRAMC_TAG "[DRAMC]"
 #define DRAMC_RSV_TAG "[DRAMC_RSV]"
 
-#define dramc_info(format, ...)	pr_info(DRAMC_TAG format, ##__VA_ARGS__)
+#define dramc_info(format, ...)	pr_no_info(DRAMC_TAG format, ##__VA_ARGS__)
 
 __weak void *mt_spm_base_get(void)
 {
@@ -1579,7 +1579,7 @@ static int dram_probe(struct platform_device *pdev)
 	void __iomem *base_temp[8];
 	struct device_node *node = NULL;
 
-	pr_debug("[DRAMC] module probe.\n");
+	pr_no_debug("[DRAMC] module probe.\n");
 
 	for (i = 0; i < (sizeof(base_temp) / sizeof(*base_temp)); i++) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
@@ -1729,11 +1729,6 @@ static int dram_probe(struct platform_device *pdev)
 		dramc_info("fail to create read_dram_data_rate sysfs files\n");
 		return ret;
 	}
-
-	if (dram_can_support_fh())
-		dramc_info("dram can support DFS\n");
-	else
-		dramc_info("dram can not support DFS\n");
 
 	return 0;
 }

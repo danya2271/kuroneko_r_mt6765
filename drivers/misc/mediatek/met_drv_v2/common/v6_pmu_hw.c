@@ -112,7 +112,7 @@ static void armv6pmu_enable_event(int idx, unsigned short config)
 		mask = ARMV6_PMCR_EVT_COUNT1_MASK;
 		evt = (config << ARMV6_PMCR_EVT_COUNT1_SHIFT) | ARMV6_PMCR_COUNT1_IEN;
 	} else {
-		pr_debug("invalid counter number (%d)\n", idx);
+		pr_no_debug("invalid counter number (%d)\n", idx);
 		return;
 	}
 
@@ -156,7 +156,7 @@ static int armv6_pmu_hw_check_event(struct met_pmu *pmu, int idx, int event)
 			break;
 	}
 	if (i < idx) {
-		/* pr_debug("++++++ found duplicate event 0x%02x i=%d\n", event, i); */
+		/* pr_no_debug("++++++ found duplicate event 0x%02x i=%d\n", event, i); */
 		return -1;
 	}
 

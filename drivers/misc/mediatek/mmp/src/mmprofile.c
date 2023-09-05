@@ -85,10 +85,10 @@ static bool mmp_trace_log_on;
 #define MMP_LOG(prio, fmt, arg...) \
 	do { \
 		if (mmp_log_on) \
-			pr_debug("MMP:%s(): "fmt"\n", __func__, ##arg); \
+			pr_no_debug("MMP:%s(): "fmt"\n", __func__, ##arg); \
 	} while (0)
 
-#define MMP_MSG(fmt, arg...) pr_info("MMP: %s(): "fmt"\n", __func__, ##arg)
+#define MMP_MSG(fmt, arg...) pr_no_info("MMP: %s(): "fmt"\n", __func__, ##arg)
 
 #define mmp_aee(string, args...) do {	\
 	char disp_name[100];						\
@@ -97,7 +97,7 @@ static bool mmp_trace_log_on;
 		DB_OPT_DEFAULT | DB_OPT_MMPROFILE_BUFFER | \
 		DB_OPT_DISPLAY_HANG_DUMP | DB_OPT_DUMP_DISPLAY, \
 		disp_name, "[MMP] error"string, ##args);		\
-	pr_info("MMP error: "string, ##args);				\
+	pr_no_info("MMP error: "string, ##args);				\
 } while (0)
 struct mmprofile_regtable_t {
 	struct mmprofile_eventinfo_t event_info;
@@ -282,7 +282,7 @@ void mmprofile_get_dump_buffer(unsigned int start, unsigned long *p_addr,
 					&(p_regtable->event_info))) {
 					mmp_aee("pos=0x%x, src_pos=0x%x\n",
 						pos, src_pos);
-					pr_info("region_pos=0x%x, block_pos=0x%x\n",
+					pr_no_info("region_pos=0x%x, block_pos=0x%x\n",
 						region_pos, block_pos);
 					return;
 				}
@@ -735,29 +735,14 @@ static inline void __mt_update_tracing_mark_write_addr(void)
 
 static inline void mmp_kernel_trace_begin(char *name)
 {
-	if (mmp_trace_log_on) {
-		__mt_update_tracing_mark_write_addr();
-		event_trace_printk(tracing_mark_write_addr,
-			"B|%d|%s\n", current->tgid, name);
-	}
 }
 
 static inline void mmp_kernel_trace_counter(char *name, int count)
 {
-	if (mmp_trace_log_on) {
-		__mt_update_tracing_mark_write_addr();
-		event_trace_printk(tracing_mark_write_addr,
-			"C|%d|%s|%d\n",
-			in_interrupt() ? -1 : current->tgid, name, count);
-	}
 }
 
 static inline void mmp_kernel_trace_end(void)
 {
-	if (mmp_trace_log_on) {
-		__mt_update_tracing_mark_write_addr();
-		event_trace_printk(tracing_mark_write_addr, "E\n");
-	}
 }
 #else
 static inline void mmp_kernel_trace_begin(char *name)
@@ -830,7 +815,7 @@ static void mmprofile_log_int(mmp_event event, enum mmp_log_type type,
 		&(p_mmprofile_ring_buffer[index])))) {
 		mmp_aee("write_pointer:0x%x,index:0x%x,line:%d\n",
 			mmprofile_globals.write_pointer, index, __LINE__);
-		pr_info("buffer_size_record:0x%x,new_buffer_size_record:0x%x\n",
+		pr_no_info("buffer_size_record:0x%x,new_buffer_size_record:0x%x\n",
 			mmprofile_globals.buffer_size_record,
 			mmprofile_globals.new_buffer_size_record);
 		return;
@@ -856,7 +841,7 @@ static void mmprofile_log_int(mmp_event event, enum mmp_log_type type,
 				mmp_aee("write_pt:0x%x,index:0x%x,line:%d\n",
 					mmprofile_globals.write_pointer,
 					index, __LINE__);
-				pr_info("buf_size:0x%x,new_buf_size:0x%x\n",
+				pr_no_info("buf_size:0x%x,new_buf_size:0x%x\n",
 					mmprofile_globals.buffer_size_record,
 				mmprofile_globals.new_buffer_size_record);
 				return;
@@ -1468,7 +1453,7 @@ static ssize_t mmprofile_dbgfs_start_read(struct file *file, char __user *buf,
 	MMP_LOG(ANDROID_LOG_DEBUG, "start=%d", mmprofile_globals.start);
 	r = sprintf(str, "start = %d\n", mmprofile_globals.start);
 	if (r < 0)
-		pr_debug("sprintf error\n");
+		pr_no_debug("sprintf error\n");
 
 	return simple_read_from_buffer(buf, size, ppos, str, r);
 }
@@ -1499,7 +1484,7 @@ static ssize_t mmprofile_dbgfs_enable_read(struct file *file, char __user *buf,
 	MMP_LOG(ANDROID_LOG_DEBUG, "enable=%d", mmprofile_globals.enable);
 	r = sprintf(str, "enable = %d\n", mmprofile_globals.enable);
 	if (r < 0)
-		pr_debug("sprintf error\n");
+		pr_no_debug("sprintf error\n");
 
 	return simple_read_from_buffer(buf, size, ppos, str, r);
 }
@@ -1813,7 +1798,7 @@ static long mmprofile_ioctl(struct file *file, unsigned int cmd,
 		retn = copy_from_user(&meta_log, p_meta_log_user,
 			sizeof(struct mmprofile_metalog_t));
 		if (retn) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -1823,13 +1808,13 @@ static long mmprofile_ioctl(struct file *file, unsigned int cmd,
 			sizeof(struct mmp_metadata_t));
 
 		if (retn) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
 
 		if (meta_data.size == 0 || meta_data.size > 0x3000000) {
-			pr_debug("[MMPROFILE]: meta_data.size Invalid! line:%d\n",
+			pr_no_debug("[MMPROFILE]: meta_data.size Invalid! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2102,7 +2087,7 @@ static long mmprofile_ioctl_compat(struct file *file, unsigned int cmd,
 
 		if (copy_from_user(&compat_meta_log, p_compat_meta_log_user,
 			sizeof(struct compat_mmprofile_metalog_t))) {
-			pr_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
+			pr_no_debug("[MMPROFILE]: copy_from_user failed! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2118,7 +2103,7 @@ static long mmprofile_ioctl_compat(struct file *file, unsigned int cmd,
 
 		if (meta_log.meta_data.size == 0 ||
 			meta_log.meta_data.size > 0x3000000) {
-			pr_debug("[MMPROFILE]: meta_log.meta_data.size Invalid! line:%d\n",
+			pr_no_debug("[MMPROFILE]: meta_log.meta_data.size Invalid! line:%d\n",
 			 __LINE__);
 			return -EFAULT;
 		}
@@ -2263,7 +2248,7 @@ static int mmprofile_mmap(struct file *file, struct vm_area_struct *vma)
 			if (remap_pfn_range
 			    (vma, pos, pfn, PAGE_SIZE, PAGE_SHARED))
 				return -EAGAIN;
-			/* pr_debug("pfn: 0x%08x\n", pfn); */
+			/* pr_no_debug("pfn: 0x%08x\n", pfn); */
 		}
 	} else if (mmprofile_globals.selected_buffer ==
 		MMPROFILE_PRIMARY_BUFFER) {
@@ -2353,7 +2338,7 @@ static int mmprofile_probe(void)
 	mmp_dev->parent = NULL;
 	ret = misc_register(mmp_dev);
 	if (ret) {
-		pr_err("mmp: failed to register misc device.\n");
+		pr_no_err("mmp: failed to register misc device.\n");
 		kfree(mmp_dev);
 		return ret;
 	}

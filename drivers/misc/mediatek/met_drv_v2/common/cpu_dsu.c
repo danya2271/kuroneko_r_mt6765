@@ -74,7 +74,7 @@ static void perf_cpudsu_polling(unsigned long long stamp, int cpu)
 			ret = met_export_api_symbol->met_perf_event_read_local(ev, &value);
 			if (ret < 0) {
 				PR_BOOTMSG_ONCE("[MET_DSU] perf_event_read_local fail (ret=%d)\n", ret);
-				pr_debug("[MET_DSU] perf_event_read_local fail (ret=%d)\n", ret);
+				pr_no_debug("[MET_DSU] perf_event_read_local fail (ret=%d)\n", ret);
 				continue;
 			}
 

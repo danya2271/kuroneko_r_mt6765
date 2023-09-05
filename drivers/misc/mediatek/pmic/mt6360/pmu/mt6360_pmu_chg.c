@@ -3200,7 +3200,7 @@ static int mt6360_get_charger_type(struct mt6360_pmu_chg_info *mpci,
 	}
 
 	if (IS_ERR_OR_NULL(chg_psy))
-		pr_notice("%s Couldn't get chg_psy\n", __func__);
+		pr_no_notice("%s Couldn't get chg_psy\n", __func__);
 	else {
 		prop.intval = attach;
 		if (attach) {
@@ -3211,7 +3211,7 @@ static int mt6360_get_charger_type(struct mt6360_pmu_chg_info *mpci,
 		} else
 			prop2.intval = POWER_SUPPLY_USB_TYPE_UNKNOWN;
 
-		pr_notice("%s type:%d\n", __func__, prop2.intval);
+		pr_no_notice("%s type:%d\n", __func__, prop2.intval);
 
 		switch (prop2.intval) {
 		case POWER_SUPPLY_USB_TYPE_UNKNOWN:
@@ -3244,7 +3244,7 @@ static int typec_attach_thread(void *data)
 	bool attach;
 	union power_supply_propval val;
 
-	pr_info("%s: ++\n", __func__);
+	pr_no_info("%s: ++\n", __func__);
 	while (!kthread_should_stop()) {
 		wait_event(mpci->attach_wq,
 			   atomic_read(&mpci->chrdet_start) > 0 ||
@@ -3255,7 +3255,7 @@ static int typec_attach_thread(void *data)
 		attach = mpci->typec_attach;
 		mutex_unlock(&mpci->attach_lock);
 		val.intval = attach;
-		pr_notice("%s bc12_sel:%d attach:%d\n", __func__,
+		pr_no_notice("%s bc12_sel:%d attach:%d\n", __func__,
 				pdata->bc12_sel, attach);
 		if (pdata->bc12_sel == 0) {
 			ret = power_supply_set_property(mpci->chg_psy,
@@ -3294,16 +3294,16 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 		    (noti->typec_state.new_state == TYPEC_ATTACHED_SNK ||
 		    noti->typec_state.new_state == TYPEC_ATTACHED_CUSTOM_SRC ||
 		    noti->typec_state.new_state == TYPEC_ATTACHED_NORP_SRC)) {
-			pr_info("%s USB Plug in, pol = %d\n", __func__,
+			pr_no_info("%s USB Plug in, pol = %d\n", __func__,
 					noti->typec_state.polarity);
 			handle_typec_attach(chg_data, true);
 		} else if ((noti->typec_state.old_state == TYPEC_ATTACHED_SNK ||
 		    noti->typec_state.old_state == TYPEC_ATTACHED_CUSTOM_SRC ||
 			noti->typec_state.old_state == TYPEC_ATTACHED_NORP_SRC)
 			&& noti->typec_state.new_state == TYPEC_UNATTACHED) {
-			pr_info("%s USB Plug out\n", __func__);
+			pr_no_info("%s USB Plug out\n", __func__);
 			if (chg_data->tcpc_kpoc) {
-				pr_info("%s: typec unattached, power off\n",
+				pr_no_info("%s: typec unattached, power off\n",
 					__func__);
 #ifdef FIXME
 				kernel_power_off();
@@ -3312,11 +3312,11 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 			handle_typec_attach(chg_data, false);
 		} else if (noti->typec_state.old_state == TYPEC_ATTACHED_SRC &&
 			noti->typec_state.new_state == TYPEC_ATTACHED_SNK) {
-			pr_info("%s Source_to_Sink\n", __func__);
+			pr_no_info("%s Source_to_Sink\n", __func__);
 			handle_typec_attach(chg_data, true);
 		}  else if (noti->typec_state.old_state == TYPEC_ATTACHED_SNK &&
 			noti->typec_state.new_state == TYPEC_ATTACHED_SRC) {
-			pr_info("%s Sink_to_Source\n", __func__);
+			pr_no_info("%s Sink_to_Source\n", __func__);
 			handle_typec_attach(chg_data, false);
 		}
 		break;
@@ -3508,7 +3508,7 @@ static int mt6360_pmu_chg_probe(struct platform_device *pdev)
 
 	mpci->tcpc_dev = tcpc_dev_get_by_name("type_c_port0");
 	if (!mpci->tcpc_dev) {
-		pr_notice("%s get tcpc device type_c_port0 fail\n", __func__);
+		pr_no_notice("%s get tcpc device type_c_port0 fail\n", __func__);
 		ret = -ENODEV;
 		goto err_get_tcpcdev;
 	}
@@ -3517,7 +3517,7 @@ static int mt6360_pmu_chg_probe(struct platform_device *pdev)
 	ret = register_tcp_dev_notifier(mpci->tcpc_dev, &mpci->pd_nb,
 					TCP_NOTIFY_TYPE_ALL);
 	if (ret < 0) {
-		pr_notice("%s: register tcpc notifer fail\n", __func__);
+		pr_no_notice("%s: register tcpc notifer fail\n", __func__);
 		ret = -EINVAL;
 		goto err_register_tcp_notifier;
 	}

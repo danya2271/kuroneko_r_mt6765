@@ -82,7 +82,7 @@ void adsp_read_status_release(const unsigned long dsp_event)
 	last_dsp_status = dsp_event;
 	if (status_update_flag == 0) {
 		status_update_flag = 1;
-		pr_info("wake up event: %lu\n", dsp_event);
+		pr_no_info("wake up event: %lu\n", dsp_event);
 		wake_up_interruptible(&status_wq);
 	}
 }
@@ -95,12 +95,12 @@ static int adsp_read_status_blocked(void)
 	retval = wait_event_interruptible(status_wq,
 				 (status_update_flag > 0));
 	if (retval == -ERESTARTSYS) {
-		pr_info("query adsp status -ERESTARTSYS");
+		pr_no_info("query adsp status -ERESTARTSYS");
 		status = -EINTR;
 	} else if (retval == 0) {
 		status = last_dsp_status;
 		status_update_flag = 0;
-		pr_info("query adsp status wakeup  %d\n", status);
+		pr_no_info("query adsp status wakeup  %d\n", status);
 	} else
 		status = -1;
 
@@ -112,7 +112,7 @@ long adsp_driver_compat_ioctl(
 	struct file *file, unsigned int cmd, unsigned long arg)
 {
 	if (!file->f_op || !file->f_op->unlocked_ioctl) {
-		pr_notice("op null\n");
+		pr_no_notice("op null\n");
 		return -ENOTTY;
 	}
 	return file->f_op->unlocked_ioctl(file, cmd, arg);
@@ -152,7 +152,7 @@ long adsp_driver_ioctl(
 				 (void __user *)arg,
 				 sizeof(struct audio_dsp_reg_feature_t));
 		if (retval != 0) {
-			pr_notice("%s(), feature reg copy_from_user retval %d\n",
+			pr_no_notice("%s(), feature reg copy_from_user retval %d\n",
 				  __func__, retval);
 			break;
 		}
@@ -186,7 +186,7 @@ long adsp_driver_ioctl(
 				 (void __user *)arg,
 				 sizeof(struct audio_dsp_query_status_t));
 		if (retval)
-			pr_debug("%s copy_from_user fail line %d\n",
+			pr_no_debug("%s copy_from_user fail line %d\n",
 				  __func__, __LINE__);
 
 		adsp_status.ready_flag = is_adsp_ready(adsp_status.core_id);
@@ -194,10 +194,10 @@ long adsp_driver_ioctl(
 		retval = copy_to_user((void __user *)arg, &adsp_status,
 				 sizeof(struct audio_dsp_reg_feature_t));
 		if (retval)
-			pr_debug("%s copy_to_user fail line %d\n",
+			pr_no_debug("%s copy_to_user fail line %d\n",
 				  __func__, __LINE__);
 		if (adsp_status.ready_flag != last_ready_flag)
-			pr_debug("%s(), AUDIO_DSP_IOCTL_ADSP_QUERY_STATUS(%d)\n",
+			pr_no_debug("%s(), AUDIO_DSP_IOCTL_ADSP_QUERY_STATUS(%d)\n",
 				  __func__, adsp_status.ready_flag);
 		last_ready_flag = adsp_status.ready_flag;
 
@@ -210,7 +210,7 @@ long adsp_driver_ioctl(
 		}
 		if (magic[0] + magic[1] == 0xFFFFFFFF) {
 			retval = adsp_read_status_blocked();
-			pr_debug("%s(), AUDIO_DSP_IOCTL_ADSP_RESET_CBK(%d)\n",
+			pr_no_debug("%s(), AUDIO_DSP_IOCTL_ADSP_RESET_CBK(%d)\n",
 				 __func__, retval);
 		}
 		break;

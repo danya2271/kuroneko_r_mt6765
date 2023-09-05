@@ -22,7 +22,7 @@ static int gmagrotvec_get_data(int *x, int *y, int *z,
 
 	err = sensor_get_data_from_hub(ID_GEOMAGNETIC_ROTATION_VECTOR, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp		= data.time_stamp;
@@ -105,7 +105,7 @@ static int gmagrotvechub_local_init(void)
 	err = fusion_register_control_path(&ctl,
 		ID_GEOMAGNETIC_ROTATION_VECTOR);
 	if (err) {
-		pr_err("register gmagrotvec control path err\n");
+		pr_no_err("register gmagrotvec control path err\n");
 		goto exit;
 	}
 
@@ -113,13 +113,13 @@ static int gmagrotvechub_local_init(void)
 	data.vender_div = 1000000;
 	err = fusion_register_data_path(&data, ID_GEOMAGNETIC_ROTATION_VECTOR);
 	if (err) {
-		pr_err("register gmagrotvec data path err\n");
+		pr_no_err("register gmagrotvec data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_GEOMAGNETIC_ROTATION_VECTOR,
 		gmagrotvec_recv_data);
 	if (err < 0) {
-		pr_err("SCP_sensorHub_data_registration failed\n");
+		pr_no_err("SCP_sensorHub_data_registration failed\n");
 		goto exit;
 	}
 	return 0;
@@ -146,7 +146,7 @@ static int __init gmagrotvechub_init(void)
 
 static void __exit gmagrotvechub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(gmagrotvechub_init);

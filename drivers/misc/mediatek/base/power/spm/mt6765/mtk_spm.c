@@ -30,20 +30,20 @@ DEFINE_SPINLOCK(__spm_lock);
 
 void __attribute__ ((weak)) mtk_idle_cond_check_init(void)
 {
-	pr_info("[SPM] NO %s !!!\n", __func__);
+	pr_no_info("[SPM] NO %s !!!\n", __func__);
 }
 
 /* Note: implemented in mtk_spm_dram.c */
 int __attribute__ ((weak)) spm_get_spmfw_idx(void)
 {
-	pr_info("[SPM] NO %s !!!\n", __func__);
+	pr_no_info("[SPM] NO %s !!!\n", __func__);
 	return 1;
 }
 
 /* Note: implemented in mtk_spm_irq.c */
 int __attribute__ ((weak)) mtk_spm_irq_register(unsigned int spmirq0)
 {
-	pr_info("[SPM] NO %s !!!\n", __func__);
+	pr_no_info("[SPM] NO %s !!!\n", __func__);
 	return 0;
 }
 
@@ -53,13 +53,13 @@ int __attribute__ ((weak)) mtk_cpuidle_init(void) { return -EOPNOTSUPP; }
 /* Note: implemented in mtk_spm_dram.c */
 void __attribute__((weak)) spm_do_dram_config_check(void)
 {
-	pr_info("[SPM] NO %s !!!\n", __func__);
+	pr_no_info("[SPM] NO %s !!!\n", __func__);
 }
 
 /* Note: implemented in mtk_spm_fs.c */
 int __attribute__((weak)) spm_fs_init(void)
 {
-	pr_info("[SPM] NO %s !!!\n", __func__);
+	pr_no_info("[SPM] NO %s !!!\n", __func__);
 	return 0;
 }
 
@@ -104,26 +104,26 @@ static void spm_register_init(unsigned int *spm_irq_0_ptr)
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek,sleep");
 	if (!node)
-		pr_info("[SPM] find sleep node failed\n");
+		pr_no_info("[SPM] find sleep node failed\n");
 
 	spm_base = of_iomap(node, 0);
 	if (!spm_base)
-		pr_info("[SPM] base spm_base failed\n");
+		pr_no_info("[SPM] base spm_base failed\n");
 
 	spmirq0 = irq_of_parse_and_map(node, 0);
 	if (!spmirq0)
-		pr_info("[SPM] get spm_irq_0 failed\n");
+		pr_no_info("[SPM] get spm_irq_0 failed\n");
 	*spm_irq_0_ptr = spmirq0;
 
 	node = of_find_compatible_node(NULL, NULL, "mediatek,sleep_reg_md");
 	if (!node)
-		pr_info("[SPM] find sleep_reg_md node failed\n");
+		pr_no_info("[SPM] find sleep_reg_md node failed\n");
 
 	sleep_reg_md_base = of_iomap(node, 0);
 	if (!sleep_reg_md_base)
-		pr_info("[SPM] base sleep_reg_md_base failed\n");
+		pr_no_info("[SPM] base sleep_reg_md_base failed\n");
 
-	pr_info("[SPM] spm_base = %p, sleep_reg_md_base = %p, spm_irq_0 = %d\n",
+	pr_no_info("[SPM] spm_base = %p, sleep_reg_md_base = %p, spm_irq_0 = %d\n",
 		spm_base, sleep_reg_md_base, spmirq0);
 }
 
@@ -242,7 +242,7 @@ static int spm_module_init(void)
 
 	spm_wakelock = wakeup_source_register(NULL, "spm");
 	if (spm_wakelock == NULL) {
-		pr_debug("fail to request spm_wakelock\n");
+		pr_no_debug("fail to request spm_wakelock\n");
 		return ret;
 	}
 	spm_register_init(&spm_irq_0);
@@ -260,13 +260,13 @@ static int spm_module_init(void)
 
 	ret = platform_driver_register(&spm_dev_drv);
 	if (ret) {
-		pr_debug("fail to register platform driver\n");
+		pr_no_debug("fail to register platform driver\n");
 		return ret;
 	}
 
 	pspmdev = platform_device_register_simple("spm", -1, NULL, 0);
 	if (IS_ERR(pspmdev)) {
-		pr_debug("Failed to register platform device.\n");
+		pr_no_debug("Failed to register platform device.\n");
 		return -EINVAL;
 	}
 
@@ -286,7 +286,7 @@ static int spm_module_init(void)
 
 	ret = register_pm_notifier(&spm_pm_notifier_func);
 	if (ret) {
-		pr_debug("Failed to register PM notifier.\n");
+		pr_no_debug("Failed to register PM notifier.\n");
 		return ret;
 	}
 

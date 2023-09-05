@@ -286,7 +286,7 @@ int mt6779_show_log_message(int type, const char *prefix, void *data)
 
 	WARN_ON(log_size >= LOG_BUF_OUT_SZ);
 
-	pr_info("[name:spm&][SPM] %s", log_buf);
+	pr_no_info("[name:spm&][SPM] %s", log_buf);
 
 	/* Eable rcu lock checking */
 	rcu_irq_exit_irqson();
@@ -313,7 +313,7 @@ int mt6779_logger_init(void)
 	if (mt6779_spm_base)
 		mtk_lp_issuer_register(&mt6779_issuer);
 	else
-		pr_info("[name:mtk_lpm][P] - Don't register the issue by error! (%s:%d)\n",
+		pr_no_info("[name:mtk_lpm][P] - Don't register the issue by error! (%s:%d)\n",
 			__func__, __LINE__);
 	return 0;
 }

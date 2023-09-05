@@ -528,7 +528,7 @@ void debug_print_power_mode_check(enum mtkfb_power_mode prev,
 				  enum mtkfb_power_mode cur)
 {
 	if (primary_display_check_power_mode() != cur)
-		DISP_PR_ERR("AOD: fail to set FB power mode %s to %s(now %s)\n",
+		DISP_pr_no_err("AOD: fail to set FB power mode %s to %s(now %s)\n",
 			    power_mode_str(prev), power_mode_str(cur),
 			    power_mode_str(primary_display_check_power_mode()));
 	else
@@ -578,16 +578,16 @@ int dynamic_debug_msg_print(unsigned int mva, int w, int h, int pitch, int Bpp)
 
 	ret = m4u_query_mva_info(0, mva, layer_size, &real_mva, &real_size);
 	if (ret < 0) {
-		pr_debug("m4u_query_mva_info error\n");
+		pr_no_debug("m4u_query_mva_info error\n");
 		return -1;
 	}
 	ret = m4u_mva_map_kernel(real_mva, real_size, &kva, &mapped_size);
 	if (ret < 0) {
-		pr_debug("m4u_mva_map_kernel fail.\n");
+		pr_no_debug("m4u_mva_map_kernel fail.\n");
 		return -1;
 	}
 	if (layer_size > mapped_size) {
-		pr_debug("warning: layer size > mapped size\n");
+		pr_no_debug("warning: layer size > mapped size\n");
 		goto err;
 	}
 
@@ -682,7 +682,7 @@ static int _fps_ctx_reset(struct fps_ctx_t *fps_ctx, int reserve_num)
 	int i;
 
 	if (reserve_num >= FPS_ARRAY_SZ) {
-		pr_err("%s error to reset, reserve=%d\n",
+		pr_no_err("%s error to reset, reserve=%d\n",
 		       __func__, reserve_num);
 		WARN_ON(1);
 	}
@@ -730,7 +730,7 @@ static int fps_ctx_init(struct fps_ctx_t *fps_ctx, int wnd_sz)
 	mutex_init(&fps_ctx->lock);
 
 	if (wnd_sz > FPS_ARRAY_SZ) {
-		pr_err("%s error: wnd_sz = %d\n", __func__, wnd_sz);
+		pr_no_err("%s error: wnd_sz = %d\n", __func__, wnd_sz);
 		wnd_sz = FPS_ARRAY_SZ;
 	}
 	fps_ctx->wnd_sz = wnd_sz;
@@ -849,7 +849,7 @@ static int fps_ctx_set_wnd_sz(struct fps_ctx_t *fps_ctx, unsigned int wnd_sz)
 		return fps_ctx_init(fps_ctx, wnd_sz);
 
 	if (wnd_sz > FPS_ARRAY_SZ) {
-		DISP_PR_INFO("error: %s wnd_sz=%d\n", __func__, wnd_sz);
+		DISP_pr_no_info("error: %s wnd_sz=%d\n", __func__, wnd_sz);
 		return -1;
 	}
 	mutex_lock(&fps_ctx->lock);
@@ -870,16 +870,16 @@ static int fps_ext_ctx_init(struct fps_ext_ctx_t *fps_ctx, unsigned int ms)
 		return 0;
 
 	if (fps_ctx == NULL) {
-		DISP_PR_ERR("%s:%d, fps_cxt is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, fps_cxt is null\n", __func__, __LINE__);
 		return -1;
 	}
 	if (ms > INTERVAL_MS) {
-		DISP_PR_INFO("%s:%d, interval is too big:%d ms, max:%d ms\n",
+		DISP_pr_no_info("%s:%d, interval is too big:%d ms, max:%d ms\n",
 			     __func__, __LINE__, ms, INTERVAL_MS);
 		return -1;
 	}
 	if (ms == 0) {
-		DISP_PR_INFO("%s:%d, interval is equal to zero\n",
+		DISP_pr_no_info("%s:%d, interval is equal to zero\n",
 			     __func__, __LINE__);
 		return -1;
 	}
@@ -909,7 +909,7 @@ static int fps_ext_ctx_update(struct fps_ext_ctx_t *fps_ctx)
 		return 0;
 
 	if (fps_ctx == NULL) {
-		DISP_PR_ERR("%s:%d, fps_cxt is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, fps_cxt is null\n", __func__, __LINE__);
 		return -1;
 	}
 	if (display_time_fps_stablizer)
@@ -947,15 +947,15 @@ static int fps_ext_ctx_get_fps(struct fps_ext_ctx_t *fps_ctx, unsigned int *fps,
 		return 0;
 
 	if (fps_ctx == NULL) {
-		DISP_PR_ERR("%s:%d, fps_cxt is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, fps_cxt is null\n", __func__, __LINE__);
 		return -1;
 	}
 	if (fps == NULL) {
-		DISP_PR_ERR("%s:%d, fps is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, fps is null\n", __func__, __LINE__);
 		return -1;
 	}
 	if (stable == NULL) {
-		DISP_PR_ERR("%s:%d, stable is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, stable is null\n", __func__, __LINE__);
 		return -1;
 	}
 
@@ -974,7 +974,7 @@ static int fps_ext_ctx_set_interval(struct fps_ext_ctx_t *fps_ctx,
 				    unsigned int ms)
 {
 	if (fps_ctx == NULL) {
-		DISP_PR_ERR("%s:%d, fps_cxt is null\n", __func__, __LINE__);
+		DISP_pr_no_err("%s:%d, fps_cxt is null\n", __func__, __LINE__);
 		return -1;
 	}
 
@@ -982,12 +982,12 @@ static int fps_ext_ctx_set_interval(struct fps_ext_ctx_t *fps_ctx,
 		return fps_ext_ctx_init(fps_ctx, ms);
 
 	if (ms > INTERVAL_MS) {
-		DISP_PR_INFO("%s:%d, interval is too big:%d ms, max:%d ms\n",
+		DISP_pr_no_info("%s:%d, interval is too big:%d ms, max:%d ms\n",
 			     __func__, __LINE__, ms, INTERVAL_MS);
 		return -1;
 	}
 	if (ms == 0) {
-		DISP_PR_INFO("%s:%d, interval is equal to zero\n",
+		DISP_pr_no_info("%s:%d, interval is equal to zero\n",
 			     __func__, __LINE__);
 		return -1;
 	}
@@ -1253,7 +1253,7 @@ int primary_display_get_debug_state(char *stringbuf, int buf_len)
 enum DISP_MODULE_ENUM _get_dst_module_by_lcm(struct disp_lcm_handle *plcm)
 {
 	if (plcm == NULL) {
-		DISP_PR_ERR("plcm is null\n");
+		DISP_pr_no_err("plcm is null\n");
 		return DISP_MODULE_UNKNOWN;
 	}
 
@@ -1270,7 +1270,7 @@ enum DISP_MODULE_ENUM _get_dst_module_by_lcm(struct disp_lcm_handle *plcm)
 		return DISP_MODULE_DPI;
 	}
 
-	DISP_PR_ERR("can't find primary path dst module\n");
+	DISP_pr_no_err("can't find primary path dst module\n");
 	return DISP_MODULE_UNKNOWN;
 }
 
@@ -1931,7 +1931,7 @@ static void directlink_path_add_memory(struct WDMA_CONFIG_STRUCT *p_wdma,
 	/* create config thread */
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &cmdq_handle);
 	if (ret) {
-		DISP_PR_ERR("Fail to create cmdq handle\n");
+		DISP_pr_no_err("Fail to create cmdq handle\n");
 		ret = -1;
 		goto out;
 	}
@@ -1941,7 +1941,7 @@ static void directlink_path_add_memory(struct WDMA_CONFIG_STRUCT *p_wdma,
 	ret = cmdqRecCreate(CMDQ_SCENARIO_DISP_SCREEN_CAPTURE,
 			    &cmdq_wait_handle);
 	if (ret) {
-		DISP_PR_ERR("Fail to create cmdq wait handle\n");
+		DISP_pr_no_err("Fail to create cmdq wait handle\n");
 		ret = -1;
 		goto out;
 	}
@@ -2009,7 +2009,7 @@ static int sec_buf_ion_alloc(int buf_size)
 	ion_client = ion_client_create(g_ion_device, "display_dc_secmem");
 
 	if (!ion_client) {
-		DISP_PR_ERR("create ion client failed!\n");
+		DISP_pr_no_err("create ion client failed!\n");
 		return -1;
 	}
 
@@ -2017,7 +2017,7 @@ static int sec_buf_ion_alloc(int buf_size)
 				   ION_HEAP_MULTIMEDIA_SEC_MASK, 0);
 
 	if (IS_ERR_OR_NULL(sec_ion_handle)) {
-		DISP_PR_ERR("Fatal Error, ion_alloc for size %d failed\n",
+		DISP_pr_no_err("Fatal Error, ion_alloc for size %d failed\n",
 			    buf_size);
 		goto err1;
 	}
@@ -2032,20 +2032,20 @@ static int sec_buf_ion_alloc(int buf_size)
 
 	if (ion_kernel_ioctl(ion_client, ION_CMD_MULTIMEDIA_SEC,
 			     (unsigned long)&mm_data) < 0) {
-		DISP_PR_ERR("ion_test_drv: Config buffer failed.\n");
+		DISP_pr_no_err("ion_test_drv: Config buffer failed.\n");
 		goto err;
 	}
 
 	/* 2. query sec hnd */
 	if (ion_phys(ion_client, sec_ion_handle, &phy_addr,
 		     (size_t *)&mva_size)) {
-		DISP_PR_ERR("can't query ion buffer physical address!\n");
+		DISP_pr_no_err("can't query ion buffer physical address!\n");
 		goto err;
 	}
 	sec_hnd = (unsigned int)phy_addr;
 
 	if (sec_hnd == 0) {
-		DISP_PR_ERR("Fatal Error, get mva failed\n");
+		DISP_pr_no_err("Fatal Error, get mva failed\n");
 		goto err;
 	}
 	sec_mva = sec_hnd;
@@ -2087,7 +2087,7 @@ static int init_sec_buf(void)
 
 	ret = sec_buf_ion_alloc(buffer_size);
 	if (ret) {
-		DISP_PR_ERR("sec_buf_ion_alloc failed!\n");
+		DISP_pr_no_err("sec_buf_ion_alloc failed!\n");
 		return -1;
 	}
 
@@ -2128,7 +2128,7 @@ static int _DL_switch_to_DC_fast(int block)
 	}
 
 	if (mva == 0) {
-		DISP_PR_ERR("%s: DC buffer does not exist\n", __func__);
+		DISP_pr_no_err("%s: DC buffer does not exist\n", __func__);
 		return -1;
 	}
 	wdma_config.dstAddress = mva;
@@ -2228,7 +2228,7 @@ static int _DL_switch_to_DC_fast(int block)
 		DISPDBG("dpmgr create ovl memout path SUCCESS(%p)\n",
 			pgc->ovl2mem_path_handle);
 	} else {
-		DISP_PR_ERR("dpmgr create path FAIL\n");
+		DISP_pr_no_err("dpmgr create path FAIL\n");
 		return -1;
 	}
 
@@ -2573,7 +2573,7 @@ static int DL_switch_to_rdma_mode(struct cmdqRecStruct *handle, int block)
 	if (!handle) {
 		ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 		if (ret) {
-			DISP_PR_ERR("%s:%d: create cmdq handle fail! ret=%d\n",
+			DISP_pr_no_err("%s:%d: create cmdq handle fail! ret=%d\n",
 				    __func__, __LINE__, ret);
 			return -1;
 		}
@@ -2625,7 +2625,7 @@ static int rdma_mode_switch_to_DC(struct cmdqRecStruct *handle, int block)
 	if (!switch_handle) {
 		ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &switch_handle);
 		if (ret) {
-			DISP_PR_ERR("%s:%d, create cmdq handle fail!ret=%d\n",
+			DISP_pr_no_err("%s:%d, create cmdq handle fail!ret=%d\n",
 				    __func__, __LINE__, ret);
 			return -1;
 		}
@@ -2645,7 +2645,7 @@ static int rdma_mode_switch_to_DC(struct cmdqRecStruct *handle, int block)
 		DISPDBG("dpmgr create ovl memout path SUCCESS(%p)\n",
 			pgc->ovl2mem_path_handle);
 	} else {
-		DISP_PR_ERR("dpmgr create path FAIL\n");
+		DISP_pr_no_err("dpmgr create path FAIL\n");
 		return -1;
 	}
 
@@ -2702,7 +2702,7 @@ static int rdma_mode_switch_to_DL(struct cmdqRecStruct *handle, int block)
 	if (!handle) {
 		ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 		if (ret) {
-			DISP_PR_ERR("%s:%d: create cmdq handle fail! ret=%d\n",
+			DISP_pr_no_err("%s:%d: create cmdq handle fail! ret=%d\n",
 				    __func__, __LINE__, ret);
 			return -1;
 		}
@@ -2767,28 +2767,28 @@ static struct disp_internal_buffer_info *allocat_decouple_buffer(int size)
 	struct ion_handle *handle = NULL;
 
 	if (!g_ion_device) {
-		DISP_PR_ERR("%s:g_ion_device is NULL\n", __func__);
+		DISP_pr_no_err("%s:g_ion_device is NULL\n", __func__);
 		return NULL;
 	}
 	client = ion_client_create(g_ion_device, "disp_decouple");
 
 	buf_info = kzalloc(sizeof(*buf_info), GFP_KERNEL);
 	if (!buf_info) {
-		DISP_PR_ERR("kzalloc internal buffer info failed!\n");
+		DISP_pr_no_err("kzalloc internal buffer info failed!\n");
 		kfree(buf_info);
 		return NULL;
 	}
 
 	handle = ion_alloc(client, size, 0, ION_HEAP_MULTIMEDIA_MASK, 0);
 	if (IS_ERR(handle)) {
-		DISP_PR_ERR("ion_alloc for size %d failed\n",
+		DISP_pr_no_err("ion_alloc for size %d failed\n",
 			     size);
 		goto err;
 	}
 
 	buffer_va = ion_map_kernel(client, handle);
 	if (buffer_va == NULL) {
-		DISP_PR_ERR("ion_map_kernrl failed\n");
+		DISP_pr_no_err("ion_map_kernrl failed\n");
 		goto err;
 	}
 	memset((void *)&mm_data, 0, sizeof(mm_data));
@@ -2797,12 +2797,12 @@ static struct disp_internal_buffer_info *allocat_decouple_buffer(int size)
 	mm_data.get_phys_param.module_id = 0;
 	if (ion_kernel_ioctl(client, ION_CMD_MULTIMEDIA,
 			     (unsigned long)&mm_data) < 0) {
-		DISP_PR_ERR("ion_test_drv: Config buffer failed.\n");
+		DISP_pr_no_err("ion_test_drv: Config buffer failed.\n");
 		goto err;
 	}
 
 	if (mm_data.get_phys_param.phy_addr == 0) {
-		DISP_PR_ERR("Fatal Error, get mva failed\n");
+		DISP_pr_no_err("Fatal Error, get mva failed\n");
 		goto err;
 	}
 
@@ -2866,7 +2866,7 @@ static int init_decouple_buffers(void)
 	decouple_wdma_config.dstPitch = width * Bpp;
 	decouple_wdma_config.security = DISP_NORMAL_BUFFER;
 
-	pr_info("%s done\n", __func__);
+	pr_no_info("%s done\n", __func__);
 	return 0;
 }
 
@@ -2893,7 +2893,7 @@ static int _build_path_direct_link(void)
 	if (pgc->dpmgr_handle) {
 		DISPDBG("dpmgr create path SUCCESS(%p)\n", pgc->dpmgr_handle);
 	} else {
-		DISP_PR_ERR("dpmgr create path FAIL\n");
+		DISP_pr_no_err("dpmgr create path FAIL\n");
 		return -1;
 	}
 	dpmgr_set_lcm_utils(pgc->dpmgr_handle, pgc->plcm->drv);
@@ -2977,7 +2977,7 @@ static int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst,
 		   src->buffer_source == DISP_BUFFER_MVA) {
 		dst->source = OVL_LAYER_SOURCE_MEM; /* from memory */
 	} else {
-		DISP_PR_INFO("unknown source = %d", src->buffer_source);
+		DISP_pr_no_info("unknown source = %d", src->buffer_source);
 		dst->source = OVL_LAYER_SOURCE_MEM;
 	}
 	return ret;
@@ -3313,12 +3313,12 @@ primary_display_change_lcm_resolution(unsigned int width, unsigned int height)
 	if (width > pgc->plcm->params->width ||
 	    height > pgc->plcm->params->height ||
 	    width == 0 || height == 0 || width % 4 || height % 4) {
-		DISP_PR_INFO("Invalid resolution: %dx%d\n", width, height);
+		DISP_pr_no_info("Invalid resolution: %dx%d\n", width, height);
 		return -1;
 	}
 
 	if (primary_display_is_video_mode()) {
-		DISP_PR_INFO("Warning!VDO can't support multiple resolution\n");
+		DISP_pr_no_info("Warning!VDO can't support multiple resolution\n");
 		return -1;
 	}
 
@@ -3356,7 +3356,7 @@ static int _Interface_fence_release_callback(unsigned long userdata)
 		cmdqBackupReadSlot(pgc->dither_status_info, 0, &status);
 		if ((status) != 0x10001) {
 			/* dither is not idle! */
-			DISP_PR_ERR("disp dither status error! stat=0x%x\n",
+			DISP_pr_no_err("disp dither status error! stat=0x%x\n",
 				    status);
 			/* disp_aee_print("dither_stat 0x%x\n", status); */
 			mmprofile_log_ex(ddp_mmp_get_events()->primary_error,
@@ -3403,7 +3403,7 @@ static void DC_config_nightlight(struct cmdqRecStruct *cmdq_handle)
 		}
 	}
 	if (all_zero)
-		DISP_PR_INFO("Night light backup param is zero matrix\n");
+		DISP_pr_no_info("Night light backup param is zero matrix\n");
 	else
 		disp_ccorr_set_color_matrix(cmdq_handle, ccorr_matrix, mode);
 }
@@ -3435,7 +3435,7 @@ static int _decouple_update_rdma_config_nolock(void)
 	if (!cmdq_handle) {
 		ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &cmdq_handle);
 		if (ret) {
-			DISP_PR_ERR("fail to create cmdq\n");
+			DISP_pr_no_err("fail to create cmdq\n");
 			return 0;
 		}
 	}
@@ -3564,7 +3564,7 @@ static int _ovl_fence_release_callback(unsigned long userdata)
 		cmdqBackupReadSlot(pgc->ovl_status_info, 0, &status);
 		if (status & 0x1) {
 			/* ovl is not idle! */
-			DISP_PR_ERR("disp ovl status error! stat=0x%x\n",
+			DISP_pr_no_err("disp ovl status error! stat=0x%x\n",
 				    status);
 			/* disp_aee_print("ovl_stat 0x%x\n", status); */
 			mmprofile_log_ex(ddp_mmp_get_events()->primary_error,
@@ -3690,7 +3690,7 @@ static int decouple_mirror_update_rdma_config_thread(void *data)
 			atomic_set(&decouple_update_rdma_event, 0);
 			decouple_update_rdma_config();
 		} else {
-			DISP_PR_INFO("wait decouple_update_rdma_event,ret=%d\n",
+			DISP_pr_no_info("wait decouple_update_rdma_event,ret=%d\n",
 				     ret);
 		}
 		if (kthread_should_stop())
@@ -3729,7 +3729,7 @@ static int primary_display_remove_output(void *callback, unsigned int userdata)
 
 	if (ret) {
 		ret = -1;
-		DISP_PR_ERR("fail to remove memout out\n");
+		DISP_pr_no_err("fail to remove memout out\n");
 		return ret;
 	}
 
@@ -3744,7 +3744,7 @@ static int primary_display_remove_output(void *callback, unsigned int userdata)
 		cmdqRecFlush(cmdq_wait_handle);
 		/* cmdqRecDestroy(cmdq_wait_handle); */
 	} else {
-		DISP_PR_ERR("fail to create  wait handle\n");
+		DISP_pr_no_err("fail to create  wait handle\n");
 	}
 	cmdqRecReset(cmdq_handle);
 
@@ -4033,7 +4033,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 
 	lcm_param = disp_lcm_get_params(pgc->plcm);
 	if (unlikely(lcm_param == NULL)) {
-		DISP_PR_ERR("get lcm params FAILED\n");
+		DISP_pr_no_err("get lcm params FAILED\n");
 		ret = DISP_STATUS_ERROR;
 		goto done;
 	}
@@ -4052,7 +4052,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 					 (CmdqResetEngCB)cmdqDdpResetEng,
 					 (CmdqClockOffCB)cmdqDdpClockOff);
 		if (ret) {
-			DISP_PR_ERR("cmdqCoreRegisterCB failed, ret=%d\n", ret);
+			DISP_pr_no_err("cmdqCoreRegisterCB failed, ret=%d\n", ret);
 			ret = DISP_STATUS_ERROR;
 			goto done;
 		}
@@ -4075,7 +4075,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 		ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_MEMOUT,
 				    &(pgc->cmdq_handle_ovl1to2_config));
 		if (ret) {
-			DISP_PR_ERR("cmdqRecCreate FAIL, ret=%d\n", ret);
+			DISP_pr_no_err("cmdqRecCreate FAIL, ret=%d\n", ret);
 			ret = DISP_STATUS_ERROR;
 			goto done;
 		}
@@ -4128,7 +4128,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 		if (lcm_corner_en && !top_mva) {
 			ion_client = disp_ion_create("round_corner");
 			if (!ion_client)
-				DISP_PR_ERR("create ion client fail\n");
+				DISP_pr_no_err("create ion client fail\n");
 
 			DISPINFO("%s mem:(0x%p,%d)\n",
 				   __func__,
@@ -4164,7 +4164,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps,
 				ION_CACHE_INVALID_BY_RANGE);
 lcm_corner_out:
 			if (ret)
-				DISP_PR_ERR("[RC]:Fail to cach sync\n");
+				DISP_pr_no_err("[RC]:Fail to cach sync\n");
 		}
 #endif
 	}
@@ -4175,7 +4175,7 @@ lcm_corner_out:
 	init_decouple_buffer_thread = kthread_run(_init_decouple_buffers_thread,
 						  NULL, "init_decouple_buffer");
 	if (IS_ERR(init_decouple_buffer_thread))
-		DISP_PR_ERR("kthread_run init_decouple_buffer_thread err=%d\n",
+		DISP_pr_no_err("kthread_run init_decouple_buffer_thread err=%d\n",
 			    IS_ERR(init_decouple_buffer_thread));
 
 	dpmgr_path_set_video_mode(pgc->dpmgr_handle,
@@ -4191,7 +4191,7 @@ lcm_corner_out:
 	 */
 	if (disp_helper_get_option(DISP_OPT_NO_LCM_FOR_LOW_POWER_MEASUREMENT)) {
 		/* only for low power measurement */
-		DISP_PR_INFO("WARNING!!!!!! FORCE NO LCM MODE!!!\n");
+		DISP_pr_no_info("WARNING!!!!!! FORCE NO LCM MODE!!!\n");
 		islcmconnected = 0;
 
 		/* no need to change video mode vsync behavior */
@@ -4718,14 +4718,14 @@ int primary_display_release_fence_fake(void)
 			n += scnprintf(msg + n, len - n, "addr 0x%08x fail, ",
 				      addr);
 			n += scnprintf(msg + n, len - n, "unregistered\n");
-			DISP_PR_INFO("%s", msg);
+			DISP_pr_no_info("%s", msg);
 		} else if (fence_idx < 0) {
 			n = scnprintf(msg, len, "find fence idx for layer %d,",
 				     i);
 			n += scnprintf(msg + n, len - n, "addr 0x%08x fail, ",
 				      addr);
 			n += scnprintf(msg + n, len - n, "unknown\n");
-			DISP_PR_INFO("%s", msg);
+			DISP_pr_no_info("%s", msg);
 		} else {
 			if (layer_en)
 				mtkfb_release_fence(session, i, fence_idx - 1);
@@ -4776,7 +4776,7 @@ int primary_display_wait_for_vsync(void *config)
 						DISP_PATH_EVENT_IF_VSYNC,
 						HZ / 10);
 				if (ret == -2) {
-					DISP_PR_INFO("vsync not enabled yet\n");
+					DISP_pr_no_info("vsync not enabled yet\n");
 					return -1;
 				} else if (ret == 0) {
 					primary_display_release_fence_fake();
@@ -4793,7 +4793,7 @@ int primary_display_wait_for_vsync(void *config)
 				  &ts);
 
 	if (ret == -2) {
-		DISP_PR_INFO("vsync for primary path not enabled yet\n");
+		DISP_pr_no_info("vsync for primary path not enabled yet\n");
 		goto out;
 	} else if (ret == 0) {
 		/* primary_display_release_fence_fake(); */
@@ -4847,7 +4847,7 @@ int suspend_to_full_roi(void)
 
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &handle);
 	if (ret) {
-		DISP_PR_ERR("%s:%d, create cmdq handle fail!ret=%d\n",
+		DISP_pr_no_err("%s:%d, create cmdq handle fail!ret=%d\n",
 			    __func__, __LINE__, ret);
 		return -1;
 	}
@@ -4900,7 +4900,7 @@ int primary_display_suspend(void)
 	}
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("primary display path is already slept, skip\n");
+		DISP_pr_no_info("primary display path is already slept, skip\n");
 		goto done;
 	}
 	primary_display_idlemgr_kick(__func__, 0);
@@ -4945,7 +4945,7 @@ int primary_display_suspend(void)
 		DISPCHECK("[POWER]primary busy, wait frame done, ret=%d\n",
 			  event_ret);
 		if (event_ret <= 0) {
-			DISP_PR_ERR("wait frame done in suspend timeout\n");
+			DISP_pr_no_err("wait frame done in suspend timeout\n");
 			mmprofile_log_ex(ddp_mmp_get_events()->primary_suspend,
 					 MMPROFILE_FLAG_PULSE, 3, 2);
 			primary_display_diagnose();
@@ -4972,7 +4972,7 @@ int primary_display_suspend(void)
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_suspend,
 				 MMPROFILE_FLAG_PULSE, 1, 4);
-		DISP_PR_ERR("[POWER]stop display path failed, still busy\n");
+		DISP_pr_no_err("[POWER]stop display path failed, still busy\n");
 		dpmgr_path_reset(pgc->dpmgr_handle, CMDQ_DISABLE);
 		ret = -1;
 	}
@@ -5065,7 +5065,7 @@ int primary_display_get_lcm_index(void)
 	DISPFUNC();
 
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
@@ -5242,7 +5242,7 @@ int primary_display_resume(void)
 				dpmgr_path_connect(pgc->ovl2mem_path_handle,
 						   CMDQ_DISABLE);
 			else
-				DISP_PR_ERR("DC but no ovl2mem_path_handle\n");
+				DISP_pr_no_err("DC but no ovl2mem_path_handle\n");
 		}
 
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
@@ -5336,7 +5336,7 @@ int primary_display_resume(void)
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
 				 MMPROFILE_FLAG_PULSE, 1, 4);
-		DISP_PR_ERR("[POWER]didn't start display but already busy\n");
+		DISP_pr_no_err("[POWER]didn't start display but already busy\n");
 		ret = -1;
 		/* goto done; */
 	}
@@ -5356,7 +5356,7 @@ int primary_display_resume(void)
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
 				 MMPROFILE_FLAG_PULSE, 1, 6);
-		DISP_PR_ERR("[POWER]didn't trigger display but already busy\n");
+		DISP_pr_no_err("[POWER]didn't trigger display but already busy\n");
 		ret = -1;
 		/* goto done; */
 	}
@@ -5466,7 +5466,7 @@ int primary_display_resume(void)
 	 */
 	if (disp_helper_get_option(DISP_OPT_NO_LCM_FOR_LOW_POWER_MEASUREMENT)) {
 		/* only for low power measurement */
-		DISP_PR_INFO("WARNING!!!!!! FORCE NO LCM MODE!!!\n");
+		DISP_pr_no_info("WARNING!!!!!! FORCE NO LCM MODE!!!\n");
 		islcmconnected = 0;
 
 		/* no need to change video mode vsync behavior */
@@ -5517,7 +5517,7 @@ int primary_display_aod_backlight(int level)
 	cur_pm = primary_display_get_power_mode_nolock();
 
 	if (cur_pm != DOZE_SUSPEND && cur_pm != DOZE) {
-		DISP_PR_INFO("%s not in AOD, skip it\n", __func__);
+		DISP_pr_no_info("%s not in AOD, skip it\n", __func__);
 		_primary_path_unlock(__func__);
 		return 0;
 	}
@@ -5608,7 +5608,7 @@ int primary_display_aod_backlight(int level)
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
 			 MMPROFILE_FLAG_PULSE, 1, 4);
-		DISP_PR_ERR("didn't start display path but it's busy\n");
+		DISP_pr_no_err("didn't start display path but it's busy\n");
 		ret = -1;
 		/* goto done; */
 	}
@@ -5618,7 +5618,7 @@ int primary_display_aod_backlight(int level)
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
 			MMPROFILE_FLAG_PULSE, 1, 6);
-		DISP_PR_ERR("didn't trigger display path but it's busy\n");
+		DISP_pr_no_err("didn't trigger display path but it's busy\n");
 		ret = -1;
 		/* goto done; */
 	}
@@ -5662,7 +5662,7 @@ skip_resume:
 		DISPCHECK("display path is busy now,wait frame done,event=%d\n",
 				event_ret);
 		if (event_ret <= 0) {
-			DISP_PR_ERR("wait frame done in suspend timeout\n");
+			DISP_pr_no_err("wait frame done in suspend timeout\n");
 			mmprofile_log_ex(ddp_mmp_get_events()->primary_suspend,
 				 MMPROFILE_FLAG_PULSE, 3, 2);
 			primary_display_diagnose();
@@ -5676,7 +5676,7 @@ skip_resume:
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
 		mmprofile_log_ex(ddp_mmp_get_events()->primary_suspend,
 			 MMPROFILE_FLAG_PULSE, 1, 4);
-		DISP_PR_ERR("[POWER]stop display path failed, still busy\n");
+		DISP_pr_no_err("[POWER]stop display path failed, still busy\n");
 		dpmgr_path_reset(pgc->dpmgr_handle, CMDQ_DISABLE);
 		ret = -1;
 		/*
@@ -5744,7 +5744,7 @@ int primary_display_start(void)
 	dpmgr_path_start(pgc->dpmgr_handle, CMDQ_DISABLE);
 
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
-		DISP_PR_ERR("didn't trigger display but it's already busy\n");
+		DISP_pr_no_err("didn't trigger display but it's already busy\n");
 		ret = -1;
 		goto done;
 	}
@@ -5768,7 +5768,7 @@ int primary_display_stop(void)
 	dpmgr_path_stop(pgc->dpmgr_handle, CMDQ_DISABLE);
 
 	if (dpmgr_path_is_busy(pgc->dpmgr_handle)) {
-		DISP_PR_ERR("stop display path failed, still busy\n");
+		DISP_pr_no_err("stop display path failed, still busy\n");
 		ret = -1;
 		goto done;
 	}
@@ -5849,7 +5849,7 @@ static int primary_display_trigger_nolock(int blocking, void *callback,
 	primary_trigger_cnt++;
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("%s, skip because primary dipslay is slept\n",
+		DISP_pr_no_info("%s, skip because primary dipslay is slept\n",
 			     __func__);
 		goto done;
 	}
@@ -5867,7 +5867,7 @@ static int primary_display_trigger_nolock(int blocking, void *callback,
 					DISP_SESSION_DIRECT_LINK_MIRROR_MODE);
 
 		if (pgc->need_trigger_ovl1to2 == 0) {
-			DISP_PR_INFO("no output config when DL_Mirror!\n");
+			DISP_pr_no_info("no output config when DL_Mirror!\n");
 		} else {
 			primary_display_remove_output(
 					_wdma_fence_release_callback,
@@ -5940,7 +5940,7 @@ static int decouple_trigger_worker_thread(void *data)
 		_primary_path_unlock(__func__);
 
 		if (kthread_should_stop()) {
-			DISP_PR_INFO("error: stop %s as demond\n", __func__);
+			DISP_pr_no_info("error: stop %s as demond\n", __func__);
 			break;
 		}
 	}
@@ -6004,13 +6004,13 @@ static int primary_frame_cfg_output(struct disp_frame_cfg_t *cfg)
 	struct cmdqRecStruct *cmdq_handle = NULL;
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("mem out is already slept or mode wrong(%d)\n",
+		DISP_pr_no_info("mem out is already slept or mode wrong(%d)\n",
 			     pgc->session_mode);
 		goto done;
 	}
 
 	if (!primary_display_is_mirror_mode()) {
-		DISP_PR_INFO("should not config output if not mirror mode!\n");
+		DISP_pr_no_info("should not config output if not mirror mode!\n");
 		goto done;
 	}
 
@@ -6341,7 +6341,7 @@ static int get_sw_round_corner_param(unsigned int *tp_mva, unsigned int *bt_mva,
 		ret = 0;
 	} else {
 		ret = -1;
-		DISP_PR_ERR("vram_buf may not contain corner size!\n");
+		DISP_pr_no_err("vram_buf may not contain corner size!\n");
 	}
 	return ret;
 }
@@ -6445,7 +6445,7 @@ static bool disp_rsz_frame_has_rsz_layer(struct disp_frame_cfg_t *cfg)
 	if ((path != 2 && path != 3) && (rsz == true)) {
 		struct disp_input_config *c = &cfg->input_cfg[i];
 
-		DISP_PR_ERR("not RPO but L%d(%u,%u,%ux%u)->(%u,%u,%ux%u)\n",
+		DISP_pr_no_err("not RPO but L%d(%u,%u,%ux%u)->(%u,%u,%ux%u)\n",
 			    i, c->src_offset_x, c->src_offset_y, c->src_width,
 			    c->src_height, c->tgt_offset_x, c->tgt_offset_y,
 			    c->tgt_width, c->tgt_height);
@@ -6786,7 +6786,7 @@ static int _config_ovl_input(struct disp_frame_cfg_t *cfg,
 			if (bypass) {
 				n_mode = DISP_SESSION_RDMA_MODE;
 			} else if (dc_request) {
-				DISP_PR_INFO("request DC w/o a rdma frame\n");
+				DISP_pr_no_info("request DC w/o a rdma frame\n");
 				n_mode = DISP_SESSION_DECOUPLE_MODE;
 			}
 		} else if (o_mode == DISP_SESSION_RDMA_MODE) {
@@ -7094,7 +7094,7 @@ static int primary_frame_cfg_input(struct disp_frame_cfg_t *cfg)
 	primary_get_path_handles(&disp_handle, &cmdq_handle);
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("%s, skip because primary dipslay is slept\n",
+		DISP_pr_no_info("%s, skip because primary dipslay is slept\n",
 			     __func__);
 
 		if (is_DAL_Enabled() && cfg->setter == SESSION_USER_AEE &&
@@ -7144,7 +7144,7 @@ static int primary_frame_cfg_input(struct disp_frame_cfg_t *cfg)
 			}
 		}
 		if (all_zero)
-			DISP_PR_INFO("HWC set zero matrix\n");
+			DISP_pr_no_info("HWC set zero matrix\n");
 		else if (!primary_display_is_decouple_mode()) {
 			disp_ccorr_set_color_matrix(cmdq_handle,
 				m_ccorr_config.color_matrix,
@@ -7169,7 +7169,7 @@ static int primary_frame_cfg_input(struct disp_frame_cfg_t *cfg)
 		pgc->dc_buf_id %= DISP_INTERNAL_BUFFER_COUNT;
 		wdma_mva = pgc->dc_buf[pgc->dc_buf_id];
 		if (wdma_mva == 0) {
-			DISP_PR_INFO("%s, DC buffer does not exist\n",
+			DISP_pr_no_info("%s, DC buffer does not exist\n",
 				     __func__);
 			ret = -1;
 			goto done;
@@ -7199,7 +7199,7 @@ int primary_display_config_input_multiple(struct disp_session_input_config
 	struct disp_frame_cfg_t *frame_cfg;
 
 	if (sizeof(session_input->config) != sizeof(frame_cfg->input_cfg)) {
-		DISP_PR_INFO("session input config size!=frame config size\n");
+		DISP_pr_no_info("session input config size!=frame config size\n");
 		return -1;
 	}
 	frame_cfg = kzalloc(sizeof(struct disp_frame_cfg_t), GFP_KERNEL);
@@ -7407,7 +7407,7 @@ int do_primary_display_switch_mode(int sess_mode, unsigned int session,
 		goto done;
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("primary switch from %s to %s in suspend state!\n",
+		DISP_pr_no_info("primary switch from %s to %s in suspend state!\n",
 			     session_mode_str(pgc->session_mode),
 			     session_mode_str(sess_mode));
 		sw_only = 1;
@@ -7466,7 +7466,7 @@ int do_primary_display_switch_mode(int sess_mode, unsigned int session,
 		   sess_mode == DISP_SESSION_DECOUPLE_MODE) {
 		ret = rdma_mode_switch_to_DC(handle, block);
 	} else {
-		DISP_PR_INFO("invalid mode switch from %s to %s\n",
+		DISP_pr_no_info("invalid mode switch from %s to %s\n",
 			     session_mode_str(pgc->session_mode),
 			     session_mode_str(sess_mode));
 	}
@@ -7492,7 +7492,7 @@ err:
 	mmprofile_log_ex(ddp_mmp_get_events()->primary_switch_mode,
 			 MMPROFILE_FLAG_END, pgc->session_mode, sess_mode);
 	if (ret)
-		DISP_PR_ERR("primary display switch mode fail\n");
+		DISP_pr_no_err("primary display switch mode fail\n");
 	if (need_lock)
 		_primary_path_unlock(__func__);
 	pgc->session_id = session;
@@ -7686,84 +7686,84 @@ int primary_display_is_sleepd(void)
 int primary_display_get_width(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->width;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_height(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->height;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_virtual_width(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->virtual_width;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_virtual_height(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->virtual_height;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_original_width(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->lcm_original_width;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_original_height(void)
 {
 	if (!pgc->plcm) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->lcm_original_height;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
@@ -7777,42 +7777,42 @@ int primary_display_get_bpp(void)
 int primary_display_get_lcm_corner_en(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->round_corner_en;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_corner_pattern_width(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->corner_pattern_width;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 int primary_display_get_corner_pattern_height(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->corner_pattern_height;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 #endif
@@ -7834,7 +7834,7 @@ int primary_display_get_info(struct disp_session_info *info)
 	struct LCM_PARAMS *lcm_param = disp_lcm_get_params(pgc->plcm);
 
 	if (!lcm_param) {
-		DISP_PR_ERR("lcm_param is null\n");
+		DISP_pr_no_err("lcm_param is null\n");
 		return -1;
 	}
 
@@ -8039,7 +8039,7 @@ int primary_display_force_set_vsync_fps(unsigned int fps, unsigned int scenario)
 	int ret = 0;
 
 	if (!primary_display_is_video_mode()) {
-		DISP_PR_INFO("display is not video mode. fps changing fail\n");
+		DISP_pr_no_info("display is not video mode. fps changing fail\n");
 		return -1;
 	}
 
@@ -8123,17 +8123,17 @@ int primary_display_vsync_switch(int method)
 	int ret = 0;
 
 	if (method == 0) {
-		pr_debug("Vsync mapped to RDMA %d\n", method);
+		pr_no_debug("Vsync mapped to RDMA %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_RDMA0_DONE);
 	} else if (method == 1) {
-		pr_debug("Vsync mapped to DSI TE %d\n", method);
+		pr_no_debug("Vsync mapped to DSI TE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_DSI0_EXT_TE);
 	} else if (method == 2) {
-		pr_debug("Vsync mapped to DSI FRAME DONE %d\n", method);
+		pr_no_debug("Vsync mapped to DSI FRAME DONE %d\n", method);
 		dpmgr_map_event_to_irq(pgc->dpmgr_handle,
 				       DISP_PATH_EVENT_IF_VSYNC,
 				       DDP_IRQ_DSI0_FRAME_DONE);
@@ -8152,7 +8152,7 @@ int _set_backlight_by_cmdq(unsigned int level)
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &cmdq_handle_backlight);
 	DISPDBG("primary backlight, handle=%p\n", cmdq_handle_backlight);
 	if (ret) {
-		DISP_PR_INFO("fail to create cmdq handle for backlight\n");
+		DISP_pr_no_info("fail to create cmdq handle for backlight\n");
 		return -1;
 	}
 
@@ -8371,7 +8371,7 @@ int primary_display_setbacklight_nolock(unsigned int level)
 			 MMPROFILE_FLAG_START, 0, 0);
 
 	if (pgc->state == DISP_SLEPT) {
-		DISP_PR_INFO("Sleep State set backlight invalid\n");
+		DISP_pr_no_info("Sleep State set backlight invalid\n");
 	} else {
 		primary_display_idlemgr_kick(__func__, 0);
 		if (primary_display_cmdq_enabled()) {
@@ -8406,7 +8406,7 @@ int _set_lcm_cmd_by_cmdq(unsigned int *lcm_cmd, unsigned int *lcm_count,
 	ret = cmdqRecCreate(CMDQ_SCENARIO_PRIMARY_DISP, &cmdq_handle_lcm_cmd);
 	DISPDBG("primary set lcm cmd, handle=%p\n", cmdq_handle_lcm_cmd);
 	if (ret) {
-		DISP_PR_INFO("fail to create cmdq handle for setlcmcmd\n");
+		DISP_pr_no_info("fail to create cmdq handle for setlcmcmd\n");
 		return -1;
 	}
 
@@ -8580,63 +8580,63 @@ UINT32 DISP_GetScreenHeight(void)
 UINT32 DISP_GetActiveHeight(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->physical_height;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 UINT32 DISP_GetActiveWidth(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->physical_width;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 uint32_t DISP_GetActiveHeightUm(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->physical_height_um;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 uint32_t DISP_GetActiveWidthUm(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return 0;
 	}
 
 	if (pgc->plcm->params)
 		return pgc->plcm->params->physical_width_um;
 
-	DISP_PR_ERR("lcm_params is null!\n");
+	DISP_pr_no_err("lcm_params is null!\n");
 	return 0;
 }
 
 struct LCM_PARAMS *DISP_GetLcmPara(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return NULL;
 	}
 
@@ -8649,7 +8649,7 @@ struct LCM_PARAMS *DISP_GetLcmPara(void)
 struct LCM_DRIVER *DISP_GetLcmDrv(void)
 {
 	if (pgc->plcm == NULL) {
-		DISP_PR_ERR("lcm handle is null\n");
+		DISP_pr_no_err("lcm handle is null\n");
 		return NULL;
 	}
 
@@ -8973,7 +8973,7 @@ UINT32 DISP_GetVRamSizeBoot(char *cmdline)
 
 	vramsize = mtkfb_get_fb_size();
 	if (!vramsize)
-		pr_err("get fb size fail, size=0x%08x|%d\n",
+		pr_no_err("get fb size fail, size=0x%08x|%d\n",
 		       vramsize, vramsize);
 
 	DISPCHECK("[DT]display vram size = 0x%08x|%d\n", vramsize, vramsize);
@@ -8990,7 +8990,7 @@ unsigned int primary_display_get_option(const char *option)
 		return disp_helper_get_option(DISP_OPT_USE_M4U);
 
 	/* ASSERT(0); */
-	pr_info("%s, invalid option\n", __func__);
+	pr_no_info("%s, invalid option\n", __func__);
 	return -1;
 }
 
@@ -9042,12 +9042,12 @@ static int Panel_Master_primary_display_config_dsi(const char *name,
 
 	/* modify below for config dsi */
 	if (!strcmp(name, "PM_CLK")) {
-		pr_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
+		pr_no_debug("Pmaster_config_dsi: PM_CLK:%d\n", config_value);
 		data_config->dispif_config.dsi.PLL_CLOCK = config_value;
 	} else if (!strcmp(name, "PM_SSC")) {
 		data_config->dispif_config.dsi.ssc_range = config_value;
 	}
-	pr_debug("Pmaster_config_dsi: will Run path_config()\n");
+	pr_no_debug("Pmaster_config_dsi: will Run path_config()\n");
 	ret = dpmgr_path_config(pgc->dpmgr_handle, data_config, NULL);
 
 	return ret;
@@ -9536,7 +9536,7 @@ int primary_display_resolution_test(void)
 
 			n = scnprintf(msg, len,
 				"[display_test]=>Fatal error, we didn't trigger display path but it's already busy\n");
-			DISP_PR_ERR("%s", msg);
+			DISP_pr_no_err("%s", msg);
 		}
 
 		dpmgr_path_trigger(pgc->dpmgr_handle, NULL, CMDQ_DISABLE);
@@ -9639,7 +9639,7 @@ int primary_display_check_test(void)
 			      "we didn't trigger display path ");
 		n += scnprintf(msg + n, len - n,
 			      "but it's already busy\n");
-		DISP_PR_ERR("%s", msg);
+		DISP_pr_no_err("%s", msg);
 	}
 
 	DISPCHECK("[display_test]start dpmgr path[end]\n");
@@ -9738,7 +9738,7 @@ int display_enter_tui(void)
 	_primary_path_lock(__func__);
 
 	if (primary_get_state() != DISP_ALIVE) {
-		DISP_PR_ERR("Can't enter TUI: current_stat=%d is not alive\n",
+		DISP_pr_no_err("Can't enter TUI: current_stat=%d is not alive\n",
 			    primary_get_state());
 		goto err0;
 	}
@@ -9748,7 +9748,7 @@ int display_enter_tui(void)
 	primary_display_idlemgr_kick(__func__, 0);
 
 	if (primary_display_is_mirror_mode()) {
-		DISP_PR_ERR("Can't enter TUI: current_mode=%s\n",
+		DISP_pr_no_err("Can't enter TUI: current_mode=%s\n",
 			    session_mode_str(pgc->session_mode));
 		goto err1;
 	}
@@ -9784,7 +9784,7 @@ err0:
 
 int display_exit_tui(void)
 {
-	pr_info("[TUI-HAL] %s() start\n", __func__);
+	pr_no_info("[TUI-HAL] %s() start\n", __func__);
 	mmprofile_log_ex(ddp_mmp_get_events()->tui, MMPROFILE_FLAG_PULSE, 1, 1);
 
 	_primary_path_lock(__func__);
@@ -9804,7 +9804,7 @@ int display_exit_tui(void)
 
 	mmprofile_log_ex(ddp_mmp_get_events()->tui, MMPROFILE_FLAG_END, 0, 0);
 	DISPMSG("TDDP: %s\n", __func__);
-	pr_info("[TUI-HAL] %s() done\n", __func__);
+	pr_no_info("[TUI-HAL] %s() done\n", __func__);
 	return 0;
 }
 
@@ -9881,7 +9881,7 @@ int primary_display_set_scenario(int scenario)
 	if (scenario != DISP_SCENARIO_NORMAL &&
 	    pgc->primary_display_scenario != DISP_SCENARIO_NORMAL) {
 		/* every scenario should start from NORMAL !! */
-		pr_err("%s set scenario %d fail ! current scenario is %d\n",
+		pr_no_err("%s set scenario %d fail ! current scenario is %d\n",
 			__func__, scenario, pgc->primary_display_scenario);
 		return -EINVAL;
 	}

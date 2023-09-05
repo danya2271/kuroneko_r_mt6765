@@ -79,38 +79,21 @@ void perfmgr_trace_count(int val, const char *fmt, ...)
 		log[127] = '\0';
 
 	__mt_update_tracing_mark_write_addr();
-	preempt_disable();
-
-	event_trace_printk(tracing_mark_write_addr, "C|%d|%s|%d\n",
-		powerhal_tid, log, val);
-
-	preempt_enable();
 }
 
 void perfmgr_trace_printk(char *module, char *string)
 {
 	__mt_update_tracing_mark_write_addr();
-	preempt_disable();
-	event_trace_printk(tracing_mark_write_addr, "%d [%s] %s\n",
-			current->tgid, module, string);
-	preempt_enable();
 }
 
 void perfmgr_trace_begin(char *name, int id, int a, int b)
 {
 	__mt_update_tracing_mark_write_addr();
-	preempt_disable();
-	event_trace_printk(tracing_mark_write_addr, "B|%d|%s|%d|%d|%d\n",
-			current->tgid, name, id, a, b);
-	preempt_enable();
 }
 
 void perfmgr_trace_end(void)
 {
 	__mt_update_tracing_mark_write_addr();
-	preempt_disable();
-	event_trace_printk(tracing_mark_write_addr, "E\n");
-	preempt_enable();
 }
 
 void perfmgr_trace_log(char *module, const char *fmt, ...)

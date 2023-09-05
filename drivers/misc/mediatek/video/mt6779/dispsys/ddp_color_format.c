@@ -160,7 +160,7 @@ enum UNIFIED_COLOR_FMT display_fmt_reg_to_unified_fmt(int fmt_reg_val,
 		    UFMT_GET_RGBSWAP(ufmt) == rgbswap)
 			return ufmt;
 	}
-	DDP_PR_ERR("unknown_fmt fmt=%d, byteswap=%d, rgbswap=%d\n",
+	DDP_pr_no_err("unknown_fmt fmt=%d, byteswap=%d, rgbswap=%d\n",
 		   fmt_reg_val, byteswap, rgbswap);
 	return UFMT_UNKNOWN;
 }
@@ -215,7 +215,7 @@ enum UNIFIED_COLOR_FMT disp_fmt_to_unified_fmt(enum DISP_FORMAT src_fmt)
 	case DISP_FORMAT_PRGBA_FP16:
 		return UFMT_PRGBA_FP16;
 	default:
-		DDP_PR_ERR("Invalid color format: 0x%x\n", src_fmt);
+		DDP_pr_no_err("Invalid color format: 0x%x\n", src_fmt);
 		break;
 	}
 	return UFMT_UNKNOWN;

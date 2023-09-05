@@ -62,19 +62,19 @@ __init void mrdump_cblock_init(phys_addr_t cb_addr, phys_addr_t cb_size)
 	struct mrdump_machdesc *machdesc_p;
 
 	if (cb_addr == 0) {
-		pr_notice("%s: mrdump control address cannot be 0\n",
+		pr_no_notice("%s: mrdump control address cannot be 0\n",
 			  __func__);
 		return;
 	}
 	if (cb_size < sizeof(struct mrdump_control_block)) {
-		pr_notice("%s: not enough space for mrdump control block\n",
+		pr_no_notice("%s: not enough space for mrdump control block\n",
 			  __func__);
 		return;
 	}
 
 	mrdump_cblock = ioremap_wc(cb_addr, cb_size);
 	if (!mrdump_cblock) {
-		pr_notice("%s: mrdump_cb not mapped\n", __func__);
+		pr_no_notice("%s: mrdump_cb not mapped\n", __func__);
 		return;
 	}
 	memset_io(mrdump_cblock, 0, sizeof(struct mrdump_control_block));
@@ -131,7 +131,7 @@ __init void mrdump_cblock_init(phys_addr_t cb_addr, phys_addr_t cb_size)
 	mrdump_cblock->machdesc_crc = crc32(0, machdesc_p,
 			sizeof(struct mrdump_machdesc));
 
-	pr_notice("%s: done.\n", __func__);
+	pr_no_notice("%s: done.\n", __func__);
 
 	/* TODO: remove flush APIs after full ramdump support  HW_Reboot*/
 	aee__flush_dcache_area(mrdump_cblock,

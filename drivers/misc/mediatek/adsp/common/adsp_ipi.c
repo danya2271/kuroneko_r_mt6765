@@ -59,7 +59,7 @@ void adsp_A_ipi_handler(void)
 	len = adsp_rcv_obj[ADSP_A_ID]->len;
 
 	if (ipi_id >= ADSP_NR_IPI || ipi_id < 0)
-		pr_debug("[ADSP] A ipi handler id abnormal, id=%d", ipi_id);
+		pr_no_debug("[ADSP] A ipi handler id abnormal, id=%d", ipi_id);
 	else if (adsp_ipi_desc[ipi_id].handler) {
 		memcpy_fromio(share_buf,
 			(void *)adsp_rcv_obj[ADSP_A_ID]->share_buf, len);
@@ -82,14 +82,14 @@ void adsp_A_ipi_handler(void)
 			if (ipi_msg->magic == IPI_MSG_MAGIC_NUMBER)
 				DUMP_IPI_MSG("ipi queue not ready!", ipi_msg);
 			else
-				pr_info("ipi queue not ready!! opendsp_id: %u, ipi_id: %u, buf: %p, len: %u, ipi_handler: %p",
+				pr_no_info("ipi queue not ready!! opendsp_id: %u, ipi_id: %u, buf: %p, len: %u, ipi_handler: %p",
 					AUDIO_OPENDSP_USE_HIFI3_A,
 					ipi_id, share_buf, len,
 					adsp_ipi_desc[ipi_id].handler);
 			WARN_ON(1);
 		}
 	} else {
-		pr_debug("[ADSP] A ipi handler is null or abnormal, id=%d",
+		pr_no_debug("[ADSP] A ipi handler is null or abnormal, id=%d",
 			 ipi_id);
 	}
 
@@ -100,7 +100,7 @@ void adsp_A_ipi_handler(void)
 
 	stop_time = ktime_us_delta(ktime_get(), start_time);
 	if (stop_time > 1000) /* 1 ms */
-		pr_notice("IPC ISR %lld us too long!!", stop_time);
+		pr_no_notice("IPC ISR %lld us too long!!", stop_time);
 }
 
 /*
@@ -111,8 +111,8 @@ void adsp_A_ipi_init(void)
 	mutex_init(&adsp_ipi_mutex[ADSP_A_ID]);
 	adsp_rcv_obj[ADSP_A_ID] = ADSP_A_IPC_BUFFER;
 	adsp_send_obj[ADSP_A_ID] = adsp_rcv_obj[ADSP_A_ID] + 1;
-	pr_debug("adsp_rcv_obj[ADSP_A_ID] = 0x%p", adsp_rcv_obj[ADSP_A_ID]);
-	pr_debug("adsp_send_obj[ADSP_A_ID] = 0x%p", adsp_send_obj[ADSP_A_ID]);
+	pr_no_debug("adsp_rcv_obj[ADSP_A_ID] = 0x%p", adsp_rcv_obj[ADSP_A_ID]);
+	pr_no_debug("adsp_send_obj[ADSP_A_ID] = 0x%p", adsp_send_obj[ADSP_A_ID]);
 }
 
 /*
@@ -187,27 +187,27 @@ enum adsp_ipi_status adsp_ipi_send_ipc(enum adsp_ipi_id id, void *buf,
 	static u8 share_buf[SHARE_BUF_SIZE - 16];
 
 	if (in_interrupt() && wait) {
-		pr_info("adsp_ipi_send: cannot use in isr");
+		pr_no_info("adsp_ipi_send: cannot use in isr");
 		return ADSP_IPI_ERROR;
 	}
 	if (adsp_id >= ADSP_CORE_TOTAL || adsp_id < 0) {
-		pr_notice("adsp_ipi_send: adsp_id %d is invalid", adsp_id);
+		pr_no_notice("adsp_ipi_send: adsp_id %d is invalid", adsp_id);
 		return ADSP_IPI_ERROR;
 	}
 	if (is_adsp_ready(adsp_id) != 1) {
-		pr_notice("adsp_ipi_send: %s not enabled, id=%d",
+		pr_no_notice("adsp_ipi_send: %s not enabled, id=%d",
 			  adsp_core_ids[adsp_id], id);
 		return ADSP_IPI_ERROR;
 	}
 
 	if (len > sizeof(adsp_send_obj[adsp_id]->share_buf) || buf == NULL) {
-		pr_info("adsp_ipi_send: %s buffer error",
+		pr_no_info("adsp_ipi_send: %s buffer error",
 			adsp_core_ids[adsp_id]);
 		return ADSP_IPI_ERROR;
 	}
 
 	if (mutex_trylock(&adsp_ipi_mutex[adsp_id]) == 0) {
-		pr_info("adsp_ipi_send:%s %d mutex_trylock busy,owner=%d",
+		pr_no_info("adsp_ipi_send:%s %d mutex_trylock busy,owner=%d",
 			adsp_core_ids[adsp_id], id,
 			adsp_ipi_mutex_owner[adsp_id]);
 		return ADSP_IPI_BUSY;
@@ -223,7 +223,7 @@ enum adsp_ipi_status adsp_ipi_send_ipc(enum adsp_ipi_id id, void *buf,
 			if (p_ipi_msg->magic == IPI_MSG_MAGIC_NUMBER)
 				DUMP_IPI_MSG("busy. ipc owner", p_ipi_msg);
 			else
-				pr_info("adsp_ipi_send: %s %d host to adsp busy, ipi last time = %d",
+				pr_no_info("adsp_ipi_send: %s %d host to adsp busy, ipi last time = %d",
 					adsp_core_ids[adsp_id], id,
 					adsp_ipi_owner[adsp_id]);
 		}
@@ -256,7 +256,7 @@ enum adsp_ipi_status adsp_ipi_send_ipc(enum adsp_ipi_id id, void *buf,
 
 #ifdef Liang_Check
 	if (adsp_awake_unlock(adsp_id) == -1)
-		pr_debug("adsp_ipi_send: awake unlock fail");
+		pr_no_debug("adsp_ipi_send: awake unlock fail");
 #endif
 	mutex_unlock(&adsp_ipi_mutex[adsp_id]);
 

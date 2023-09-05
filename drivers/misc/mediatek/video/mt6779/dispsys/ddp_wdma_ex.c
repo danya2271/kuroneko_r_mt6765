@@ -32,7 +32,7 @@ unsigned int wdma_index(enum DISP_MODULE_ENUM module)
 		break;
 	default:
 		/* invalid module */
-		DDP_PR_ERR("[DDP] error: invalid wdma module=%d\n", module);
+		DDP_pr_no_err("[DDP] error: invalid wdma module=%d\n", module);
 		ASSERT(0);
 		break;
 	}
@@ -67,7 +67,7 @@ int wdma_reset(enum DISP_MODULE_ENUM module, void *handle)
 			delay_cnt++;
 			udelay(10);
 			if (delay_cnt > 2000) {
-				DDP_PR_ERR("wdma%d reset timeout!\n", idx);
+				DDP_pr_no_err("wdma%d reset timeout!\n", idx);
 				break;
 			}
 		}
@@ -982,7 +982,7 @@ static int wdma_golden_setting(enum DISP_MODULE_ENUM module,
 	unsigned int value = 0;
 
 	if (!gsc) {
-		DDP_PR_ERR("%s:%d: golden setting is null\n",
+		DDP_pr_no_err("%s:%d: golden setting is null\n",
 			   __FILE__, __LINE__);
 		ASSERT(0);
 		return 0;
@@ -1098,7 +1098,7 @@ static int wdma_golden_setting(enum DISP_MODULE_ENUM module,
 static int wdma_check_input_param(struct WDMA_CONFIG_STRUCT *config)
 {
 	if (!is_unified_color_fmt_supported(config->outputFormat)) {
-		DDP_PR_ERR("wdma parameter invalidate: outfmt %s:0x%x\n",
+		DDP_pr_no_err("wdma parameter invalidate: outfmt %s:0x%x\n",
 			   unified_color_fmt_name(config->outputFormat),
 			   config->outputFormat);
 		return -1;
@@ -1106,7 +1106,7 @@ static int wdma_check_input_param(struct WDMA_CONFIG_STRUCT *config)
 
 	if (config->dstAddress == 0 || config->srcWidth == 0 ||
 		config->srcHeight == 0) {
-		DDP_PR_ERR("wdma parameter invalidate: addr=0x%lx,w=%d,h=%d\n",
+		DDP_pr_no_err("wdma parameter invalidate: addr=0x%lx,w=%d,h=%d\n",
 			   config->dstAddress, config->srcWidth,
 			   config->srcHeight);
 		return -1;

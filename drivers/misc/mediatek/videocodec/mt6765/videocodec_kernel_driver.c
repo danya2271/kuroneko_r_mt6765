@@ -283,14 +283,14 @@ EXPORT_SYMBOL(mt_vdec_base_get);
  *			i == 59 || i == 61 || i == 62 || i == 63 ||
  *			i == 71) {
  *			u4DataStatusMain = VDO_HW_READ(KVA_VDEC_VLD_BASE+(i*4));
- *			pr_info("[VCODEC][DUMP] "
+ *			pr_no_info("[VCODEC][DUMP] "
  *				"VLD_%d = %x\n", i, u4DataStatusMain);
  *		}
  *	}
  *
  *	for (i = 66; i < 80; i++) {
  *		u4DataStatusMain = VDO_HW_READ(KVA_VDEC_MISC_BASE+(i*4));
- *		pr_info("[VCODEC][DUMP] "
+ *		pr_no_info("[VCODEC][DUMP] "
  *				"MISC_%d = %x\n", i, u4DataStatusMain);
  *	}
  *
@@ -317,14 +317,14 @@ void vdec_polling_status(void)
 			unsigned int u4IntStatus = 0;
 			unsigned int i = 0;
 
-			pr_notice("[ERROR] Leftover data before power down");
+			pr_no_notice("[ERROR] Leftover data before power down");
 			for (i = 45; i < 72; i++) {
 				if (i == 45 || i == 46 || i == 52 || i == 58 ||
 					i == 59 || i == 61 || i == 62 ||
 					i == 63 || i == 71){
 					u4Reg = KVA_VDEC_VLD_BASE+(i*4);
 					u4IntStatus = VDO_HW_READ(u4Reg);
-					pr_notice("[VCODEC] VLD_%d = %x\n",
+					pr_no_notice("[VCODEC] VLD_%d = %x\n",
 						i, u4IntStatus);
 				}
 			}
@@ -332,7 +332,7 @@ void vdec_polling_status(void)
 			for (i = 66; i < 80; i++) {
 				u4Reg = KVA_VDEC_MISC_BASE+(i*4);
 				u4DataStatus = VDO_HW_READ(u4Reg);
-				pr_info("[VCODEC] MISC_%d = %x\n",
+				pr_no_info("[VCODEC] MISC_%d = %x\n",
 						i, u4DataStatus);
 			}
 #ifdef CONFIG_MTK_SMI_EXT
@@ -344,7 +344,7 @@ void vdec_polling_status(void)
 			WARN_ON(1);
 		}
 	}
-	/* pr_info("u4Counter %d\n", u4Counter); */
+	/* pr_no_info("u4Counter %d\n", u4Counter); */
 
 }
 
@@ -360,7 +360,7 @@ void vdec_power_on(void)
 	ret = clk_prepare_enable(clk_MT_SCP_SYS_DISP);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VDEC] MT_SCP_SYS_DISP is not on, ret = %d\n",
+		pr_no_info("[VDEC] MT_SCP_SYS_DISP is not on, ret = %d\n",
 				ret);
 	}
 
@@ -370,21 +370,21 @@ void vdec_power_on(void)
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMM0);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VCODEC] MT_CG_SMI_COMM0 is not on, ret = %d\n",
+		pr_no_info("[VCODEC] MT_CG_SMI_COMM0 is not on, ret = %d\n",
 				ret);
 		}
 
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMM1);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VCODEC] MT_CG_SMI_COMM1 is not on, ret = %d\n",
+		pr_no_info("[VCODEC] MT_CG_SMI_COMM1 is not on, ret = %d\n",
 				ret);
 		}
 
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMMON);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VCODEC] MT_CG_SMI_COMMON is not on, ret = %d\n",
+		pr_no_info("[VCODEC] MT_CG_SMI_COMMON is not on, ret = %d\n",
 				ret);
 		}
 #endif
@@ -392,13 +392,13 @@ void vdec_power_on(void)
 	ret = clk_prepare_enable(clk_MT_SCP_SYS_VCODEC);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VCODEC] MT_SCP_SYS_VDE is not on, ret = %d\n", ret);
+		pr_no_info("[VCODEC] MT_SCP_SYS_VDE is not on, ret = %d\n", ret);
 	}
 
 	ret = clk_prepare_enable(clk_MT_CG_VDEC);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VCODEC] MT_CG_VDEC is not on, ret = %d\n", ret);
+		pr_no_info("[VCODEC] MT_CG_VDEC is not on, ret = %d\n", ret);
 	}
 #if defined(CONFIG_MACH_MT6761)
 	/* GF14 type SRAM  power on config */
@@ -484,7 +484,7 @@ void venc_power_on(void)
 	ret = clk_prepare_enable(clk_MT_SCP_SYS_DISP);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_SCP_SYS_DISP is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_SCP_SYS_DISP is not on, ret = %d\n",
 				ret);
 	}
 
@@ -494,21 +494,21 @@ void venc_power_on(void)
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMM0);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_CG_SMI_COMM0 is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_CG_SMI_COMM0 is not on, ret = %d\n",
 				ret);
 	}
 
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMM1);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_CG_SMI_COMM1 is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_CG_SMI_COMM1 is not on, ret = %d\n",
 				ret);
 	}
 
 	ret = clk_prepare_enable(clk_MT_CG_SMI_COMMON);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_CG_SMI_COMMON is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_CG_SMI_COMMON is not on, ret = %d\n",
 				ret);
 	}
 #endif
@@ -516,14 +516,14 @@ void venc_power_on(void)
 	ret = clk_prepare_enable(clk_MT_SCP_SYS_VCODEC);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_SCP_SYS_VEN is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_SCP_SYS_VEN is not on, ret = %d\n",
 				ret);
 	}
 
 	ret = clk_prepare_enable(clk_MT_CG_VENC);
 	if (ret) {
 		/* print error log & error handling */
-		pr_info("[VENC] MT_CG_VENC is not on, ret = %d\n",
+		pr_no_info("[VENC] MT_CG_VENC is not on, ret = %d\n",
 				ret);
 	}
 #if defined(CONFIG_MACH_MT6761)
@@ -588,33 +588,33 @@ void vdec_break(void)
 		unsigned int j;
 		unsigned int u4DataStatus = 0;
 
-		pr_info("Leftover data access before powering down\n");
+		pr_no_info("Leftover data access before powering down\n");
 
 		for (j = 68; j < 80; j++) {
 			u4DataStatus = VDO_HW_READ(KVA_VDEC_MISC_BASE+(j*4));
-			pr_info("[VCODEC][DUMP] MISC_%d = 0x%08x",
+			pr_no_info("[VCODEC][DUMP] MISC_%d = 0x%08x",
 				j, u4DataStatus);
 		}
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(45*4));
-		pr_info("[VCODEC][DUMP] VLD_45 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_45 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(46*4));
-		pr_info("[VCODEC][DUMP] VLD_46 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_46 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(52*4));
-		pr_info("[VCODEC][DUMP] VLD_52 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_52 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(58*4));
-		pr_info("[VCODEC][DUMP] VLD_58 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_58 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(59*4));
-		pr_info("[VCODEC][DUMP] VLD_59 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_59 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(61*4));
-		pr_info("[VCODEC][DUMP] VLD_61 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_61 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(62*4));
-		pr_info("[VCODEC][DUMP] VLD_62 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_62 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(63*4));
-		pr_info("[VCODEC][DUMP] VLD_63 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_63 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_BASE+(71*4));
-		pr_info("[VCODEC][DUMP] VLD_71 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] VLD_71 = 0x%08x", u4DataStatus);
 		u4DataStatus = VDO_HW_READ(KVA_VDEC_MISC_BASE+(66*4));
-		pr_info("[VCODEC][DUMP] MISC_66 = 0x%08x", u4DataStatus);
+		pr_no_info("[VCODEC][DUMP] MISC_66 = 0x%08x", u4DataStatus);
 	}
 
 	/* Step 3: software reset */
@@ -710,7 +710,7 @@ void dec_isr(void)
 
 	u4DecDoneStatus = VDO_HW_READ(KVA_VDEC_MISC_BASE+0xA4);
 	if ((u4DecDoneStatus & (0x1 << 16)) != 0x10000) {
-		pr_info("[VDEC] DEC ISR, Dec done is not 0x1 (0x%08x)",
+		pr_no_info("[VDEC] DEC ISR, Dec done is not 0x1 (0x%08x)",
 				u4DecDoneStatus);
 		return;
 	}
@@ -728,7 +728,7 @@ void dec_isr(void)
 	if (u4TempDecISRCount != u4TempLockDecHWCount) {
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
-		 * pr_info("[INFO] Dec ISRCount: 0x%x, "
+		 * pr_no_info("[INFO] Dec ISRCount: 0x%x, "
 		 * "LockHWCount:0x%x\n",
 		 * u4TempDecISRCount, u4TempLockDecHWCount);
 		 */
@@ -747,7 +747,7 @@ void dec_isr(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VDEC] ISR set DecIsrEvent error\n");
+		pr_no_info("[VDEC] ISR set DecIsrEvent error\n");
 	}
 	spin_unlock_irqrestore(&DecIsrLock, ulFlags);
 }
@@ -775,14 +775,14 @@ void enc_isr(void)
 	if (u4TempEncISRCount != u4TempLockEncHWCount) {
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
-		 * pr_info("[INFO] Enc ISRCount: 0x%xa, "
+		 * pr_no_info("[INFO] Enc ISRCount: 0x%xa, "
 		 *	"LockHWCount:0x%x\n",
 		 * u4TempEncISRCount, u4TempLockEncHWCount);
 		 */
 	}
 
 	if (CodecHWLock.pvHandle == 0) {
-		pr_info("[VENC] NO one Lock Enc HW, please check!!\n");
+		pr_no_info("[VENC] NO one Lock Enc HW, please check!!\n");
 
 		/* Clear all status */
 		/* VDO_HW_WRITE(KVA_VENC_MP4_IRQ_ACK_ADDR, 1); */
@@ -843,7 +843,7 @@ void enc_isr(void)
 					VENC_IRQ_STATUS_FRM);
 		}
 	} else {
-		pr_info("[VENC] Invalid lock holder driver type = %d\n",
+		pr_no_info("[VENC] Invalid lock holder driver type = %d\n",
 				CodecHWLock.eDriverType);
 	}
 
@@ -852,7 +852,7 @@ void enc_isr(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VENC] ISR set EncIsrEvent error\n");
+		pr_no_info("[VENC] ISR set EncIsrEvent error\n");
 	}
 }
 
@@ -871,7 +871,7 @@ static irqreturn_t video_intr_dlr2(int irq, void *dev_id)
 static long vcodec_lockhw_dec_fail(struct VAL_HW_LOCK_T rHWLock,
 				unsigned int FirstUseDecHW)
 {
-	pr_info("VCODEC_LOCKHW, HWLockEvent TimeOut, CurrentTID = %d\n",
+	pr_no_info("VCODEC_LOCKHW, HWLockEvent TimeOut, CurrentTID = %d\n",
 			current->pid);
 	if (FirstUseDecHW != 1) {
 		mutex_lock(&HWLock);
@@ -879,12 +879,12 @@ static long vcodec_lockhw_dec_fail(struct VAL_HW_LOCK_T rHWLock,
 			/* Add one line comment for avoid kernel coding style,
 			 * WARNING:BRACES:
 			 */
-			pr_info("VCODEC_LOCKHW, mediaserver may restarted");
+			pr_no_info("VCODEC_LOCKHW, mediaserver may restarted");
 		} else {
 			/* Add one line comment for avoid kernel coding style,
 			 * WARNING:BRACES:
 			 */
-			pr_info("VCODEC_LOCKHW, someone use HW");
+			pr_no_info("VCODEC_LOCKHW, someone use HW");
 		}
 		mutex_unlock(&HWLock);
 	}
@@ -898,22 +898,22 @@ static long vcodec_lockhw_dec_fail(struct VAL_HW_LOCK_T rHWLock,
 static long vcodec_lockhw_enc_fail(struct VAL_HW_LOCK_T rHWLock,
 				unsigned int FirstUseEncHW)
 {
-	pr_info("VENC_LOCKHW HWLockEvent TimeOut, CurrentTID = %d\n",
+	pr_no_info("VENC_LOCKHW HWLockEvent TimeOut, CurrentTID = %d\n",
 			current->pid);
 
 	if (FirstUseEncHW != 1) {
 		mutex_lock(&HWLock);
 		if (CodecHWLock.pvHandle == 0) {
-			pr_info("VENC_LOCKHW, mediaserver may restarted");
+			pr_no_info("VENC_LOCKHW, mediaserver may restarted");
 		} else {
-			pr_info("VENC_LOCKHW, someone use HW (%d)\n",
+			pr_no_info("VENC_LOCKHW, someone use HW (%d)\n",
 				 gLockTimeOutCount);
 			++gLockTimeOutCount;
 
 			if (gLockTimeOutCount > 30) {
-				pr_info("VENC_LOCKHW - ID %d fail\n",
+				pr_no_info("VENC_LOCKHW - ID %d fail\n",
 						current->pid);
-				pr_info(ENC_LOCK_FLOG,
+				pr_no_info(ENC_LOCK_FLOG,
 				(unsigned long)CodecHWLock.pvHandle,
 				pmem_user_v2p_video(
 					(unsigned long)rHWLock.pvHandle),
@@ -925,9 +925,9 @@ static long vcodec_lockhw_enc_fail(struct VAL_HW_LOCK_T rHWLock,
 			}
 
 			if (rHWLock.u4TimeoutMs == 0) {
-				pr_info("VENC_LOCKHW - ID %d fail\n",
+				pr_no_info("VENC_LOCKHW - ID %d fail\n",
 						current->pid);
-				pr_info(ENC_LOCK_FLOG2,
+				pr_no_info(ENC_LOCK_FLOG2,
 				(unsigned long)CodecHWLock.pvHandle,
 				 pmem_user_v2p_video(
 					(unsigned long)rHWLock.pvHandle),
@@ -974,7 +974,7 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 	while ((*bLockedHW) == VAL_FALSE) {
 		mutex_lock(&HWLockEventTimeoutLock);
 		if (HWLockEvent.u4TimeoutMs == 1) {
-			pr_info("VDEC_LOCKHW, First Use Dec HW!!\n");
+			pr_no_info("VDEC_LOCKHW, First Use Dec HW!!\n");
 			FirstUseDecHW = 1;
 		} else {
 			FirstUseDecHW = 0;
@@ -1002,8 +1002,8 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 		handle = (unsigned long)(pHWLock->pvHandle);
 		if (CodecHWLock.pvHandle ==
 			(void *)pmem_user_v2p_video(handle)) {
-			pr_info("[VDEC] Same inst double lock\n");
-			pr_info("may timeout!! inst = 0x%lx, TID = %d\n",
+			pr_no_info("[VDEC] Same inst double lock\n");
+			pr_no_info("may timeout!! inst = 0x%lx, TID = %d\n",
 				(unsigned long)CodecHWLock.pvHandle,
 				current->pid);
 		}
@@ -1021,12 +1021,12 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 		if (eValRet == VAL_RESULT_INVALID_ISR) {
 			ret = vcodec_lockhw_dec_fail(*pHWLock, FirstUseDecHW);
 			if (ret) {
-				pr_info("[VDEC] lockhw_dec_fail: %lu\n",
+				pr_no_info("[VDEC] lockhw_dec_fail: %lu\n",
 						ret);
 				return -EFAULT;
 			}
 		} else if (eValRet == VAL_RESULT_RESTARTSYS) {
-			pr_info("[VDEC] ERESTARTSYS when LockHW\n");
+			pr_no_info("[VDEC] ERESTARTSYS when LockHW\n");
 			return -ERESTARTSYS;
 		}
 
@@ -1042,7 +1042,7 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 					/* Print log if trying to enter suspend
 					 * for too long
 					 */
-					pr_info("VDEC blocked by suspend");
+					pr_no_info("VDEC blocked by suspend");
 					suspend_block_cnt = 0;
 				}
 				usleep_range(1000, 2000);
@@ -1093,7 +1093,7 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 				}
 			}
 
-			/* pr_info("VDEC cur_job freq %u, %llu, %d",
+			/* pr_no_info("VDEC cur_job freq %u, %llu, %d",
 			 *	target_freq, target_freq_64, dec_step_size);
 			 */
 
@@ -1113,7 +1113,7 @@ static long vcodec_lockhw_vdec(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 				enable_irq(VDEC_IRQ_ID);
 			}
 		} else { /* Another one holding dec hw now */
-			pr_info("VDEC_LOCKHW E\n");
+			pr_no_info("VDEC_LOCKHW E\n");
 			eVideoGetTimeOfDay(&rCurTime,
 						sizeof(struct VAL_TIME_T));
 			u4TimeInterval = (((((rCurTime.u4Sec -
@@ -1187,7 +1187,7 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 		/* Wait to acquire Enc HW lock */
 		mutex_lock(&HWLockEventTimeoutLock);
 		if (HWLockEvent.u4TimeoutMs == 1) {
-			pr_info("VENC_LOCKHW, First Use Enc HW %d!!\n",
+			pr_no_info("VENC_LOCKHW, First Use Enc HW %d!!\n",
 					pHWLock->eDriverType);
 			FirstUseEncHW = 1;
 		} else {
@@ -1226,8 +1226,8 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 		/* one process try to lock twice */
 		if (CodecHWLock.pvHandle ==
 			(void *)pmem_user_v2p_video(handle)) {
-			pr_info("VENC_LOCKHW, Some inst double lock");
-			pr_info("may timeout inst=0x%lx, TID=%d, type:%d\n",
+			pr_no_info("VENC_LOCKHW, Some inst double lock");
+			pr_no_info("may timeout inst=0x%lx, TID=%d, type:%d\n",
 				(unsigned long)CodecHWLock.pvHandle,
 				current->pid, pHWLock->eDriverType);
 		}
@@ -1244,7 +1244,7 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 		if (eValRet == VAL_RESULT_INVALID_ISR) {
 			ret = vcodec_lockhw_enc_fail(*pHWLock, FirstUseEncHW);
 			if (ret) {
-				pr_info("lockhw_enc_fail: %lu\n",
+				pr_no_info("lockhw_enc_fail: %lu\n",
 					ret);
 				return -EFAULT;
 			}
@@ -1264,7 +1264,7 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 					/* Print log if trying to enter
 					 * suspend for too long
 					 */
-					pr_info("VENC blocked by suspend");
+					pr_no_info("VENC blocked by suspend");
 					suspend_block_cnt = 0;
 				}
 				usleep_range(1000, 2000);
@@ -1316,7 +1316,7 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 				}
 			}
 
-			/* pr_info("VENC cur_job freq %u, %llu, %d",
+			/* pr_no_info("VENC cur_job freq %u, %llu, %d",
 			 *	target_freq, target_freq_64, enc_step_size);
 			 */
 
@@ -1361,7 +1361,7 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 			 *	 current->pid);
 			 */
 			++gLockTimeOutCount;
-			pr_info("VENC_LOCKHW Ret %d Count %d First %d Lock %d ,Try %d Timeout %d",
+			pr_no_info("VENC_LOCKHW Ret %d Count %d First %d Lock %d ,Try %d Timeout %d",
 				eValRet,
 				gLockTimeOutCount,
 				FirstUseEncHW,
@@ -1369,9 +1369,9 @@ static long vcodec_lockhw_venc(struct VAL_HW_LOCK_T *pHWLock, char *bLockedHW)
 				pHWLock->eDriverType,
 				HWLockEvent.u4TimeoutMs);
 			if (gLockTimeOutCount > 30) {
-				pr_info("VENC_LOCKHW %d fail 30 times",
+				pr_no_info("VENC_LOCKHW %d fail 30 times",
 						current->pid);
-				pr_info("no TO 0x%lx,%lx,0x%lx,type:%d\n",
+				pr_no_info("no TO 0x%lx,%lx,0x%lx,type:%d\n",
 				(unsigned long)CodecHWLock.pvHandle,
 				pmem_user_v2p_video(handle),
 				handle,
@@ -1421,7 +1421,7 @@ static long vcodec_lockhw(unsigned long arg)
 	ret = copy_from_user(&rHWLock, user_data_addr, sizeof(struct
 							VAL_HW_LOCK_T));
 	if (ret) {
-		pr_info("[VCODEC] LOCKHW copy_from_user failed: %lu\n",
+		pr_no_info("[VCODEC] LOCKHW copy_from_user failed: %lu\n",
 				ret);
 		return -EFAULT;
 	}
@@ -1447,7 +1447,7 @@ static long vcodec_lockhw(unsigned long arg)
 
 		if (bLockedHW == VAL_FALSE) {
 			handle = (unsigned long)rHWLock.pvHandle;
-			pr_info(ENC_LOCK_LOG,
+			pr_no_info(ENC_LOCK_LOG,
 				current->pid,
 				(unsigned long)CodecHWLock.pvHandle,
 				pmem_user_v2p_video(handle),
@@ -1468,7 +1468,7 @@ static long vcodec_lockhw(unsigned long arg)
 
 		/* pr_no_debug("VCODEC_LOCKHWed - tid = %d\n", current->pid); */
 	} else {
-		pr_info("[WARNING] VCODEC_LOCKHW Unknown instance type %d timeout %u\n",
+		pr_no_info("[WARNING] VCODEC_LOCKHW Unknown instance type %d timeout %u\n",
 			rHWLock.eDriverType,
 			rHWLock.u4TimeoutMs);
 		return -EFAULT;
@@ -1493,7 +1493,7 @@ static long vcodec_lockhw(unsigned long arg)
 		u4VcodecSel = 0x4;
 	} else {
 		u4VcodecSel = 0x0;
-		pr_info("[WARNING] Unknown driver type\n");
+		pr_no_info("[WARNING] Unknown driver type\n");
 	}
 
 	if (VDO_HW_READ(KVA_VDEC_GCON_BASE + 0x20) == 0) {
@@ -1501,7 +1501,7 @@ static long vcodec_lockhw(unsigned long arg)
 			VDO_HW_WRITE(KVA_VDEC_GCON_BASE + 0x20, u4VcodecSel);
 		} while (VDO_HW_READ(KVA_VDEC_GCON_BASE + 0x20) != u4VcodecSel);
 	} else {
-		pr_info("[WARNING] VCODEC_SEL is not 0\n");
+		pr_no_info("[WARNING] VCODEC_SEL is not 0\n");
 	}
 	if (u4VcodecSel == 0x2)
 		VDO_HW_WRITE(KVA_VDEC_GCON_BASE + 0x10, 0x1);
@@ -1530,7 +1530,7 @@ static long vcodec_unlockhw(unsigned long arg)
 	ret = copy_from_user(&rHWLock, user_data_addr,
 				sizeof(struct VAL_HW_LOCK_T));
 	if (ret) {
-		pr_info("[VCODEC] UNLOCKHW, copy_from_user failed: %lu\n",
+		pr_no_info("[VCODEC] UNLOCKHW, copy_from_user failed: %lu\n",
 				ret);
 		return -EFAULT;
 	}
@@ -1552,7 +1552,7 @@ static long vcodec_unlockhw(unsigned long arg)
 			mutex_lock(&VcodecDVFSLock);
 			cur_job = codec_jobs;
 			if (cur_job == 0) {
-				pr_info("VDEC job is null when unlock, error");
+				pr_no_info("VDEC job is null when unlock, error");
 			} else if (cur_job->handle ==
 				CodecHWLock.pvHandle) {
 				cur_job->end = get_time_us();
@@ -1560,7 +1560,7 @@ static long vcodec_unlockhw(unsigned long arg)
 				codec_jobs = codec_jobs->next;
 				kfree(cur_job);
 			} else {
-				pr_info("VCODEC wrong job at dec done %p, %p",
+				pr_no_info("VCODEC wrong job at dec done %p, %p",
 					cur_job->handle,
 					CodecHWLock.pvHandle);
 			}
@@ -1584,8 +1584,8 @@ static long vcodec_unlockhw(unsigned long arg)
 			CodecHWLock.pvHandle = 0;
 			CodecHWLock.eDriverType = VAL_DRIVER_TYPE_NONE;
 		} else { /* Not current owner */
-			pr_info("[ERROR] VDEC_UNLOCKHW\n");
-			pr_info("VDEC Not owner trying to unlock 0x%lx\n",
+			pr_no_info("[ERROR] VDEC_UNLOCKHW\n");
+			pr_no_info("VDEC Not owner trying to unlock 0x%lx\n",
 					pmem_user_v2p_video(handle));
 			mutex_unlock(&HWLock);
 			return -EFAULT;
@@ -1608,7 +1608,7 @@ static long vcodec_unlockhw(unsigned long arg)
 				mutex_lock(&VcodecDVFSLock);
 				cur_job = codec_jobs;
 			if (cur_job == 0) {
-				pr_info("VENC job is null when unlock, error");
+				pr_no_info("VENC job is null when unlock, error");
 			} else if (cur_job->handle ==
 				CodecHWLock.pvHandle) {
 				cur_job->end = get_time_us();
@@ -1616,7 +1616,7 @@ static long vcodec_unlockhw(unsigned long arg)
 				codec_jobs = codec_jobs->next;
 				kfree(cur_job);
 			} else {
-				pr_info("VCODEC wrong job at enc done %p, %p",
+				pr_no_info("VCODEC wrong job at enc done %p, %p",
 					cur_job->handle,
 					CodecHWLock.pvHandle);
 			}
@@ -1636,8 +1636,8 @@ static long vcodec_unlockhw(unsigned long arg)
 			CodecHWLock.eDriverType = VAL_DRIVER_TYPE_NONE;
 		} else { /* Not current owner */
 			/* [TODO] error handling */
-			pr_info("[ERROR] VENC_UNLOCKHW\n");
-			pr_info("VENC Not owner trying to unlock 0x%lx\n",
+			pr_no_info("[ERROR] VENC_UNLOCKHW\n");
+			pr_no_info("VENC Not owner trying to unlock 0x%lx\n",
 				pmem_user_v2p_video(handle));
 			mutex_unlock(&HWLock);
 			return -EFAULT;
@@ -1649,7 +1649,7 @@ static long vcodec_unlockhw(unsigned long arg)
 		eValRet = eVideoSetEvent(&HWLockEvent,
 					sizeof(struct VAL_EVENT_T));
 	} else {
-		pr_info("[WARNING] VCODEC_UNLOCKHW Unknown instance\n");
+		pr_no_info("[WARNING] VCODEC_UNLOCKHW Unknown instance\n");
 		return -EFAULT;
 	}
 
@@ -1674,7 +1674,7 @@ static long vcodec_waitisr(unsigned long arg)
 	ret = copy_from_user(&val_isr, user_data_addr,
 				sizeof(struct VAL_ISR_T));
 	if (ret) {
-		pr_info("[VCODEC] WAITISR, copy_from_user failed: %lu\n",
+		pr_no_info("[VCODEC] WAITISR, copy_from_user failed: %lu\n",
 				ret);
 		return -EFAULT;
 	}
@@ -1696,7 +1696,7 @@ static long vcodec_waitisr(unsigned long arg)
 		mutex_unlock(&HWLock);
 
 		if (bLockedHW == VAL_FALSE) {
-			pr_info("VDEC_WAITISR, DO NOT have HWLock, fail\n");
+			pr_no_info("VDEC_WAITISR, DO NOT have HWLock, fail\n");
 			return -EFAULT;
 		}
 
@@ -1709,7 +1709,7 @@ static long vcodec_waitisr(unsigned long arg)
 		if (eValRet == VAL_RESULT_INVALID_ISR) {
 			return -2;
 		} else if (eValRet == VAL_RESULT_RESTARTSYS) {
-			pr_info("VDEC_WAITISR, ERESTARTSYS\n");
+			pr_no_info("VDEC_WAITISR, ERESTARTSYS\n");
 			return -ERESTARTSYS;
 		}
 	} else if (val_isr.eDriverType == VAL_DRIVER_TYPE_H264_ENC) {
@@ -1725,7 +1725,7 @@ static long vcodec_waitisr(unsigned long arg)
 		mutex_unlock(&HWLock);
 
 		if (bLockedHW == VAL_FALSE) {
-			pr_info("VENC_WAITISR, DO NOT have HWLock, fail\n");
+			pr_no_info("VENC_WAITISR, DO NOT have HWLock, fail\n");
 			return -EFAULT;
 		}
 
@@ -1738,7 +1738,7 @@ static long vcodec_waitisr(unsigned long arg)
 		if (eValRet == VAL_RESULT_INVALID_ISR) {
 			return -2;
 		} else if (eValRet == VAL_RESULT_RESTARTSYS) {
-			pr_info("VENC_WAITISR, ERESTARTSYS\n");
+			pr_no_info("VENC_WAITISR, ERESTARTSYS\n");
 			return -ERESTARTSYS;
 		}
 
@@ -1747,13 +1747,13 @@ static long vcodec_waitisr(unsigned long arg)
 			ret = copy_to_user(user_data_addr, &val_isr,
 					sizeof(struct VAL_ISR_T));
 			if (ret) {
-				pr_info("VENC_WAITISR, cp status fail: %lu",
+				pr_no_info("VENC_WAITISR, cp status fail: %lu",
 						ret);
 				return -EFAULT;
 			}
 		}
 	} else {
-		pr_info("[WARNING] VCODEC_WAITISR Unknown instance\n");
+		pr_no_info("[WARNING] VCODEC_WAITISR Unknown instance\n");
 		return -EFAULT;
 	}
 
@@ -1852,7 +1852,7 @@ static long vcodec_set_frame_info(unsigned long arg)
 			/* bits/s to mbytes/s */
 			emi_bw = emi_bw / (1024*1024) / 8;
 
-			/* pr_info("VDEC mbytes/s emi_bw %ld", emi_bw); */
+			/* pr_no_info("VDEC mbytes/s emi_bw %ld", emi_bw); */
 			mtk_pm_qos_update_request(&vcodec_qos_request, (int)emi_bw);
 			gVDECBWRequested = 1;
 		}
@@ -1889,7 +1889,7 @@ static long vcodec_set_frame_info(unsigned long arg)
 			/* bits/s to mbytes/s */
 			emi_bw = emi_bw / (1024*1024) / 8;
 
-			/* pr_info("VENC mbytes/s emi_bw %ld", emi_bw); */
+			/* pr_no_info("VENC mbytes/s emi_bw %ld", emi_bw); */
 			mtk_pm_qos_update_request(&vcodec_qos_request2,
 						(int)emi_bw);
 			gVENCBWRequested = 1;
@@ -1918,19 +1918,19 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 	switch (cmd) {
 	case VCODEC_SET_THREAD_ID:
 	{
-		pr_info("[INFO] VCODEC_SET_THREAD_ID empty");
+		pr_no_info("[INFO] VCODEC_SET_THREAD_ID empty");
 	}
 	break;
 
 	case VCODEC_ALLOC_NON_CACHE_BUFFER:
 	{
-		pr_info("[INFO] VCODEC_ALLOC_NON_CACHE_BUFFER  empty");
+		pr_no_info("[INFO] VCODEC_ALLOC_NON_CACHE_BUFFER  empty");
 	}
 	break;
 
 	case VCODEC_FREE_NON_CACHE_BUFFER:
 	{
-		pr_info("[INFO] VCODEC_FREE_NON_CACHE_BUFFER  empty");
+		pr_no_info("[INFO] VCODEC_FREE_NON_CACHE_BUFFER  empty");
 	}
 	break;
 
@@ -1948,7 +1948,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 		ret = copy_to_user(user_data_addr, &gu4DecEMICounter,
 				sizeof(unsigned int));
 		if (ret) {
-			pr_info("INC_DEC_EMI_USER, copy_to_user fail: %lu",
+			pr_no_info("INC_DEC_EMI_USER, copy_to_user fail: %lu",
 					ret);
 			mutex_unlock(&DecEMILock);
 			return -EFAULT;
@@ -1975,7 +1975,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 		ret = copy_to_user(user_data_addr, &gu4DecEMICounter,
 				sizeof(unsigned int));
 		if (ret) {
-			pr_info("DEC_DEC_EMI_USER, copy_to_user fail: %lu",
+			pr_no_info("DEC_DEC_EMI_USER, copy_to_user fail: %lu",
 					ret);
 			mutex_unlock(&DecEMILock);
 			return -EFAULT;
@@ -2002,7 +2002,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 		ret = copy_to_user(user_data_addr, &gu4EncEMICounter,
 				sizeof(unsigned int));
 		if (ret) {
-			pr_info("INC_ENC_EMI_USER, copy_to_user fail: %lu",
+			pr_no_info("INC_ENC_EMI_USER, copy_to_user fail: %lu",
 					ret);
 			mutex_unlock(&EncEMILock);
 			return -EFAULT;
@@ -2023,13 +2023,13 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 
 		mutex_lock(&EncEMILock);
 		gu4EncEMICounter--;
-		pr_info("[VCODEC] ENC_EMI_USER = %d\n",
+		pr_no_info("[VCODEC] ENC_EMI_USER = %d\n",
 				gu4EncEMICounter);
 		user_data_addr = (unsigned char *)arg;
 		ret = copy_to_user(user_data_addr, &gu4EncEMICounter,
 					sizeof(unsigned int));
 		if (ret) {
-			pr_info("DEC_ENC_EMI_USER, copy_to_user fail: %lu",
+			pr_no_info("DEC_ENC_EMI_USER, copy_to_user fail: %lu",
 					ret);
 			mutex_unlock(&EncEMILock);
 			return -EFAULT;
@@ -2046,7 +2046,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 	{
 		ret = vcodec_lockhw(arg);
 		if (ret) {
-			pr_info("[ERROR] VCODEC_LOCKHW failed! %lu\n",
+			pr_no_info("[ERROR] VCODEC_LOCKHW failed! %lu\n",
 					ret);
 			return ret;
 		}
@@ -2057,7 +2057,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 	{
 		ret = vcodec_unlockhw(arg);
 		if (ret) {
-			pr_info("[ERROR] VCODEC_UNLOCKHW failed! %lu\n",
+			pr_no_info("[ERROR] VCODEC_UNLOCKHW failed! %lu\n",
 					ret);
 			return ret;
 		}
@@ -2066,13 +2066,13 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 
 	case VCODEC_INC_PWR_USER:
 	{
-		/* pr_info("[INFO] VCODEC_INC_PWR_USER empty"); */
+		/* pr_no_info("[INFO] VCODEC_INC_PWR_USER empty"); */
 	}
 	break;
 
 	case VCODEC_DEC_PWR_USER:
 	{
-		/* pr_info("[INFO] VCODEC_DEC_PWR_USER empty"); */
+		/* pr_no_info("[INFO] VCODEC_DEC_PWR_USER empty"); */
 	}
 	break;
 
@@ -2080,7 +2080,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 	{
 		ret = vcodec_waitisr(arg);
 		if (ret) {
-			pr_info("[ERROR] VCODEC_WAITISR failed! %lu\n",
+			pr_no_info("[ERROR] VCODEC_WAITISR failed! %lu\n",
 					ret);
 			return ret;
 		}
@@ -2089,25 +2089,25 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 
 	case VCODEC_INITHWLOCK:
 	{
-		pr_info("[INFO] VCODEC_INITHWLOCK empty");
+		pr_no_info("[INFO] VCODEC_INITHWLOCK empty");
 	}
 	break;
 
 	case VCODEC_DEINITHWLOCK:
 	{
-		pr_info("[INFO] VCODEC_DEINITHWLOCK empty");
+		pr_no_info("[INFO] VCODEC_DEINITHWLOCK empty");
 	}
 	break;
 
 	case VCODEC_GET_CPU_LOADING_INFO:
 	{
-		pr_info("[INFO] VCODEC_GET_CPU_LOADING empty");
+		pr_no_info("[INFO] VCODEC_GET_CPU_LOADING empty");
 	}
 	break;
 
 	case VCODEC_GET_CORE_LOADING:
 	{
-		pr_info("[INFO] VCODEC_GET_CORE_LOADING empty");
+		pr_no_info("[INFO] VCODEC_GET_CORE_LOADING empty");
 	}
 	break;
 
@@ -2122,7 +2122,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 		ret = copy_to_user(user_data_addr, &temp_nr_cpu_ids,
 				sizeof(int));
 		if (ret) {
-			pr_info("GET_CORE_NUMBER, copy_to_user failed: %lu",
+			pr_no_info("GET_CORE_NUMBER, copy_to_user failed: %lu",
 					ret);
 			return -EFAULT;
 		}
@@ -2134,7 +2134,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 
 	case VCODEC_SET_CPU_OPP_LIMIT:
 	{
-		pr_info("[INFO] VCODEC_SET_CPU_OPP_LIMIT empty");
+		pr_no_info("[INFO] VCODEC_SET_CPU_OPP_LIMIT empty");
 	}
 	break;
 
@@ -2156,7 +2156,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 		ret = copy_from_user(&rIncLogCount, user_data_addr,
 				sizeof(char));
 		if (ret) {
-			pr_info("SET_LOG_COUNT, copy_from_user failed: %lu",
+			pr_no_info("SET_LOG_COUNT, copy_from_user failed: %lu",
 					ret);
 			mutex_unlock(&LogCountLock);
 			return -EFAULT;
@@ -2195,7 +2195,7 @@ static long vcodec_unlocked_ioctl(struct file *file, unsigned int cmd,
 	break;
 	default:
 	{
-		pr_info("[ERROR] vcodec_ioctl default case %u\n", cmd);
+		pr_no_info("[ERROR] vcodec_ioctl default case %u\n", cmd);
 	}
 	break;
 
@@ -2764,7 +2764,7 @@ static int vcodec_open(struct inode *inode, struct file *file)
 	mutex_lock(&DriverOpenCountLock);
 	Driver_Open_Count++;
 
-	pr_info("%s pid = %d, Driver_Open_Count %d\n",
+	pr_no_info("%s pid = %d, Driver_Open_Count %d\n",
 			__func__, current->pid, Driver_Open_Count);
 	mutex_unlock(&DriverOpenCountLock);
 
@@ -2789,7 +2789,7 @@ static int vcodec_release(struct inode *inode, struct file *file)
 	/* dump_stack(); */
 	pr_no_debug("%s, curr_tid =%d\n", __func__, current->pid);
 	mutex_lock(&DriverOpenCountLock);
-	pr_info("%s pid = %d, Driver_Open_Count %d\n",
+	pr_no_info("%s pid = %d, Driver_Open_Count %d\n",
 			__func__, current->pid, Driver_Open_Count);
 	Driver_Open_Count--;
 
@@ -2800,11 +2800,11 @@ static int vcodec_release(struct inode *inode, struct file *file)
 
 		/* check if someone didn't unlockHW */
 		if (CodecHWLock.pvHandle != 0) {
-			pr_info("err %s %d, type = %d, 0x%lx\n",
+			pr_no_info("err %s %d, type = %d, 0x%lx\n",
 				__func__, current->pid,
 				CodecHWLock.eDriverType,
 				(unsigned long)CodecHWLock.pvHandle);
-			pr_info("err VCODEC_SEL 0x%x\n",
+			pr_no_info("err VCODEC_SEL 0x%x\n",
 				VDO_HW_READ(KVA_VDEC_GCON_BASE + 0x20));
 
 			/* power off */
@@ -2944,7 +2944,7 @@ static int vcodec_mmap(struct file *file, struct vm_area_struct *vma)
 		}
 
 		if (u4I == VCODEC_INST_NUM_x_10) {
-			pr_info("mmap region error: Len(0x%lx),pfn(0x%lx)",
+			pr_no_info("mmap region error: Len(0x%lx),pfn(0x%lx)",
 				 (unsigned long)length, pfn);
 			return -EAGAIN;
 		}
@@ -3007,7 +3007,7 @@ static struct dev_pm_domain mt_venc_pm_domain = {
 static int vcodec_suspend(struct platform_device *pDev, pm_message_t state)
 {
 	if (CodecHWLock.pvHandle != 0) {
-		pr_info("%s fail due to videocodec activity", __func__);
+		pr_no_info("%s fail due to videocodec activity", __func__);
 		return -EBUSY;
 	}
 	pr_no_debug("%s ok", __func__);
@@ -3016,7 +3016,7 @@ static int vcodec_suspend(struct platform_device *pDev, pm_message_t state)
 
 static int vcodec_resume(struct platform_device *pDev)
 {
-	pr_info("%s ok", __func__);
+	pr_no_info("%s ok", __func__);
 	return 0;
 }
 
@@ -3034,14 +3034,14 @@ static int vcodec_suspend_notifier(struct notifier_block *nb,
 {
 	int wait_cnt = 0;
 
-	pr_info("%s ok action = %ld", __func__, action);
+	pr_no_info("%s ok action = %ld", __func__, action);
 	switch (action) {
 	case PM_SUSPEND_PREPARE:
 		is_entering_suspend = 1;
 		while (CodecHWLock.pvHandle != 0) {
 			wait_cnt++;
 			if (wait_cnt > 90) {
-				pr_info("%s waiting %p %d",
+				pr_no_info("%s waiting %p %d",
 					__func__, CodecHWLock.pvHandle,
 					(int)CodecHWLock.eDriverType);
 				/* Current task is still not finished, don't
@@ -3085,7 +3085,7 @@ static int vcodec_probe(struct platform_device *dev)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC] Can't Get Major number\n");
+		pr_no_info("[VCODEC] Can't Get Major number\n");
 	}
 
 	vcodec_cdev = cdev_alloc();
@@ -3097,13 +3097,13 @@ static int vcodec_probe(struct platform_device *dev)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC] Can't add Vcodec Device\n");
+		pr_no_info("[VCODEC] Can't add Vcodec Device\n");
 	}
 
 	vcodec_class = class_create(THIS_MODULE, VCODEC_DEVNAME);
 	if (IS_ERR(vcodec_class)) {
 		ret = PTR_ERR(vcodec_class);
-		pr_info("[VCODEC] Unable to create class err = %d ",
+		pr_no_info("[VCODEC] Unable to create class err = %d ",
 				 ret);
 		return ret;
 	}
@@ -3122,13 +3122,13 @@ static int vcodec_probe(struct platform_device *dev)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC] Can't add Vcodec Device 2\n");
+		pr_no_info("[VCODEC] Can't add Vcodec Device 2\n");
 	}
 
 	vcodec_class2 = class_create(THIS_MODULE, VCODEC_DEVNAME2);
 	if (IS_ERR(vcodec_class2)) {
 		ret = PTR_ERR(vcodec_class2);
-		pr_info("[VCODEC] Unable to create class 2, err = %d", ret);
+		pr_no_info("[VCODEC] Unable to create class 2, err = %d", ret);
 		return ret;
 	}
 
@@ -3145,7 +3145,7 @@ static int vcodec_probe(struct platform_device *dev)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] error to request dec irq\n");
+		pr_no_info("[VCODEC][ERROR] error to request dec irq\n");
 	} else {
 		pr_no_debug("[VCODEC] success to request dec irq: %d\n",
 				VDEC_IRQ_ID);
@@ -3168,44 +3168,44 @@ static int vcodec_probe(struct platform_device *dev)
 #ifndef CONFIG_MTK_SMI_EXT
 	clk_MT_CG_SMI_COMM0 = devm_clk_get(&dev->dev, "MT_CG_MM_SMI_COMM0");
 	if (IS_ERR(clk_MT_CG_SMI_COMMON)) {
-		pr_info("[VCODEC] Unable to get MT_CG_MM_SMI_COMM0");
+		pr_no_info("[VCODEC] Unable to get MT_CG_MM_SMI_COMM0");
 		return PTR_ERR(clk_MT_CG_SMI_COMM0);
 	}
 
 	clk_MT_CG_SMI_COMM1 = devm_clk_get(&dev->dev, "MT_CG_MM_SMI_COMM1");
 	if (IS_ERR(clk_MT_CG_SMI_COMM1)) {
-		pr_info("[VCODEC] Unable to get MT_CG_SMI_COMM1");
+		pr_no_info("[VCODEC] Unable to get MT_CG_SMI_COMM1");
 		return PTR_ERR(clk_MT_CG_SMI_COMM1);
 	}
 
 	clk_MT_CG_SMI_COMMON = devm_clk_get(&dev->dev, "MT_CG_MM_SMI_COMMON");
 	if (IS_ERR(clk_MT_CG_SMI_COMMON)) {
-		pr_info("[VCODEC] Unable to get MT_CG_MM_SMI_COMMON");
+		pr_no_info("[VCODEC] Unable to get MT_CG_MM_SMI_COMMON");
 		return PTR_ERR(clk_MT_CG_SMI_COMMON);
 	}
 #endif
 
 	clk_MT_CG_VDEC = devm_clk_get(&dev->dev, "MT_CG_VDEC");
 	if (IS_ERR(clk_MT_CG_VDEC)) {
-		pr_info("[VCODEC] Unable to get MT_CG_VDEC");
+		pr_no_info("[VCODEC] Unable to get MT_CG_VDEC");
 		return PTR_ERR(clk_MT_CG_VDEC);
 	}
 
 	clk_MT_CG_VENC = devm_clk_get(&dev->dev, "MT_CG_VENC");
 	if (IS_ERR(clk_MT_CG_VENC)) {
-		pr_info("[VCODEC] Unable to get MT_CG_VENC");
+		pr_no_info("[VCODEC] Unable to get MT_CG_VENC");
 		return PTR_ERR(clk_MT_CG_VENC);
 	}
 
 	clk_MT_SCP_SYS_VCODEC = devm_clk_get(&dev->dev, "MT_SCP_SYS_VCODEC");
 	if (IS_ERR(clk_MT_SCP_SYS_VCODEC)) {
-		pr_info("[VCODEC] Unable to get MT_SCP_SYS_VCODEC");
+		pr_no_info("[VCODEC] Unable to get MT_SCP_SYS_VCODEC");
 		return PTR_ERR(clk_MT_SCP_SYS_VCODEC);
 	}
 
 	clk_MT_SCP_SYS_DISP = devm_clk_get(&dev->dev, "MT_SCP_SYS_DIS");
 	if (IS_ERR(clk_MT_SCP_SYS_DISP)) {
-		pr_info("[VCODEC] Unable to get MT_SCP_SYS_DIS");
+		pr_no_info("[VCODEC] Unable to get MT_SCP_SYS_DIS");
 		return PTR_ERR(clk_MT_SCP_SYS_DISP);
 	}
 
@@ -3428,7 +3428,7 @@ static int __init vcodec_driver_init(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] create vcodec hwlock event error\n");
+		pr_no_info("[VCODEC][ERROR] create vcodec hwlock event error\n");
 	}
 
 #ifdef VCODEC_DVFS_V2
@@ -3450,7 +3450,7 @@ static int __init vcodec_driver_init(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] create dec isr event error\n");
+		pr_no_info("[VCODEC][ERROR] create dec isr event error\n");
 	}
 
 	spin_lock_irqsave(&EncIsrLock, ulFlags);
@@ -3464,7 +3464,7 @@ static int __init vcodec_driver_init(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] create enc isr event error\n");
+		pr_no_info("[VCODEC][ERROR] create enc isr event error\n");
 	}
 #if USE_WAKELOCK == 0
 	is_entering_suspend = 0;
@@ -3536,7 +3536,7 @@ static void __exit vcodec_driver_exit(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] close dec hwlock event error\n");
+		pr_no_info("[VCODEC][ERROR] close dec hwlock event error\n");
 	}
 
 	eValHWLockRet = eVideoCloseEvent(&HWLockEvent,
@@ -3545,7 +3545,7 @@ static void __exit vcodec_driver_exit(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] close enc hwlock event error\n");
+		pr_no_info("[VCODEC][ERROR] close enc hwlock event error\n");
 	}
 
 	/* MT6589_IsrEvent part */
@@ -3555,7 +3555,7 @@ static void __exit vcodec_driver_exit(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] close dec isr event error\n");
+		pr_no_info("[VCODEC][ERROR] close dec isr event error\n");
 	}
 
 	eValHWLockRet = eVideoCloseEvent(&EncIsrEvent,
@@ -3564,7 +3564,7 @@ static void __exit vcodec_driver_exit(void)
 		/* Add one line comment for avoid kernel coding style,
 		 * WARNING:BRACES:
 		 */
-		pr_info("[VCODEC][ERROR] close enc isr event error\n");
+		pr_no_info("[VCODEC][ERROR] close enc isr event error\n");
 	}
 
 #ifdef CONFIG_MTK_HIBERNATION

@@ -528,7 +528,7 @@ int mcdi_governor_select(int cpu, int cluster_idx)
 		if (val >= BOOT_TIME_LIMIT) {
 			boot_time_check = 1;
 			mcdi_ap_ready();
-			pr_info("MCDI bootup check: PASS\n");
+			pr_no_info("MCDI bootup check: PASS\n");
 		} else {
 			return MCDI_STATE_WFI;
 		}
@@ -738,7 +738,7 @@ void set_mcdi_s_state(int state)
 		return;
 	}
 
-	pr_info("%s = %d\n", __func__, state);
+	pr_no_info("%s = %d\n", __func__, state);
 
 	spin_lock_irqsave(&mcdi_feature_stat_spin_lock, flags);
 

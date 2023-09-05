@@ -13,16 +13,16 @@
 #define DCM_DEFAULT (-1)
 
 #define TAG	"[Power/dcm] "
-#define dcm_pr_notice(fmt, args...)			\
-	pr_notice(TAG fmt, ##args)
+#define dcm_pr_no_notice(fmt, args...)			\
+	pr_no_notice(TAG fmt, ##args)
 #define dcm_pr_info_limit(fmt, args...)			\
 	pr_info_ratelimited(TAG fmt, ##args)
-#define dcm_pr_info(fmt, args...)			\
-	pr_info(TAG fmt, ##args)
+#define dcm_pr_no_info(fmt, args...)			\
+	pr_no_info(TAG fmt, ##args)
 #define dcm_pr_dbg(fmt, args...)			\
 	do {						\
 		if (dcm_debug)				\
-			pr_info(TAG fmt, ##args);	\
+			pr_no_info(TAG fmt, ##args);	\
 	} while (0)
 
 /** macro **/

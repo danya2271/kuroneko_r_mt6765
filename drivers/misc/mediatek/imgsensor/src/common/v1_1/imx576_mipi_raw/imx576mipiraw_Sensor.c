@@ -55,7 +55,7 @@
 static kal_uint32 streaming_control(kal_bool enable);
 static kal_uint16 imx576_HDR_synthesis = 1;
 
-#define LOG_INF(format, args...) pr_debug(PFX "[%s] " format, __func__, ##args)
+#define LOG_INF(format, args...) pr_no_debug(PFX "[%s] " format, __func__, ##args)
 static DEFINE_SPINLOCK(imgsensor_drv_lock);
 
 static struct imgsensor_info_struct imgsensor_info = {
@@ -346,7 +346,7 @@ static kal_uint16 imx576_table_write_cmos_sensor(kal_uint16 *para,
 		GFP_KERNEL);
 
 	if (puSendCmd == NULL) {
-		pr_info("allocate mem failed\n");
+		pr_no_info("allocate mem failed\n");
 		return -ENOMEM;
 	}
 
@@ -2920,7 +2920,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			*feature_return_para_32 = 2; /*BINNING_AVERAGED*/
 			break;
 		}
-		pr_debug("SENSOR_FEATURE_GET_BINNING_TYPE AE_binning_type:%d\n",
+		pr_no_debug("SENSOR_FEATURE_GET_BINNING_TYPE AE_binning_type:%d\n",
 			*feature_return_para_32);
 
 		*feature_para_len = 4;

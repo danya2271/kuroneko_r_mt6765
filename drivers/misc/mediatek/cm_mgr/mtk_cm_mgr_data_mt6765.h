@@ -69,7 +69,7 @@ static int vcore_power_array_size(int idx)
 		return VCORE_POWER_ARRAY_SIZE(1);
 	}
 
-	pr_info("#@# %s(%d) warning value %d\n", __func__, __LINE__, idx);
+	pr_no_info("#@# %s(%d) warning value %d\n", __func__, __LINE__, idx);
 	return 0;
 };
 
@@ -82,7 +82,7 @@ static int *vcore_power_gain_ptr(int idx)
 		return VCORE_POWER_GAIN_PTR(1);
 	}
 
-	pr_info("#@# %s(%d) warning value %d\n", __func__, __LINE__, idx);
+	pr_no_info("#@# %s(%d) warning value %d\n", __func__, __LINE__, idx);
 	return NULL;
 };
 

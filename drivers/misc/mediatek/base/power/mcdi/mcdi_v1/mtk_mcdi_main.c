@@ -519,7 +519,7 @@ static int mcdi_procfs_init(void)
 	mcdi_dir = proc_mkdir(mcdi_procfs_dir_name, NULL);
 
 	if (!mcdi_dir) {
-		pr_notice("fail to create /proc/mcdi @ %s()\n", __func__);
+		pr_no_notice("fail to create /proc/mcdi @ %s()\n", __func__);
 		return -ENOMEM;
 	}
 
@@ -858,7 +858,7 @@ subsys_initcall(mcdi_sysram_init);
 static int __init mcdi_init(void)
 {
 	/* Activate MCDI after SMP */
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 
 	/* Register CPU up/down callbacks */
 	mcdi_hotplug_cb_init();

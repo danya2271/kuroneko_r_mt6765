@@ -182,7 +182,7 @@ static void *__ondiemet_trace_seq_next(struct seq_file *seqf, loff_t *offset)
 	struct ondiemet_log_req *next_req;
 
 	if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-		pr_debug("[met] __ondiemet_trace_seq_next: pid: %d\n", current->pid);
+		pr_no_debug("[met] __ondiemet_trace_seq_next: pid: %d\n", current->pid);
 
 	if (__ondiemet_log_req_closed())
 		return NULL;
@@ -207,7 +207,7 @@ static void *ondiemet_trace_seq_start(struct seq_file *seqf, loff_t *offset)
 	void *ret;
 
 	if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE) {
-		pr_debug("[met] ondiemet_trace_seq_start: locked_pid: %d, pid: %d, offset: %llu\n",
+		pr_no_debug("[met] ondiemet_trace_seq_start: locked_pid: %d, pid: %d, offset: %llu\n",
 			 trace_owner_pid, current->pid, *offset);
 	}
 
@@ -227,7 +227,7 @@ static void *ondiemet_trace_seq_start(struct seq_file *seqf, loff_t *offset)
 static void *ondiemet_trace_seq_next(struct seq_file *seqf, void *p, loff_t *offset)
 {
 	if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-		pr_debug("[met] ondiemet_trace_seq_next: pid: %d\n", current->pid);
+		pr_no_debug("[met] ondiemet_trace_seq_next: pid: %d\n", current->pid);
 
 	(*offset)++;
 	return __ondiemet_trace_seq_next(seqf, offset);
@@ -243,7 +243,7 @@ static int ondiemet_trace_seq_show(struct seq_file *seqf, void *p)
 	int ret;
 
 	if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-		pr_debug("[met] ondiemet_trace_seq_show: pid: %d\n", current->pid);
+		pr_no_debug("[met] ondiemet_trace_seq_show: pid: %d\n", current->pid);
 
 	if (req->num >= seqf->size) {
 		l_req = kmalloc(sizeof(*req), GFP_KERNEL);
@@ -259,7 +259,7 @@ static int ondiemet_trace_seq_show(struct seq_file *seqf, void *p)
 		req = l_req;
 
 		if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-			pr_debug("[met] ondiemet_trace_seq_show: split request\n");
+			pr_no_debug("[met] ondiemet_trace_seq_show: split request\n");
 	}
 
 	ret = seq_write(seqf, req->src, req->num);
@@ -270,7 +270,7 @@ static int ondiemet_trace_seq_show(struct seq_file *seqf, void *p)
 			__ondiemet_log_req_undeq(req);
 		} else {
 			if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-				pr_debug("[met] ondiemet_trace_seq_show: reading trace record failed, some data may be lost or corrupted\n");
+				pr_no_debug("[met] ondiemet_trace_seq_show: reading trace record failed, some data may be lost or corrupted\n");
 			__ondiemet_log_req_fini(req);
 		}
 		return 0;
@@ -283,7 +283,7 @@ static int ondiemet_trace_seq_show(struct seq_file *seqf, void *p)
 static void ondiemet_trace_seq_stop(struct seq_file *seqf, void *p)
 {
 	if (ondiemet_trace_run == ONDIEMET_LOG_DEBUG_MODE)
-		pr_debug("[met] ondiemet_trace_seq_stop: pid: %d\n", current->pid);
+		pr_no_debug("[met] ondiemet_trace_seq_stop: pid: %d\n", current->pid);
 
 	mutex_lock(&lock_trace_owner_pid);
 	if (current->pid == trace_owner_pid) {
@@ -458,7 +458,7 @@ static ssize_t ondiemet_log_run_store(struct device *dev, struct device_attribut
 		if (prev_run_state != ONDIEMET_LOG_DEBUG_MODE) {
 			ret = device_create_file(dev, &dev_attr_ondiemet_log_write);
 			if (ret != 0)
-				pr_debug("[met] can not create device node: ondiemet_log_write\n");
+				pr_no_debug("[met] can not create device node: ondiemet_log_write\n");
 		}
 	}
 
@@ -520,7 +520,7 @@ int ondiemet_log_manager_init(struct device *dev)
 	ondiemet_trace_run = __ondiemet_log_req_working();
 	ret = device_create_file(dev, &dev_attr_ondiemet_log_run);
 	if (ret != 0) {
-		pr_debug("[met] can not create device node: ondiemet_log_run\n");
+		pr_no_debug("[met] can not create device node: ondiemet_log_run\n");
 		return ret;
 	}
 

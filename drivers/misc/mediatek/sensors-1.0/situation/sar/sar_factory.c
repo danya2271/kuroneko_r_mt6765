@@ -43,7 +43,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 				 _IOC_SIZE(cmd));
 
 	if (err) {
-		pr_err("access error: %08X, (%2d, %2d)\n", cmd,
+		pr_no_err("access error: %08X, (%2d, %2d)\n", cmd,
 			    _IOC_DIR(cmd), _IOC_SIZE(cmd));
 		return -EFAULT;
 	}
@@ -56,14 +56,14 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    sar_factory.fops->enable_sensor != NULL) {
 			err = sar_factory.fops->enable_sensor(flag, 200);
 			if (err < 0) {
-				pr_err("SAR_IOCTL_INIT fail!\n");
+				pr_no_err("SAR_IOCTL_INIT fail!\n");
 				return -EINVAL;
 			}
-			pr_debug(
+			pr_no_debug(
 				"SAR_IOCTL_INIT, enable: %d, sample_period:%dms\n",
 				flag, 200);
 		} else {
-			pr_err("SAR_IOCTL_INIT NULL\n");
+			pr_no_err("SAR_IOCTL_INIT NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -72,11 +72,11 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    sar_factory.fops->get_data != NULL) {
 			err = sar_factory.fops->get_data(data_buf);
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"SAR_IOCTL_READ_SENSORDATA read data fail!\n");
 				return -EINVAL;
 			}
-			pr_debug("SAR_IOCTL_READ_SENSORDATA: (%d, %d, %d)!\n",
+			pr_no_debug("SAR_IOCTL_READ_SENSORDATA: (%d, %d, %d)!\n",
 				data_buf[0], data_buf[1], data_buf[2]);
 			sensor_data.x = data_buf[0];
 			sensor_data.y = data_buf[1];
@@ -85,7 +85,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 							sizeof(sensor_data)))
 				return -EFAULT;
 		} else {
-			pr_err("SAR_IOCTL_READ_SENSORDATA NULL\n");
+			pr_no_err("SAR_IOCTL_READ_SENSORDATA NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -94,12 +94,12 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    sar_factory.fops->enable_calibration != NULL) {
 			err = sar_factory.fops->enable_calibration();
 			if (err < 0) {
-				pr_err(
+				pr_no_err(
 					"SAR_IOCTL_ENABLE_CALI fail!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("SAR_IOCTL_ENABLE_CALI NULL\n");
+			pr_no_err("SAR_IOCTL_ENABLE_CALI NULL\n");
 			return -EINVAL;
 		}
 		return 0;
@@ -108,15 +108,15 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 		    sar_factory.fops->get_cali != NULL) {
 			err = sar_factory.fops->get_cali(data_buf);
 			if (err < 0) {
-				pr_err("SAR_IOCTL_GET_CALI FAIL!\n");
+				pr_no_err("SAR_IOCTL_GET_CALI FAIL!\n");
 				return -EINVAL;
 			}
 		} else {
-			pr_err("SAR_IOCTL_GET_CALI NULL\n");
+			pr_no_err("SAR_IOCTL_GET_CALI NULL\n");
 			return -EINVAL;
 		}
 
-		pr_debug("SAR_IOCTL_GET_CALI: (%d, %d, %d)!\n",
+		pr_no_debug("SAR_IOCTL_GET_CALI: (%d, %d, %d)!\n",
 			data_buf[0], data_buf[1], data_buf[2]);
 		sensor_data.x = data_buf[0];
 		sensor_data.y = data_buf[1];
@@ -125,7 +125,7 @@ static long sar_factory_unlocked_ioctl(struct file *file, unsigned int cmd,
 			return -EFAULT;
 		return 0;
 	default:
-		pr_err("unknown IOCTL: 0x%08x\n", cmd);
+		pr_no_err("unknown IOCTL: 0x%08x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 	return 0;
@@ -137,7 +137,7 @@ static long compat_sar_factory_unlocked_ioctl(struct file *filp,
 					       unsigned long arg)
 {
 	if (!filp->f_op || !filp->f_op->unlocked_ioctl) {
-		pr_err(
+		pr_no_err(
 			"compat_ion_ioctl file has no f_op or no f_op->unlocked_ioctl.\n");
 		return -ENOTTY;
 	}
@@ -147,14 +147,14 @@ static long compat_sar_factory_unlocked_ioctl(struct file *filp,
 	case COMPAT_SAR_IOCTL_READ_SENSORDATA:
 	case COMPAT_SAR_IOCTL_ENABLE_CALI:
 	case COMPAT_SAR_IOCTL_GET_CALI: {
-		pr_debug(
+		pr_no_debug(
 			"compat_ion_ioctl : SAR_IOCTL_XXX command is 0x%x\n",
 			cmd);
 		return filp->f_op->unlocked_ioctl(
 			filp, cmd, (unsigned long)compat_ptr(arg));
 	}
 	default:
-		pr_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
+		pr_no_err("compat_ion_ioctl : No such command!! 0x%x\n", cmd);
 		return -ENOIOCTLCMD;
 	}
 }
@@ -186,7 +186,7 @@ int sar_factory_device_register(struct sar_factory_public *dev)
 	sar_factory.fops = dev->fops;
 	err = misc_register(&_sar_factory_device);
 	if (err) {
-		pr_err("sar_factory_device register failed\n");
+		pr_no_err("sar_factory_device register failed\n");
 		err = -1;
 	}
 	return err;

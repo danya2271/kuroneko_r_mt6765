@@ -313,7 +313,7 @@ int __init mtk_lp_plat_apmcu_init(void)
 	if (!IS_ERR(mtk_lp_plat_task))
 		wake_up_process(mtk_lp_plat_task);
 	else
-		pr_notice("Create thread fail @ %s()\n", __func__);
+		pr_no_notice("Create thread fail @ %s()\n", __func__);
 
 	return 0;
 }
@@ -321,7 +321,7 @@ int __init mtk_lp_plat_apmcu_init(void)
 int __init mtk_lp_plat_apmcu_early_init(void)
 {
 	if (mtk_lp_plat_mcusys_ctrl_init() != 0) {
-		pr_notice("%s(): Not support\n", __func__);
+		pr_no_notice("%s(): Not support\n", __func__);
 		return 0;
 	}
 

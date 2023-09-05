@@ -87,13 +87,13 @@ enum VAL_RESULT_T eVideoCreateEvent(struct VAL_EVENT_T *a_prParam,
 		init_waitqueue_head(pWaitQueue);
 		a_prParam->pvWaitQueue = (void *)pWaitQueue;
 	} else {
-		pr_info("[VCODEC] Event wait Queue failed to create\n");
+		pr_no_info("[VCODEC] Event wait Queue failed to create\n");
 	}
 	if (pFlag != VAL_NULL) {
 		a_prParam->pvReserved = (void *)pFlag;
 		*((unsigned char *)a_prParam->pvReserved) = VAL_FALSE;
 	} else {
-		pr_info("[VCODEC] Event flag failed to create\n");
+		pr_no_info("[VCODEC] Event flag failed to create\n");
 	}
 
 	return VAL_RESULT_NO_ERROR;
@@ -134,16 +134,16 @@ enum VAL_RESULT_T eVideoWaitEvent(struct VAL_EVENT_T *a_prParam,
 				/*g_mflexvideo_interrupt_handler */,
 				 timeout_jiff);
 	if (i4Ret == 0) {
-		pr_info("[VCODEC] %s timeout: %d ms",
+		pr_no_info("[VCODEC] %s timeout: %d ms",
 				__func__, a_prParam->u4TimeoutMs);
 		status = VAL_RESULT_INVALID_ISR;	/* timeout */
 	} else if (-ERESTARTSYS == i4Ret) {
-		pr_info("[VCODEC] %s wake up by ERESTARTSYS", __func__);
+		pr_no_info("[VCODEC] %s wake up by ERESTARTSYS", __func__);
 		status = VAL_RESULT_RESTARTSYS;
 	} else if (i4Ret > 0) {
 		status = VAL_RESULT_NO_ERROR;
 	} else {
-		pr_info("[VCODEC] %s wake up by %ld",
+		pr_no_info("[VCODEC] %s wake up by %ld",
 				__func__, i4Ret);
 		status = VAL_RESULT_NO_ERROR;
 	}
@@ -163,7 +163,7 @@ enum VAL_RESULT_T eVideoSetEvent(struct VAL_EVENT_T *a_prParam,
 		 */
 		*((unsigned char *)a_prParam->pvReserved) = VAL_TRUE;
 	} else {
-		pr_info("[VCODEC] Event flag should not be null\n");
+		pr_no_info("[VCODEC] Event flag should not be null\n");
 	}
 	if (pWaitQueue != VAL_NULL) {
 		/* Add one line comment for avoid kernel coding style,
@@ -171,7 +171,7 @@ enum VAL_RESULT_T eVideoSetEvent(struct VAL_EVENT_T *a_prParam,
 		 */
 		wake_up_interruptible(pWaitQueue);
 	} else {
-		pr_info("[VCODEC] Wait Queue should not be null\n");
+		pr_no_info("[VCODEC] Wait Queue should not be null\n");
 	}
 	return VAL_RESULT_NO_ERROR;
 }
@@ -188,7 +188,7 @@ enum VAL_RESULT_T eVideoCreateMutex(struct VAL_MUTEX_T *a_prParam,
 		 */
 		a_prParam->pvMutex = (void *)pLock;
 	} else {
-		pr_info("[VCODEC] Unable to create mutex!\n");
+		pr_no_info("[VCODEC] Unable to create mutex!\n");
 		return VAL_RESULT_INVALID_MEMORY;
 	}
 	/* init_MUTEX(pLock); */

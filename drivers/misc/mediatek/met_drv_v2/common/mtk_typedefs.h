@@ -304,7 +304,7 @@
 /*
  *  MET Debug Message
  */
-#define METINFO(format, ...)	pr_debug("[MET]%s: "format, __func__, ##__VA_ARGS__)
-#define METERROR(format, ...)	pr_debug("[MET][ERR]%s: "format, __func__, ##__VA_ARGS__)
+#define METINFO(format, ...)	pr_no_debug("[MET]%s: "format, __func__, ##__VA_ARGS__)
+#define METERROR(format, ...)	pr_no_debug("[MET][ERR]%s: "format, __func__, ##__VA_ARGS__)
 
 #endif	/* _MT_TYPEDEFS_H__ */

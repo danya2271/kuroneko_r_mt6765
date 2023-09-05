@@ -25,7 +25,7 @@ struct file *open_file(const char *name)
 
 	fp = filp_open(name, O_WRONLY | O_APPEND /*| O_TRUNC */  | O_CREAT, 0664);
 	if (unlikely(fp == NULL)) {
-		pr_debug(KERNEL_INFO "can not open result file");
+		pr_no_debug(KERNEL_INFO "can not open result file");
 		return NULL;
 	}
 	return fp;
@@ -62,7 +62,7 @@ int close_file(struct file *fp)
 		fp = NULL;
 		return 0;
 	}
-	pr_debug("cannot close file pointer:%p\n", fp);
+	pr_no_debug("cannot close file pointer:%p\n", fp);
 	return -1;
 }
 

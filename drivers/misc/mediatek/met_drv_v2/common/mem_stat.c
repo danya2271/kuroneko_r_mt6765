@@ -17,7 +17,7 @@
 
 /* define MEMSTAT_DEBUG */
 #ifdef MEMSTAT_DEBUG
-#define debug_memstat(fmt, arg...) pr_debug(fmt, ##arg)
+#define debug_memstat(fmt, arg...) pr_no_debug(fmt, ##arg)
 #else
 #define debug_memstat(fmt, arg...) do {} while (0)
 #endif
@@ -263,7 +263,7 @@ static int met_memstat_process_argument(const char *arg, int len)
 		}
 	} else if (strncmp(choice, "vir_mem_stat", 12) == 0) {
 		if (!vm_event_counters_enable) {
-			pr_debug("[%s] %d: CONFIG_VM_EVENT_COUNTERS is not configured\n", __func__,
+			pr_no_debug("[%s] %d: CONFIG_VM_EVENT_COUNTERS is not configured\n", __func__,
 				 __LINE__);
 			goto error;
 		}
@@ -277,13 +277,13 @@ static int met_memstat_process_argument(const char *arg, int len)
 			}
 		}
 	} else {
-		pr_debug("[%s] %d: only support phy_mem_stat & vir_mem_stat keyword\n", __func__,
+		pr_no_debug("[%s] %d: only support phy_mem_stat & vir_mem_stat keyword\n", __func__,
 			 __LINE__);
 		goto error;
 	}
 
 	if (!found_event) {
-		pr_debug("[%s] %d: input event name error\n", __func__, __LINE__);
+		pr_no_debug("[%s] %d: input event name error\n", __func__, __LINE__);
 		goto error;
 	}
 

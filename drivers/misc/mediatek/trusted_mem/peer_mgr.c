@@ -52,7 +52,7 @@ static int peer_mgr_chunk_alloc_locked(
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("%s:%d peer session is still not ready!\n", __func__,
+		pr_no_err("%s:%d peer session is still not ready!\n", __func__,
 		       __LINE__);
 		return TMEM_MGR_SESSION_IS_NOT_READY;
 	}
@@ -63,7 +63,7 @@ static int peer_mgr_chunk_alloc_locked(
 				    owner, id, clean, sess_data->peer_data,
 				    dev_desc);
 	if (ret) {
-		pr_err("peer alloc size: 0x%x failed:%d\n", size, ret);
+		pr_no_err("peer alloc size: 0x%x failed:%d\n", size, ret);
 		MGR_SESSION_UNLOCK();
 		if (ret == -ENOMEM)
 			return ret;
@@ -85,7 +85,7 @@ static int peer_mgr_chunk_free_locked(u32 sec_handle, uint8_t *owner, u32 id,
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("%s:%d peer session is still not ready!\n", __func__,
+		pr_no_err("%s:%d peer session is still not ready!\n", __func__,
 		       __LINE__);
 		return TMEM_MGR_SESSION_IS_NOT_READY;
 	}
@@ -95,13 +95,13 @@ static int peer_mgr_chunk_free_locked(u32 sec_handle, uint8_t *owner, u32 id,
 	ret = drv_ops->memory_free(sec_handle, owner, id, sess_data->peer_data,
 				   dev_desc);
 	if (ret) {
-		pr_err("peer free chunk memory failed:%d\n", ret);
+		pr_no_err("peer free chunk memory failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_FREE_MEM_FAILED;
 	}
 
 	if (IS_ZERO(sess_data->ref_chunks))
-		pr_err("system error, please check! (ref_chunks:0)\n");
+		pr_no_err("system error, please check! (ref_chunks:0)\n");
 	else
 		sess_data->ref_chunks--;
 
@@ -117,7 +117,7 @@ static int peer_mgr_mem_add_locked(u64 pa, u32 size,
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("%s:%d peer session is still not ready!\n", __func__,
+		pr_no_err("%s:%d peer session is still not ready!\n", __func__,
 		       __LINE__);
 		return TMEM_MGR_SESSION_IS_NOT_READY;
 	}
@@ -126,7 +126,7 @@ static int peer_mgr_mem_add_locked(u64 pa, u32 size,
 
 	ret = drv_ops->memory_grant(pa, size, sess_data->peer_data, dev_desc);
 	if (ret != 0) {
-		pr_err("peer append reg mem failed:%d\n", ret);
+		pr_no_err("peer append reg mem failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_MEM_ADD_FAILED;
 	}
@@ -146,7 +146,7 @@ static int peer_mgr_mem_remove_locked(struct trusted_driver_operations *drv_ops,
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("%s:%d peer session is still not ready!\n", __func__,
+		pr_no_err("%s:%d peer session is still not ready!\n", __func__,
 		       __LINE__);
 		return TMEM_MGR_SESSION_IS_NOT_READY;
 	}
@@ -155,7 +155,7 @@ static int peer_mgr_mem_remove_locked(struct trusted_driver_operations *drv_ops,
 
 	ret = drv_ops->memory_reclaim(sess_data->peer_data, dev_desc);
 	if (ret != 0) {
-		pr_err("peer release reg mem failed:%d\n", ret);
+		pr_no_err("peer release reg mem failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_MEM_REMOVE_FAILED;
 	}
@@ -175,7 +175,7 @@ peer_mgr_session_open_locked(struct trusted_driver_operations *drv_ops,
 	int ret;
 
 	if (is_session_ready(sess_data)) {
-		pr_err("peer session is already opened!\n");
+		pr_no_err("peer session is already opened!\n");
 		return TMEM_MGR_SESSION_IS_ALREADY_OPEN;
 	}
 
@@ -183,12 +183,12 @@ peer_mgr_session_open_locked(struct trusted_driver_operations *drv_ops,
 
 	ret = drv_ops->session_open(&sess_data->peer_data, dev_desc);
 	if (ret != 0) {
-		pr_err("peer open session failed:%d\n", ret);
+		pr_no_err("peer open session failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_OPEN_SESSION_FAILED;
 	}
 
-	pr_debug("peer data is created:%p\n", sess_data->peer_data);
+	pr_no_debug("peer data is created:%p\n", sess_data->peer_data);
 
 	set_session_ready(sess_data, true);
 
@@ -203,12 +203,12 @@ static int peer_mgr_session_close_locked(
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("peer session is already closed!\n");
+		pr_no_err("peer session is already closed!\n");
 		return TMEM_MGR_SESSION_IS_ALREADY_CLOSE;
 	}
 
 	if (keep_alive) {
-		pr_debug("peer session won't close!\n");
+		pr_no_debug("peer session won't close!\n");
 		return TMEM_OK;
 	}
 
@@ -216,7 +216,7 @@ static int peer_mgr_session_close_locked(
 
 	ret = drv_ops->session_close(sess_data->peer_data, dev_desc);
 	if (ret != 0) {
-		pr_err("peer close session failed:%d\n", ret);
+		pr_no_err("peer close session failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_CLOSE_SESSION_FAILED;
 	}
@@ -236,7 +236,7 @@ static int peer_mgr_session_invoke_cmd_locked(
 	int ret;
 
 	if (!is_session_ready(sess_data)) {
-		pr_err("%s:%d peer session is still not ready!\n", __func__,
+		pr_no_err("%s:%d peer session is still not ready!\n", __func__,
 		       __LINE__);
 		return TMEM_MGR_SESSION_IS_NOT_READY;
 	}
@@ -246,7 +246,7 @@ static int peer_mgr_session_invoke_cmd_locked(
 	ret = drv_ops->invoke_cmd(invoke_params, sess_data->peer_data,
 				  dev_desc);
 	if (ret != 0) {
-		pr_err("peer invoke command failed:%d\n", ret);
+		pr_no_err("peer invoke command failed:%d\n", ret);
 		MGR_SESSION_UNLOCK();
 		return TMEM_MGR_INVOKE_COMMAND_FAILED;
 	}
@@ -261,7 +261,7 @@ struct peer_mgr_desc *create_peer_mgr_desc(void)
 
 	t_mgr_desc = mld_kmalloc(sizeof(struct peer_mgr_desc), GFP_KERNEL);
 	if (INVALID(t_mgr_desc)) {
-		pr_err("%s:%d out of memory!\n", __func__, __LINE__);
+		pr_no_err("%s:%d out of memory!\n", __func__, __LINE__);
 		return NULL;
 	}
 

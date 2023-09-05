@@ -272,7 +272,7 @@ static int met_spmtwam_create(struct kobject *parent)
 	do { \
 		ret = sysfs_create_file(kobj_spmtwam, &attr_name ## _attr.attr); \
 		if (ret != 0) { \
-			pr_notice("Failed to create " #attr_name " in sysfs\n"); \
+			pr_no_notice("Failed to create " #attr_name " in sysfs\n"); \
 			return ret; \
 		} \
 	} while (0)
@@ -282,7 +282,7 @@ static int met_spmtwam_create(struct kobject *parent)
 #ifdef SPM_TWAM_DEBUG
 	ret = sysfs_create_file(kobj_spmtwam, &debug_attr.attr);
 	if (ret != 0) {
-		pr_debug("Failed to create debug in sysfs\n");
+		pr_no_debug("Failed to create debug in sysfs\n");
 		return ret;
 	}
 #endif
@@ -396,7 +396,7 @@ static void spmtwam_start(void)
 		if (fmem_dcm_base == NULL) {
 			fmem_dcm_base = ioremap_nocache(INFRA_FMEM_DCM_BASE, INFRA_FMEM_DCM_SIZE);
 			if (!fmem_dcm_base) {
-				pr_debug("fmem_dcm_base ioremap fail...");
+				pr_no_debug("fmem_dcm_base ioremap fail...");
 				return;
 			}
 
@@ -408,7 +408,7 @@ static void spmtwam_start(void)
 		if (twam_dbg_signal_base == NULL) {
 			twam_dbg_signal_base = ioremap_nocache(TWAM_DBG_SIG_BASE, TWAM_DBG_SIG_SIZE);
 			if (!twam_dbg_signal_base) {
-				pr_debug("twam_dbg_signal_base ioremap fail...");
+				pr_no_debug("twam_dbg_signal_base ioremap fail...");
 				return;
 			}
 		}

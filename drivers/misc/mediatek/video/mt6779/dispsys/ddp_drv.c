@@ -169,7 +169,7 @@ static int disp_mmap(struct file *file, struct vm_area_struct *a_pstVMArea)
 			    a_pstVMArea->vm_pgoff,
 			    (a_pstVMArea->vm_end - a_pstVMArea->vm_start),
 			    a_pstVMArea->vm_page_prot)) {
-		DDP_PR_ERR("MMAP failed!!\n");
+		DDP_pr_no_err("MMAP failed!!\n");
 		return -1;
 	}
 #endif
@@ -223,7 +223,7 @@ static void disp_clk_init(struct platform_device *pdev)
 		DDPMSG("DISPSYS get clock %s\n", ddp_get_clk_name(i));
 		pclk = devm_clk_get(&pdev->dev, ddp_get_clk_name(i));
 		if (IS_ERR(pclk)) {
-			DDP_PR_ERR("%s:%d, DISPSYS get %d,%s clock error!!!\n",
+			DDP_pr_no_err("%s:%d, DISPSYS get %d,%s clock error!!!\n",
 				   __FILE__, __LINE__, i, ddp_get_clk_name(i));
 			continue;
 		}
@@ -251,7 +251,7 @@ struct disp_iommu_device *disp_get_iommu_dev(void)
 		larb_node[larb_idx] = of_parse_phandle(mydev.dev.of_node,
 						"mediatek,larb", larb_idx);
 		if (!larb_node[larb_idx]) {
-			pr_info("disp driver get larb fail\n");
+			pr_no_info("disp driver get larb fail\n");
 			return NULL;
 		}
 		larb_pdev[larb_idx] =
@@ -260,9 +260,9 @@ struct disp_iommu_device *disp_get_iommu_dev(void)
 		if ((!larb_pdev[larb_idx]) ||
 		    (!larb_pdev[larb_idx]->dev.driver)) {
 			if (!larb_pdev[larb_idx])
-				pr_info("earlier than SMI, larb_pdev null\n");
+				pr_no_info("earlier than SMI, larb_pdev null\n");
 			else
-				pr_info("earlier than SMI, larb drv null\n");
+				pr_no_info("earlier than SMI, larb drv null\n");
 		}
 
 		disp_iommu.larb_pdev[larb_idx] = larb_pdev[larb_idx];
@@ -270,12 +270,12 @@ struct disp_iommu_device *disp_get_iommu_dev(void)
 	/* add for mmp dump mva->pa */
 	np = of_find_compatible_node(NULL, NULL, "mediatek,mt-pseudo_m4u-port");
 	if (np == NULL) {
-		pr_info("DT,mediatek,mt-pseudo_m4u-port is not found\n");
+		pr_no_info("DT,mediatek,mt-pseudo_m4u-port is not found\n");
 	} else {
 		disp_iommu.iommu_pdev = of_find_device_by_node(np);
 		of_node_put(np);
 		if (!disp_iommu.iommu_pdev)
-			pr_info("get iommu device failed\n");
+			pr_no_info("get iommu device failed\n");
 	}
 	disp_iommu.inited = 1;
 	return &disp_iommu;
@@ -316,7 +316,7 @@ static int disp_probe_1(void)
 	unsigned int id;
 	unsigned int larb;
 
-	pr_info("disp driver(1) %s begin\n", __func__);
+	pr_no_info("disp driver(1) %s begin\n", __func__);
 
 #if (defined(CONFIG_TEE) || \
 	defined(CONFIG_TRUSTONIC_TEE_SUPPORT)) && \
@@ -327,7 +327,7 @@ static int disp_probe_1(void)
 	disp_misc_dev.parent = NULL;
 	ret = misc_register(&disp_misc_dev);
 	if (ret) {
-		pr_err("disp: fail to create mtk_disp node\n");
+		pr_no_err("disp: fail to create mtk_disp node\n");
 		return (unsigned long)(ERR_PTR(ret));
 	}
 #endif
@@ -360,7 +360,7 @@ static int disp_probe_1(void)
 			}
 
 			if (j == DISP_LARB_NUM) {
-				DDP_PR_ERR("Cannot find smi-larb%d\n",
+				DDP_pr_no_err("Cannot find smi-larb%d\n",
 						larb);
 				continue;
 			}
@@ -372,7 +372,7 @@ static int disp_probe_1(void)
 					"[ERR]DT, i=%d, module=%s, unable to find node, dt_name=%s\n",
 					i, ddp_get_module_name(i),
 					ddp_get_module_dtname(i));
-				DDP_PR_ERR("%s", msg);
+				DDP_pr_no_err("%s", msg);
 				continue;
 			}
 		}
@@ -382,7 +382,7 @@ static int disp_probe_1(void)
 			n = scnprintf(msg, len,
 				"[ERR]DT, i=%d, module=%s, unable to ge VA, of_iomap fail\n",
 				i, ddp_get_module_name(i));
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 			continue;
 		} else {
 			ddp_set_module_va(i, va);
@@ -390,7 +390,7 @@ static int disp_probe_1(void)
 
 		status = of_address_to_resource(node, 0, &res);
 		if (status < 0) {
-			DDP_PR_ERR("[ERR]DT,i=%d,module=%s,unable to get PA\n",
+			DDP_pr_no_err("[ERR]DT,i=%d,module=%s,unable to get PA\n",
 				   i, ddp_get_module_name(i));
 			continue;
 		}
@@ -402,7 +402,7 @@ static int disp_probe_1(void)
 				(void *)ddp_get_module_va(i),
 				ddp_get_module_pa(i),
 				(void *)(uintptr_t)res.start);
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 		}
 
 		/* get IRQ ID and request IRQ */
@@ -423,7 +423,7 @@ static int disp_probe_1(void)
 			continue;
 
 		if (ddp_get_module_irq(i) == 0) {
-			DDP_PR_ERR("[ERR]DT, i=%d, module=%s, map_irq=%d\n",
+			DDP_pr_no_err("[ERR]DT, i=%d, module=%s, map_irq=%d\n",
 				   i, ddp_get_module_name(i),
 				   ddp_get_module_irq(i));
 			ddp_module_irq_disable(i);
@@ -439,7 +439,7 @@ static int disp_probe_1(void)
 				     ddp_get_module_irq(i),
 				     virq_to_hwirq(ddp_get_module_irq(i)),
 				     ddp_get_module_checkirq(i));
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 
 			ddp_module_irq_disable(i);
 			continue;
@@ -454,7 +454,7 @@ static int disp_probe_1(void)
 				  IRQF_TRIGGER_NONE, ddp_get_module_name(i),
 				  NULL);
 		if (ret) {
-			DDP_PR_ERR("DT,i=%d,module=%s,request_irq(%d) fail\n",
+			DDP_pr_no_err("DT,i=%d,module=%s,request_irq(%d) fail\n",
 				   i, ddp_get_module_name(i),
 				   ddp_get_module_irq(i));
 			continue;
@@ -479,7 +479,7 @@ static int disp_probe_1(void)
 	ddp_path_init();
 	disp_m4u_init();
 
-	pr_info("disp driver(1) %s end\n", __func__);
+	pr_no_info("disp driver(1) %s end\n", __func__);
 	/* NOT_REFERENCED(class_dev); */
 	return ret;
 }
@@ -489,9 +489,9 @@ static int disp_probe(struct platform_device *pdev)
 	static unsigned int disp_probe_cnt;
 
 #ifdef CONFIG_MTK_SMI_EXT
-	pr_notice("%s: %d\n", __func__, smi_mm_first_get());
+	pr_no_notice("%s: %d\n", __func__, smi_mm_first_get());
 	if (!smi_mm_first_get()) {
-		pr_notice("SMI not start probe\n");
+		pr_no_notice("SMI not start probe\n");
 		return -EPROBE_DEFER;
 	}
 #endif
@@ -499,7 +499,7 @@ static int disp_probe(struct platform_device *pdev)
 	if (disp_probe_cnt != 0)
 		return 0;
 
-	pr_info("disp driver(1) %s begin\n", __func__);
+	pr_no_info("disp driver(1) %s begin\n", __func__);
 
 	/* save pdev for disp_probe_1 */
 	memcpy(&mydev, pdev, sizeof(mydev));
@@ -511,7 +511,7 @@ static int disp_probe(struct platform_device *pdev)
 
 	disp_probe_cnt++;
 
-	pr_info("disp driver(1) %s end\n", __func__);
+	pr_no_info("disp driver(1) %s end\n", __func__);
 
 	disp_probe_1();
 
@@ -570,7 +570,7 @@ static int __init disp_init(void)
 	init_log_buffer();
 	DDPMSG("register the disp driver\n");
 	if (platform_driver_register(&dispsys_of_driver)) {
-		DDP_PR_ERR("failed to register disp driver\n");
+		DDP_pr_no_err("failed to register disp driver\n");
 		/* platform_device_unregister(&disp_device); */
 		ret = -ENODEV;
 		return ret;
@@ -601,7 +601,7 @@ static int __init disp_late(void)
 	/* for rt5081 */
 	ret = display_bias_regulator_init();
 	if (ret < 0)
-		pr_err("get dsv_pos fail, ret = %d\n", ret);
+		pr_no_err("get dsv_pos fail, ret = %d\n", ret);
 
 	display_bias_enable();
 

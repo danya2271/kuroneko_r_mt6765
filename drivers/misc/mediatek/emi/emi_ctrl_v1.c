@@ -82,7 +82,7 @@ static const struct of_device_id emi_of_ids[] = {
 #ifdef CONFIG_PM
 static int emi_suspend_noirq(struct device *dev)
 {
-	/* pr_info("[EMI] suspend\n"); */
+	/* pr_no_info("[EMI] suspend\n"); */
 
 #if ENABLE_ELM
 	suspend_elm();
@@ -93,7 +93,7 @@ static int emi_suspend_noirq(struct device *dev)
 
 static int emi_resume_noirq(struct device *dev)
 {
-	/* pr_info("[EMI] resume\n"); */
+	/* pr_no_info("[EMI] resume\n"); */
 
 #if ENABLE_ELM
 	resume_elm();
@@ -138,19 +138,19 @@ static int emi_probe(struct platform_device *pdev)
 	struct proc_dir_entry *proc_entry;
 	int i;
 
-	pr_info("[EMI] module probe.\n");
+	pr_no_info("[EMI] module probe.\n");
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	CEN_EMI_BASE = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(CEN_EMI_BASE)) {
-		pr_err("[EMI] unable to map CEN_EMI_BASE\n");
+		pr_no_err("[EMI] unable to map CEN_EMI_BASE\n");
 		return -EINVAL;
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	EMI_MPU_BASE = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(EMI_MPU_BASE)) {
-		pr_err("[EMI] unable to map EMI_MPU_BASE\n");
+		pr_no_err("[EMI] unable to map EMI_MPU_BASE\n");
 		return -EINVAL;
 	}
 
@@ -158,7 +158,7 @@ static int emi_probe(struct platform_device *pdev)
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 2 + i);
 		CHN_EMI_BASE[i] = devm_ioremap_resource(&pdev->dev, res);
 		if (IS_ERR(CHN_EMI_BASE[i])) {
-			pr_err("[EMI] unable to map CH%d_EMI_BASE\n", i);
+			pr_no_err("[EMI] unable to map CH%d_EMI_BASE\n", i);
 			return -EINVAL;
 		}
 	}
@@ -168,7 +168,7 @@ static int emi_probe(struct platform_device *pdev)
 					    2 + MAX_CH + i);
 		EMI_DBG_BASE[i] = devm_ioremap_resource(&pdev->dev, res);
 		if (IS_ERR(EMI_DBG_BASE[i])) {
-			pr_debug("[EMI] unable to map dbg\n");
+			pr_no_debug("[EMI] unable to map dbg\n");
 			return -EINVAL;
 		}
 	}
@@ -177,10 +177,10 @@ static int emi_probe(struct platform_device *pdev)
 				"emi_dcm", &emi_dcm);
 	plat_debug_api_init();
 #endif
-	pr_info("[EMI] get CEN_EMI_BASE @ %p\n", mt_cen_emi_base_get());
-	pr_info("[EMI] get EMI_MPU_BASE @ %p\n", mt_emi_mpu_base_get());
+	pr_no_info("[EMI] get CEN_EMI_BASE @ %p\n", mt_cen_emi_base_get());
+	pr_no_info("[EMI] get EMI_MPU_BASE @ %p\n", mt_emi_mpu_base_get());
 	for (i = 0; i < MAX_CH; i++)
-		pr_info("[EMI] get CH%d_EMI_BASE @ %p\n",
+		pr_no_info("[EMI] get CH%d_EMI_BASE @ %p\n",
 			i, mt_chn_emi_base_get(i));
 
 	proc_entry = proc_create("ddr_info", 0444, NULL, &ddr_info_proc_fops);
@@ -216,7 +216,7 @@ static int __init emi_ctrl_init(void)
 	/* register EMI ctrl interface */
 	ret = platform_driver_register(&emi_ctrl);
 	if (ret)
-		pr_err("[EMI/BWL] fail to register emi_ctrl driver\n");
+		pr_no_err("[EMI/BWL] fail to register emi_ctrl driver\n");
 
 	/* get EMI info from boot tags */
 	node = of_find_compatible_node(NULL, NULL, "mediatek,emi");
@@ -224,27 +224,27 @@ static int __init emi_ctrl_init(void)
 		ret = of_property_read_u32(node,
 			"emi_info,dram_type", &(emi_info.dram_type));
 		if (ret)
-			pr_err("[EMI] fail to get dram_type\n");
+			pr_no_err("[EMI] fail to get dram_type\n");
 		ret = of_property_read_u32(node,
 			"emi_info,ch_num", &(emi_info.ch_num));
 		if (ret)
-			pr_err("[EMI] fail to get ch_num\n");
+			pr_no_err("[EMI] fail to get ch_num\n");
 		ret = of_property_read_u32(node,
 			"emi_info,rk_num", &(emi_info.rk_num));
 		if (ret)
-			pr_err("[EMI] fail to get rk_num\n");
+			pr_no_err("[EMI] fail to get rk_num\n");
 		ret = of_property_read_u32_array(node, "emi_info,rank_size",
 			emi_info.rank_size, MAX_RK);
 		if (ret)
-			pr_err("[EMI] fail to get rank_size\n");
+			pr_no_err("[EMI] fail to get rank_size\n");
 	}
 
-	pr_info("[EMI] dram_type(%d)\n", get_dram_type());
-	pr_info("[EMI] mr5(0x%x)\n", get_dram_mr(5));
-	pr_info("[EMI] ch_num(%d)\n", get_ch_num());
-	pr_info("[EMI] rk_num(%d)\n", get_rk_num());
+	pr_no_info("[EMI] dram_type(%d)\n", get_dram_type());
+	pr_no_info("[EMI] mr5(0x%x)\n", get_dram_mr(5));
+	pr_no_info("[EMI] ch_num(%d)\n", get_ch_num());
+	pr_no_info("[EMI] rk_num(%d)\n", get_rk_num());
 	for (i = 0; i < get_rk_num(); i++)
-		pr_info("[EMI] rank%d_size(0x%x)", i, get_rank_size(i));
+		pr_no_info("[EMI] rank%d_size(0x%x)", i, get_rank_size(i));
 
 	return 0;
 }

@@ -121,10 +121,10 @@ static enum ovl_colorspace ovl_map_cs(enum android_dataspace ds)
 		cs = OVL_P3;
 		break;
 	case HAL_DATASPACE_STANDARD_ADOBE_RGB:
-		DISP_PR_ERR("%s: ovl get cs ADOBE_RGB\n", __func__);
+		DISP_pr_no_err("%s: ovl get cs ADOBE_RGB\n", __func__);
 		/* fall through */
 	case HAL_DATASPACE_STANDARD_BT2020:
-		DISP_PR_ERR("%s: ovl does not support BT2020\n", __func__);
+		DISP_pr_no_err("%s: ovl does not support BT2020\n", __func__);
 		/* fall through */
 	default:
 		cs = OVL_SRGB;
@@ -144,12 +144,12 @@ static enum ovl_transfer ovl_map_transfer(enum android_dataspace ds)
 		break;
 	case HAL_DATASPACE_TRANSFER_GAMMA2_6:
 	case HAL_DATASPACE_TRANSFER_GAMMA2_8:
-		DISP_PR_ERR("%s: ovl does not support gamma 2.6/2.8\n",
+		DISP_pr_no_err("%s: ovl does not support gamma 2.6/2.8\n",
 			    __func__);
 		/* fall through */
 	case HAL_DATASPACE_TRANSFER_ST2084:
 	case HAL_DATASPACE_TRANSFER_HLG:
-		DISP_PR_ERR("%s: HDR transfer\n", __func__);
+		DISP_pr_no_err("%s: HDR transfer\n", __func__);
 		/* fall through */
 	default:
 		xfr = OVL_GAMMA2_2;
@@ -261,7 +261,7 @@ static int ovl_do_csc(struct OVL_CONFIG_STRUCT *c,
 
 	csc = get_ovl_csc(in, out);
 	if (!csc) {
-		DISP_PR_ERR("%s:L%d:no ovl csc %s to %s, disable csc\n",
+		DISP_pr_no_err("%s:L%d:no ovl csc %s to %s, disable csc\n",
 			    __func__, c->layer, ovl_colorspace_str(in),
 			    ovl_colorspace_str(out));
 		*wcg_en &= ~REG_FLD_VAL(fld, en);

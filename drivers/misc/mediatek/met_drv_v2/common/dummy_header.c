@@ -71,7 +71,7 @@ static int dummy_create(struct kobject *parent)
 	kobj_met_dummy = parent;
 	ret = sysfs_create_file(kobj_met_dummy, &dummy_attr.attr);
 	if (ret != 0) {
-		pr_debug("Failed to create montype0 in sysfs\n");
+		pr_no_debug("Failed to create montype0 in sysfs\n");
 		return ret;
 	}
 

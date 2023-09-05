@@ -144,9 +144,9 @@ static int aw3644_flash_read(struct i2c_client *client, u8 reg)
 	mutex_lock(&chip->lock);
 	ret = i2c_smbus_read_byte_data(client, reg);
 	mutex_unlock(&chip->lock);
-	pr_info("%s reg:0x%x val:0x%x\n", __func__, reg, ret);
+	pr_no_info("%s reg:0x%x val:0x%x\n", __func__, reg, ret);
 	if (ret < 0)
-		pr_info("failed reading at 0x%02x\n", reg);
+		pr_no_info("failed reading at 0x%02x\n", reg);
 
 	return ret;
 }
@@ -166,7 +166,7 @@ static int aw3644_flash_write(struct i2c_client *client, u8 reg, u8 val)
 	mutex_unlock(&chip->lock);
 
 	if (ret < 0)
-		pr_info("failed writing at 0x%02x\n", reg);
+		pr_no_info("failed writing at 0x%02x\n", reg);
 
 	return ret;
 
@@ -179,12 +179,12 @@ static int aw3644_pinctrl_init(struct platform_device *pdev)
 {
 	int ret = 0;
 
-	pr_info("%s in\n", __func__);
+	pr_no_info("%s in\n", __func__);
 	//return 1;
 	/* get pinctrl */
 	aw3644_pinctrl = devm_pinctrl_get(&pdev->dev);
 	if (IS_ERR(aw3644_pinctrl)) {
-		pr_info("Failed to get flashlight pinctrl.\n");
+		pr_no_info("Failed to get flashlight pinctrl.\n");
 		ret = PTR_ERR(aw3644_pinctrl);
 		return ret;
 	}
@@ -193,17 +193,17 @@ static int aw3644_pinctrl_init(struct platform_device *pdev)
 	aw3644_hwen_high = pinctrl_lookup_state(aw3644_pinctrl,
 		AW3644_PINCTRL_STATE_HWEN_HIGH);
 	if (IS_ERR(aw3644_hwen_high)) {
-		pr_info("Failed to init (%s)\n",
+		pr_no_info("Failed to init (%s)\n",
 			AW3644_PINCTRL_STATE_HWEN_HIGH);
 		ret = PTR_ERR(aw3644_hwen_high);
 	}
 	aw3644_hwen_low = pinctrl_lookup_state(aw3644_pinctrl,
 		AW3644_PINCTRL_STATE_HWEN_LOW);
 	if (IS_ERR(aw3644_hwen_low)) {
-		pr_info("Failed to init (%s)\n", AW3644_PINCTRL_STATE_HWEN_LOW);
+		pr_no_info("Failed to init (%s)\n", AW3644_PINCTRL_STATE_HWEN_LOW);
 		ret = PTR_ERR(aw3644_hwen_low);
 	}
-	pr_info("%s out\n", __func__);
+	pr_no_info("%s out\n", __func__);
 	return ret;
 }
 
@@ -211,11 +211,11 @@ static int aw3644_pinctrl_set(int pin, int state)
 {
 	int ret = 0;
 
-	pr_info("%s in\n", __func__);
+	pr_no_info("%s in\n", __func__);
 	//return 0;
 
 	if (IS_ERR(aw3644_pinctrl)) {
-		pr_info("pinctrl is not available\n");
+		pr_no_info("pinctrl is not available\n");
 		return -1;
 	}
 
@@ -228,14 +228,14 @@ static int aw3644_pinctrl_set(int pin, int state)
 			!IS_ERR(aw3644_hwen_high))
 			pinctrl_select_state(aw3644_pinctrl, aw3644_hwen_high);
 		else
-			pr_info("set err, pin(%d) state(%d)\n", pin, state);
+			pr_no_info("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	default:
-		pr_info("set err, pin(%d) state(%d)\n", pin, state);
+		pr_no_info("set err, pin(%d) state(%d)\n", pin, state);
 		break;
 	}
-	pr_info("pin(%d) state(%d)\n", pin, state);
-	pr_info("%s out\n", __func__);
+	pr_no_info("pin(%d) state(%d)\n", pin, state);
+	pr_no_info("%s out\n", __func__);
 	return ret;
 }
 
@@ -266,7 +266,7 @@ static int aw3644_set_torch_brightness(int channel, int regval)
 		aw3644_flash_write(AW3644_i2c_client,
 			AW3644_REG_TORCH_LEVEL_LED2, regval);
 	} else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 	mdelay(AW3644_WAIT_TIME);
@@ -293,7 +293,7 @@ static int aw3644_set_strobe_brightness(int channel, int regval)
 		aw3644_flash_write(AW3644_i2c_client,
 			AW3644_REG_FLASH_LEVEL_LED2, regval);
 	} else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 	mdelay(AW3644_WAIT_TIME);
@@ -478,7 +478,7 @@ static int aw3644_enable(int channel)
 /* flashlight disable function */
 static int aw3644_disable(void)
 {
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	aw3644_flash_write(AW3644_i2c_client, AW3644_REG_ENABLE, 0x00);
 	return 0;
 }
@@ -523,7 +523,7 @@ static int aw3644_set_scenario(int scenario)
 /* flashlight init */
 static int aw3644_init(void)
 {
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	/* clear flashlight state */
 	aw3644_en_ch1 = AW3644_DISABLE;
 	aw3644_en_ch2 = AW3644_DISABLE;
@@ -564,13 +564,13 @@ static int aw3644_uninit(void)
  *****************************************************************************/
 static void aw3644_work_disable_ch1(struct work_struct *data)
 {
-	pr_debug("ht work queue callback\n");
+	pr_no_debug("ht work queue callback\n");
 	aw3644_disable();
 }
 
 static void aw3644_work_disable_ch2(struct work_struct *data)
 {
-	pr_debug("lt work queue callback\n");
+	pr_no_debug("lt work queue callback\n");
 	aw3644_disable();
 }
 
@@ -593,7 +593,7 @@ static int aw3644_timer_start(int channel, ktime_t ktime)
 	else if (channel == AW3644_CHANNEL_CH2)
 		hrtimer_start(&aw3644_timer_ch2, ktime, HRTIMER_MODE_REL);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -607,7 +607,7 @@ static int aw3644_timer_cancel(int channel)
 	else if (channel == AW3644_CHANNEL_CH2)
 		hrtimer_cancel(&aw3644_timer_ch2);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -632,7 +632,7 @@ static int aw3644_operate(int channel, int enable)
 			if (aw3644_is_torch(channel, aw3644_level_ch2))
 				aw3644_en_ch2 = AW3644_ENABLE_FLASH;
 	} else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -703,28 +703,28 @@ static int aw3644_ioctl(unsigned int cmd, unsigned long arg)
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_timeout_ms[channel] = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_set_level(channel, fl_arg->arg);
 		break;
 	case FLASH_IOC_SET_SCENARIO:
-		pr_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_set_scenario(fl_arg->arg);
 		break;
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		aw3644_operate(channel, fl_arg->arg);
 		break;
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_no_info("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -748,7 +748,7 @@ static int aw3644_release(void)
 		use_count = 0;
 	mutex_unlock(&aw3644_mutex);
 
-	pr_info("Release: %d\n", use_count);
+	pr_no_info("Release: %d\n", use_count);
 
 	return 0;
 }
@@ -762,14 +762,14 @@ static int aw3644_set_driver(int set)
 		if (!use_count)
 			ret = aw3644_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = aw3644_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&aw3644_mutex);
 
@@ -816,10 +816,10 @@ static int aw3644_i2c_probe(struct i2c_client *client,
 	struct aw3644_platform_data *pdata = client->dev.platform_data;
 	int err;
 
-	pr_info("%s start.\n", __func__);
+	pr_no_info("%s start.\n", __func__);
 	/* check i2c */
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-		pr_info("Failed to check i2c functionality.\n");
+		pr_no_info("Failed to check i2c functionality.\n");
 		err = -ENODEV;
 		goto err_out;
 	}
@@ -865,7 +865,7 @@ static int aw3644_i2c_probe(struct i2c_client *client,
 	/* clear usage count */
 	use_count = 0;
 
-	pr_info("Probe done.\n");
+	pr_no_info("Probe done.\n");
 
 	return 0;
 
@@ -881,7 +881,7 @@ static int aw3644_i2c_remove(struct i2c_client *client)
 {
 	struct aw3644_chip_data *chip = i2c_get_clientdata(client);
 
-	pr_info("Remove start.\n");
+	pr_no_info("Remove start.\n");
 
 	/* flush work queue */
 	flush_work(&aw3644_work_ch1);
@@ -894,7 +894,7 @@ static int aw3644_i2c_remove(struct i2c_client *client)
 		kfree(chip->pdata);
 	kfree(chip);
 
-	pr_info("Remove done.\n");
+	pr_no_info("Remove done.\n");
 
 	return 0;
 }
@@ -930,30 +930,30 @@ static struct i2c_driver aw3644_i2c_driver = {
  *****************************************************************************/
 static int aw3644_probe(struct platform_device *dev)
 {
-	pr_info("aw3644_platform_probe start.\n");
+	pr_no_info("aw3644_platform_probe start.\n");
 	/* init pinctrl */
 	if (aw3644_pinctrl_init(dev)) {
-		pr_debug("Failed to init pinctrl.\n");
+		pr_no_debug("Failed to init pinctrl.\n");
 		return -1;
 	}
 
 	if (i2c_add_driver(&aw3644_i2c_driver)) {
-		pr_debug("Failed to add i2c driver.\n");
+		pr_no_debug("Failed to add i2c driver.\n");
 		return -1;
 	}
 
-	pr_info("%s done.\n", __func__);
+	pr_no_info("%s done.\n", __func__);
 
 	return 0;
 }
 
 static int aw3644_remove(struct platform_device *dev)
 {
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	i2c_del_driver(&aw3644_i2c_driver);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -991,34 +991,34 @@ static int __init flashlight_aw3644_init(void)
 {
 	int ret;
 
-	pr_info("flashlight_aw3644_initInit start.\n");
+	pr_no_info("flashlight_aw3644_initInit start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&aw3644_platform_device);
 	if (ret) {
-		pr_info("Failed to register platform device\n");
+		pr_no_info("Failed to register platform device\n");
 		return ret;
 	}
 #endif
 
 	ret = platform_driver_register(&aw3644_platform_driver);
 	if (ret) {
-		pr_info("Failed to register platform driver\n");
+		pr_no_info("Failed to register platform driver\n");
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_aw3644_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&aw3644_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 late_initcall(flashlight_aw3644_init);

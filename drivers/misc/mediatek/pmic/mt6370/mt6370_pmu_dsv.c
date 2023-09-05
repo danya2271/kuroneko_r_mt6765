@@ -113,7 +113,7 @@ struct mt6370_pmu_dsv_platform_data {
 
 static irqreturn_t mt6370_pmu_dsv_vneg_ocp_irq_handler(int irq, void *data)
 {
-	/* Use pr_info()  instead of dev_info */
+	/* Use pr_no_info()  instead of dev_info */
 	struct mt6370_pmu_dsv_data *dsv_data = data;
 
 	mt6370_pmu_dsv_auto_vbst_adjustment(dsv_data->chip, DSV_VNEG_OCP);
@@ -121,7 +121,7 @@ static irqreturn_t mt6370_pmu_dsv_vneg_ocp_irq_handler(int irq, void *data)
 	if (mt6370_pmu_dsv_scp_ocp_irq_debug(dsv_data->chip, DSV_VNEG_OCP))
 		return IRQ_HANDLED;
 
-	pr_info("%s: IRQ triggered\n", __func__);
+	pr_no_info("%s: IRQ triggered\n", __func__);
 	return IRQ_HANDLED;
 }
 
@@ -134,7 +134,7 @@ static irqreturn_t mt6370_pmu_dsv_vpos_ocp_irq_handler(int irq, void *data)
 	if (mt6370_pmu_dsv_scp_ocp_irq_debug(dsv_data->chip, DSV_VPOS_OCP))
 		return IRQ_HANDLED;
 
-	pr_info("%s: IRQ triggered\n", __func__);
+	pr_no_info("%s: IRQ triggered\n", __func__);
 	return IRQ_HANDLED;
 }
 
@@ -147,7 +147,7 @@ static irqreturn_t mt6370_pmu_dsv_bst_ocp_irq_handler(int irq, void *data)
 	if (mt6370_pmu_dsv_scp_ocp_irq_debug(dsv_data->chip, DSV_BST_OCP))
 		return IRQ_HANDLED;
 
-	pr_info("%s: IRQ triggered\n", __func__);
+	pr_no_info("%s: IRQ triggered\n", __func__);
 	return IRQ_HANDLED;
 }
 
@@ -156,7 +156,7 @@ static irqreturn_t mt6370_pmu_dsv_vneg_scp_irq_handler(int irq, void *data)
 	struct mt6370_pmu_dsv_data *dsv_data = data;
 	int ret;
 
-	pr_info("%s: IRQ triggered\n", __func__);
+	pr_no_info("%s: IRQ triggered\n", __func__);
 	ret = mt6370_pmu_reg_read(dsv_data->chip, MT6370_PMU_REG_DBSTAT);
 	if (ret&0x40)
 		regulator_notifier_call_chain(
@@ -175,7 +175,7 @@ static irqreturn_t mt6370_pmu_dsv_vpos_scp_irq_handler(int irq, void *data)
 	struct mt6370_pmu_dsv_data *dsv_data = data;
 	int ret;
 
-	pr_info("%s: IRQ triggered\n", __func__);
+	pr_no_info("%s: IRQ triggered\n", __func__);
 	ret = mt6370_pmu_reg_read(dsv_data->chip, MT6370_PMU_REG_DBSTAT);
 	if (ret&0x80)
 		regulator_notifier_call_chain(
@@ -270,7 +270,7 @@ static int mt6370_dsv_enable(struct regulator_dev *rdev)
 {
 	struct mt6370_pmu_dsv_data *info = rdev_get_drvdata(rdev);
 
-	pr_info("%s, id = %d\n", __func__, rdev->desc->id);
+	pr_no_info("%s, id = %d\n", __func__, rdev->desc->id);
 	return mt6370_pmu_reg_set_bit(info->chip,
 		mt6370_dsv_regulators[rdev->desc->id].enable_reg,
 		mt6370_dsv_regulators[rdev->desc->id].enable_bit);
@@ -280,7 +280,7 @@ static int mt6370_dsv_disable(struct regulator_dev *rdev)
 {
 	struct mt6370_pmu_dsv_data *info = rdev_get_drvdata(rdev);
 
-	pr_info("%s, id = %d\n", __func__, rdev->desc->id);
+	pr_no_info("%s, id = %d\n", __func__, rdev->desc->id);
 	return mt6370_pmu_reg_clr_bit(info->chip,
 		mt6370_dsv_regulators[rdev->desc->id].enable_reg,
 		mt6370_dsv_regulators[rdev->desc->id].enable_bit);
@@ -477,7 +477,7 @@ static int mt6370_pmu_dsv_probe(struct platform_device *pdev)
 	struct mt6370_pmu_dsv_platform_data pdata, mask;
 	int ret;
 
-	pr_info("%s: (%s)\n", __func__, MT6370_PMU_DSV_DRV_VERSION);
+	pr_no_info("%s: (%s)\n", __func__, MT6370_PMU_DSV_DRV_VERSION);
 
 	dsv_data = devm_kzalloc(&pdev->dev, sizeof(*dsv_data), GFP_KERNEL);
 	if (!dsv_data)

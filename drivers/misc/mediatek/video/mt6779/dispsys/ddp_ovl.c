@@ -92,7 +92,7 @@ unsigned long ovl_base_addr(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_OVL1_2L:
 		return DISPSYS_OVL1_2L_BASE;
 	default:
-		DDP_PR_ERR("invalid ovl module=%d\n", module);
+		DDP_pr_no_err("invalid ovl module=%d\n", module);
 		return -1;
 	}
 	return 0;
@@ -123,7 +123,7 @@ unsigned long ovl_layer_num(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_OVL1_2L:
 		return 2;
 	default:
-		DDP_PR_ERR("invalid ovl module=%d\n", module);
+		DDP_pr_no_err("invalid ovl module=%d\n", module);
 		return 0;
 	}
 	return 0;
@@ -139,7 +139,7 @@ enum CMDQ_EVENT_ENUM ovl_to_cmdq_event_nonsec_end(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_OVL1_2L:
 		return CMDQ_SYNC_DISP_2LOVL1_2NONSEC_END;
 	default:
-		DDP_PR_ERR("invalid ovl module=%d, %s fail\n",
+		DDP_pr_no_err("invalid ovl module=%d, %s fail\n",
 			   module, __func__);
 		ASSERT(0);
 		return CMDQ_SYNC_TOKEN_INVALID;
@@ -157,7 +157,7 @@ static inline unsigned long ovl_to_cmdq_engine(enum DISP_MODULE_ENUM module)
 	case DISP_MODULE_OVL1_2L:
 		return CMDQ_ENG_DISP_2L_OVL1;
 	default:
-		DDP_PR_ERR("invalid ovl module=%d, get cmdq engine fail\n",
+		DDP_pr_no_err("invalid ovl module=%d, get cmdq engine fail\n",
 			   module);
 		ASSERT(0);
 		return DISP_MODULE_UNKNOWN;
@@ -173,7 +173,7 @@ unsigned int ovl_to_index(enum DISP_MODULE_ENUM module)
 		if (ovl_index_module[i] == module)
 			return i;
 	}
-	DDP_PR_ERR("invalid ovl module=%d, get ovl index fail\n", module);
+	DDP_pr_no_err("invalid ovl module=%d, get ovl index fail\n", module);
 	ASSERT(0);
 	return 0;
 }
@@ -181,7 +181,7 @@ unsigned int ovl_to_index(enum DISP_MODULE_ENUM module)
 static inline enum DISP_MODULE_ENUM ovl_index_to_module(int index)
 {
 	if (index >= OVL_NUM) {
-		DDP_PR_ERR("invalid ovl index=%d\n", index);
+		DDP_pr_no_err("invalid ovl index=%d\n", index);
 		ASSERT(0);
 		return DISP_MODULE_UNKNOWN;
 	}
@@ -269,7 +269,7 @@ int ovl_reset(enum DISP_MODULE_ENUM module, void *handle)
 		delay_cnt++;
 		udelay(10);
 		if (delay_cnt > 2000) {
-			DDP_PR_ERR("%s reset timeout!\n",
+			DDP_pr_no_err("%s reset timeout!\n",
 				   ddp_get_module_name(module));
 			ret = -1;
 			break;
@@ -308,7 +308,7 @@ int ovl_roi(enum DISP_MODULE_ENUM module, unsigned int bg_w, unsigned int bg_h,
 	unsigned long baddr = ovl_base_addr(module);
 
 	if ((bg_w > OVL_MAX_WIDTH) || (bg_h > OVL_MAX_HEIGHT)) {
-		DDP_PR_ERR("%s,exceed OVL max size, wh(%ux%u)\n",
+		DDP_pr_no_err("%s,exceed OVL max size, wh(%ux%u)\n",
 			   __func__, bg_w, bg_h);
 		ASSERT(0);
 	}
@@ -330,7 +330,7 @@ static int _ovl_get_rsz_layer_roi(const struct OVL_CONFIG_STRUCT *const c,
 				struct disp_rect src_total_roi)
 {
 	if (c->src_w > c->dst_w || c->src_h > c->dst_h) {
-		DDP_PR_ERR("%s:L%u:src(%ux%u)>dst(%ux%u)\n", __func__, c->layer,
+		DDP_pr_no_err("%s:L%u:src(%ux%u)>dst(%ux%u)\n", __func__, c->layer,
 			   c->src_w, c->src_h, c->dst_w, c->dst_h);
 		return -EINVAL;
 	}
@@ -478,7 +478,7 @@ int ovl_layer_switch(enum DISP_MODULE_ENUM module, unsigned int layer,
 		DISP_REG_SET(handle, baddr + DISP_REG_OVL_RDMA3_CTRL, en);
 		break;
 	default:
-		DDP_PR_ERR("invalid layer=%d\n", layer);
+		DDP_pr_no_err("invalid layer=%d\n", layer);
 		ASSERT(0);
 		break;
 	}
@@ -560,7 +560,7 @@ ovl_layer_config(enum DISP_MODULE_ENUM module, unsigned int phy_layer,
 	ASSERT(dst_h <= OVL_MAX_HEIGHT);
 
 	if (!cfg->addr && cfg->source == OVL_LAYER_SOURCE_MEM) {
-		DDP_PR_ERR("source from memory, but addr is 0!\n");
+		DDP_pr_no_err("source from memory, but addr is 0!\n");
 		ASSERT(0);
 		return -1;
 	}
@@ -576,7 +576,7 @@ ovl_layer_config(enum DISP_MODULE_ENUM module, unsigned int phy_layer,
 	/* check dim layer fmt */
 	if (cfg->source == OVL_LAYER_SOURCE_RESERVED) {
 		if (cfg->aen == 0)
-			DDP_PR_ERR("dim layer%d alpha enable should be 1!\n",
+			DDP_pr_no_err("dim layer%d alpha enable should be 1!\n",
 				   phy_layer);
 		format = UFMT_RGB888;
 	}
@@ -622,7 +622,7 @@ ovl_layer_config(enum DISP_MODULE_ENUM module, unsigned int phy_layer,
 		color_matrix = 7;
 		break; /* BT709 */
 	default:
-		DDP_PR_ERR("un-recognized yuv_range=%d!\n", cfg->yuv_range);
+		DDP_pr_no_err("un-recognized yuv_range=%d!\n", cfg->yuv_range);
 		color_matrix = 4;
 		break;
 	}
@@ -801,12 +801,12 @@ static int ovl_layer_config_compress(enum DISP_MODULE_ENUM module,
 
 	/* 1. check params */
 	if (dst_w > OVL_MAX_WIDTH || dst_h > OVL_MAX_HEIGHT) {
-		DDP_PR_ERR("[PVRIC] invalid size: %u x %u\n", dst_w, dst_h);
+		DDP_pr_no_err("[PVRIC] invalid size: %u x %u\n", dst_w, dst_h);
 		return -EINVAL;
 	}
 
 	if (!cfg->addr && cfg->source == OVL_LAYER_SOURCE_MEM) {
-		DDP_PR_ERR("[PVRIC] source from memory, but addr is 0\n");
+		DDP_pr_no_err("[PVRIC] source from memory, but addr is 0\n");
 		return -EINVAL;
 	}
 
@@ -817,7 +817,7 @@ static int ovl_layer_config_compress(enum DISP_MODULE_ENUM module,
 	}
 
 	if (!is_rgb || (Bpp != 4 && Bpp != 8)) {
-		DDP_PR_ERR("[PVRIC] OVL no support compressed %s\n",
+		DDP_pr_no_err("[PVRIC] OVL no support compressed %s\n",
 			unified_color_fmt_name(format));
 		return -EINVAL;
 	}
@@ -1229,7 +1229,7 @@ static int ovl_check_input_param(struct OVL_CONFIG_STRUCT *cfg)
 {
 	if ((cfg->addr == 0 && cfg->source == 0) ||
 	    cfg->dst_w == 0 || cfg->dst_h == 0) {
-		DDP_PR_ERR("ovl parameter invalidate,addr=0x%08lx,w=%d,h=%d\n",
+		DDP_pr_no_err("ovl parameter invalidate,addr=0x%08lx,w=%d,h=%d\n",
 			   cfg->addr, cfg->dst_w, cfg->dst_h);
 		ASSERT(0);
 		return -1;
@@ -2175,7 +2175,7 @@ int ovl_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 	/* int reg_pa = DISP_REG_OVL_FLOW_CTRL_DBG & 0x1fffffff; */
 
 	if (!cmdq_trigger_handle) {
-		DDP_PR_ERR("cmdq_trigger_handle is NULL\n");
+		DDP_pr_no_err("cmdq_trigger_handle is NULL\n");
 		return -1;
 	}
 
@@ -2184,7 +2184,7 @@ int ovl_build_cmdq(enum DISP_MODULE_ENUM module, void *cmdq_trigger_handle,
 			ret = cmdqRecPoll(cmdq_trigger_handle, 0x14007240, 2,
 					  0x3f);
 		} else {
-			DDP_PR_ERR("wrong module: %s\n",
+			DDP_pr_no_err("wrong module: %s\n",
 				   ddp_get_module_name(module));
 			return -1;
 		}
@@ -2928,7 +2928,7 @@ int ovl_partial_update(enum DISP_MODULE_ENUM module, unsigned int bg_w,
 	unsigned long baddr = ovl_base_addr(module);
 
 	if ((bg_w > OVL_MAX_WIDTH) || (bg_h > OVL_MAX_HEIGHT)) {
-		DDP_PR_ERR("ovl_roi,exceed OVL max size, w=%d, h=%d\n",
+		DDP_pr_no_err("ovl_roi,exceed OVL max size, w=%d, h=%d\n",
 			   bg_w, bg_h);
 		ASSERT(0);
 	}

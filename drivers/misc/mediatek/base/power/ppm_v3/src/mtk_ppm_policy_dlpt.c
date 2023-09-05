@@ -66,9 +66,6 @@ void mt_ppm_dlpt_kick_PBM(struct ppm_cluster_status *cluster_status,
 	budget = ppm_dlpt_pwr_budget_postprocess(
 		budget, (unsigned int)power_idx);
 
-	ppm_dbg(DLPT, "budget = %d(%d), total_core = %d, max_volt = %d\n",
-		budget, power_idx, total_core, max_volt);
-
 #ifndef DISABLE_PBM_FEATURE
 #ifdef CONFIG_MTK_AEE_IPANIC
 	aee_rr_rec_ppm_waiting_for_pbm(1);
@@ -90,9 +87,6 @@ void mt_ppm_dlpt_set_limit_by_pbm(unsigned int limited_power)
 	FUNC_ENTER(FUNC_LV_POLICY);
 
 	budget = ppm_dlpt_pwr_budget_preprocess(limited_power);
-
-	ppm_dbg(DLPT, "Get PBM notifier => budget = %d(%d)\n",
-		budget, limited_power);
 
 	ppm_lock(&dlpt_policy.lock);
 
@@ -129,8 +123,6 @@ static unsigned int ppm_dlpt_pwr_budget_postprocess(unsigned int budget,
 	/* just calculate new ratio */
 	dlpt_percentage_to_real_power =
 		(pwr_idx * 100 + (budget - 1)) / budget;
-	ppm_dbg(DLPT, "new dlpt ratio = %d (%d/%d)\n",
-		dlpt_percentage_to_real_power, pwr_idx, budget);
 
 	return budget;
 }
@@ -206,9 +198,7 @@ static ssize_t ppm_dlpt_budget_trans_percentage_proc_write(
 		return -EINVAL;
 
 	if (!kstrtouint(buf, 10, &percentage)) {
-		if (!percentage)
-			ppm_err("percentage should not be 0!\n");
-		else
+		if (percentage)
 			dlpt_percentage_to_real_power = percentage;
 	} else
 		ppm_err("@%s: Invalid input!\n", __func__);

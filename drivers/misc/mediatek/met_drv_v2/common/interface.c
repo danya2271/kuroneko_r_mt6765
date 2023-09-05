@@ -89,7 +89,7 @@ static void calc_timer_value(int rate)
 	else
 		met_timer_expire = (HZ / rate) + 1;
 
-	/* pr_debug("JBK HZ=%d, met_hrtimer_expire=%d ns, met_timer_expire=%d ticks\n", */
+	/* pr_no_debug("JBK HZ=%d, met_hrtimer_expire=%d ns, met_timer_expire=%d ticks\n", */
 	/* HZ, met_hrtimer_expire, met_timer_expire); */
 }
 
@@ -1144,7 +1144,7 @@ int met_set_platform(const char *plf_name, int flag)
 	if (flag) {
 		ret = device_create_file(met_device.this_device, &dev_attr_plf);
 		if (ret != 0) {
-			pr_debug("can not create device file: plf\n");
+			pr_no_debug("can not create device file: plf\n");
 			return ret;
 		}
 		strncpy(met_platform, plf_name, sizeof(met_platform) - 1);
@@ -1209,7 +1209,7 @@ int met_set_topology(const char *topology_name, int flag)
 	if (flag) {
 		ret = device_create_file(met_device.this_device, &dev_attr_core_topology);
 		if (ret != 0) {
-			pr_debug("can not create device file: topology\n");
+			pr_no_debug("can not create device file: topology\n");
 			return ret;
 		}
 		strncpy(met_topology, topology_name, sizeof(met_topology) - 1);
@@ -1284,7 +1284,7 @@ int fs_reg(int met_minor)
 		met_device.minor = met_minor;
 	ret = misc_register(&met_device);
 	if (ret != 0) {
-		pr_debug("misc register failed, minor = %d \n", met_device.minor);
+		pr_no_debug("misc register failed, minor = %d \n", met_device.minor);
 		return ret;
 	}
 
@@ -1295,20 +1295,20 @@ int fs_reg(int met_minor)
 
 	ret = device_create_file(met_device.this_device, &dev_attr_ksym);
 	if (ret != 0) {
-		pr_debug("can not create device file: ksym\n");
+		pr_no_debug("can not create device file: ksym\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_run);
 	if (ret != 0) {
-		pr_debug("can not create device file: run\n");
+		pr_no_debug("can not create device file: run\n");
 		return ret;
 	}
 
 #if	defined(PR_CPU_NOTIFY)
 	ret = device_create_file(met_device.this_device, &dev_attr_cpu_notify);
 	if (ret != 0) {
-		pr_debug("can not create device file: cpu_notify\n");
+		pr_no_debug("can not create device file: cpu_notify\n");
 		return ret;
 	}
 #endif
@@ -1316,112 +1316,112 @@ int fs_reg(int met_minor)
 #if IS_ENABLED(CONFIG_CPU_FREQ)
 	ret = device_create_file(met_device.this_device, &dev_attr_dvfs);
 	if (ret != 0) {
-		pr_debug("can not create device file: dvfs\n");
+		pr_no_debug("can not create device file: dvfs\n");
 		return ret;
 	}
 #endif
 
 	ret = device_create_file(met_device.this_device, &dev_attr_suspend_compensation_enable);
 	if (ret != 0) {
-		pr_debug("can not create device file: suspend_compensation_enable\n");
+		pr_no_debug("can not create device file: suspend_compensation_enable\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_suspend_compensation_flag);
 	if (ret != 0) {
-		pr_debug("can not create device file: suspend_compensation_enable\n");
+		pr_no_debug("can not create device file: suspend_compensation_enable\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_ver);
 	if (ret != 0) {
-		pr_debug("can not create device file: ver\n");
+		pr_no_debug("can not create device file: ver\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_devices);
 	if (ret != 0) {
-		pr_debug("can not create device file: devices\n");
+		pr_no_debug("can not create device file: devices\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_ctrl);
 	if (ret != 0) {
-		pr_debug("can not create device file: ctrl\n");
+		pr_no_debug("can not create device file: ctrl\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_cpu_pmu_method);
 	if (ret != 0) {
-		pr_debug("can not create device file: cpu_pmu_method\n");
+		pr_no_debug("can not create device file: cpu_pmu_method\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_cpu_pm_pmu_reconfig);
 	if (ret != 0) {
-		pr_debug("can not create device file: cpu_pm_pmu_reconfig\n");
+		pr_no_debug("can not create device file: cpu_pm_pmu_reconfig\n");
 		return ret;
 	}
 
 #if	defined(MET_BOOT_MSG)
 	ret = device_create_file(met_device.this_device, &dev_attr_bootmsg);
 	if (ret != 0) {
-		pr_debug("can not create device file: bootmsg\n");
+		pr_no_debug("can not create device file: bootmsg\n");
 		return ret;
 	}
 #endif
 
 	ret = device_create_file(met_device.this_device, &dev_attr_sample_rate);
 	if (ret != 0) {
-		pr_debug("can not create device file: sample_rate\n");
+		pr_no_debug("can not create device file: sample_rate\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_core_topology);
 	if (ret != 0) {
-		pr_debug("can not create device file: topology\n");
+		pr_no_debug("can not create device file: topology\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_plf);
 	if (ret != 0) {
-		pr_debug("can not create device file: plf\n");
+		pr_no_debug("can not create device file: plf\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_chip_id);
 	if (ret != 0) {
-		pr_debug("can not create device file: chip_id\n");
+		pr_no_debug("can not create device file: chip_id\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_hash);
 	if (ret != 0) {
-		pr_debug("can not create device file: hash\n");
+		pr_no_debug("can not create device file: hash\n");
 		return ret;
 	}
 
 	ret = device_create_file(met_device.this_device, &dev_attr_ipi_test);
 	if (ret != 0) {
-		pr_debug("can not create device file: ipi_test\n");
+		pr_no_debug("can not create device file: ipi_test\n");
 		return ret;
 	}
 
 	kobj_misc = kobject_create_and_add("misc", &met_device.this_device->kobj);
 	if (kobj_misc == NULL) {
-		pr_debug("can not create kobject: kobj_misc\n");
+		pr_no_debug("can not create kobject: kobj_misc\n");
 		return -1;
 	}
 
 	kobj_pmu = kobject_create_and_add("pmu", &met_device.this_device->kobj);
 	if (kobj_pmu == NULL) {
-		pr_debug("can not create kobject: kobj_pmu\n");
+		pr_no_debug("can not create kobject: kobj_pmu\n");
 		return -1;
 	}
 
 	kobj_bus = kobject_create_and_add("bus", &met_device.this_device->kobj);
 	if (kobj_bus == NULL) {
-		pr_debug("can not create kobject: kobj_bus\n");
+		pr_no_debug("can not create kobject: kobj_bus\n");
 		return -1;
 	}
 

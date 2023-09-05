@@ -353,37 +353,37 @@ void mtktspmic_get_from_dts(struct platform_device *pdev)
 	chan_chip_temp = devm_iio_channel_get(&pdev->dev, "pmic_chip_temp");
 	if (IS_ERR(chan_chip_temp)) {
 		ret = PTR_ERR(chan_chip_temp);
-		pr_notice("AUXADC_CHIP_TEMP get fail, ret=%d\n", ret);
+		pr_no_notice("AUXADC_CHIP_TEMP get fail, ret=%d\n", ret);
 	}
 
 	chan_vcore_temp = devm_iio_channel_get(&pdev->dev, "pmic_buck1_temp");
 	if (IS_ERR(chan_vcore_temp)) {
 		ret = PTR_ERR(chan_vcore_temp);
-		pr_notice("AUXADC_VCORE_TEMP get fail, ret=%d\n", ret);
+		pr_no_notice("AUXADC_VCORE_TEMP get fail, ret=%d\n", ret);
 	}
 
 	chan_vproc_temp = devm_iio_channel_get(&pdev->dev, "pmic_buck2_temp");
 	if (IS_ERR(chan_vproc_temp)) {
 		ret = PTR_ERR(chan_vproc_temp);
-		pr_notice("AUXADC_VPROC_TEMP get fail, ret=%d\n", ret);
+		pr_no_notice("AUXADC_VPROC_TEMP get fail, ret=%d\n", ret);
 	}
 
 	chan_vgpu_temp = devm_iio_channel_get(&pdev->dev, "pmic_buck3_temp");
 	if (IS_ERR(chan_vgpu_temp)) {
 		ret = PTR_ERR(chan_vgpu_temp);
-		pr_err("AUXADC_VGPU_TEMP get fail, ret=%d\n", ret);
+		pr_no_err("AUXADC_VGPU_TEMP get fail, ret=%d\n", ret);
 	}
 
 	chan_tsx_temp = devm_iio_channel_get(&pdev->dev, "pmic_tsx_temp");
 	if (IS_ERR(chan_tsx_temp)) {
 		ret = PTR_ERR(chan_tsx_temp);
-		pr_err("AUXADC_TSX_TEMP get fail, ret=%d\n", ret);
+		pr_no_err("AUXADC_TSX_TEMP get fail, ret=%d\n", ret);
 	}
 
 	chan_dcxo_temp = devm_iio_channel_get(&pdev->dev, "pmic_dcxo_temp");
 	if (IS_ERR(chan_dcxo_temp)) {
 		ret = PTR_ERR(chan_dcxo_temp);
-		pr_err("AUXADC_DCXO_TEMP get fail, ret=%d\n", ret);
+		pr_no_err("AUXADC_DCXO_TEMP get fail, ret=%d\n", ret);
 	}
 
 	g_pdev = pdev;
@@ -404,7 +404,7 @@ int mtktspmic_get_hw_temp(void)
 							"pmic_chip_temp");
 		if (IS_ERR(chan_chip_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_chip_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_chip_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -413,7 +413,7 @@ int mtktspmic_get_hw_temp(void)
 	if (!IS_ERR(chan_chip_temp)) {
 		ret = iio_read_channel_processed(chan_chip_temp, &temp);
 		if (ret < 0)
-			pr_notice("pmic_chip_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_chip_temp read fail, ret=%d\n", ret);
 
 	}
 #else
@@ -465,7 +465,7 @@ int mt6359vcore_get_hw_temp(void)
 							"pmic_buck1_temp");
 		if (IS_ERR(chan_vcore_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_vcore_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_vcore_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -474,7 +474,7 @@ int mt6359vcore_get_hw_temp(void)
 	if (!IS_ERR(chan_vcore_temp)) {
 		ret = iio_read_channel_processed(chan_vcore_temp, &temp);
 		if (ret < 0)
-			pr_notice("pmic_vcore_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_vcore_temp read fail, ret=%d\n", ret);
 	}
 #else
 	temp = pmic_get_auxadc_value(AUXADC_LIST_VCORE_TEMP);
@@ -524,7 +524,7 @@ int mt6359vproc_get_hw_temp(void)
 							"pmic_buck2_temp");
 		if (IS_ERR(chan_vproc_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_vproc_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_vproc_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -533,7 +533,7 @@ int mt6359vproc_get_hw_temp(void)
 	if (!IS_ERR(chan_vproc_temp)) {
 		ret = iio_read_channel_processed(chan_vproc_temp, &temp);
 		if (ret < 0)
-			pr_notice("pmic_vproc_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_vproc_temp read fail, ret=%d\n", ret);
 	}
 #else
 	temp = pmic_get_auxadc_value(AUXADC_LIST_VPROC_TEMP);
@@ -583,7 +583,7 @@ int mt6359vgpu_get_hw_temp(void)
 							"pmic_buck3_temp");
 		if (IS_ERR(chan_vgpu_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_vgpu_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_vgpu_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -592,7 +592,7 @@ int mt6359vgpu_get_hw_temp(void)
 	if (!IS_ERR(chan_vgpu_temp)) {
 		ret = iio_read_channel_processed(chan_vgpu_temp, &temp);
 		if (ret < 0)
-			pr_notice("pmic_vgpu_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_vgpu_temp read fail, ret=%d\n", ret);
 	}
 #else
 	temp = pmic_get_auxadc_value(AUXADC_LIST_VGPU_TEMP);
@@ -816,7 +816,7 @@ int mt6359tsx_get_hw_temp(void)
 							"pmic_tsx_temp");
 		if (IS_ERR(chan_tsx_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_tsx_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_tsx_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -825,7 +825,7 @@ int mt6359tsx_get_hw_temp(void)
 	if (!IS_ERR(chan_tsx_temp)) {
 		ret = iio_read_channel_raw(chan_tsx_temp, &raw);
 		if (ret < 0)
-			pr_notice("pmic_tsx_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_tsx_temp read fail, ret=%d\n", ret);
 
 	}
 
@@ -879,7 +879,7 @@ int mt6359dcxo_get_hw_temp(void)
 							"pmic_dcxo_temp");
 		if (IS_ERR(chan_dcxo_temp)) {
 			mutex_unlock(&TSPMIC_lock);
-			pr_notice("chan_dcxo_temp is invalid, return fake temperature\n");
+			pr_no_notice("chan_dcxo_temp is invalid, return fake temperature\n");
 			temp1 = 35000;
 			goto out;
 		}
@@ -888,7 +888,7 @@ int mt6359dcxo_get_hw_temp(void)
 	if (!IS_ERR(chan_dcxo_temp)) {
 		ret = iio_read_channel_raw(chan_dcxo_temp, &raw);
 		if (ret < 0)
-			pr_notice("pmic_dcxo_temp read fail, ret=%d\n", ret);
+			pr_no_notice("pmic_dcxo_temp read fail, ret=%d\n", ret);
 
 	}
 

@@ -177,7 +177,7 @@ static int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst,
 	unsigned int Bpp = 0;
 
 	if (!src || !dst) {
-		DISP_PR_INFO("%s src(0x%p) or dst(0x%p) is null\n",
+		DISP_pr_no_info("%s src(0x%p) or dst(0x%p) is null\n",
 			__func__, src, dst);
 		return -1;
 	}
@@ -233,7 +233,7 @@ static int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst,
 		src->buffer_source == DISP_BUFFER_MVA) {
 		dst->source = OVL_LAYER_SOURCE_MEM; /* from memory */
 	} else {
-		DISP_PR_INFO("unknown source = %d", src->buffer_source);
+		DISP_pr_no_info("unknown source = %d", src->buffer_source);
 		dst->source = OVL_LAYER_SOURCE_MEM;
 	}
 
@@ -374,7 +374,7 @@ int ovl2mem_init(unsigned int session)
 	ovl2mem_path_lock(__func__);
 
 	if (pgcl->state > 0) {
-		DISP_PR_INFO("path has created, state%d\n", pgcl->state);
+		DISP_pr_no_info("path has created, state%d\n", pgcl->state);
 		goto Exit;
 	}
 
@@ -392,7 +392,7 @@ int ovl2mem_init(unsigned int session)
 		ret = cmdqRecCreate(CMDQ_SCENARIO_SUB_DISP,
 			&(pgcl->cmdq_handle_config));
 		if (ret) {
-			DISP_PR_INFO("cmdqRecCreate FAIL, ret=%d\n", ret);
+			DISP_pr_no_info("cmdqRecCreate FAIL, ret=%d\n", ret);
 			goto Exit;
 		} else {
 			DISPDBG("cmdqRecCreate SUCCESS, cmdq_handle=%p\n",
@@ -414,7 +414,7 @@ int ovl2mem_init(unsigned int session)
 	if (pgcl->dpmgr_handle) {
 		DISPDBG("dpmgr create path SUCCESS(%p)\n", pgcl->dpmgr_handle);
 	} else {
-		DISP_PR_INFO("dpmgr create path FAIL\n");
+		DISP_pr_no_info("dpmgr create path FAIL\n");
 		goto Exit;
 	}
 
@@ -434,7 +434,7 @@ int ovl2mem_init(unsigned int session)
 			  ddp_get_module_name(DISP_MODULE_OVL1_2L),
 			  ovl2mem_use_m4u ? "virtual" : "physical");
 	} else {
-		DISP_PR_INFO("config M4U Port %s to %s FAIL(ret=%d)\n",
+		DISP_pr_no_info("config M4U Port %s to %s FAIL(ret=%d)\n",
 			  ddp_get_module_name(DISP_MODULE_OVL1_2L),
 			  ovl2mem_use_m4u ? "virtual" : "physical", ret);
 		goto Exit;
@@ -451,7 +451,7 @@ int ovl2mem_init(unsigned int session)
 			  ddp_get_module_name(DISP_MODULE_WDMA0),
 			  ovl2mem_use_m4u ? "virtual" : "physical");
 	} else {
-		DISP_PR_INFO("config M4U Port %s to %s FAIL(ret=%d)\n",
+		DISP_pr_no_info("config M4U Port %s to %s FAIL(ret=%d)\n",
 			  ddp_get_module_name(DISP_MODULE_WDMA0),
 			  ovl2mem_use_m4u ? "virtual" : "physical", ret);
 		goto Exit;
@@ -697,7 +697,7 @@ int ovl2mem_frame_cfg(struct disp_frame_cfg_t *cfg)
 	ovl2mem_path_lock(__func__);
 
 	if (pgcl->state == 0) {
-		DISP_PR_INFO("ovl2mem is already slept\n");
+		DISP_pr_no_info("ovl2mem is already slept\n");
 		ovl2mem_path_unlock(__func__);
 		return 0;
 	}

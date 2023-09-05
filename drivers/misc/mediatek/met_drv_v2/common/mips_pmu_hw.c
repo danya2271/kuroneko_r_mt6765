@@ -86,7 +86,7 @@ static enum cpu_type_enum mips_get_ic(void)
 {
 	unsigned int value = current_cpu_type();
 
-	/* pr_debug("ic value: %X\n", value); */
+	/* pr_no_debug("ic value: %X\n", value); */
 	return value;
 }
 
@@ -128,7 +128,7 @@ static int mips_pmu_hw_get_counters(void)
 {
 	int count = n_counters();
 
-	/* pr_debug("pmu hw event nr: %d\n", count); */
+	/* pr_no_debug("pmu hw event nr: %d\n", count); */
 	return count;
 }
 
@@ -290,7 +290,7 @@ static int mips_pmu_hw_get_event_desc(int idx, int event, char *event_desc)
 	int i;
 
 	if (event_desc == NULL) {
-		pr_debug("event_desc is NULL\n");
+		pr_no_debug("event_desc is NULL\n");
 		return -1;
 	}
 
@@ -334,7 +334,7 @@ static void mips_pmu_hw_start(struct met_pmu *pmu, int count)
 	int generic = count - 1;
 	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 
-	/* pr_debug("hw_start generic: %d\n", generic); */
+	/* pr_no_debug("hw_start generic: %d\n", generic); */
 	for (i = 0; i < generic; i++) {
 		/* init config */
 		cpuc->config_base[i] = 0;
@@ -349,14 +349,14 @@ static void mips_pmu_hw_start(struct met_pmu *pmu, int count)
 			mipsxx_pmu_enable_event(i, pmu[i].event);
 	}
 	if (pmu[count - 1].mode == MODE_POLLING)
-		pr_debug("%s %d BUG!!! index over run!!\n", __func__, __LINE__);
+		pr_no_debug("%s %d BUG!!! index over run!!\n", __func__, __LINE__);
 }
 
 static void mips_pmu_hw_stop(int count)
 {
 	int idx = 0;
 	int generic = count - 1;
-	/* pr_debug("reset %d\n", generic); */
+	/* pr_no_debug("reset %d\n", generic); */
 	for (idx = 0; idx < generic; idx++) {
 		mipsxx_pmu_reset_counters(idx);
 		mipsxx_pmu_disable_event(idx);
@@ -378,7 +378,7 @@ static unsigned int mips_pmu_hw_polling(struct met_pmu *pmu, int count, unsigned
 		}
 	}
 	if (pmu[count - 1].mode == MODE_POLLING) {
-		pr_debug("%s %d BUG!!! index over run!!\n", __func__, __LINE__);
+		pr_no_debug("%s %d BUG!!! index over run!!\n", __func__, __LINE__);
 		pmu_value[cnt] = 0xFFFF;
 		cnt++;
 	}

@@ -86,7 +86,7 @@ void sched_mon_msg(int out, char *buf, ...)
 	if (out & TO_FTRACE)
 		trace_sched_mon_msg_rcuidle(str);
 	if (out & TO_KERNEL_LOG)
-		pr_info("%s\n", str);
+		pr_no_info("%s\n", str);
 	if (out & TO_DEFERRED)
 		printk_deferred("%s\n", str);
 	if (out & TO_SRAM) {
@@ -471,8 +471,6 @@ static inline void __trace_hardirqs_off_time(void)
 
 inline void trace_hardirqs_off_time(void)
 {
-	if (irq_off_tracer)
-		__trace_hardirqs_off_time();
 }
 
 static inline void __trace_hardirqs_on_time(void)
@@ -540,8 +538,6 @@ static inline void __trace_hardirqs_on_time(void)
 
 inline void trace_hardirqs_on_time(void)
 {
-	if (irq_off_tracer)
-		__trace_hardirqs_on_time();
 }
 
 __init static int init_irq_off_tracer(void)
@@ -589,8 +585,6 @@ static inline void __trace_preempt_off_time(void)
 
 inline void trace_preempt_off_time(void)
 {
-	if (preempt_tracer)
-		__trace_preempt_off_time();
 }
 
 static inline void __trace_preempt_on_time(void)
@@ -643,8 +637,6 @@ static inline void __trace_preempt_on_time(void)
 
 inline void trace_preempt_on_time(void)
 {
-	if (preempt_tracer)
-		__trace_preempt_on_time();
 }
 
 __init static int init_preempt_tracer(void)
@@ -830,7 +822,7 @@ static int __init init_sched_monitor(void)
 				 sched_mon_file[i].mode,
 				 dir[sched_mon_file[i].dir],
 				 sched_mon_file[i].proc_fops)) {
-			pr_info("create [%s] failed\n", sched_mon_file[i].name);
+			pr_no_info("create [%s] failed\n", sched_mon_file[i].name);
 			return -ENOMEM;
 		}
 	}

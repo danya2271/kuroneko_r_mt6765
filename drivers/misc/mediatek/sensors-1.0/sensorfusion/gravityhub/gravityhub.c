@@ -21,7 +21,7 @@ static int grav_get_data(int *x, int *y, int *z, int *scalar, int *status)
 
 	err = sensor_get_data_from_hub(ID_GRAVITY, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!!\n");
+		pr_no_err("sensor_get_data_from_hub fail!!\n");
 		return -1;
 	}
 	time_stamp				= data.time_stamp;
@@ -101,7 +101,7 @@ static int gravityhub_local_init(void)
 #endif
 	err = fusion_register_control_path(&ctl, ID_GRAVITY);
 	if (err) {
-		pr_err("register gravity control path err\n");
+		pr_no_err("register gravity control path err\n");
 		goto exit;
 	}
 
@@ -109,12 +109,12 @@ static int gravityhub_local_init(void)
 	data.vender_div = 1000;
 	err = fusion_register_data_path(&data, ID_GRAVITY);
 	if (err) {
-		pr_err("register gravity data path err\n");
+		pr_no_err("register gravity data path err\n");
 		goto exit;
 	}
 	err = scp_sensorHub_data_registration(ID_GRAVITY, gravity_recv_data);
 	if (err < 0) {
-		pr_err("SCP_sensorHub_data_registration failed\n");
+		pr_no_err("SCP_sensorHub_data_registration failed\n");
 		goto exit;
 	}
 	return 0;
@@ -140,7 +140,7 @@ static int __init gravityhub_init(void)
 
 static void __exit gravityhub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(gravityhub_init);

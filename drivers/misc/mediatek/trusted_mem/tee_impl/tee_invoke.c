@@ -50,14 +50,14 @@ tee_directly_invoke_cmd_locked(struct trusted_driver_cmd_params *invoke_params)
 		get_tee_peer_ops(&tee_ops);
 
 	if (tee_ops->session_open(&tee_session_data, NULL)) {
-		pr_err("%s:%d tee open session failed!\n", __func__, __LINE__);
+		pr_no_err("%s:%d tee open session failed!\n", __func__, __LINE__);
 		return TMEM_TEE_CREATE_SESSION_FAILED;
 	}
 
 	ret = tee_ops->invoke_cmd(invoke_params, tee_session_data, NULL);
 
 	if (tee_ops->session_close(tee_session_data, NULL))
-		pr_err("%s:%d tee close session failed!\n", __func__, __LINE__);
+		pr_no_err("%s:%d tee close session failed!\n", __func__, __LINE__);
 
 	return ret;
 }
@@ -86,7 +86,7 @@ int secmem_fr_set_prot_shared_region(u64 pa, u32 size, int remote_region_type)
 
 #ifdef TCORE_UT_TESTS_SUPPORT
 	if (is_multi_type_alloc_multithread_test_locked()) {
-		pr_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
+		pr_no_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
 		return TMEM_OK;
 	}
 #endif
@@ -115,7 +115,7 @@ int secmem_set_mchunks_region(u64 pa, u32 size, int remote_region_type)
 
 #ifdef TCORE_UT_TESTS_SUPPORT
 	if (is_multi_type_alloc_multithread_test_locked()) {
-		pr_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
+		pr_no_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
 		return TMEM_OK;
 	}
 #endif

@@ -51,11 +51,11 @@ static struct proc_dir_entry *clVR_ISP_status;
 #define clVR_ISP_dprintk(fmt, args...)   \
 	do {                                    \
 		if (clVR_ISP_debug_log == 1) {                \
-			pr_notice(CLVR_ISP_LOG_TAG fmt, ##args); \
+			pr_no_notice(CLVR_ISP_LOG_TAG fmt, ##args); \
 		}                                   \
 	} while (0)
 
-#define clVR_ISP_printk(fmt, args...) pr_notice(CLVR_ISP_LOG_TAG fmt, ##args)
+#define clVR_ISP_printk(fmt, args...) pr_no_notice(CLVR_ISP_LOG_TAG fmt, ##args)
 
 
 
@@ -63,7 +63,7 @@ void __attribute__ ((weak))
 mmdvfs_qos_limit_config(u32 pm_qos_class, u32 limit_value,
 	enum mmdvfs_limit_source source)
 {
-	pr_notice("E_WF: %s doesn't exist\n", __func__);
+	pr_no_notice("E_WF: %s doesn't exist\n", __func__);
 }
 
 static ssize_t clVR_ISP_status_write(

@@ -166,7 +166,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 
 	enum   IMGSENSOR_RETURN    ret   = IMGSENSOR_RETURN_SUCCESS;
 
-	pr_debug("i2c_buf_mode_en %d\n", enable);
+	pr_no_debug("i2c_buf_mode_en %d\n", enable);
 
 	ret = (enable) ?
 		hw_trig_i2c_enable(pinst->pi2c_client->adapter) :
@@ -177,7 +177,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 #else
 enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 {
-	pr_info("not support i2c_buf_mode\n");
+	pr_no_info("not support i2c_buf_mode\n");
 	return IMGSENSOR_RETURN_SUCCESS;
 }
 #endif
@@ -218,7 +218,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_read(
 		static DEFINE_RATELIMIT_STATE(ratelimit, 1 * HZ, 30);
 
 		if (__ratelimit(&ratelimit))
-			pr_info(
+			pr_no_info(
 			    "I2C read failed (0x%x)! speed(0=%d) (0x%x)\n",
 			    ret,
 			    speed,
@@ -272,7 +272,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_write(
 		static DEFINE_RATELIMIT_STATE(ratelimit, 1 * HZ, 30);
 
 		if (__ratelimit(&ratelimit))
-			pr_info(
+			pr_no_info(
 			    "I2C write failed (0x%x)! speed(0=%d) (0x%x)\n",
 			    ret,
 			    speed,

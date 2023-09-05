@@ -17,7 +17,7 @@
 #include "mt6765_dcm_internal.h"
 #include "mtk_dcm.h"
 
-#define DEBUGLINE dcm_pr_info("%s %d\n", __func__, __LINE__)
+#define DEBUGLINE dcm_pr_no_info("%s %d\n", __func__, __LINE__)
 
 static short dcm_cpu_cluster_stat;
 static short dcm_debug_stat;
@@ -62,7 +62,7 @@ unsigned long dcm_jpgenc_base;
 short is_dcm_bringup(void)
 {
 #ifdef DCM_BRINGUP
-	dcm_pr_info("%s: skipped for bring up\n", __func__);
+	dcm_pr_no_info("%s: skipped for bring up\n", __func__);
 	return 1;
 #else
 	return 0;
@@ -221,7 +221,7 @@ int dcm_mcsi(int on)
 
 void dcm_dump_regs(void)
 {
-	dcm_pr_info("\n******** dcm dump register *********\n");
+	dcm_pr_no_info("\n******** dcm dump register *********\n");
 	/* MCUSYS reg */
 
 	/* ARMCORE reg */
@@ -466,7 +466,7 @@ int mt_dcm_dts_map(void)
 	/* dcm */
 	node = of_find_compatible_node(NULL, NULL, DCM_NODE);
 	if (!node) {
-		dcm_pr_info("error: cannot find node %s\n", DCM_NODE);
+		dcm_pr_no_info("error: cannot find node %s\n", DCM_NODE);
 		return -1;
 	}
 
@@ -475,7 +475,7 @@ int mt_dcm_dts_map(void)
 		*(dcm_base_array[i].base) = (unsigned long)of_iomap(node, i);
 
 		if (!*(dcm_base_array[i].base)) {
-			dcm_pr_info("error: cannot iomap base %s\n",
+			dcm_pr_no_info("error: cannot iomap base %s\n",
 				dcm_base_array[i].name);
 			return -1;
 		}
@@ -493,7 +493,7 @@ int mt_dcm_dts_map(void)
 
 void dcm_pre_init(void)
 {
-	dcm_pr_info("weak function of %s\n", __func__);
+	dcm_pr_no_info("weak function of %s\n", __func__);
 }
 
 static int __init mt6765_dcm_init(void)
@@ -507,7 +507,7 @@ static int __init mt6765_dcm_init(void)
 		return 0;
 
 	if (mt_dcm_dts_map()) {
-		dcm_pr_notice("%s: failed due to DTS failed\n", __func__);
+		dcm_pr_no_notice("%s: failed due to DTS failed\n", __func__);
 		return -1;
 	}
 

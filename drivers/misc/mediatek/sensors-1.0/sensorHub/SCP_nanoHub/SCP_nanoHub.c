@@ -186,7 +186,7 @@ static void moving_average_filter(struct moving_average *filter,
 	if (filter->cnt < FILTER_DATAPOINTS)
 		filter->cnt++;
 
-	/* pr_err("hongxu raw_offset=%lld\n", ap_time - hub_time); */
+	/* pr_no_err("hongxu raw_offset=%lld\n", ap_time - hub_time); */
 
 	for (i = 1, avg = 0; i < filter->cnt; i++)
 		avg += (filter->input[i] - filter->input[0]);
@@ -264,7 +264,7 @@ static int ipi_txrx_bufs(struct ipi_transfer *t)
 
 	/* union SCP_SENSOR_HUB_DATA *req =
 	 *		(union SCP_SENSOR_HUB_DATA *)t->tx_buf;
-	 * pr_err("sensorType:%d, action:%d\n",
+	 * pr_no_err("sensorType:%d, action:%d\n",
 	 *req->req.sensorType, req->req.action);
 	 */
 	spin_lock_irqsave(&txrx_cmd_lock, flags);
@@ -279,12 +279,12 @@ static int ipi_txrx_bufs(struct ipi_transfer *t)
 		status = scp_ipi_send(IPI_SENSOR,
 			(unsigned char *)hw->tx, hw->len, 0, SCP_A_ID);
 		if (status == SCP_IPI_ERROR) {
-			pr_err("scp_ipi_send fail\n");
+			pr_no_err("scp_ipi_send fail\n");
 			return -1;
 		}
 		if (status == SCP_IPI_BUSY) {
 			if (retry++ == 1000) {
-				pr_err("retry fail\n");
+				pr_no_err("retry fail\n");
 				return -1;
 			}
 			if (retry % 100 == 0)
@@ -293,12 +293,12 @@ static int ipi_txrx_bufs(struct ipi_transfer *t)
 	} while (status == SCP_IPI_BUSY);
 
 	if (retry >= 100)
-		pr_debug("retry time:%d\n", retry);
+		pr_no_debug("retry time:%d\n", retry);
 
 	timeout = wait_for_completion_timeout(&hw->done, msecs_to_jiffies(500));
 	spin_lock_irqsave(&txrx_cmd_lock, flags);
 	if (!timeout) {
-		pr_err("transfer timeout!");
+		pr_no_err("transfer timeout!");
 		hw->count = -1;
 	}
 	hw->context = NULL;
@@ -324,7 +324,7 @@ static void ipi_work(struct work_struct *work)
 		list_for_each_entry(t, &m->transfers, transfer_list) {
 			if (!t->tx_buf && t->len) {
 				status = -EINVAL;
-				pr_err("transfer param wrong :%d\n",
+				pr_no_err("transfer param wrong :%d\n",
 					status);
 				break;
 			}
@@ -332,11 +332,11 @@ static void ipi_work(struct work_struct *work)
 				status = ipi_txrx_bufs(t);
 			if (status < 0) {
 				status = -EREMOTEIO;
-				/* pr_err("transfer err :%d\n", status); */
+				/* pr_no_err("transfer err :%d\n", status); */
 				break;
 			} else if (status != t->len) {
 				status = -EREMOTEIO;
-				pr_err("ack err :%d\n", status);
+				pr_no_err("ack err :%d\n", status);
 				break;
 			}
 			status = 0;
@@ -408,7 +408,7 @@ static int SCP_sensorHub_ipi_master_init(void)
 	spin_lock_init(&master.lock);
 	master.workqueue = create_singlethread_workqueue("ipi_master");
 	if (master.workqueue == NULL) {
-		pr_err("workqueue fail\n");
+		pr_no_err("workqueue fail\n");
 		return -1;
 	}
 
@@ -420,22 +420,22 @@ int scp_sensorHub_req_send(union SCP_SENSOR_HUB_DATA *data,
 {
 	int ret = 0;
 
-	/* pr_err("sensorType = %d, action = %d\n", data->req.sensorType,
+	/* pr_no_err("sensorType = %d, action = %d\n", data->req.sensorType,
 	 *	data->req.action);
 	 */
 
 	if (*len > SENSOR_IPI_SIZE) {
-		pr_err("over sensor data size!!\n");
+		pr_no_err("over sensor data size!!\n");
 		return -1;
 	}
 
 	if (in_interrupt()) {
-		pr_err("Can't do %s in interrupt context!!\n", __func__);
+		pr_no_err("Can't do %s in interrupt context!!\n", __func__);
 		return -1;
 	}
 
 	if (data->rsp.sensorType > ID_SENSOR_MAX_HANDLE) {
-		pr_err("SCP_sensorHub_IPI_handler invalid sensor type %d\n",
+		pr_no_err("SCP_sensorHub_IPI_handler invalid sensor type %d\n",
 			data->rsp.sensorType);
 		return -1;
 	}
@@ -451,13 +451,13 @@ int scp_sensorHub_data_registration(uint8_t sensor,
 	struct SCP_sensorHub_data *obj = obj_data;
 
 	if (sensor > ID_SENSOR_MAX_HANDLE) {
-		pr_err("SCP_sensorHub_rsp_registration invalid sensor %d\n",
+		pr_no_err("SCP_sensorHub_rsp_registration invalid sensor %d\n",
 			sensor);
 		return -1;
 	}
 
 	if (handler == NULL)
-		pr_err("SCP_sensorHub_rsp_registration null handler\n");
+		pr_no_err("SCP_sensorHub_rsp_registration null handler\n");
 
 	obj->dispatch_data_cb[sensor] = handler;
 
@@ -473,7 +473,7 @@ static void SCP_sensorHub_write_wp_queue(union SCP_SENSOR_HUB_DATA *rsp)
 	wp_queue->ringbuffer[wp_queue->head++] = rsp->notify_rsp.currWp;
 	wp_queue->head &= wp_queue->bufsize - 1;
 	if (unlikely(wp_queue->head == wp_queue->tail))
-		pr_err("dropped currWp due to ringbuffer is full\n");
+		pr_no_err("dropped currWp due to ringbuffer is full\n");
 	spin_unlock(&wp_queue->buffer_lock);
 }
 static int SCP_sensorHub_fetch_next_wp(uint32_t *currWp)
@@ -490,7 +490,7 @@ static int SCP_sensorHub_fetch_next_wp(uint32_t *currWp)
 		wp_queue->tail &= wp_queue->bufsize - 1;
 	}
 	spin_unlock_irq(&wp_queue->buffer_lock);
-	/* pr_err("head:%d, tail:%d, currWp:%d\n",
+	/* pr_no_err("head:%d, tail:%d, currWp:%d\n",
 	 * wp_queue->head, wp_queue->tail, *currWp);
 	 */
 	return have_event;
@@ -542,7 +542,7 @@ static void SCP_sensorHub_xcmd_putdata(union SCP_SENSOR_HUB_DATA *rsp,
 
 	spin_lock(&txrx_cmd_lock);
 	if (!hw->context) {
-		pr_err("after ipi timeout ack occur then dropped this\n");
+		pr_no_err("after ipi timeout ack occur then dropped this\n");
 		goto out;
 	}
 
@@ -550,7 +550,7 @@ static void SCP_sensorHub_xcmd_putdata(union SCP_SENSOR_HUB_DATA *rsp,
 
 	if (req->req.sensorType != rsp->rsp.sensorType ||
 		req->req.action != rsp->rsp.action) {
-		pr_debug("req type %d != rsp %d req action %d != rsq %d\n",
+		pr_no_debug("req type %d != rsp %d req action %d != rsq %d\n",
 			req->req.sensorType, rsp->rsp.sensorType,
 			req->req.action, rsp->rsp.action);
 	} else {
@@ -642,7 +642,7 @@ static void SCP_sensorHub_notify_cmd(union SCP_SENSOR_HUB_DATA *rsp,
 		mark_ipi_timestamp(arch_counter_get_cntvct() -
 			rsp->notify_rsp.arch_counter);
 #ifdef DEBUG_PERFORMANCE_HW_TICK
-		pr_notice("[Performance] AP_get_ipi Stanley kernel tick:%llu\n",
+		pr_no_notice("[Performance] AP_get_ipi Stanley kernel tick:%llu\n",
 			arch_counter_get_cntvct());
 
 #endif
@@ -658,13 +658,13 @@ static void SCP_sensorHub_notify_cmd(union SCP_SENSOR_HUB_DATA *rsp,
 /*
  *		handle = rsp->rsp.sensorType;
  *		if (handle > ID_SENSOR_MAX_HANDLE) {
- *			pr_err("invalid sensor %d\n", handle);
+ *			pr_no_err("invalid sensor %d\n", handle);
  *		} else {
  *			event = (struct data_unit_t *)rsp->notify_rsp.int8_Data;
  *			if (obj->dispatch_data_cb[handle] != NULL)
  *				obj->dispatch_data_cb[handle](event, NULL);
  *			else
- *				pr_err("type:%d don't support this flow?\n",
+ *				pr_no_err("type:%d don't support this flow?\n",
  *					handle);
  *			if (event->flush_action == FLUSH_ACTION)
  *				atomic_dec(&mSensorState[handle].flushCnt);
@@ -730,17 +730,17 @@ static void SCP_sensorHub_IPI_handler(int id,
 	const struct SCP_sensorHub_Cmd *cmd;
 
 	if (len > SENSOR_IPI_SIZE) {
-		pr_err("%s len=%d error\n", __func__, len);
+		pr_no_err("%s len=%d error\n", __func__, len);
 		return;
 	}
-	/*pr_err("sensorType:%d, action=%d event:%d len:%d\n",
+	/*pr_no_err("sensorType:%d, action=%d event:%d len:%d\n",
 	 * rsp->rsp.sensorType, rsp->rsp.action, rsp->notify_rsp.event, len);
 	 */
 	cmd = SCP_sensorHub_find_cmd(rsp->rsp.action);
 	if (cmd != NULL)
 		cmd->handler(rsp, len);
 	else
-		pr_err("cannot find cmd!\n");
+		pr_no_err("cannot find cmd!\n");
 }
 
 static void SCP_sensorHub_init_sensor_state(void)
@@ -960,12 +960,12 @@ static int SCP_sensorHub_batch(int handle, int flag,
 		ret = nanohub_external_write((const uint8_t *)&cmd,
 			sizeof(struct ConfigCmd));
 		if (ret < 0) {
-			pr_err("fail enbatch h:%d, r: %d,l: %lld, cmd:%d\n",
+			pr_no_err("fail enbatch h:%d, r: %d,l: %lld, cmd:%d\n",
 				handle, cmd.rate, cmd.latency, cmd.cmd);
 			return -1;
 		}
 	} else {
-		pr_err("unhandle handle=%d, is inited?\n", handle);
+		pr_no_err("unhandle handle=%d, is inited?\n", handle);
 		return -1;
 	}
 	return 0;
@@ -994,7 +994,7 @@ static int SCP_sensorHub_flush(int handle)
 			ret = nanohub_external_write((const uint8_t *)&cmd,
 				sizeof(struct ConfigCmd));
 			if (ret < 0) {
-				pr_err("failed flush handle:%d\n", handle);
+				pr_no_err("failed flush handle:%d\n", handle);
 				mutex_lock(&flush_mtx);
 				if (atomic_read(p_flush_count) > 0)
 					atomic_dec(p_flush_count);
@@ -1003,7 +1003,7 @@ static int SCP_sensorHub_flush(int handle)
 			}
 		}
 	} else {
-		pr_err("unhandle handle=%d, is inited?\n", handle);
+		pr_no_err("unhandle handle=%d, is inited?\n", handle);
 		return -1;
 	}
 	return 0;
@@ -1022,12 +1022,12 @@ static int SCP_sensorHub_report_raw_data(struct data_unit_t *data_t)
 	sensor_type = sensor_id + ID_OFFSET;
 
 	if (sensor_id < 0 || sensor_id > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid sensor %d\n", sensor_id);
+		pr_no_err("invalid sensor %d\n", sensor_id);
 		return 0;
 	}
 
 	if (obj->dispatch_data_cb[sensor_id] == NULL) {
-		pr_err("type:%d don't support this flow?\n", sensor_id);
+		pr_no_err("type:%d don't support this flow?\n", sensor_id);
 		return 0;
 	}
 
@@ -1038,7 +1038,7 @@ static int SCP_sensorHub_report_raw_data(struct data_unit_t *data_t)
 		if (data_t->time_stamp > raw_enable_time)
 			err = obj->dispatch_data_cb[sensor_id](data_t, NULL);
 		else
-			pr_info("ac:%d, e:%lld, d:%lld\n", data_t->flush_action,
+			pr_no_info("ac:%d, e:%lld, d:%lld\n", data_t->flush_action,
 				raw_enable_time, data_t->time_stamp);
 	} else if (data_t->flush_action == FLUSH_ACTION) {
 		mutex_lock(&flush_mtx);
@@ -1070,7 +1070,7 @@ static int SCP_sensorHub_report_alt_data(struct data_unit_t *data_t)
 	sensor_type = sensor_id + ID_OFFSET;
 
 	if (sensor_id < 0 || sensor_id > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid sensor %d\n", sensor_id);
+		pr_no_err("invalid sensor %d\n", sensor_id);
 		return 0;
 	}
 
@@ -1081,7 +1081,7 @@ static int SCP_sensorHub_report_alt_data(struct data_unit_t *data_t)
 		return 0;
 
 	if (obj->dispatch_data_cb[alt_id] == NULL) {
-		pr_err("alt:%d don't support this flow?\n", alt_id);
+		pr_no_err("alt:%d don't support this flow?\n", alt_id);
 		return 0;
 	}
 
@@ -1092,7 +1092,7 @@ static int SCP_sensorHub_report_alt_data(struct data_unit_t *data_t)
 		if (data_t->time_stamp > alt_enable_time)
 			err = obj->dispatch_data_cb[alt_id](data_t, NULL);
 		else
-			pr_info("ac:%d, e:%lld, d:%lld\n", data_t->flush_action,
+			pr_no_info("ac:%d, e:%lld, d:%lld\n", data_t->flush_action,
 				alt_enable_time, data_t->time_stamp);
 	} else if (data_t->flush_action == FLUSH_ACTION) {
 		mutex_lock(&flush_mtx);
@@ -1127,11 +1127,11 @@ static int SCP_sensorHub_server_dispatch_data(uint32_t *currWp)
 	wp = pStart + wp_copy;
 
 	if (wp < pStart || pEnd < wp) {
-		pr_err("FIFO wp invalid : %p, %p, %p\n", pStart, pEnd, wp);
+		pr_no_err("FIFO wp invalid : %p, %p, %p\n", pStart, pEnd, wp);
 		return -5;
 	}
 	if (rp == wp) {
-		pr_err("FIFO empty\n");
+		pr_no_err("FIFO empty\n");
 		return 0;
 	}
 	/*
@@ -1232,13 +1232,13 @@ static int sensor_send_dram_info_to_hub(void)
 	for (retry = 0; retry < total; ++retry) {
 		err = scp_sensorHub_req_send(&data, &len, 1);
 		if (err < 0) {
-			pr_err("%s fail!\n", __func__);
+			pr_no_err("%s fail!\n", __func__);
 			continue;
 		}
 		break;
 	}
 	if (retry < total)
-		pr_notice("[sensorHub] %s success\n", __func__);
+		pr_no_notice("[sensorHub] %s success\n", __func__);
 	return SCP_SENSOR_HUB_SUCCESS;
 }
 
@@ -1258,11 +1258,11 @@ static int sensor_send_timestamp_wake_locked(void)
 	req.set_config_req.action = SENSOR_HUB_SET_TIMESTAMP;
 	req.set_config_req.ap_timestamp = now_time;
 	req.set_config_req.arch_counter = arch_counter;
-	pr_debug("sync ap boottime=%lld\n", now_time);
+	pr_no_debug("sync ap boottime=%lld\n", now_time);
 	len = sizeof(req.set_config_req);
 	err = scp_sensorHub_req_send(&req, &len, 1);
 	if (err < 0)
-		pr_err("scp_sensorHub_req_send fail!\n");
+		pr_no_err("scp_sensorHub_req_send fail!\n");
 	return err;
 }
 
@@ -1272,7 +1272,7 @@ static int sensor_send_timestamp_to_hub(void)
 	struct SCP_sensorHub_data *obj = obj_data;
 
 	if (READ_ONCE(rtc_compensation_suspend)) {
-		pr_err("rtc_compensation_suspend suspend,drop time sync\n");
+		pr_no_err("rtc_compensation_suspend suspend,drop time sync\n");
 		return 0;
 	}
 
@@ -1310,7 +1310,7 @@ static void sensor_disable_report_flush(uint8_t handle)
 				usleep_range(2000, 4000);
 		} while (ret < 0 && retry++ < 5);
 		if (ret < 0)
-			pr_err("%d flush complete err when disable\n",
+			pr_no_err("%d flush complete err when disable\n",
 				handle);
 	}
 	mutex_unlock(&flush_mtx);
@@ -1325,7 +1325,7 @@ int sensor_enable_to_hub(uint8_t handle, int enabledisable)
 		scp_register_feature(SENS_FEATURE_ID);
 	mutex_lock(&mSensorState_mtx);
 	if (handle > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid handle %d\n", handle);
+		pr_no_err("invalid handle %d\n", handle);
 		ret = -1;
 		mutex_unlock(&mSensorState_mtx);
 		return ret;
@@ -1347,7 +1347,7 @@ int sensor_enable_to_hub(uint8_t handle, int enabledisable)
 		if (!enabledisable)
 			sensor_disable_report_flush(handle);
 	} else {
-		pr_err("unhandle handle=%d, is inited?\n", handle);
+		pr_no_err("unhandle handle=%d, is inited?\n", handle);
 		mutex_unlock(&mSensorState_mtx);
 		return -1;
 	}
@@ -1362,7 +1362,7 @@ int sensor_set_delay_to_hub(uint8_t handle, unsigned int delayms)
 
 	mutex_lock(&mSensorState_mtx);
 	if (handle > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid sensor %d\n", handle);
+		pr_no_err("invalid sensor %d\n", handle);
 		ret = -1;
 	} else {
 		ret = SCP_sensorHub_batch(handle, 0, samplingPeriodNs, 0);
@@ -1378,7 +1378,7 @@ int sensor_batch_to_hub(uint8_t handle,
 
 	mutex_lock(&mSensorState_mtx);
 	if (handle > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid handle %d\n", handle);
+		pr_no_err("invalid handle %d\n", handle);
 		ret = -1;
 	} else
 		ret = SCP_sensorHub_batch(handle,
@@ -1393,7 +1393,7 @@ int sensor_flush_to_hub(uint8_t handle)
 
 	mutex_lock(&mSensorState_mtx);
 	if (handle > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid handle %d\n", handle);
+		pr_no_err("invalid handle %d\n", handle);
 		ret = -1;
 	} else
 		ret = SCP_sensorHub_flush(handle);
@@ -1407,7 +1407,7 @@ int sensor_cfg_to_hub(uint8_t handle, uint8_t *data, uint8_t count)
 	int ret = 0;
 
 	if (handle > ID_SENSOR_MAX_HANDLE) {
-		pr_err("invalid handle %d\n", handle);
+		pr_no_err("invalid handle %d\n", handle);
 		ret = -1;
 	} else {
 		cmd = vzalloc(sizeof(struct ConfigCmd) + count);
@@ -1420,7 +1420,7 @@ int sensor_cfg_to_hub(uint8_t handle, uint8_t *data, uint8_t count)
 		ret = nanohub_external_write((const uint8_t *)cmd,
 			sizeof(struct ConfigCmd) + count);
 		if (ret < 0) {
-			pr_err("failed cfg data handle:%d, cmd:%d\n",
+			pr_no_err("failed cfg data handle:%d, cmd:%d\n",
 				handle, cmd->cmd);
 			ret =  -1;
 		}
@@ -1441,12 +1441,12 @@ int sensor_calibration_to_hub(uint8_t handle)
 		ret = nanohub_external_write((const uint8_t *)&cmd,
 			sizeof(struct ConfigCmd));
 		if (ret < 0) {
-			pr_err("failed calibration handle:%d\n",
+			pr_no_err("failed calibration handle:%d\n",
 				handle);
 			return -1;
 		}
 	} else {
-		pr_err("unhandle handle=%d, is inited?\n", handle);
+		pr_no_err("unhandle handle=%d, is inited?\n", handle);
 		return -1;
 	}
 	return 0;
@@ -1464,12 +1464,12 @@ int sensor_selftest_to_hub(uint8_t handle)
 		ret = nanohub_external_write((const uint8_t *)&cmd,
 			sizeof(struct ConfigCmd));
 		if (ret < 0) {
-			pr_err("failed selfttest handle:%d\n",
+			pr_no_err("failed selfttest handle:%d\n",
 				handle);
 			return -1;
 		}
 	} else {
-		pr_err("unhandle handle=%d, is inited?\n", handle);
+		pr_no_err("unhandle handle=%d, is inited?\n", handle);
 		return -1;
 	}
 	return 0;
@@ -1483,7 +1483,7 @@ int sensor_get_data_from_hub(uint8_t sensorType,
 	int len = 0, err = 0;
 
 	if (atomic_read(&power_status) == SENSOR_POWER_DOWN) {
-		pr_err("scp power down, we can not access scp\n");
+		pr_no_err("scp power down, we can not access scp\n");
 		return -1;
 	}
 
@@ -1492,13 +1492,13 @@ int sensor_get_data_from_hub(uint8_t sensorType,
 	len = sizeof(req.get_data_req);
 	err = scp_sensorHub_req_send(&req, &len, 1);
 	if (err < 0) {
-		pr_err("fail :%d!\n", err);
+		pr_no_err("fail :%d!\n", err);
 		return -1;
 	}
 	if (sensorType != req.get_data_rsp.sensorType ||
 		req.get_data_rsp.action != SENSOR_HUB_GET_DATA ||
 		req.get_data_rsp.errCode != 0) {
-		pr_err("req Type: %d, rsp Type:%d action:%d, errcode:%d\n",
+		pr_no_err("req Type: %d, rsp Type:%d action:%d, errcode:%d\n",
 			sensorType, req.get_data_rsp.sensorType,
 			req.get_data_rsp.action, req.get_data_rsp.errCode);
 
@@ -1747,7 +1747,7 @@ int sensor_set_cmd_to_hub(uint8_t sensorType,
 	req.get_data_req.action = SENSOR_HUB_SET_CUST;
 
 	if (atomic_read(&power_status) == SENSOR_POWER_DOWN) {
-		pr_err("scp power down, we can not access scp\n");
+		pr_no_err("scp power down, we can not access scp\n");
 		return -1;
 	}
 
@@ -1825,19 +1825,19 @@ int sensor_set_cmd_to_hub(uint8_t sensorType,
 				if ((req.set_cust_rsp.action !=
 					SENSOR_HUB_SET_CUST)
 					|| (req.set_cust_rsp.errCode != 0)) {
-					pr_err("scp_sHub_req_send fail!\n");
+					pr_no_err("scp_sHub_req_send fail!\n");
 					return -1;
 				}
 				if (req.set_cust_rsp.getRawData.action !=
 					CUST_ACTION_GET_RAW_DATA) {
-					pr_err("scp_sHub_req_send fail!\n");
+					pr_no_err("scp_sHub_req_send fail!\n");
 					return -1;
 				}
 				pGetRawData = &req.set_cust_rsp.getRawData;
 				*((uint8_t *) data) =
 					pGetRawData->uint8_data[0];
 			} else {
-				pr_err("scp_sensorHub_req_send failed!\n");
+				pr_no_err("scp_sensorHub_req_send failed!\n");
 			}
 			return 0;
 		case CUST_ACTION_SHOW_ALSLV:
@@ -1911,19 +1911,19 @@ int sensor_set_cmd_to_hub(uint8_t sensorType,
 				if ((req.set_cust_rsp.action !=
 					SENSOR_HUB_SET_CUST)
 					|| (req.set_cust_rsp.errCode != 0)) {
-					pr_err("scp_sHub_req_send fail!\n");
+					pr_no_err("scp_sHub_req_send fail!\n");
 					return -1;
 				}
 				if (req.set_cust_rsp.getRawData.action !=
 					CUST_ACTION_GET_RAW_DATA) {
-					pr_err("scp_sHub_req_send fail!\n");
+					pr_no_err("scp_sHub_req_send fail!\n");
 					return -1;
 				}
 				pGetRawData = &req.set_cust_rsp.getRawData;
 				*((uint16_t *) data) =
 					pGetRawData->uint16_data[0];
 			} else {
-				pr_err("scp_sensorHub_req_send failed!\n");
+				pr_no_err("scp_sensorHub_req_send failed!\n");
 			}
 			return 0;
 		case CUST_ACTION_GET_SENSOR_INFO:
@@ -2107,13 +2107,13 @@ int sensor_set_cmd_to_hub(uint8_t sensorType,
 	}
 	err = scp_sensorHub_req_send(&req, &len, 1);
 	if (err < 0) {
-		pr_err("scp_sensorHub_req_send fail!\n");
+		pr_no_err("scp_sensorHub_req_send fail!\n");
 		return -1;
 	}
 	if (sensorType != req.get_data_rsp.sensorType
 		|| SENSOR_HUB_SET_CUST != req.get_data_rsp.action
 		|| 0 != req.get_data_rsp.errCode) {
-		pr_err("error : %d\n", req.get_data_rsp.errCode);
+		pr_no_err("error : %d\n", req.get_data_rsp.errCode);
 		return req.get_data_rsp.errCode;
 	}
 
@@ -2121,7 +2121,7 @@ int sensor_set_cmd_to_hub(uint8_t sensorType,
 	case CUST_ACTION_GET_SENSOR_INFO:
 		if (req.set_cust_rsp.getInfo.action !=
 			CUST_ACTION_GET_SENSOR_INFO) {
-			pr_info("scp_sensorHub_req_send failed action!\n");
+			pr_no_info("scp_sensorHub_req_send failed action!\n");
 			return -1;
 		}
 		memcpy((struct sensorInfo_t *)data,
@@ -2144,14 +2144,14 @@ static void restoring_enable_sensorHub_sensor(int handle)
 	if (mSensorState[sensor_type].sensorType &&
 		mSensorState[sensor_type].enable) {
 		init_sensor_config_cmd(&cmd, sensor_type);
-		pr_debug("restoring: handle=%d,enable=%d,rate=%d,latency=%lld\n",
+		pr_no_debug("restoring: handle=%d,enable=%d,rate=%d,latency=%lld\n",
 			handle, mSensorState[sensor_type].enable,
 			mSensorState[sensor_type].rate,
 			mSensorState[sensor_type].latency);
 		ret = nanohub_external_write((const uint8_t *)&cmd,
 			sizeof(struct ConfigCmd));
 		if (ret < 0)
-			pr_notice("failed registerlistener handle:%d, cmd:%d\n",
+			pr_no_notice("failed registerlistener handle:%d, cmd:%d\n",
 				handle, cmd.cmd);
 
 		cmd.cmd = CONFIG_CMD_FLUSH;
@@ -2161,7 +2161,7 @@ static void restoring_enable_sensorHub_sensor(int handle)
 			ret = nanohub_external_write((const uint8_t *)&cmd,
 				sizeof(struct ConfigCmd));
 			if (ret < 0)
-				pr_notice("failed flush handle:%d\n", handle);
+				pr_no_notice("failed flush handle:%d\n", handle);
 		}
 		mutex_unlock(&flush_mtx);
 	}
@@ -2196,7 +2196,7 @@ void sensorHub_power_up_loop(void *data)
 		((long)scp_get_reserve_mem_size(SENS_MEM_ID) -
 		offsetof(struct sensorFIFO, data)) /
 		SENSOR_DATA_SIZE * SENSOR_DATA_SIZE);
-	pr_debug("obj->SCP_sensorFIFO =%p, wp =%d, rp =%d, size =%d\n",
+	pr_no_debug("obj->SCP_sensorFIFO =%p, wp =%d, rp =%d, size =%d\n",
 		READ_ONCE(obj->SCP_sensorFIFO),
 		READ_ONCE(obj->SCP_sensorFIFO->wp),
 		READ_ONCE(obj->SCP_sensorFIFO->rp),
@@ -2262,11 +2262,11 @@ static int sensorHub_probe(struct platform_device *pdev)
 	struct task_struct *task_power_reset = NULL;
 	struct sched_param param = { .sched_priority = MAX_RT_PRIO - 1 };
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	SCP_sensorHub_init_sensor_state();
 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
 	if (!obj) {
-		pr_err("Allocate SCP_sensorHub_data fail\n");
+		pr_no_err("Allocate SCP_sensorHub_data fail\n");
 		err = -ENOMEM;
 		goto exit;
 	}
@@ -2281,7 +2281,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 	obj->wp_queue.ringbuffer =
 		vzalloc(obj->wp_queue.bufsize * sizeof(uint32_t));
 	if (!obj->wp_queue.ringbuffer) {
-		pr_err("Alloc ringbuffer error!\n");
+		pr_no_err("Alloc ringbuffer error!\n");
 		goto exit_wp_queue;
 	}
 	/* register ipi interrupt handler */
@@ -2296,7 +2296,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 	/* obj->direct_push_workqueue =
 	 *		create_singlethread_workqueue("chre_work");
 	 *	if (obj->direct_push_workqueue == NULL) {
-	 *	pr_err("direct_push_workqueue fail\n");
+	 *	pr_no_err("direct_push_workqueue fail\n");
 	 *	return -1;
 	 *}
 	 */
@@ -2305,7 +2305,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 	task = kthread_run(SCP_sensorHub_direct_push_work,
 		NULL, "chre_kthread");
 	if (IS_ERR(task)) {
-		pr_err("SCP_sensorHub_direct_push_work create fail!\n");
+		pr_no_err("SCP_sensorHub_direct_push_work create fail!\n");
 		goto exit_direct_push;
 	}
 	sched_setscheduler(task, SCHED_FIFO, &param);
@@ -2322,7 +2322,7 @@ static int sensorHub_probe(struct platform_device *pdev)
 		jiffies + msecs_to_jiffies(SYNC_TIME_START_CYCLC));
 	obj->ws = wakeup_source_register(NULL, "sync_time");
 	if (!obj->ws) {
-		pr_err("SCP_sensorHub: wakeup source init fail\n");
+		pr_no_err("SCP_sensorHub: wakeup source init fail\n");
 		err = -ENOMEM;
 		goto exit_wakeup;
 	}
@@ -2334,12 +2334,12 @@ static int sensorHub_probe(struct platform_device *pdev)
 	task_power_reset = kthread_run(sensorHub_power_up_work,
 		NULL, "scp_power_reset");
 	if (IS_ERR(task_power_reset)) {
-		pr_err("sensorHub_power_up_work create fail!\n");
+		pr_no_err("sensorHub_power_up_work create fail!\n");
 		goto exit_kthread_power_up;
 	}
 
 	SCP_sensorHub_init_flag = 0;
-	pr_debug("init done, data_unit_t size: %d,SCP_SENSOR_HUB_DATA size:%d\n",
+	pr_no_debug("init done, data_unit_t size: %d,SCP_SENSOR_HUB_DATA size:%d\n",
 		(int)sizeof(struct data_unit_t),
 		(int)sizeof(union SCP_SENSOR_HUB_DATA));
 	BUG_ON(sizeof(struct data_unit_t) != SENSOR_DATA_SIZE
@@ -2357,7 +2357,7 @@ exit_direct_push:
 exit_wp_queue:
 	kfree(obj);
 exit:
-	pr_err("%s: err = %d\n", __func__, err);
+	pr_no_err("%s: err = %d\n", __func__, err);
 	SCP_sensorHub_init_flag = -1;
 	return err;
 }
@@ -2403,7 +2403,7 @@ static void sensorHub_shutdown(struct platform_device *pdev)
 			ret = nanohub_external_write((const uint8_t *)&cmd,
 				sizeof(struct ConfigCmd));
 			if (ret < 0)
-				pr_notice("failed registerlistener handle:%d, cmd:%d\n",
+				pr_no_notice("failed registerlistener handle:%d, cmd:%d\n",
 					handle, cmd.cmd);
 		}
 	}
@@ -2429,27 +2429,27 @@ static ssize_t nanohub_trace_store(struct device_driver *ddri,
 	unsigned int handle;
 	int res = 0;
 
-	pr_debug("%s buf:%s\n", __func__, buf);
+	pr_no_debug("%s buf:%s\n", __func__, buf);
 	if (sscanf(buf, "%d,%d", &handle, &trace) != 2) {
-		pr_err("invalid content: '%s', length = %zu\n", buf, count);
+		pr_no_err("invalid content: '%s', length = %zu\n", buf, count);
 		goto err_out;
 	}
 
 	if (handle < 0 || handle > ID_SENSOR_MAX_HANDLE) {
-		pr_debug("invalid handle value:%d,should be '0<=handle<=%d'\n",
+		pr_no_debug("invalid handle value:%d,should be '0<=handle<=%d'\n",
 			trace, ID_SENSOR_MAX_HANDLE);
 		goto err_out;
 	}
 
 	if (trace != 0 && trace != 1) {
-		pr_debug("invalid trace value:%d,trace should be '0' or '1'",
+		pr_no_debug("invalid trace value:%d,trace should be '0' or '1'",
 			trace);
 		goto err_out;
 	}
 
 	res = sensor_set_cmd_to_hub(handle, CUST_ACTION_SET_TRACE, &trace);
 	if (res < 0) {
-		pr_err("cmd_to_hub (ID: %d),(action: %d)err: %d\n", handle,
+		pr_no_err("cmd_to_hub (ID: %d),(action: %d)err: %d\n", handle,
 					CUST_ACTION_SET_TRACE, res);
 	} else
 		atomic_set(&obj->traces[handle], trace);
@@ -2475,7 +2475,7 @@ static int nanohub_create_attr(struct device_driver *driver)
 	for (idx = 0; idx < num; idx++) {
 		err = driver_create_file(driver, nanohub_attr_list[idx]);
 		if (err) {
-			pr_err("driver_create_file (%s) = %d\n",
+			pr_no_err("driver_create_file (%s) = %d\n",
 				nanohub_attr_list[idx]->attr.name, err);
 			break;
 		}
@@ -2520,12 +2520,12 @@ static int sensorHub_pm_event(struct notifier_block *notifier,
 {
 	switch (pm_event) {
 	case PM_POST_SUSPEND:
-		pr_debug("resume ap boottime=%lld\n", ktime_get_boot_ns());
+		pr_no_debug("resume ap boottime=%lld\n", ktime_get_boot_ns());
 		WRITE_ONCE(rtc_compensation_suspend, false);
 		sensor_send_timestamp_to_hub();
 		return NOTIFY_DONE;
 	case PM_SUSPEND_PREPARE:
-		pr_debug("suspend ap boottime=%lld\n", ktime_get_boot_ns());
+		pr_no_debug("suspend ap boottime=%lld\n", ktime_get_boot_ns());
 		WRITE_ONCE(rtc_compensation_suspend, true);
 		return NOTIFY_DONE;
 	default:
@@ -2543,22 +2543,22 @@ static struct notifier_block sensorHub_pm_notifier_func = {
 static int __init SCP_sensorHub_init(void)
 {
 	SCP_sensorHub_ipi_master_init();
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	if (platform_device_register(&sensorHub_device)) {
-		pr_err("SCP_sensorHub platform device error\n");
+		pr_no_err("SCP_sensorHub platform device error\n");
 		return -1;
 	}
 	if (platform_driver_register(&sensorHub_driver)) {
-		pr_err("SCP_sensorHub platform driver error\n");
+		pr_no_err("SCP_sensorHub platform driver error\n");
 		return -1;
 	}
 	if (nanohub_create_attr(&sensorHub_driver.driver)) {
-		pr_err("create attribute err\n");
+		pr_no_err("create attribute err\n");
 		nanohub_delete_attr(&sensorHub_driver.driver);
 	}
 #ifdef CONFIG_PM
 	if (register_pm_notifier(&sensorHub_pm_notifier_func)) {
-		pr_err("Failed to register PM notifier.\n");
+		pr_no_err("Failed to register PM notifier.\n");
 		return -1;
 	}
 #endif /* CONFIG_PM */
@@ -2567,7 +2567,7 @@ static int __init SCP_sensorHub_init(void)
 
 static void __exit SCP_sensorHub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(SCP_sensorHub_init);

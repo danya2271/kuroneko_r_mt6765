@@ -119,20 +119,20 @@ struct DPE_CLK_STRUCT dpe_clk;
 #define MyTag "[DPE]"
 #define IRQTag "KEEPER"
 
-#define LOG_VRB(format, args...) pr_debug(MyTag format, ##args)
+#define LOG_VRB(format, args...) pr_no_debug(MyTag format, ##args)
 
 /* #define DPE_DEBUG_USE */
 #ifdef DPE_DEBUG_USE
-#define LOG_DBG(format, args...) pr_info(MyTag format, ##args)
+#define LOG_DBG(format, args...) pr_no_info(MyTag format, ##args)
 #else
 #define LOG_DBG(format, args...)
 #endif
 
-#define LOG_INF(format, args...) pr_info(MyTag format, ##args)
-#define LOG_NOTICE(format, args...) pr_notice(MyTag format, ##args)
-#define LOG_WRN(format, args...) pr_info(MyTag format, ##args)
-#define LOG_ERR(format, args...) pr_info(MyTag format, ##args)
-#define LOG_AST(format, args...) pr_info(MyTag format, ##args)
+#define LOG_INF(format, args...) pr_no_info(MyTag format, ##args)
+#define LOG_NOTICE(format, args...) pr_no_notice(MyTag format, ##args)
+#define LOG_WRN(format, args...) pr_no_info(MyTag format, ##args)
+#define LOG_ERR(format, args...) pr_no_info(MyTag format, ##args)
+#define LOG_AST(format, args...) pr_no_info(MyTag format, ##args)
 
 /**************************************************************
  *
@@ -3253,7 +3253,7 @@ enum m4u_callback_ret_t DPE_M4U_TranslationFault_callback(int port,
 #endif
 {
 
-	pr_info("[DPE_M4U]fault call port=%d, mva=0x%x", port, mva);
+	pr_no_info("[DPE_M4U]fault call port=%d, mva=0x%x", port, mva);
 
 	switch (port) {
 	case M4U_PORT_DVS_RDMA:
@@ -3261,100 +3261,100 @@ enum m4u_callback_ret_t DPE_M4U_TranslationFault_callback(int port,
 	case M4U_PORT_DVP_RDMA:
 	case M4U_PORT_DVP_WDMA:
 	default:  //ISP_DPE_BASE = 0x1b001000
-		pr_info("DVS_SRC_05_L_FRM0:0x%08x, DVS_SRC_06_L_FRM1:0x%08x, DVS_SRC_07_L_FRM2:0x%08x, DVS_SRC_08_L_FRM3:0x%08x\n",
+		pr_no_info("DVS_SRC_05_L_FRM0:0x%08x, DVS_SRC_06_L_FRM1:0x%08x, DVS_SRC_07_L_FRM2:0x%08x, DVS_SRC_08_L_FRM3:0x%08x\n",
 			DPE_RD32(DVS_SRC_05_L_FRM0_REG),
 			DPE_RD32(DVS_SRC_06_L_FRM1_REG),
 			DPE_RD32(DVS_SRC_07_L_FRM2_REG),
 			DPE_RD32(DVS_SRC_08_L_FRM3_REG));
-		pr_info("DVS_SRC_09_R_FRM0:0x%08x, DVS_SRC_10_R_FRM1:0x%08x, DVS_SRC_11_R_FRM2:0x%08x, DVS_SRC_12_R_FRM3:0x%08x\n",
+		pr_no_info("DVS_SRC_09_R_FRM0:0x%08x, DVS_SRC_10_R_FRM1:0x%08x, DVS_SRC_11_R_FRM2:0x%08x, DVS_SRC_12_R_FRM3:0x%08x\n",
 			DPE_RD32(DVS_SRC_09_R_FRM0_REG),
 			DPE_RD32(DVS_SRC_10_R_FRM1_REG),
 			DPE_RD32(DVS_SRC_11_R_FRM2_REG),
 			DPE_RD32(DVS_SRC_12_R_FRM3_REG));
-		pr_info("DVS_SRC_13_L_VMAP0:0x%08x, DVS_SRC_14_L_VMAP1:0x%08x, DVS_SRC_15_L_VMAP2:0x%08x, DVS_SRC_16_L_VMAP3:0x%08x\n",
+		pr_no_info("DVS_SRC_13_L_VMAP0:0x%08x, DVS_SRC_14_L_VMAP1:0x%08x, DVS_SRC_15_L_VMAP2:0x%08x, DVS_SRC_16_L_VMAP3:0x%08x\n",
 			DPE_RD32(DVS_SRC_13_L_VMAP0_REG),
 			DPE_RD32(DVS_SRC_14_L_VMAP1_REG),
 			DPE_RD32(DVS_SRC_15_L_VMAP2_REG),
 			DPE_RD32(DVS_SRC_16_L_VMAP3_REG));
-		pr_info("DVS_SRC_17_R_VMAP0:0x%08x, DVS_SRC_18_R_VMAP1:0x%08x, DVS_SRC_19_R_VMAP2:0x%08x, DVS_SRC_20_R_VMAP3:0x%08x\n",
+		pr_no_info("DVS_SRC_17_R_VMAP0:0x%08x, DVS_SRC_18_R_VMAP1:0x%08x, DVS_SRC_19_R_VMAP2:0x%08x, DVS_SRC_20_R_VMAP3:0x%08x\n",
 			DPE_RD32(DVS_SRC_17_R_VMAP0_REG),
 			DPE_RD32(DVS_SRC_18_R_VMAP1_REG),
 			DPE_RD32(DVS_SRC_19_R_VMAP2_REG),
 			DPE_RD32(DVS_SRC_20_R_VMAP3_REG));
-		pr_info("DVS_SRC_21_INTER_MEDV:0x%08x\n",
+		pr_no_info("DVS_SRC_21_INTER_MEDV:0x%08x\n",
 			DPE_RD32(DVS_SRC_21_INTER_MEDV_REG));
-		pr_info("DVS_SRC_22_MEDV0:0x%08x, DVS_SRC_23_MEDV1:0x%08x, DVS_SRC_24_MEDV2:0x%08x, DVS_SRC_25_MEDV3:0x%08x\n",
+		pr_no_info("DVS_SRC_22_MEDV0:0x%08x, DVS_SRC_23_MEDV1:0x%08x, DVS_SRC_24_MEDV2:0x%08x, DVS_SRC_25_MEDV3:0x%08x\n",
 			DPE_RD32(DVS_SRC_22_MEDV0_REG),
 			DPE_RD32(DVS_SRC_23_MEDV1_REG),
 			DPE_RD32(DVS_SRC_24_MEDV2_REG),
 			DPE_RD32(DVS_SRC_25_MEDV3_REG));
-		pr_info("DVS_SRC_26_OCCDV0:0x%08x, DVS_SRC_27_OCCDV1:0x%08x, DVS_SRC_28_OCCDV2:0x%08x, DVS_SRC_29_OCCDV3:0x%08x\n",
+		pr_no_info("DVS_SRC_26_OCCDV0:0x%08x, DVS_SRC_27_OCCDV1:0x%08x, DVS_SRC_28_OCCDV2:0x%08x, DVS_SRC_29_OCCDV3:0x%08x\n",
 			DPE_RD32(DVS_SRC_26_OCCDV0_REG),
 			DPE_RD32(DVS_SRC_27_OCCDV1_REG),
 			DPE_RD32(DVS_SRC_28_OCCDV2_REG),
 			DPE_RD32(DVS_SRC_29_OCCDV3_REG));
-		pr_info("DVS_SRC_30_DCV_CONF0:0x%08x, DVS_SRC_31_DCV_CONF1:0x%08x, DVS_SRC_32_DCV_CONF2:0x%08x, DVS_SRC_33_DCV_CONF3:0x%08x\n",
+		pr_no_info("DVS_SRC_30_DCV_CONF0:0x%08x, DVS_SRC_31_DCV_CONF1:0x%08x, DVS_SRC_32_DCV_CONF2:0x%08x, DVS_SRC_33_DCV_CONF3:0x%08x\n",
 			DPE_RD32(DVS_SRC_30_DCV_CONF0_REG),
 			DPE_RD32(DVS_SRC_31_DCV_CONF1_REG),
 			DPE_RD32(DVS_SRC_32_DCV_CONF2_REG),
 			DPE_RD32(DVS_SRC_33_DCV_CONF3_REG));
-		pr_info("DVS_SRC_34_DCV_L_FRM0:0x%08x, DVS_SRC_35_DCV_L_FRM1:0x%08x, DVS_SRC_36_DCV_L_FRM2:0x%08x, DVS_SRC_37_DCV_L_FRM3:0x%08x\n",
+		pr_no_info("DVS_SRC_34_DCV_L_FRM0:0x%08x, DVS_SRC_35_DCV_L_FRM1:0x%08x, DVS_SRC_36_DCV_L_FRM2:0x%08x, DVS_SRC_37_DCV_L_FRM3:0x%08x\n",
 			DPE_RD32(DVS_SRC_34_DCV_L_FRM0_REG),
 			DPE_RD32(DVS_SRC_35_DCV_L_FRM1_REG),
 			DPE_RD32(DVS_SRC_36_DCV_L_FRM2_REG),
 			DPE_RD32(DVS_SRC_37_DCV_L_FRM3_REG));
-		pr_info("DVS_SRC_38_DCV_R_FRM0:0x%08x, DVS_SRC_39_DCV_R_FRM1:0x%08x, DVS_SRC_40_DCV_R_FRM2:0x%08x, DVS_SRC_41_DCV_R_FRM3:0x%08x\n",
+		pr_no_info("DVS_SRC_38_DCV_R_FRM0:0x%08x, DVS_SRC_39_DCV_R_FRM1:0x%08x, DVS_SRC_40_DCV_R_FRM2:0x%08x, DVS_SRC_41_DCV_R_FRM3:0x%08x\n",
 			DPE_RD32(DVS_SRC_38_DCV_R_FRM0_REG),
 			DPE_RD32(DVS_SRC_39_DCV_R_FRM1_REG),
 			DPE_RD32(DVS_SRC_40_DCV_R_FRM2_REG),
 			DPE_RD32(DVS_SRC_41_DCV_R_FRM3_REG));
-		pr_info("DVS_SRC_42_OCCDV_EXT0:0x%08x, DVS_SRC_43_OCCDV_EXT1:0x%08x, DVS_SRC_44_OCCDV_EXT2:0x%08x, DVS_SRC_45_OCCDV_EXT3:0x%08x\n",
+		pr_no_info("DVS_SRC_42_OCCDV_EXT0:0x%08x, DVS_SRC_43_OCCDV_EXT1:0x%08x, DVS_SRC_44_OCCDV_EXT2:0x%08x, DVS_SRC_45_OCCDV_EXT3:0x%08x\n",
 			DPE_RD32(DVS_SRC_42_OCCDV_EXT0_REG),
 			DPE_RD32(DVS_SRC_43_OCCDV_EXT1_REG),
 			DPE_RD32(DVS_SRC_44_OCCDV_EXT2_REG),
 			DPE_RD32(DVS_SRC_45_OCCDV_EXT3_REG));
 
-		pr_info("DVP_SRC_05_Y_FRM0:0x%08x, DVP_SRC_06_Y_FRM1:0x%08x, DVP_SRC_07_Y_FRM2:0x%08x, DVP_SRC_08_Y_FRM3:0x%08x\n",
+		pr_no_info("DVP_SRC_05_Y_FRM0:0x%08x, DVP_SRC_06_Y_FRM1:0x%08x, DVP_SRC_07_Y_FRM2:0x%08x, DVP_SRC_08_Y_FRM3:0x%08x\n",
 			DPE_RD32(DVP_SRC_05_Y_FRM0_REG),
 			DPE_RD32(DVP_SRC_06_Y_FRM1_REG),
 			DPE_RD32(DVP_SRC_07_Y_FRM2_REG),
 			DPE_RD32(DVP_SRC_08_Y_FRM3_REG));
-		pr_info("DVP_SRC_09_C_FRM0:0x%08x, DVP_SRC_10_C_FRM1:0x%08x, DVP_SRC_11_C_FRM2:0x%08x, DVP_SRC_12_C_FRM3:0x%08x\n",
+		pr_no_info("DVP_SRC_09_C_FRM0:0x%08x, DVP_SRC_10_C_FRM1:0x%08x, DVP_SRC_11_C_FRM2:0x%08x, DVP_SRC_12_C_FRM3:0x%08x\n",
 			DPE_RD32(DVP_SRC_09_C_FRM0_REG),
 			DPE_RD32(DVP_SRC_10_C_FRM1_REG),
 			DPE_RD32(DVP_SRC_11_C_FRM2_REG),
 			DPE_RD32(DVP_SRC_12_C_FRM3_REG));
-		pr_info("DVP_SRC_13_OCCDV0:0x%08x, DVP_SRC_14_OCCDV1:0x%08x, DVP_SRC_15_OCCDV2:0x%08x, DVP_SRC_16_OCCDV3:0x%08x\n",
+		pr_no_info("DVP_SRC_13_OCCDV0:0x%08x, DVP_SRC_14_OCCDV1:0x%08x, DVP_SRC_15_OCCDV2:0x%08x, DVP_SRC_16_OCCDV3:0x%08x\n",
 			DPE_RD32(DVP_SRC_13_OCCDV0_REG),
 			DPE_RD32(DVP_SRC_14_OCCDV1_REG),
 			DPE_RD32(DVP_SRC_15_OCCDV2_REG),
 			DPE_RD32(DVP_SRC_16_OCCDV3_REG));
-		pr_info("DVP_SRC_17_CRM:0x%08x\n",
+		pr_no_info("DVP_SRC_17_CRM:0x%08x\n",
 			DPE_RD32(DVP_SRC_17_CRM_REG));
-		pr_info("DVP_SRC_18_ASF_RMDV:0x%08x, DVP_SRC_19_ASF_RDDV:0x%08x\n",
+		pr_no_info("DVP_SRC_18_ASF_RMDV:0x%08x, DVP_SRC_19_ASF_RDDV:0x%08x\n",
 			DPE_RD32(DVP_SRC_18_ASF_RMDV_REG),
 			DPE_RD32(DVP_SRC_19_ASF_RDDV_REG));
-		pr_info("DVP_SRC_20_ASF_DV0:0x%08x, DVP_SRC_21_ASF_DV1:0x%08x, DVP_SRC_22_ASF_DV2:0x%08x, DVP_SRC_23_ASF_DV3:0x%08x\n",
+		pr_no_info("DVP_SRC_20_ASF_DV0:0x%08x, DVP_SRC_21_ASF_DV1:0x%08x, DVP_SRC_22_ASF_DV2:0x%08x, DVP_SRC_23_ASF_DV3:0x%08x\n",
 			DPE_RD32(DVP_SRC_20_ASF_DV0_REG),
 			DPE_RD32(DVP_SRC_21_ASF_DV1_REG),
 			DPE_RD32(DVP_SRC_22_ASF_DV2_REG),
 			DPE_RD32(DVP_SRC_23_ASF_DV3_REG));
-		pr_info("DVP_SRC_24_WMF_HFDV:0x%08x\n",
+		pr_no_info("DVP_SRC_24_WMF_HFDV:0x%08x\n",
 			DPE_RD32(DVP_SRC_24_WMF_HFDV_REG));
-		pr_info("DVP_SRC_25_WMF_DV0:0x%08x, DVP_SRC_26_WMF_DV1:0x%08x, DVP_SRC_27_WMF_DV2:0x%08x, DVP_SRC_28_WMF_DV3:0x%08x\n",
+		pr_no_info("DVP_SRC_25_WMF_DV0:0x%08x, DVP_SRC_26_WMF_DV1:0x%08x, DVP_SRC_27_WMF_DV2:0x%08x, DVP_SRC_28_WMF_DV3:0x%08x\n",
 			DPE_RD32(DVP_SRC_25_WMF_DV0_REG),
 			DPE_RD32(DVP_SRC_26_WMF_DV1_REG),
 			DPE_RD32(DVP_SRC_27_WMF_DV2_REG),
 			DPE_RD32(DVP_SRC_28_WMF_DV3_REG));
-		pr_info("DVP_EXT_SRC_13_OCCDV0:0x%08x, DVP_EXT_SRC_14_OCCDV1:0x%08x, DVP_EXT_SRC_15_OCCDV2:0x%08x, DVP_EXT_SRC_16_OCCDV3:0x%08x\n",
+		pr_no_info("DVP_EXT_SRC_13_OCCDV0:0x%08x, DVP_EXT_SRC_14_OCCDV1:0x%08x, DVP_EXT_SRC_15_OCCDV2:0x%08x, DVP_EXT_SRC_16_OCCDV3:0x%08x\n",
 			DPE_RD32(DVP_EXT_SRC_13_OCCDV0_REG),
 			DPE_RD32(DVP_EXT_SRC_14_OCCDV1_REG),
 			DPE_RD32(DVP_EXT_SRC_15_OCCDV2_REG),
 			DPE_RD32(DVP_EXT_SRC_16_OCCDV3_REG));
-		pr_info("DVP_EXT_SRC_18_ASF_RMDV:0x%08x, DVP_EXT_SRC_19_ASF_RDDV:0x%08x\n",
+		pr_no_info("DVP_EXT_SRC_18_ASF_RMDV:0x%08x, DVP_EXT_SRC_19_ASF_RDDV:0x%08x\n",
 			DPE_RD32(DVP_EXT_SRC_18_ASF_RMDV_REG),
 			DPE_RD32(DVP_EXT_SRC_19_ASF_RDDV_REG));
-		pr_info("DVP_EXT_SRC_20_ASF_DV0:0x%08x, DVP_EXT_SRC_21_ASF_DV1:0x%08x, DVP_EXT_SRC_22_ASF_DV2:0x%08x, DVP_EXT_SRC_23_ASF_DV3:0x%08x\n",
+		pr_no_info("DVP_EXT_SRC_20_ASF_DV0:0x%08x, DVP_EXT_SRC_21_ASF_DV1:0x%08x, DVP_EXT_SRC_22_ASF_DV2:0x%08x, DVP_EXT_SRC_23_ASF_DV3:0x%08x\n",
 			DPE_RD32(DVP_EXT_SRC_20_ASF_DV0_REG),
 			DPE_RD32(DVP_EXT_SRC_21_ASF_DV1_REG),
 			DPE_RD32(DVP_EXT_SRC_22_ASF_DV2_REG),
@@ -3731,7 +3731,7 @@ int DPE_pm_resume(struct device *device)
 #endif
 int DPE_pm_restore_noirq(struct device *device)
 {
-	pr_debug("calling %s()\n", __func__);
+	pr_no_debug("calling %s()\n", __func__);
 #ifndef CONFIG_OF
 /*	mt_irq_set_sens(DPE_IRQ_BIT_ID, MT_LEVEL_SENSITIVE);*/
 /*	mt_irq_set_polarity(DPE_IRQ_BIT_ID, MT_POLARITY_LOW);*/

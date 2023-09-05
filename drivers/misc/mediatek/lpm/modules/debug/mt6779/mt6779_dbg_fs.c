@@ -22,7 +22,7 @@ int mt6779_dbg_fs_init(void)
 	mt6779_logger_init();
 	mt6779_dbg_idle_fs_init();
 	mt6779_dbg_spm_fs_init();
-	pr_info("%s %d: finish", __func__, __LINE__);
+	pr_no_info("%s %d: finish", __func__, __LINE__);
 	return 0;
 }
 

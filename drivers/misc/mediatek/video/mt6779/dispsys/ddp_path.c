@@ -600,7 +600,7 @@ static void ddp_connect_path_l(int *module_list, void *handle)
 				break;
 			}
 			if (!found)
-				DDP_PR_ERR("%s error: %s sel_in not set\n",
+				DDP_pr_no_err("%s error: %s sel_in not set\n",
 					   __func__,
 					   ddp_get_module_name(module_list[i]));
 		}
@@ -851,7 +851,7 @@ int ddp_set_dst_module(enum DDP_SCENARIO_ENUM scenario,
 		if (i < (DDP_ENING_NUM - 1)) {
 			;
 		} else {
-			DDP_PR_ERR("set dst module over up bound\n");
+			DDP_pr_no_err("set dst module over up bound\n");
 			return -1;
 		}
 	} else {
@@ -859,7 +859,7 @@ int ddp_set_dst_module(enum DDP_SCENARIO_ENUM scenario,
 			if (i >= 1) {
 				module_list_scenario[scenario][i--] = -1;
 			} else {
-				DDP_PR_ERR("set dst module over low bound\n");
+				DDP_pr_no_err("set dst module over low bound\n");
 				return -1;
 			}
 		}

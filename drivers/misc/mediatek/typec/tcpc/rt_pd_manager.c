@@ -50,7 +50,7 @@ enum {
 
 void __attribute__((weak)) usb_dpdm_pulldown(bool enable)
 {
-	pr_notice("%s is not defined\n", __func__);
+	pr_no_notice("%s is not defined\n", __func__);
 }
 
 static int pd_tcp_notifier_call(struct notifier_block *nb,
@@ -69,7 +69,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 		mutex_lock(&rpmd->param_lock);
 		rpmd->sink_mv_new = noti->vbus_state.mv;
 		rpmd->sink_ma_new = noti->vbus_state.ma;
-		pr_info("%s sink vbus %dmV %dmA type(0x%02X)\n", __func__,
+		pr_no_info("%s sink vbus %dmV %dmA type(0x%02X)\n", __func__,
 			rpmd->sink_mv_new, rpmd->sink_ma_new,
 			noti->vbus_state.type);
 #ifdef CONFIG_MTK_CHARGER
@@ -91,32 +91,32 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 		if (noti->typec_state.old_state == TYPEC_UNATTACHED &&
 			noti->typec_state.new_state == TYPEC_ATTACHED_AUDIO) {
 			/* AUDIO plug in */
-			pr_info("%s audio plug in\n", __func__);
+			pr_no_info("%s audio plug in\n", __func__);
 		} else if (noti->typec_state.old_state == TYPEC_ATTACHED_AUDIO
 			&& noti->typec_state.new_state == TYPEC_UNATTACHED) {
 			/* AUDIO plug out */
-			pr_info("%s audio plug out\n", __func__);
+			pr_no_info("%s audio plug out\n", __func__);
 		}
 		break;
 	case TCP_NOTIFY_PD_STATE:
-		pr_info("%s pd state = %d\n",
+		pr_no_info("%s pd state = %d\n",
 			__func__, noti->pd_state.connected);
 		break;
 	case TCP_NOTIFY_EXT_DISCHARGE:
-		pr_info("%s ext discharge = %d\n", __func__, noti->en_state.en);
+		pr_no_info("%s ext discharge = %d\n", __func__, noti->en_state.en);
 #ifdef CONFIG_MTK_CHARGER
 		charger_dev_enable_discharge(rpmd->chg_dev,
 					     noti->en_state.en);
 #endif
 		break;
 	case TCP_NOTIFY_WD_STATUS:
-		pr_info("%s wd status = %d\n",
+		pr_no_info("%s wd status = %d\n",
 			__func__, noti->wd_status.water_detected);
 
 		if (noti->wd_status.water_detected) {
 			usb_dpdm_pulldown(false);
 			if (rpmd->tcpc_kpoc) {
-				pr_info("Water is detected in KPOC, disable HV charging\n");
+				pr_no_info("Water is detected in KPOC, disable HV charging\n");
 #ifdef CONFIG_MTK_CHARGER
 			propval.intval = false;
 			power_supply_set_property(rpmd->chg_psy,
@@ -126,7 +126,7 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 		} else {
 			usb_dpdm_pulldown(true);
 			if (rpmd->tcpc_kpoc) {
-				pr_info("Water is removed in KPOC, enable HV charging\n");
+				pr_no_info("Water is removed in KPOC, enable HV charging\n");
 #ifdef CONFIG_MTK_CHARGER
 			propval.intval = true;
 			power_supply_set_property(rpmd->chg_psy,
@@ -136,13 +136,13 @@ static int pd_tcp_notifier_call(struct notifier_block *nb,
 		}
 		break;
 	case TCP_NOTIFY_CABLE_TYPE:
-		pr_info("%s cable type = %d\n", __func__,
+		pr_no_info("%s cable type = %d\n", __func__,
 			noti->cable_type.type);
 		break;
 	case TCP_NOTIFY_PLUG_OUT:
-		pr_info("%s typec plug out\n", __func__);
+		pr_no_info("%s typec plug out\n", __func__);
 		if (rpmd->tcpc_kpoc) {
-			pr_info("[%s] typec cable plug out, power off\n",
+			pr_no_info("[%s] typec cable plug out, power off\n",
 				__func__);
 			kernel_power_off();
 		}
@@ -158,7 +158,7 @@ static int rt_pd_manager_probe(struct platform_device *pdev)
 	struct rt_pd_manager_data *rpmd;
 	int ret = 0;
 
-	pr_info("%s (%s)\n", __func__, RT_PD_MANAGER_VERSION);
+	pr_no_info("%s (%s)\n", __func__, RT_PD_MANAGER_VERSION);
 
 	rpmd = devm_kzalloc(&pdev->dev, sizeof(*rpmd), GFP_KERNEL);
 	if (!rpmd)
@@ -173,14 +173,14 @@ static int rt_pd_manager_probe(struct platform_device *pdev)
 	if (ret == KERNEL_POWER_OFF_CHARGING_BOOT ||
 	    ret == LOW_POWER_OFF_CHARGING_BOOT)
 		rpmd->tcpc_kpoc = true;
-	pr_info("%s KPOC is %d\n", __func__, rpmd->tcpc_kpoc);
+	pr_no_info("%s KPOC is %d\n", __func__, rpmd->tcpc_kpoc);
 #endif
 
 #ifdef CONFIG_MTK_CHARGER
 	/* get charger device */
 	rpmd->chg_dev = get_charger_by_name("primary_chg");
 	if (!rpmd->chg_dev) {
-		pr_err("%s: get primary charger device failed\n", __func__);
+		pr_no_err("%s: get primary charger device failed\n", __func__);
 		ret = -ENODEV;
 		goto err_mutex;
 	}
@@ -195,7 +195,7 @@ static int rt_pd_manager_probe(struct platform_device *pdev)
 
 	rpmd->tcpc_dev = tcpc_dev_get_by_name("type_c_port0");
 	if (!rpmd->tcpc_dev) {
-		pr_err("%s get tcpc device type_c_port0 fail\n", __func__);
+		pr_no_err("%s get tcpc device type_c_port0 fail\n", __func__);
 		ret = -ENODEV;
 		goto err_mutex;
 	}
@@ -203,12 +203,12 @@ static int rt_pd_manager_probe(struct platform_device *pdev)
 	ret = register_tcp_dev_notifier(rpmd->tcpc_dev, &rpmd->pd_nb,
 					TCP_NOTIFY_TYPE_ALL);
 	if (ret < 0) {
-		pr_err("%s: register tcpc notifer fail\n", __func__);
+		pr_no_err("%s: register tcpc notifer fail\n", __func__);
 		ret = -EINVAL;
 		goto err_mutex;
 	}
 
-	pr_info("%s OK!!\n", __func__);
+	pr_no_info("%s OK!!\n", __func__);
 	return 0;
 err_mutex:
 	mutex_destroy(&rpmd->param_lock);

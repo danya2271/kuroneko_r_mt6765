@@ -144,7 +144,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_buffer_mode(int enable)
 	PK_DBG("i2c_buf_mode_en %d\n", enable);
 
 	if (pinst->pi2c_client == NULL) {
-		pr_info("pi2c_client is NULL!\n");
+		pr_no_info("pi2c_client is NULL!\n");
 		return IMGSENSOR_RETURN_ERROR;
 	}
 
@@ -168,7 +168,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_read(
 	enum   IMGSENSOR_RETURN    ret   = IMGSENSOR_RETURN_SUCCESS;
 
 	if (pinst->pi2c_client == NULL) {
-		pr_info("pi2c_client is NULL!\n");
+		pr_no_info("pi2c_client is NULL!\n");
 		return IMGSENSOR_RETURN_ERROR;
 	}
 
@@ -196,7 +196,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_read(
 		static DEFINE_RATELIMIT_STATE(ratelimit, 1 * HZ, 30);
 
 		if (__ratelimit(&ratelimit))
-			pr_info(
+			pr_no_info(
 			"I2C read failed (0x%x)! speed(0=%d) (0x%x)\n",
 			ret, speed, *pwrite_data);
 		ret = IMGSENSOR_RETURN_ERROR;
@@ -223,7 +223,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_write(
 	int i   = 0;
 
 	if (pinst->pi2c_client == NULL) {
-		pr_info("pi2c_client is NULL!\n");
+		pr_no_info("pi2c_client is NULL!\n");
 		return IMGSENSOR_RETURN_ERROR;
 	}
 
@@ -252,7 +252,7 @@ enum IMGSENSOR_RETURN imgsensor_i2c_write(
 		static DEFINE_RATELIMIT_STATE(ratelimit, 1 * HZ, 30);
 
 		if (__ratelimit(&ratelimit))
-			pr_info(
+			pr_no_info(
 				"I2C write failed (0x%x)! speed(0=%d) (0x%x)\n",
 				ret, speed, *pwrite_data);
 		ret = IMGSENSOR_RETURN_ERROR;

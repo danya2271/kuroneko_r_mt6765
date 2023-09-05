@@ -165,7 +165,7 @@ static int mt6357_led_get_clock(struct led_classdev *cdev, int *en)
 				__func__, RG_DRV_ISINK_CK_PDN);
 		return ret;
 	}
-	pr_info("get RG_DRV_ISINK_CK_PDN[0x%0x]: %d", RG_DRV_ISINK_CK_PDN, *en);
+	pr_no_info("get RG_DRV_ISINK_CK_PDN[0x%0x]: %d", RG_DRV_ISINK_CK_PDN, *en);
 	switch (led->id) {
 	case MT6357_ISINK1:
 		*en = (~*en >> RG_DRV_ISINK1_CK_PDN_SHIFT) & RG_DRV_ISINK1_CK_PDN_MASK;
@@ -177,7 +177,7 @@ static int mt6357_led_get_clock(struct led_classdev *cdev, int *en)
 		break;
 	}
 
-	pr_info("%s: PMIC LED(%d) Get clock %s.\n",
+	pr_no_info("%s: PMIC LED(%d) Get clock %s.\n",
 		__func__, led->id, en ? "True" : "False");
 
 	return ret;
@@ -210,7 +210,7 @@ static int mt6357_led_set_clock(struct led_classdev *cdev, int en)
 				__func__, RG_DRV_ISINK_CK_PDN);
 			return ret;
 		}
-		pr_info("set ISINK_EN_CTRL[0x%0x]: 0x%0x",
+		pr_no_info("set ISINK_EN_CTRL[0x%0x]: 0x%0x",
 			RG_DRV_ISINK_CK_PDN,
 			value << RG_DRV_ISINK1_CK_PDN_SHIFT);
 		mt6357_led_get_clock(cdev, &en);
@@ -259,7 +259,7 @@ static int mt6357_led_set_ISINK(struct led_classdev *cdev, int en)
 					__func__, ISINK_EN_CTRL);
 			return ret;
 		}
-		pr_info("set ISINK_EN_CTRL[0x%0x]: 0x%0x", ISINK_EN_CTRL, en_value | chop_value);
+		pr_no_info("set ISINK_EN_CTRL[0x%0x]: 0x%0x", ISINK_EN_CTRL, en_value | chop_value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -289,7 +289,7 @@ static int mt6357_led_get_ISINK(struct led_classdev *cdev, int *CTL0, int *CTL1)
 					__func__, ISINK_EN_CTRL);
 			return ret;
 		}
-		pr_info("get ISINK_EN_CTRL[0x%0x]: 0x%0x", ISINK_EN_CTRL, value);
+		pr_no_info("get ISINK_EN_CTRL[0x%0x]: 0x%0x", ISINK_EN_CTRL, value);
 		*CTL0 = (value >> ISINK_CHOP1_EN_SHIFT) & ISINK_CHOP1_EN_MASK;
 		*CTL1 = (value >> ISINK_CH1_EN_SHIFT) & ISINK_CH1_EN_MASK;
 		break;
@@ -349,7 +349,7 @@ static int mt6357_led_change_mode(struct led_classdev *cdev, int mode)
 		mode_val = mode_val << ISINK_CH1_MODE_SHIFT;
 		ret = regmap_update_bits(regmap, ISINK_CH1_MODE,
 			ISINK_CH1_MODE_MASK << ISINK_CH1_MODE_SHIFT, mode_val);
-		pr_info("set ISINK_CH1_MODE[0x%0x]: 0x%0x", ISINK_CH1_MODE, mode_val);
+		pr_no_info("set ISINK_CH1_MODE[0x%0x]: 0x%0x", ISINK_CH1_MODE, mode_val);
 		if (ret < 0) {
 			dev_notice(led->parent->dev,
 					"%s: ISINK_CH1_MODE Reg(0x%x) Write ERROR.\n",
@@ -395,7 +395,7 @@ static int mt6357_led_get_current_step(struct mt_led_info *info, int *value)
 				__func__, ISINK_CH1_STEP);
 			return ret;
 		}
-		pr_info("get ISINK_CH1_STEP[0x%0x]: 0x%0x", ISINK_CH1_STEP, *value);
+		pr_no_info("get ISINK_CH1_STEP[0x%0x]: 0x%0x", ISINK_CH1_STEP, *value);
 		*value = (*value >> ISINK_CH1_STEP_MASK) & ISINK_CH1_STEP_SHIFT;
 		break;
 	case MT6357_ISINK2:
@@ -432,7 +432,7 @@ static int mt6357_led_set_current_step(struct mt_led_info *info, int step)
 				__func__, ISINK_CH1_STEP);
 			return -1;
 		}
-		pr_info("set ISINK_CH1_STEP[0x%0x]: 0x%0x", ISINK_CH1_STEP, value);
+		pr_no_info("set ISINK_CH1_STEP[0x%0x]: 0x%0x", ISINK_CH1_STEP, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -469,7 +469,7 @@ static int mt6357_led_get_pwm_dim_duty(struct mt_led_info *info, int *value)
 				__func__, ISINK_DIM1_DUTY);
 			return -1;
 		}
-		pr_info("get ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, *value);
+		pr_no_info("get ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, *value);
 		*value = (*value >> ISINK_DIM1_DUTY_SHIFT) & ISINK_DIM1_DUTY_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -507,7 +507,7 @@ static int mt6357_led_set_pwm_dim_duty(struct mt_led_info *info, int duty)
 				__func__, ISINK_DIM1_DUTY);
 			return -1;
 		}
-		pr_info("set ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, value);
+		pr_no_info("set ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -540,7 +540,7 @@ static int mt6357_led_get_pwm_dim_freq(struct mt_led_info *info, int *value)
 				__func__, ISINK_DIM1_FSEL);
 			return -1;
 		}
-		pr_info("get ISINK_DIM1_FSEL [0x%0x]: 0x%0x", ISINK_DIM1_FSEL, *value);
+		pr_no_info("get ISINK_DIM1_FSEL [0x%0x]: 0x%0x", ISINK_DIM1_FSEL, *value);
 		*value = (*value >> ISINK_DIM1_FSEL_SHIFT) & ISINK_DIM1_FSEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -572,7 +572,7 @@ static int mt6357_led_set_pwm_dim_freq(struct mt_led_info *info, int freq)
 		value = value << ISINK_DIM1_FSEL_SHIFT;
 		ret = regmap_update_bits(regmap, ISINK_DIM1_FSEL,
 			ISINK_DIM1_FSEL_MASK << ISINK_DIM1_FSEL_SHIFT, value);
-		pr_info("set ISINK_DIM1_FSEL[0x%0x]: 0x%0x", ISINK_DIM1_FSEL, value);
+		pr_no_info("set ISINK_DIM1_FSEL[0x%0x]: 0x%0x", ISINK_DIM1_FSEL, value);
 		if (ret < 0) {
 			dev_notice(led->parent->dev, "%s: ISINK_DIM1_FSEL Reg(0x%x) Write ERROR.\n",
 				__func__, ISINK_DIM1_FSEL);
@@ -607,7 +607,7 @@ static int mt6357_led_get_breath_tr1(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TR_SEL[0x%0x]1: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TR_SEL[0x%0x]1: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TR1_SEL_SHIFT) & ISINK_BREATH1_TR1_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -635,7 +635,7 @@ static int mt6357_led_get_breath_tr2(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TR_SEL[0x%0x]1: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TR_SEL[0x%0x]1: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TR2_SEL_SHIFT) & ISINK_BREATH1_TR2_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -663,7 +663,7 @@ static int mt6357_led_get_breath_tf1(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TF1_SEL_SHIFT) & ISINK_BREATH1_TF1_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -691,7 +691,7 @@ static int mt6357_led_get_breath_tf2(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TF2_SEL_SHIFT) & ISINK_BREATH1_TF2_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -719,7 +719,7 @@ static int mt6357_led_get_breath_ton(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TON_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TON_SEL_SHIFT) & ISINK_BREATH1_TON_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -747,7 +747,7 @@ static int mt6357_led_get_breath_toff(struct mt_led_info *info, int *value)
 				__func__, ISINK_BREATH1_TON_SEL);
 			return -1;
 		}
-		pr_info("get ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, *value);
+		pr_no_info("get ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, *value);
 		*value = (*value >> ISINK_BREATH1_TOFF_SEL_SHIFT) & ISINK_BREATH1_TOFF_SEL_MASK;
 		break;
 	case MT6357_ISINK2:
@@ -779,7 +779,7 @@ static int mt6357_led_set_breath_tr1(struct mt_led_info *info, int time)
 		value = time << ISINK_BREATH1_TR1_SEL_SHIFT;
 		ret = regmap_update_bits(regmap, ISINK_BREATH1_TR_SEL,
 			ISINK_BREATH1_TR1_SEL_MASK << ISINK_BREATH1_TR1_SEL_SHIFT, value);
-		pr_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
 		if (ret < 0) {
 			dev_notice(led->parent->dev, "%s: ISINK_BREATH1_TR_SEL Reg(0x%x) Write ERROR.\n",
 				__func__, ISINK_BREATH1_TR_SEL);
@@ -820,7 +820,7 @@ static int mt6357_led_set_breath_tr2(struct mt_led_info *info, int time)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -856,7 +856,7 @@ static int mt6357_led_set_breath_tf1(struct mt_led_info *info, int time)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
 
 		break;
 	case MT6357_ISINK2:
@@ -894,7 +894,7 @@ static int mt6357_led_set_breath_tf2(struct mt_led_info *info, int time)
 				__func__, ISINK_BREATH1_TR_SEL);
 			return -1;
 		}
-		pr_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TR_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TR_SEL, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -930,7 +930,7 @@ static int mt6357_led_set_breath_ton(struct mt_led_info *info, int time)
 				__func__, ISINK_BREATH1_TON_SEL);
 			return -1;
 		}
-		pr_info("set ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -966,7 +966,7 @@ static int mt6357_led_set_breath_toff(struct mt_led_info *info, int time)
 				__func__, ISINK_BREATH1_TON_SEL);
 			return -1;
 		}
-		pr_info("set ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, value);
+		pr_no_info("set ISINK_BREATH1_TON_SEL[0x%0x]: 0x%0x", ISINK_BREATH1_TON_SEL, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -1027,7 +1027,7 @@ static int mt6357_led_hw_brightness(struct led_classdev *cdev,
 				__func__, ISINK_DIM1_DUTY);
 			return -1;
 		}
-		pr_info("set ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, value);
+		pr_no_info("set ISINK_DIM1_DUTY[0x%0x]: 0x%0x", ISINK_DIM1_DUTY, value);
 		break;
 	case MT6357_ISINK2:
 	case MT6357_ISINK3:
@@ -1248,7 +1248,7 @@ static int mt6357_led_set_dt_default(struct led_classdev *cdev,
 			mt6357_led_set_brightness(cdev, LED_OFF);
 		}
 	}
-	pr_info("mt6357 parse led[%d]: %s, %s, %s\n",
+	pr_no_info("mt6357 parse led[%d]: %s, %s, %s\n",
 		led->id, led->l_info.cdev.name, state, led->l_info.cdev.default_trigger);
 
 	return ret;
@@ -1358,7 +1358,7 @@ static int mt6357_led_probe(struct platform_device *pdev)
 		//ISINK OFF
 		mt6357_led_hw_off(&leds->led[reg]->l_info.cdev);
 	}
-	pr_info("mt6357 led end!");
+	pr_no_info("mt6357 led end!");
 
 	return 0;
 
@@ -1406,11 +1406,11 @@ static int __init mt6357_leds_init(void)
 {
 	int ret;
 
-	pr_info("Leds init");
+	pr_no_info("Leds init");
 	ret = platform_driver_register(&mt6357_led_driver);
 
 	if (ret) {
-		pr_info("driver register error: %d", ret);
+		pr_no_info("driver register error: %d", ret);
 		return ret;
 	}
 

@@ -121,7 +121,7 @@ static int get_bpp(enum DISP_FORMAT format)
 	int id = format >> 8;
 
 	if (id <= (DISP_FORMAT_UNKNOWN >> 8) || id >= (DISP_FORMAT_NUM >> 8)) {
-		DISP_PR_ERR("Invalid color format: 0x%x\n", format);
+		DISP_pr_no_err("Invalid color format: 0x%x\n", format);
 		goto err;
 	}
 
@@ -381,7 +381,7 @@ static int get_ovl_by_phy(int layer_map_tb, int phy_layer_idx)
 	}
 
 	if (layer_idx == MAX_PHY_OVL_CNT) {
-		DISP_PR_ERR("%s fail, phy_layer_idx:%d\n", __func__,
+		DISP_pr_no_err("%s fail, phy_layer_idx:%d\n", __func__,
 			    phy_layer_idx);
 		return -1;
 	}
@@ -662,7 +662,7 @@ int rollback_resize_layer_to_GPU_range(struct disp_layer_info *disp_info,
 	if (l_rule_ops->rsz_by_gpu_info_change)
 		l_rule_ops->rsz_by_gpu_info_change();
 	else
-		DISP_PR_INFO("%s, rsz_by_gpu_info_change not defined\n",
+		DISP_pr_no_info("%s, rsz_by_gpu_info_change not defined\n",
 			     __func__);
 
 	return 0;
@@ -713,7 +713,7 @@ static int _rollback_to_GPU_bottom_up(struct disp_layer_info *info,
 	}
 
 	if (available_ovl_num < 0)
-		DISP_PR_ERR("%s available_ovl_num invalid:%d\n", __func__,
+		DISP_pr_no_err("%s available_ovl_num invalid:%d\n", __func__,
 			    available_ovl_num);
 
 	return available_ovl_num;
@@ -750,7 +750,7 @@ static int _rollback_to_GPU_top_down(struct disp_layer_info *disp_info,
 	}
 
 	if (available_ovl_num < 0)
-		DISP_PR_ERR("%s available_ovl_num invalid:%d\n", __func__,
+		DISP_pr_no_err("%s available_ovl_num invalid:%d\n", __func__,
 			    available_ovl_num);
 
 	return available_ovl_num;
@@ -889,7 +889,7 @@ static int ext_id_tuning(struct disp_layer_info *info, int disp)
 	_filter_by_ovl_cnt(info, disp);
 	phy_ovl_cnt = get_phy_ovl_layer_cnt(info, disp);
 	if (phy_ovl_cnt > MAX_PHY_OVL_CNT) {
-		DISP_PR_ERR("phy_ovl_cnt(%d) over OVL count limit\n",
+		DISP_pr_no_err("phy_ovl_cnt(%d) over OVL count limit\n",
 			    phy_ovl_cnt);
 		phy_ovl_cnt = MAX_PHY_OVL_CNT;
 	}
@@ -1729,7 +1729,7 @@ static int check_layering_result(struct disp_layer_info *info)
 		max_ovl_id = info->input_config[disp_idx][layer_num - 1].ovl_id;
 
 		if (max_ovl_id >= ovl_layer_num) {
-			DISP_PR_ERR("Inv ovl:%d,disp:%d\n",
+			DISP_pr_no_err("Inv ovl:%d,disp:%d\n",
 				    max_ovl_id, disp_idx);
 			WARN_ON(1);
 		}
@@ -1748,7 +1748,7 @@ int check_disp_info(struct disp_layer_info *disp_info)
 	int n = 0;
 
 	if (disp_info == NULL) {
-		DISP_PR_ERR("[HRT]disp_info is empty\n");
+		DISP_pr_no_err("[HRT]disp_info is empty\n");
 		return -1;
 	}
 
@@ -1760,7 +1760,7 @@ int check_disp_info(struct disp_layer_info *disp_info)
 				     "[HRT]input config is empty,disp:%d,l_num:%d\n",
 				     disp_idx,
 				     disp_info->layer_num[disp_idx]);
-			DISP_PR_INFO("%s", msg);
+			DISP_pr_no_info("%s", msg);
 			return -1;
 		}
 
@@ -1775,7 +1775,7 @@ int check_disp_info(struct disp_layer_info *disp_info)
 				     disp_idx,
 				     disp_info->gles_head[disp_idx],
 				     disp_info->gles_tail[disp_idx]);
-			DISP_PR_INFO("%s", msg);
+			DISP_pr_no_info("%s", msg);
 			return -1;
 		}
 	}
@@ -1807,7 +1807,7 @@ static int _copy_layer_info_from_disp(struct disp_layer_info *disp_info_user,
 		if (copy_from_user(l_info->input_config[disp_idx],
 				   disp_info_user->input_config[disp_idx],
 				   layer_size)) {
-			pr_info("[DISP][FB]: copy_to_user failed! line:%d\n",
+			pr_no_info("[DISP][FB]: copy_to_user failed! line:%d\n",
 				__LINE__);
 			return -EFAULT;
 		}
@@ -1849,7 +1849,7 @@ static int _copy_layer_info_by_disp(struct disp_layer_info *disp_info_user,
 	} else {
 		if (copy_to_user(disp_info_user->input_config[disp_idx],
 				 l_info->input_config[disp_idx], layer_size)) {
-			pr_info("[DISP][FB]: copy_to_user failed! line:%d\n",
+			pr_no_info("[DISP][FB]: copy_to_user failed! line:%d\n",
 				__LINE__);
 			ret = -EFAULT;
 		}
@@ -1896,7 +1896,7 @@ int set_hrt_state(enum HRT_SYS_STATE sys_state, int en)
 			l_rule_info->hrt_sys_state &= ~(1 << sys_state);
 		break;
 	default:
-		DISP_PR_ERR("unknown hrt scenario\n");
+		DISP_pr_no_err("unknown hrt scenario\n");
 		break;
 	}
 
@@ -1919,12 +1919,12 @@ int layering_rule_start(struct disp_layer_info *disp_info_user, int debug_mode)
 	roll_gpu_for_idle = 0;
 
 	if (l_rule_ops == NULL || l_rule_info == NULL) {
-		DISP_PR_INFO("Layering rule has not been initialize.\n");
+		DISP_pr_no_info("Layering rule has not been initialize.\n");
 		return -EFAULT;
 	}
 
 	if (check_disp_info(disp_info_user) < 0) {
-		DISP_PR_ERR("check_disp_info fail\n");
+		DISP_pr_no_err("check_disp_info fail\n");
 		return -EFAULT;
 	}
 	if (set_disp_info(disp_info_user, debug_mode))
@@ -1955,7 +1955,7 @@ int layering_rule_start(struct disp_layer_info *disp_info_user, int debug_mode)
 		if (l_rule_ops->resizing_rule)
 			ret = l_rule_ops->resizing_rule(&layering_info);
 		else
-			DISP_PR_INFO("RSZ on, but no resizing rule.\n");
+			DISP_pr_no_info("RSZ on, but no resizing rule.\n");
 	} else {
 		rollback_all_resize_layer_to_GPU(&layering_info,
 			HRT_PRIMARY);
@@ -2126,7 +2126,7 @@ static char *parse_hrt_data_value(char *start, long *value)
 		*tok_end = 0;
 	ret = kstrtol(tok_start + 1, 10, value);
 	if (ret)
-		DISP_PR_INFO("Parsing error gles_num:%d, p:%s, ret:%d\n",
+		DISP_pr_no_info("Parsing error gles_num:%d, p:%s, ret:%d\n",
 			     (int)*value, tok_start + 1, ret);
 out:
 	return tok_end;
@@ -2177,12 +2177,12 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 	set_fs(KERNEL_DS);
 	filp = filp_open(filename, O_RDONLY, 0777);
 	if (IS_ERR(filp)) {
-		DISP_PR_INFO("File open error:%s\n", filename);
+		DISP_pr_no_info("File open error:%s\n", filename);
 		return -1;
 	}
 
 	if (!filp->f_op) {
-		DISP_PR_INFO("File Operation Method Error!!\n");
+		DISP_pr_no_info("File Operation Method Error!!\n");
 		return -1;
 	}
 
@@ -2253,7 +2253,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 			is_end = true;
 		} else if (strncmp(line_buf,
 				"[print_out_test_result]", 23) == 0) {
-			DISP_PR_INFO("Test case %d is %s\n", (int)test_case,
+			DISP_pr_no_info("Test case %d is %s\n", (int)test_case,
 				     is_test_pass?"Pass":"Fail");
 		} else if (strncmp(line_buf, "[layer_result]", 14) == 0) {
 			long layer_result = 0, layer_id;
@@ -2271,7 +2271,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 			input_config =
 				&disp_info->input_config[disp_id][layer_id];
 			if (layer_result !=	input_config->ovl_id) {
-				DISP_PR_INFO("case:%d,ovl_id incorrect,%d/%d\n",
+				DISP_pr_no_info("case:%d,ovl_id incorrect,%d/%d\n",
 					     (int)test_case,
 					     input_config->ovl_id,
 					     (int)layer_result);
@@ -2292,7 +2292,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 					     (int)test_case,
 					     input_config->ext_sel_layer,
 					     (int)layer_result);
-				DISP_PR_INFO("%s", msg);
+				DISP_pr_no_info("%s", msg);
 				is_test_pass = false;
 			}
 		} else if (strncmp(line_buf, "[gles_result]", 13) == 0) {
@@ -2306,7 +2306,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 				goto end;
 			tok = parse_hrt_data_value(tok, &gles_num);
 			if (gles_num != disp_info->gles_head[disp_id]) {
-				DISP_PR_INFO("case:%d,gles head err,%d/%d\n",
+				DISP_pr_no_info("case:%d,gles head err,%d/%d\n",
 					     (int)test_case,
 					     disp_info->gles_head[disp_id],
 					     (int)gles_num);
@@ -2319,7 +2319,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 			if (!tok)
 				goto end;
 			if (gles_num != disp_info->gles_tail[disp_id]) {
-				DISP_PR_INFO("case:%d,gles tail err,%d/%d\n",
+				DISP_pr_no_info("case:%d,gles tail err,%d/%d\n",
 					     (int)test_case,
 					     disp_info->gles_tail[disp_id],
 					     (int)gles_num);
@@ -2331,7 +2331,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 
 			tok = parse_hrt_data_value(line_buf, &hrt_num);
 			if (hrt_num != HRT_GET_DVFS_LEVEL(disp_info->hrt_num))
-				DISP_PR_INFO("case:%d,hrt num err,%d/%d\n",
+				DISP_pr_no_info("case:%d,hrt num err,%d/%d\n",
 					     (int)test_case,
 					     HRT_GET_DVFS_LEVEL(
 							disp_info->hrt_num),
@@ -2346,7 +2346,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 				HRT_GET_PATH_SCENARIO(disp_info->hrt_num) &
 				0x1F;
 			if (hrt_num != path_scen) {
-				DISP_PR_INFO("case:%d,hrt path err,%d/%d\n",
+				DISP_pr_no_info("case:%d,hrt path err,%d/%d\n",
 					     (int)test_case, path_scen,
 					     (int)hrt_num);
 				is_test_pass = false;
@@ -2359,7 +2359,7 @@ static int load_hrt_test_data(struct disp_layer_info *disp_info)
 				goto end;
 			if (hrt_num !=
 				HRT_GET_SCALE_SCENARIO(disp_info->hrt_num)) {
-				DISP_PR_INFO("case:%d, hrt scale err,%d/%d\n",
+				DISP_pr_no_info("case:%d, hrt scale err,%d/%d\n",
 					     (int)test_case,
 					     HRT_GET_SCALE_SCENARIO(
 							disp_info->hrt_num),

@@ -627,7 +627,7 @@ int dpmgr_destroy_path_handle(disp_path_handle dp_handle)
 
 	phandle = (struct ddp_path_handle *)dp_handle;
 	if (!phandle) {
-		DDP_PR_ERR("%s: error: path handle is NULL\n", __func__);
+		DDP_pr_no_err("%s: error: path handle is NULL\n", __func__);
 		return -EINVAL;
 	}
 	if (phandle->hwmutexid < 0) {
@@ -705,7 +705,7 @@ int dpmgr_path_add_memout(disp_path_handle dp_handle,
 	wdma = DISP_MODULE_WDMA0;
 
 	if (ddp_is_module_in_scenario(phandle->scenario, wdma) == 1) {
-		DDP_PR_ERR("%s: error, wdma is already in scenario=%s\n",
+		DDP_pr_no_err("%s: error, wdma is already in scenario=%s\n",
 			   __func__, ddp_get_scenario_name(phandle->scenario));
 		return -1;
 	}
@@ -716,7 +716,7 @@ int dpmgr_path_add_memout(disp_path_handle dp_handle,
 	if (engine == DISP_MODULE_OVL0) {
 		phandle->scenario = DDP_SCENARIO_PRIMARY_ALL;
 	} else {
-		pr_err("%s error: engine=%d\n", __func__, engine);
+		pr_no_err("%s error: engine=%d\n", __func__, engine);
 		ASSERT(0);
 		return 0;
 	}
@@ -760,7 +760,7 @@ int dpmgr_path_remove_memout(disp_path_handle dp_handle, void *cmdq_handle)
 	wdma = DISP_MODULE_WDMA0;
 
 	if (ddp_is_module_in_scenario(phandle->scenario, wdma) == 0) {
-		DDP_PR_ERR("%s: error: wdma is not in scenario=%s\n", __func__,
+		DDP_pr_no_err("%s: error: wdma is not in scenario=%s\n", __func__,
 			   ddp_get_scenario_name(phandle->scenario));
 		return -1;
 	}
@@ -785,7 +785,7 @@ int dpmgr_path_remove_memout(disp_path_handle dp_handle, void *cmdq_handle)
 		old_scn = DDP_SCENARIO_SUB_OVL_MEMOUT;
 		new_scn = DDP_SCENARIO_SUB_DISP;
 	} else {
-		pr_err("%s: error scenario=%s\n", __func__,
+		pr_no_err("%s: error scenario=%s\n", __func__,
 		       ddp_get_scenario_name(phandle->scenario));
 		ASSERT(0);
 		return 0;
@@ -1932,7 +1932,7 @@ int dpmgr_check_status(disp_path_handle dp_handle)
 	ASSERT(dp_handle != NULL);
 	handle = kmalloc(sizeof(struct ddp_path_handle), GFP_ATOMIC);
 	if (IS_ERR_OR_NULL(handle)) {
-		DISP_PR_INFO("%s:%d alloc path handle fail!\n",
+		DISP_pr_no_info("%s:%d alloc path handle fail!\n",
 			__func__, __LINE__);
 		return 0;
 	}

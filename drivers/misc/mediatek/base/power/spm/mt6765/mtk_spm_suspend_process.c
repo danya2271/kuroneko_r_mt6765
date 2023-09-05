@@ -76,7 +76,7 @@ void spm_suspend_pre_process(struct pwr_ctrl *pwrctrl)
 
 	ret = spm_to_sspm_command(SPM_SUSPEND, &spm_d);
 	if (ret < 0) {
-		pr_info("[SPM] ret %d", ret);
+		pr_no_info("[SPM] ret %d", ret);
 	}
 #endif
 

@@ -131,7 +131,7 @@ static int is_same_ratio(struct layer_config *ref, struct layer_config *c)
 	int diff_w, diff_h;
 
 	if (!ref->dst_width || !ref->dst_height) {
-		DISP_PR_ERR("%s:ref dst(%dx%d)\n", __func__,
+		DISP_pr_no_err("%s:ref dst(%dx%d)\n", __func__,
 			    ref->dst_width, ref->dst_height);
 		return -EINVAL;
 	}
@@ -191,7 +191,7 @@ static bool is_RPO(struct disp_layer_info *disp_info, int disp_idx,
 		rect_join(&dst_layer_roi, &dst_roi, &dst_roi);
 		if (src_roi.width > dst_roi.width ||
 		    src_roi.height > dst_roi.height) {
-			DISP_PR_ERR(
+			DISP_pr_no_err(
 				 "L%d:scale down(%d,%d,%dx%d)->(%d,%d,%dx%d)\n",
 				 i, src_roi.x, src_roi.y, src_roi.width,
 				 src_roi.height, dst_roi.x, dst_roi.y,
@@ -209,7 +209,7 @@ static bool is_RPO(struct disp_layer_info *disp_info, int disp_idx,
 	if (*rsz_idx == -1)
 		return false;
 	if (*rsz_idx == 2) {
-		DISP_PR_ERR("%s:error: rsz layer idx >= 2\n", __func__);
+		DISP_pr_no_err("%s:error: rsz layer idx >= 2\n", __func__);
 		return false;
 	}
 
@@ -259,7 +259,7 @@ static bool lr_rsz_layout(struct disp_layer_info *disp_info)
 			else if (rsz_idx == 1)
 				l_rule_info.disp_path = HRT_PATH_RPO_L0L1;
 			else
-				DISP_PR_ERR("%s:RPO but rsz_idx(%d) error\n",
+				DISP_pr_no_err("%s:RPO but rsz_idx(%d) error\n",
 					    __func__, rsz_idx);
 		} else {
 			rollback_all_resize_layer_to_GPU(disp_info,
@@ -708,7 +708,7 @@ static void backup_input_config(struct disp_layer_info *disp_info)
 	g_input_config = kzalloc(size, GFP_KERNEL);
 
 	if (g_input_config == 0) {
-		DISP_PR_ERR("%s: allocate memory fail\n", __func__);
+		DISP_pr_no_err("%s: allocate memory fail\n", __func__);
 		return;
 	}
 

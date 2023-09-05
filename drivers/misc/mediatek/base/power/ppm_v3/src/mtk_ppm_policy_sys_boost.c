@@ -49,34 +49,6 @@ static struct ppm_userlimit_data sysboost_final_limit = {
 static void ppm_sysboost_dump_final_limit(void *data)
 {
 	int i;
-
-	if (!data) {
-		ppm_dbg(SYS_BOOST,
-			"is_core_limited = %d, is_freq_limited = %d\n",
-			sysboost_final_limit.is_core_limited_by_user,
-			sysboost_final_limit.is_freq_limited_by_user);
-		for_each_ppm_clusters(i) {
-			ppm_dbg(SYS_BOOST, "cluster %d = (%d)(%d)(%d)(%d)\n",
-				i,
-				sysboost_final_limit.limit[i].min_freq_idx,
-				sysboost_final_limit.limit[i].max_freq_idx,
-				sysboost_final_limit.limit[i].min_core_num,
-				sysboost_final_limit.limit[i].max_core_num);
-		}
-	} else {
-		struct seq_file *m = (struct seq_file *)data;
-
-		seq_printf(m, "is_core_limited = %d, is_freq_limited = %d\n",
-			sysboost_final_limit.is_core_limited_by_user,
-			sysboost_final_limit.is_freq_limited_by_user);
-		for_each_ppm_clusters(i) {
-			seq_printf(m, "cluster %d = (%d)(%d)(%d)(%d)\n", i,
-				sysboost_final_limit.limit[i].min_freq_idx,
-				sysboost_final_limit.limit[i].max_freq_idx,
-				sysboost_final_limit.limit[i].min_core_num,
-				sysboost_final_limit.limit[i].max_core_num);
-		}
-	}
 }
 
 /* must acquire sysboost_policy lock before calling this functions! */

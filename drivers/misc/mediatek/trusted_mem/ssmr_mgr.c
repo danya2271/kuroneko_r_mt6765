@@ -27,18 +27,18 @@ static int tmem_ssmr_get(u64 *pa, u32 *size, u32 feat, void *dev_desc)
 	UNUSED(dev_desc);
 
 	if (ssmr_offline(&ssmr_pa, &ssmr_size, true, feat)) {
-		pr_err("ssmr offline failed (feat:%d)!\n", feat);
+		pr_no_err("ssmr offline failed (feat:%d)!\n", feat);
 		return TMEM_SSMR_OFFLINE_FAILED;
 	}
 
 	*pa = (u64)ssmr_pa;
 	*size = (u32)ssmr_size;
 	if (INVALID_ADDR(*pa) || INVALID_SIZE(*size)) {
-		pr_err("ssmr pa is invalid (0x%llx, 0x%x)\n", *pa, *size);
+		pr_no_err("ssmr pa is invalid (0x%llx, 0x%x)\n", *pa, *size);
 		return TMEM_INVALID_ADDR_OR_SIZE;
 	}
 
-	pr_debug("ssmr offline passed! feat:%d, pa: 0x%llx, sz: 0x%x\n", feat,
+	pr_no_debug("ssmr offline passed! feat:%d, pa: 0x%llx, sz: 0x%x\n", feat,
 		 *pa, *size);
 	return TMEM_OK;
 }
@@ -48,11 +48,11 @@ static int tmem_ssmr_put(u32 feat, void *dev_desc)
 	UNUSED(dev_desc);
 
 	if (ssmr_online(feat)) {
-		pr_err("ssmr online failed (feat:%d)!\n", feat);
+		pr_no_err("ssmr online failed (feat:%d)!\n", feat);
 		return TMEM_SSMR_ONLINE_FAILED;
 	}
 
-	pr_debug("ssmr online passed!\n");
+	pr_no_debug("ssmr online passed!\n");
 	return TMEM_OK;
 }
 

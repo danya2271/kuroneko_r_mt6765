@@ -66,7 +66,7 @@ int module_to_m4u_port(enum DISP_MODULE_ENUM module)
 		if (module_to_m4u_port_mapping[i].module == module)
 			return module_to_m4u_port_mapping[i].port;
 
-	DDP_PR_ERR("%s, get m4u port fail(module=%s)\n", __func__,
+	DDP_pr_no_err("%s, get m4u port fail(module=%s)\n", __func__,
 		   ddp_get_module_name(module));
 	return M4U_PORT_UNKNOWN;
 }
@@ -79,7 +79,7 @@ int module_to_m4u_larb(enum DISP_MODULE_ENUM module)
 		if (module_to_m4u_port_mapping[i].module == module)
 			return module_to_m4u_port_mapping[i].larb;
 
-	DDP_PR_ERR("module_to_m4u_port, get m4u larb fail(module=%s)\n",
+	DDP_pr_no_err("module_to_m4u_port, get m4u larb fail(module=%s)\n",
 		   ddp_get_module_name(module));
 	return M4U_PORT_UNKNOWN;
 }
@@ -93,7 +93,7 @@ enum DISP_MODULE_ENUM m4u_port_to_module(int port)
 		if (module_to_m4u_port_mapping[i].port == port)
 			return module_to_m4u_port_mapping[i].module;
 
-	DDP_PR_ERR("%s: unknown port=%d\n", __func__, port);
+	DDP_pr_no_err("%s: unknown port=%d\n", __func__, port);
 	return DISP_MODULE_UNKNOWN;
 }
 
@@ -152,7 +152,7 @@ int config_display_m4u_port(void)
 			enum DISP_MODULE_ENUM module;
 
 			module = module_to_m4u_port_mapping[i].module;
-			DISP_PR_ERR("config M4U Port %s to %s FAIL(ret=%d)\n",
+			DISP_pr_no_err("config M4U Port %s to %s FAIL(ret=%d)\n",
 				    ddp_get_module_name(module),
 				    m4u_usage, ret);
 			return -1;
@@ -167,7 +167,7 @@ int disp_m4u_callback(int port, unsigned long mva,
 {
 	enum DISP_MODULE_ENUM module;
 
-	DDP_PR_ERR("fault call port=%d, mva=0x%lx, data=0x%p\n",
+	DDP_pr_no_err("fault call port=%d, mva=0x%lx, data=0x%p\n",
 		   port, mva, data);
 	module = m4u_port_to_module(port);
 	ddp_dump_analysis(module);
@@ -188,7 +188,7 @@ int disp_mva_map_kernel(enum DISP_MODULE_ENUM module, unsigned int mva,
 		mtk_iommu_iova_to_va(&(disp_dev->iommu_pdev->dev),
 					      mva, map_va, size);
 	else
-		pr_info("disp mva map kernel fail\n");
+		pr_no_info("disp mva map kernel fail\n");
 #endif
 #elif defined(CONFIG_MTK_M4U)
 	m4u_mva_map_kernel(mva, size, map_va, map_size);
@@ -217,7 +217,7 @@ struct ion_client *disp_ion_create(const char *name)
 		disp_ion_client = ion_client_create(g_ion_device, name);
 
 	if (!disp_ion_client) {
-		DDP_PR_ERR("create ion client failed!\n");
+		DDP_pr_no_err("create ion client failed!\n");
 		return NULL;
 	}
 
@@ -235,7 +235,7 @@ struct ion_handle *disp_ion_alloc(struct ion_client *client,
 #if defined(MTK_FB_ION_SUPPORT)
 	disp_handle = ion_alloc(client, size, align, heap_id_mask, 0);
 	if (IS_ERR(disp_handle)) {
-		DISP_PR_ERR("%s error 0x%p\n", __func__, disp_handle);
+		DISP_pr_no_err("%s error 0x%p\n", __func__, disp_handle);
 		return NULL;
 	}
 
@@ -252,7 +252,7 @@ int *disp_aosp_ion_alloc(unsigned int heap_id_mask,
 #if !defined(MTK_FB_ION_SUPPORT)
 	fd = ion_alloc(size, heap_id_mask, 0);
 	if (fd < 0)
-		DISP_PR_ERR("%s error %d\n", __func__, fd);
+		DISP_pr_no_err("%s error %d\n", __func__, fd);
 
 	DDPDBG("%s %d\n", __func__, fd);
 #endif
@@ -271,7 +271,7 @@ int disp_ion_get_mva(struct ion_client *client, struct ion_handle *handle,
 	mm_data.get_phys_param.kernel_handle = handle;
 	if (ion_kernel_ioctl(client, ION_CMD_MULTIMEDIA,
 			     (unsigned long)&mm_data) < 0) {
-		DISP_PR_ERR("%s: config buffer failed.0x%p -0x%p\n",
+		DISP_pr_no_err("%s: config buffer failed.0x%p -0x%p\n",
 			    __func__, client, handle);
 		ion_free(client, handle);
 		return -1;
@@ -348,18 +348,18 @@ struct ion_handle *disp_ion_import_handle(struct ion_client *client, int fd)
 
 	/* If no need ION support, do nothing! */
 	if (fd <= 0) {
-		DDP_PR_ERR("NO NEED ion support, fd %d\n", fd);
+		DDP_pr_no_err("NO NEED ion support, fd %d\n", fd);
 		return handle;
 	}
 
 	if (!client) {
-		DDP_PR_ERR("invalid ion client!\n");
+		DDP_pr_no_err("invalid ion client!\n");
 		return handle;
 	}
 
 	handle = ion_import_dma_buf_fd(client, fd);
 	if (IS_ERR(handle)) {
-		DDP_PR_ERR("import ion handle failed!\n");
+		DDP_pr_no_err("import ion handle failed!\n");
 		return NULL;
 	}
 	mm_data.mm_cmd = ION_MM_CONFIG_BUFFER;
@@ -370,7 +370,7 @@ struct ion_handle *disp_ion_import_handle(struct ion_client *client, int fd)
 
 	if (ion_kernel_ioctl(client, ION_CMD_MULTIMEDIA,
 			     (unsigned long)&mm_data))
-		DDP_PR_ERR("configure ion buffer failed!\n");
+		DDP_pr_no_err("configure ion buffer failed!\n");
 
 	DDPDBG("import ion handle fd=%d,hnd=0x%p\n", fd, handle);
 
@@ -386,7 +386,7 @@ void disp_ion_free_handle(struct ion_client *client, struct ion_handle *handle)
 {
 #if defined(MTK_FB_ION_SUPPORT)
 	if (!client) {
-		DDP_PR_ERR("invalid ion client!\n");
+		DDP_pr_no_err("invalid ion client!\n");
 		return;
 	}
 	if (!handle)
@@ -417,7 +417,7 @@ void disp_ion_cache_flush(struct ion_client *client, struct ion_handle *handle,
 		return;
 
 	if (sync_type == ION_CACHE_FLUSH_ALL) {
-		DDP_PR_ERR("Cannot use ion cache flush anymore\n");
+		DDP_pr_no_err("Cannot use ion cache flush anymore\n");
 		return;
 	}
 
@@ -430,7 +430,7 @@ void disp_ion_cache_flush(struct ion_client *client, struct ion_handle *handle,
 	sys_data.cache_sync_param.size = handle->buffer->size;
 
 	if (ion_kernel_ioctl(client, ION_CMD_SYSTEM, (unsigned long)&sys_data))
-		DDP_PR_ERR("ion cache flush failed!\n");
+		DDP_pr_no_err("ion cache flush failed!\n");
 
 	ion_unmap_kernel(client, handle);
 }
@@ -468,7 +468,7 @@ int disp_aosp_release_reserved_area(phys_addr_t pa_start,
 	void *va_start, *va_end;
 
 	if ((!pa_start) || (!pa_end)) {
-		DISP_PR_ERR("%s:%d cannot support NULL PA(0x%lx,0x%lx)\n",
+		DISP_pr_no_err("%s:%d cannot support NULL PA(0x%lx,0x%lx)\n",
 				__func__, __LINE__,
 				(unsigned long)pa_start,
 				(unsigned long)pa_end);
@@ -479,7 +479,7 @@ int disp_aosp_release_reserved_area(phys_addr_t pa_start,
 	va_end = __va(pa_end);
 	pages = free_reserved_area(va_start, va_end, 0xFF, "DDP_M4U");
 	if (!pages) {
-		DISP_PR_ERR("%s:%d release fail! va_s:0x%p, va_e:%p\n",
+		DISP_pr_no_err("%s:%d release fail! va_s:0x%p, va_e:%p\n",
 				__func__, __LINE__, va_start, va_end);
 		return -1;
 	}
@@ -497,19 +497,19 @@ int disp_aosp_alloc_iova(struct device *dev, phys_addr_t pa_start,
 	size_t size = pa_end - pa_start + 1;
 
 	if (!dev) {
-		DISP_PR_ERR("%s:%d cannot support NULL dev\n",
+		DISP_pr_no_err("%s:%d cannot support NULL dev\n",
 				__func__, __LINE__);
 		return -1;
 	}
 	if ((!pa_start) || (!pa_end)) {
-		DISP_PR_ERR("%s:%d cannot support NULL PA(0x%lx,0x%lx)\n",
+		DISP_pr_no_err("%s:%d cannot support NULL PA(0x%lx,0x%lx)\n",
 				__func__, __LINE__,
 				(unsigned long)pa_start,
 				(unsigned long)pa_end);
 		return -1;
 	}
 	if (!iova) {
-		DISP_PR_ERR("%s:%d cannot support NULL iova\n",
+		DISP_pr_no_err("%s:%d cannot support NULL iova\n",
 				__func__, __LINE__);
 		return -1;
 	}
@@ -517,9 +517,9 @@ int disp_aosp_alloc_iova(struct device *dev, phys_addr_t pa_start,
 	*va = (unsigned long)dma_alloc_attrs(dev, size, iova,
 			GFP_KERNEL, DMA_ATTR_WRITE_COMBINE);
 	if (!(*va)) {
-		DISP_PR_ERR("%s:%d alloc dma_buf fail! ",
+		DISP_pr_no_err("%s:%d alloc dma_buf fail! ",
 				__func__, __LINE__);
-		DISP_PR_ERR("dev:0x%p, size:%d, iova:0x%p\n",
+		DISP_pr_no_err("dev:0x%p, size:%d, iova:0x%p\n",
 				dev, (unsigned int)size, iova);
 		return -1;
 	}
@@ -547,7 +547,7 @@ int disp_hal_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 		sg_dma_len(sg_table->sgl) = (pa_end - pa_start + 1);
 		client = m4u_create_client();
 		if (IS_ERR_OR_NULL(client))
-			DISP_PR_ERR("create client fail!\n");
+			DISP_pr_no_err("create client fail!\n");
 
 		*mva = pa_start & 0xffffffffULL;
 		ret = m4u_alloc_mva(client, DISP_M4U_PORT_DISP_OVL0, 0,
@@ -555,9 +555,9 @@ int disp_hal_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 				    M4U_PROT_READ | M4U_PROT_WRITE, 0,
 				    (unsigned int *)mva);
 		if (ret)
-			DISP_PR_ERR("m4u_alloc_mva returns fail: %d\n", ret);
+			DISP_pr_no_err("m4u_alloc_mva returns fail: %d\n", ret);
 
-		pr_debug("[DISPHAL] FB MVA is 0x%lx PA is 0x%pa\n",
+		pr_no_debug("[DISPHAL] FB MVA is 0x%lx PA is 0x%pa\n",
 			 *mva, &pa_start);
 	} else {
 		*mva = pa_start & 0xffffffffULL;
@@ -567,7 +567,7 @@ int disp_hal_allocate_framebuffer(phys_addr_t pa_start, phys_addr_t pa_end,
 	*mva = iova & 0xffffffffULL;
 #endif
 
-	pr_debug("%s:%d, pa=(0x%pa,0x%pa), va=0x%lx\n",
+	pr_no_debug("%s:%d, pa=(0x%pa,0x%pa), va=0x%lx\n",
 		 __func__, __LINE__, &pa_start, &pa_end, *va);
 
 	return 0;

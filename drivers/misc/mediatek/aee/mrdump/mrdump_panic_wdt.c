@@ -94,19 +94,19 @@ int in_fiq_handler(void)
 /* debug timer */
 void __weak timer_list_aee_dump(int exclude_cpus)
 {
-	pr_notice("%s weak function at %s\n", __func__, __FILE__);
+	pr_no_notice("%s weak function at %s\n", __func__, __FILE__);
 }
 
 /* debug systimer */
 void __weak mtk_timer_clkevt_aee_dump(void)
 {
-	pr_notice("%s weak function at %s\n", __func__, __FILE__);
+	pr_no_notice("%s weak function at %s\n", __func__, __FILE__);
 }
 
 /* debug tick-broadcast */
 void __weak tick_broadcast_mtk_aee_dump(void)
 {
-	pr_notice("%s weak function at %s\n", __func__, __FILE__);
+	pr_no_notice("%s weak function at %s\n", __func__, __FILE__);
 }
 
 /* debug EMI */
@@ -114,7 +114,7 @@ __weak void dump_emi_outstanding(void) {}
 
 void __weak sysrq_sched_debug_show_at_AEE(void)
 {
-	pr_notice("%s weak function at %s\n", __func__, __FILE__);
+	pr_no_notice("%s weak function at %s\n", __func__, __FILE__);
 }
 
 void aee_wdt_printf(const char *fmt, ...)
@@ -293,7 +293,7 @@ void aee_wdt_atf_info(unsigned int cpu, struct pt_regs *regs)
 #if IS_ENABLED(CONFIG_MEDIATEK_CACHE_API)
 		dis_D_inner_flush_all();
 #else
-		pr_info("dis_D_inner_flush_all invalid");
+		pr_no_info("dis_D_inner_flush_all invalid");
 #endif
 		local_irq_disable();
 
@@ -399,10 +399,10 @@ void notrace aee_wdt_atf_entry(void)
 	if (mtk_rgu_status_is_sysrst() || mtk_rgu_status_is_eintrst()) {
 #if IS_ENABLED(CONFIG_MTK_PMIC_COMMON)
 		if (pmic_get_register_value(PMIC_JUST_SMART_RST) == 1) {
-			pr_notice("SMART RESET: TRUE\n");
+			pr_no_notice("SMART RESET: TRUE\n");
 			aee_sram_fiq_log("SMART RESET: TRUE\n");
 		} else {
-			pr_notice("SMART RESET: FALSE\n");
+			pr_no_notice("SMART RESET: FALSE\n");
 			aee_sram_fiq_log("SMART RESET: FALSE\n");
 		}
 #endif
@@ -509,17 +509,17 @@ int __init mrdump_wdt_init(void)
 	arm_smccc_smc(MTK_SIP_KERNEL_WDT,
 			(u32) &aee_wdt_atf_entry, 0, 0, 0, 0, 0, 0, &res);
 #endif
-	pr_notice("\n MTK_SIP_KERNEL_WDT - 0x%p\n", &aee_wdt_atf_entry);
+	pr_no_notice("\n MTK_SIP_KERNEL_WDT - 0x%p\n", &aee_wdt_atf_entry);
 
 	atf_aee_debug_phy_addr = (phys_addr_t) (0x00000000FFFFFFFFULL & res.a0);
 	if (!atf_aee_debug_phy_addr
 			|| (atf_aee_debug_phy_addr == 0xFFFFFFFF)) {
-		pr_notice("\n invalid atf_aee_debug_phy_addr\n");
+		pr_no_notice("\n invalid atf_aee_debug_phy_addr\n");
 	} else {
 		/* use the last 16KB in ATF log buffer */
 		atf_aee_debug_virt_addr = ioremap(atf_aee_debug_phy_addr,
 				ATF_AEE_DEBUG_BUF_LENGTH);
-		pr_notice("\n atf_aee_debug_virt_addr = 0x%p\n",
+		pr_no_notice("\n atf_aee_debug_virt_addr = 0x%p\n",
 				atf_aee_debug_virt_addr);
 		if (atf_aee_debug_virt_addr)
 			memset_io(atf_aee_debug_virt_addr, 0,

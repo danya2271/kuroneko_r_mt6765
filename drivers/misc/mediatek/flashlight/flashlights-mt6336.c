@@ -304,7 +304,7 @@ static int mt6336_enable(void)
 					0x01);
 		} else {
 			/*  failed in OTG mode */
-			pr_info("Failed to turn on flash mode since in OTG mode.\n");
+			pr_no_info("Failed to turn on flash mode since in OTG mode.\n");
 		}
 
 	} else {
@@ -404,7 +404,7 @@ static int mt6336_set_level(int channel, int level)
 	else if (channel == MT6336_CHANNEL_CH2)
 		mt6336_set_level_ch2(level);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -500,13 +500,13 @@ void mt6336_isr_short_ch2(void)
  *****************************************************************************/
 static void mt6336_work_disable_ch1(struct work_struct *data)
 {
-	pr_debug("ht work queue callback\n");
+	pr_no_debug("ht work queue callback\n");
 	mt6336_disable();
 }
 
 static void mt6336_work_disable_ch2(struct work_struct *data)
 {
-	pr_debug("lt work queue callback\n");
+	pr_no_debug("lt work queue callback\n");
 	mt6336_disable();
 }
 
@@ -529,7 +529,7 @@ static int mt6336_timer_start(int channel, ktime_t ktime)
 	else if (channel == MT6336_CHANNEL_CH2)
 		hrtimer_start(&mt6336_timer_ch2, ktime, HRTIMER_MODE_REL);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -543,7 +543,7 @@ static int mt6336_timer_cancel(int channel)
 	else if (channel == MT6336_CHANNEL_CH2)
 		hrtimer_cancel(&mt6336_timer_ch2);
 	else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -571,7 +571,7 @@ static int mt6336_operate(int channel, int enable)
 			if (mt6336_is_torch(mt6336_level_ch2))
 				mt6336_en_ch2 = MT6336_ENABLE_FLASH;
 	} else {
-		pr_info("Error channel\n");
+		pr_no_info("Error channel\n");
 		return -1;
 	}
 
@@ -631,59 +631,59 @@ static int mt6336_ioctl(unsigned int cmd, unsigned long arg)
 
 	/* verify channel */
 	if (channel < 0 || channel >= MT6336_CHANNEL_NUM) {
-		pr_info("Failed with error channel\n");
+		pr_no_info("Failed with error channel\n");
 		return -EINVAL;
 	}
 
 	switch (cmd) {
 	case FLASH_IOC_SET_TIME_OUT_TIME_MS:
-		pr_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_TIME_OUT_TIME_MS(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6336_timeout_ms[channel] = fl_arg->arg;
 		break;
 
 	case FLASH_IOC_SET_DUTY:
-		pr_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_DUTY(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6336_set_level(channel, fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_SCENARIO:
-		pr_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_SCENARIO(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6336_set_scenario(fl_arg->arg);
 		break;
 
 	case FLASH_IOC_SET_ONOFF:
-		pr_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
+		pr_no_debug("FLASH_IOC_SET_ONOFF(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		mt6336_operate(channel, fl_arg->arg);
 		break;
 
 	case FLASH_IOC_GET_DUTY_NUMBER:
-		pr_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_DUTY_NUMBER(%d)\n", channel);
 		fl_arg->arg = MT6336_LEVEL_NUM;
 		break;
 
 	case FLASH_IOC_GET_MAX_TORCH_DUTY:
-		pr_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_MAX_TORCH_DUTY(%d)\n", channel);
 		fl_arg->arg = MT6336_LEVEL_TORCH - 1;
 		break;
 
 	case FLASH_IOC_GET_DUTY_CURRENT:
 		fl_arg->arg = mt6336_verify_level(fl_arg->arg);
-		pr_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
+		pr_no_debug("FLASH_IOC_GET_DUTY_CURRENT(%d): %d\n",
 				channel, (int)fl_arg->arg);
 		fl_arg->arg = mt6336_current[fl_arg->arg];
 		break;
 
 	case FLASH_IOC_GET_HW_TIMEOUT:
-		pr_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
+		pr_no_debug("FLASH_IOC_GET_HW_TIMEOUT(%d)\n", channel);
 		fl_arg->arg = MT6336_HW_TIMEOUT;
 		break;
 
 	default:
-		pr_info("No such command and arg(%d): (%d, %d)\n",
+		pr_no_info("No such command and arg(%d): (%d, %d)\n",
 				channel, _IOC_NR(cmd), (int)fl_arg->arg);
 		return -ENOTTY;
 	}
@@ -713,14 +713,14 @@ static int mt6336_set_driver(int set)
 		if (!use_count)
 			ret = mt6336_init();
 		use_count++;
-		pr_debug("Set driver: %d\n", use_count);
+		pr_no_debug("Set driver: %d\n", use_count);
 	} else {
 		use_count--;
 		if (!use_count)
 			ret = mt6336_uninit();
 		if (use_count < 0)
 			use_count = 0;
-		pr_debug("Unset driver: %d\n", use_count);
+		pr_no_debug("Unset driver: %d\n", use_count);
 	}
 	mutex_unlock(&mt6336_mutex);
 
@@ -772,13 +772,13 @@ static int mt6336_parse_dt(struct device *dev,
 
 	pdata->channel_num = of_get_child_count(np);
 	if (!pdata->channel_num) {
-		pr_info("Parse no dt, node.\n");
+		pr_no_info("Parse no dt, node.\n");
 		return 0;
 	}
-	pr_info("Channel number(%d).\n", pdata->channel_num);
+	pr_no_info("Channel number(%d).\n", pdata->channel_num);
 
 	if (of_property_read_u32(np, "decouple", &decouple))
-		pr_info("Parse no dt, decouple.\n");
+		pr_no_info("Parse no dt, decouple.\n");
 
 	pdata->dev_id = devm_kzalloc(dev,
 			pdata->channel_num *
@@ -799,7 +799,7 @@ static int mt6336_parse_dt(struct device *dev,
 		pdata->dev_id[i].channel = i;
 		pdata->dev_id[i].decouple = decouple;
 
-		pr_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
+		pr_no_info("Parse dt (type,ct,part,name,channel,decouple)=(%d,%d,%d,%s,%d,%d).\n",
 				pdata->dev_id[i].type, pdata->dev_id[i].ct,
 				pdata->dev_id[i].part, pdata->dev_id[i].name,
 				pdata->dev_id[i].channel,
@@ -821,7 +821,7 @@ static int mt6336_probe(struct platform_device *pdev)
 	int ret;
 	int i;
 
-	pr_debug("Probe start.\n");
+	pr_no_debug("Probe start.\n");
 
 	/* parse dt */
 	if (!pdata) {
@@ -878,7 +878,7 @@ static int mt6336_probe(struct platform_device *pdev)
 			return -EFAULT;
 	}
 
-	pr_debug("Probe done.\n");
+	pr_no_debug("Probe done.\n");
 
 	return 0;
 }
@@ -888,7 +888,7 @@ static int mt6336_remove(struct platform_device *pdev)
 	struct mt6336_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int i;
 
-	pr_debug("Remove start.\n");
+	pr_no_debug("Remove start.\n");
 
 	pdev->dev.platform_data = NULL;
 
@@ -912,7 +912,7 @@ static int mt6336_remove(struct platform_device *pdev)
 	/* mt6336_disable_interrupt(MT6336_INT_LED2_OPEN, "flashlight"); */
 	mt6336_ctrl_disable(flashlight_ctrl);
 
-	pr_debug("Remove done.\n");
+	pr_no_debug("Remove done.\n");
 
 	return 0;
 }
@@ -951,34 +951,34 @@ static int __init flashlight_mt6336_init(void)
 {
 	int ret;
 
-	pr_debug("Init start.\n");
+	pr_no_debug("Init start.\n");
 
 #ifndef CONFIG_OF
 	ret = platform_device_register(&mt6336_platform_device);
 	if (ret) {
-		pr_info("Failed to register platform device\n");
+		pr_no_info("Failed to register platform device\n");
 		return ret;
 	}
 #endif
 
 	ret = platform_driver_register(&mt6336_platform_driver);
 	if (ret) {
-		pr_info("Failed to register platform driver\n");
+		pr_no_info("Failed to register platform driver\n");
 		return ret;
 	}
 
-	pr_debug("Init done.\n");
+	pr_no_debug("Init done.\n");
 
 	return 0;
 }
 
 static void __exit flashlight_mt6336_exit(void)
 {
-	pr_debug("Exit start.\n");
+	pr_no_debug("Exit start.\n");
 
 	platform_driver_unregister(&mt6336_platform_driver);
 
-	pr_debug("Exit done.\n");
+	pr_no_debug("Exit done.\n");
 }
 
 /* replace module_init() since conflict in kernel init process */

@@ -113,7 +113,7 @@ void aee_show_regs(struct pt_regs *regs)
 
 	p_show_regs = (void *)aee_addr_find("__show_regs");
 	if (!p_show_regs)
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 	else
 		p_show_regs(regs);
 }
@@ -130,7 +130,7 @@ int aee_unwind_frame(struct task_struct *tsk, struct stackframe *frame)
 	if (p_unwind_frame)
 		return p_unwind_frame(tsk, frame);
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return -1;
 }
 #else
@@ -144,7 +144,7 @@ int aee_unwind_frame(struct stackframe *frame)
 	if (p_unwind_frame)
 		return p_unwind_frame(frame);
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return -1;
 }
 #endif
@@ -157,7 +157,7 @@ unsigned long aee_get_stext(void)
 
 	p_stext = aee_addr_find("_stext");
 	if (p_stext == 0)
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 	return p_stext;
 }
 
@@ -169,7 +169,7 @@ unsigned long aee_get_etext(void)
 
 	p_etext = aee_addr_find("_etext");
 	if (p_etext == 0)
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 	return p_etext;
 }
 
@@ -181,7 +181,7 @@ unsigned long aee_get_text(void)
 
 	p_text = aee_addr_find("_text");
 	if (p_text == 0)
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 	return p_text;
 }
 
@@ -205,7 +205,7 @@ unsigned long aee_get_kimage_vaddr(void)
 
 	p_kimage_vaddr = (void *)aee_addr_find("kimage_vaddr");
 	if (!p_kimage_vaddr) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return 0;
 	}
 	return *p_kimage_vaddr;
@@ -221,7 +221,7 @@ struct kset *aee_get_module_kset(void)
 
 	p_module_kset = (void *)aee_addr_find("module_kset");
 	if (!p_module_kset) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return NULL;
 	}
 	return *p_module_kset;
@@ -239,7 +239,7 @@ phys_addr_t aee_memblock_start_of_DRAM(void)
 	if (p_memblock_start_of_DRAM)
 		return p_memblock_start_of_DRAM();
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return 0;
 }
 
@@ -253,7 +253,7 @@ phys_addr_t aee_memblock_end_of_DRAM(void)
 	if (p_memblock_end_of_DRAM)
 		return p_memblock_end_of_DRAM();
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return 0;
 
 }
@@ -268,7 +268,7 @@ void aee_print_modules(void)
 
 	p_print_modules = (void *)aee_addr_find("print_modules");
 	if (!p_print_modules) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return;
 	}
 
@@ -286,7 +286,7 @@ int aee_save_modules(char *mbuf, int mbufsize)
 	int i, search_nm;
 
 	if (!mbuf || mbufsize <= 0) {
-		pr_info("mrdump: module info buffer wrong(sz:%d)\n", mbufsize);
+		pr_no_info("mrdump: module info buffer wrong(sz:%d)\n", mbufsize);
 		return sz;
 	}
 
@@ -294,7 +294,7 @@ int aee_save_modules(char *mbuf, int mbufsize)
 		p_modules = (void *)aee_addr_find("modules");
 
 	if (!p_modules) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return sz;
 	}
 
@@ -304,7 +304,7 @@ int aee_save_modules(char *mbuf, int mbufsize)
 		if (mod->state == MODULE_STATE_UNFORMED)
 			continue;
 		if (sz >= mbufsize) {
-			pr_info("mrdump: module info buffer full(sz:%d)\n",
+			pr_no_info("mrdump: module info buffer full(sz:%d)\n",
 					mbufsize);
 			break;
 		}
@@ -398,7 +398,7 @@ char *aee_log_buf_addr_get(void)
 	if (p__log_buf)
 		return p__log_buf;
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(aee_log_buf_addr_get);
@@ -412,7 +412,7 @@ static unsigned long *aee_irq_stack_ptr(void)
 
 	p_irq_stack_ptr = (void *)aee_addr_find("irq_stack_ptr");
 	if (!p_irq_stack_ptr) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return NULL;
 	}
 	return p_irq_stack_ptr;
@@ -454,7 +454,7 @@ static struct mm_struct *aee_init_mm(void)
 
 	p_init_mm = (void *)aee_addr_find("init_mm");
 	if (!p_init_mm) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return NULL;
 	}
 	return p_init_mm;
@@ -477,7 +477,7 @@ static struct rq *aee_runqueues(void)
 
 	p_runqueues = (void *)aee_addr_find("runqueues");
 	if (!p_runqueues) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return NULL;
 	}
 	return p_runqueues;
@@ -523,7 +523,7 @@ void aee__flush_dcache_area(void *addr, size_t len)
 
 	p__flush_dcache_area = (void *)aee_addr_find("__flush_dcache_area");
 	if (!p__flush_dcache_area) {
-		pr_info("%s failed", __func__);
+		pr_no_info("%s failed", __func__);
 		return;
 	}
 
@@ -584,7 +584,7 @@ const char *aee_arch_vma_name(struct vm_area_struct *vma)
 	if (p_arch_vma_name)
 		return p_arch_vma_name(vma);
 
-	pr_info("%s failed", __func__);
+	pr_no_info("%s failed", __func__);
 	return NULL;
 }
 EXPORT_SYMBOL(aee_arch_vma_name);
@@ -723,7 +723,7 @@ unsigned long aee_get_kallsyms_addresses(void)
 /* workaround for 32bit kernel, waiting for cache implement */
 __weak void __flush_dcache_area(void *addr, size_t len)
 {
-	pr_info("%s weak function", __func__);
+	pr_no_info("%s weak function", __func__);
 }
 
 extern void __flush_dcache_area(void *addr, size_t len);

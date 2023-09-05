@@ -18,7 +18,7 @@
 
 static int __init met_drv_init(void)
 {
-	pr_info("Hello MET default module\n");
+	pr_no_info("Hello MET default module\n");
 	return 0;
 }
 

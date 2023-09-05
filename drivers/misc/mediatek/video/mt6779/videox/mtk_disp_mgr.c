@@ -156,12 +156,12 @@ static int mtk_disp_mgr_mmap(struct file *file, struct vm_area_struct *vma)
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 
 	if (require_size > size || (pa_start < addr_min || pa_end > addr_max)) {
-		DISP_PR_ERR("mmap size range over flow!\n");
+		DISP_pr_no_err("mmap size range over flow!\n");
 		return -EAGAIN;
 	}
 	if (remap_pfn_range(vma, vma->vm_start, vma->vm_pgoff,
 			    (vma->vm_end - vma->vm_start), vma->vm_page_prot)) {
-		DISP_PR_ERR("display mmap failed!\n");
+		DISP_pr_no_err("display mmap failed!\n");
 		return -EAGAIN;
 	}
 
@@ -219,7 +219,7 @@ int disp_create_session(struct disp_session_config *config)
 	}
 
 	if (idx == -1) {
-		DISP_PR_ERR("invalid session creation request\n");
+		DISP_pr_no_err("invalid session creation request\n");
 		ret = -1;
 		goto done;
 	}
@@ -260,7 +260,7 @@ static int release_session_buffer(unsigned int session)
 	mutex_lock(&disp_session_lock);
 
 	if (session == 0) {
-		DISP_PR_ERR("%s: session id:0x%08x\n", __func__, session);
+		DISP_pr_no_err("%s: session id:0x%08x\n", __func__, session);
 		mutex_unlock(&disp_session_lock);
 		return -1;
 	}
@@ -317,7 +317,7 @@ int disp_destroy_session(struct disp_session_config *config)
 #endif
 		DISPMSG("destroy session(0x%08x)\n", session);
 	} else
-		DISP_PR_ERR("session(0x%08x) does not exist\n", session);
+		DISP_pr_no_err("session(0x%08x) does not exist\n", session);
 
 	return ret;
 }
@@ -329,7 +329,7 @@ int _ioctl_create_session(unsigned long arg)
 	struct disp_session_config config;
 
 	if (copy_from_user(&config, argp, sizeof(config))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
@@ -337,7 +337,7 @@ int _ioctl_create_session(unsigned long arg)
 		ret = -EFAULT;
 
 	if (copy_to_user(argp, &config, sizeof(config))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -351,7 +351,7 @@ int _ioctl_destroy_session(unsigned long arg)
 	struct disp_session_config config;
 
 	if (copy_from_user(&config, argp, sizeof(config))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
@@ -387,20 +387,20 @@ int _ioctl_prepare_present_fence(unsigned long arg)
 	int tl = disp_sync_get_present_timeline_id();
 
 	if (copy_from_user(&pf, (void __user *)arg, sizeof(pf))) {
-		pr_err("[FB Driver] copy_from_user failed! line:%d\n",
+		pr_no_err("[FB Driver] copy_from_user failed! line:%d\n",
 		       __LINE__);
 		return -EFAULT;
 	}
 
 	if (DISP_SESSION_TYPE(pf.session_id) != DISP_SESSION_PRIMARY) {
-		DISP_PR_INFO("non-primary ask for present fence! sess=0x%08x\n",
+		DISP_pr_no_info("non-primary ask for present fence! sess=0x%08x\n",
 			     pf.session_id);
 		data.fence = MTK_FB_INVALID_FENCE_FD;
 		data.value = 0;
 	} else {
 		l_info = disp_sync_get_layer_info(pf.session_id, tl);
 		if (!l_info) {
-			DISP_PR_ERR("layer_info is null\n");
+			DISP_pr_no_err("layer_info is null\n");
 			ret = -EFAULT;
 			return ret;
 		}
@@ -409,7 +409,7 @@ int _ioctl_prepare_present_fence(unsigned long arg)
 		data.value = ++fence_idx;
 		ret = fence_create(l_info->timeline, &data);
 		if (ret) {
-			DISP_PR_ERR("%s%d,L%d create Fence Object failed!\n",
+			DISP_pr_no_err("%s%d,L%d create Fence Object failed!\n",
 				    disp_session_type_str(pf.session_id),
 				    DISP_SESSION_DEV(pf.session_id), tl);
 			ret = -EFAULT;
@@ -419,7 +419,7 @@ int _ioctl_prepare_present_fence(unsigned long arg)
 	pf.present_fence_fd = data.fence;
 	pf.present_fence_index = data.value;
 	if (copy_to_user(argp, &pf, sizeof(pf))) {
-		pr_err("[FB Driver] copy_to_user failed! line:%d\n", __LINE__);
+		pr_no_err("[FB Driver] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -450,7 +450,7 @@ static void __prepare_output_buffer(struct disp_buffer_info *disp_buf,
 		disp_buf->interface_fence_fd = output_buf->fence;
 		disp_buf->interface_index = output_buf->idx;
 	} else {
-		DISP_PR_ERR(" FAIL:P+/%s%d/L%u/e%d/ion%d/c%d/idx%d/fd%d\n",
+		DISP_pr_no_err(" FAIL:P+/%s%d/L%u/e%d/ion%d/c%d/idx%d/fd%d\n",
 			    disp_session_type_str(disp_buf->session_id),
 			    DISP_SESSION_DEV(disp_buf->session_id),
 			    disp_buf->layer_id, disp_buf->layer_en,
@@ -470,7 +470,7 @@ int _ioctl_prepare_buffer(unsigned long arg, enum PREPARE_FENCE_TYPE type)
 	struct mtkfb_fence_buf_info *fence_buf, *fence_buf2;
 
 	if (copy_from_user(&disp_buf, (void __user *)arg, sizeof(disp_buf))) {
-		pr_err("[FB Driver] copy_from_user failed! line:%d\n",
+		pr_no_err("[FB Driver] copy_from_user failed! line:%d\n",
 		       __LINE__);
 		return -EFAULT;
 	}
@@ -482,7 +482,7 @@ int _ioctl_prepare_buffer(unsigned long arg, enum PREPARE_FENCE_TYPE type)
 	else if (type == PREPARE_OUTPUT_FENCE)
 		disp_buf.layer_id = disp_sync_get_output_timeline_id();
 	else
-		DISP_PR_INFO("type is wrong: %d\n", type);
+		DISP_pr_no_info("type is wrong: %d\n", type);
 
 	if (disp_buf.layer_en) {
 		fence_buf = disp_sync_prepare_buf(mtk_disp_mgr_dev, &disp_buf);
@@ -490,7 +490,7 @@ int _ioctl_prepare_buffer(unsigned long arg, enum PREPARE_FENCE_TYPE type)
 			disp_buf.fence_fd = fence_buf->fence;
 			disp_buf.index = fence_buf->idx;
 		} else {
-			DISP_PR_ERR(
+			DISP_pr_no_err(
 				 " FAIL:P+/%s%d/L%d/e%d/ion%d/c%d/idx%d/fd%d\n",
 				    disp_session_type_str(disp_buf.session_id),
 				    DISP_SESSION_DEV(disp_buf.session_id),
@@ -504,7 +504,7 @@ int _ioctl_prepare_buffer(unsigned long arg, enum PREPARE_FENCE_TYPE type)
 		if (type == PREPARE_OUTPUT_FENCE)
 			__prepare_output_buffer(&disp_buf, fence_buf2);
 	} else {
-		DISP_PR_ERR(" FAIL:P+/%s%d/L%d/e%d/ion%d/c%d/idx%d/fd%d\n",
+		DISP_pr_no_err(" FAIL:P+/%s%d/L%d/e%d/ion%d/c%d/idx%d/fd%d\n",
 			    disp_session_type_str(disp_buf.session_id),
 			    DISP_SESSION_DEV(disp_buf.session_id),
 			    disp_buf.layer_id, disp_buf.layer_en,
@@ -515,7 +515,7 @@ int _ioctl_prepare_buffer(unsigned long arg, enum PREPARE_FENCE_TYPE type)
 	}
 
 	if (copy_to_user(argp, &disp_buf, sizeof(disp_buf))) {
-		pr_err("[FB Driver] copy_to_user failed! line:%d\n", __LINE__);
+		pr_no_err("[FB Driver] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 	return ret;
@@ -611,7 +611,7 @@ static int _get_layer_cnt(unsigned int session)
 	else if (DISP_SESSION_TYPE(session) == DISP_SESSION_MEMORY)
 		return ovl2mem_get_max_layer();
 
-	DISP_PR_INFO("invalid session_id(0x%08x)\n", session);
+	DISP_pr_no_info("invalid session_id(0x%08x)\n", session);
 	return 0;
 }
 
@@ -661,7 +661,7 @@ static int _get_max_layer(unsigned int session_id)
 	else if (DISP_SESSION_TYPE(session_id) == DISP_SESSION_MEMORY)
 		return ovl2mem_get_max_layer();
 
-	DISP_PR_INFO("session_id is wrong!!\n");
+	DISP_pr_no_info("session_id is wrong!!\n");
 	return 0;
 }
 
@@ -716,9 +716,9 @@ static int disp_input_get_dirty_roi(struct disp_frame_cfg_t *frm_cfg)
 			goto error;
 
 		if (copy_from_user(addr, cfg->dirty_roi_addr, size)) {
-			DISP_PR_ERR("[dirty roi]copy_from_user failed!line%d\n",
+			DISP_pr_no_err("[dirty roi]copy_from_user failed!line%d\n",
 				    __LINE__);
-			DISP_PR_ERR("to=0x%p, from=0x%p, size=0x%lx\n",
+			DISP_pr_no_err("to=0x%p, from=0x%p, size=0x%lx\n",
 				    addr, cfg->dirty_roi_addr, size);
 			kfree(addr);
 			goto error;
@@ -781,7 +781,7 @@ static int input_config_preprocess(struct disp_frame_cfg_t *cfg)
 			     disp_session_type_str(session),
 			     cfg->input_layer_num,
 			     _get_layer_cnt(session));
-		DISP_PR_INFO("%s", msg);
+		DISP_pr_no_info("%s", msg);
 		return 0;
 	}
 
@@ -793,7 +793,7 @@ static int input_config_preprocess(struct disp_frame_cfg_t *cfg)
 
 		layer_id = c->layer_id;
 		if (layer_id >= _get_layer_cnt(session)) {
-			DISP_PR_ERR("set_%s_buffer, invalid layer_id = %d!\n",
+			DISP_pr_no_err("set_%s_buffer, invalid layer_id = %d!\n",
 				    disp_session_type_str(session), layer_id);
 			continue;
 		}
@@ -831,7 +831,7 @@ static int input_config_preprocess(struct disp_frame_cfg_t *cfg)
 			}
 			c->src_phy_addr = (void *)dst_mva;
 			if (!dst_mva) {
-				DISP_PR_ERR("disable L%d due to no valid mva\n",
+				DISP_pr_no_err("disable L%d due to no valid mva\n",
 					    c->layer_id);
 				c->layer_enable = 0;
 				is_err = 1;
@@ -841,7 +841,7 @@ static int input_config_preprocess(struct disp_frame_cfg_t *cfg)
 			/* get src fence */
 			src_fence = sync_fence_fdget(c->src_fence_fd);
 			if (!src_fence && c->src_fence_fd != -1) {
-				DISP_PR_ERR("error to get src_fence by fd%d\n",
+				DISP_pr_no_err("error to get src_fence by fd%d\n",
 					    c->src_fence_fd);
 				is_err = 1;
 			}
@@ -909,7 +909,7 @@ static int output_config_preprocess(struct disp_frame_cfg_t *cfg)
 	}
 	cfg->output_cfg.pa = (void *)dst_mva;
 	if (!dst_mva) {
-		DISP_PR_INFO("%s output mva=0! skip it\n", __func__);
+		DISP_pr_no_info("%s output mva=0! skip it\n", __func__);
 		cfg->output_en = 0;
 		goto out;
 	}
@@ -918,7 +918,7 @@ static int output_config_preprocess(struct disp_frame_cfg_t *cfg)
 	/* get src fence */
 	src_fence = sync_fence_fdget(cfg->output_cfg.src_fence_fd);
 	if (!src_fence && cfg->output_cfg.src_fence_fd != -1) {
-		DISP_PR_ERR("error to get src_fence from output fd %d\n",
+		DISP_pr_no_err("error to get src_fence from output fd %d\n",
 			    cfg->output_cfg.src_fence_fd);
 	}
 	cfg->output_cfg.src_fence_struct = src_fence;
@@ -977,7 +977,7 @@ static int do_frame_config(struct frame_queue_t *frame_node)
 	} else if (s_type == DISP_SESSION_MEMORY) {
 		ovl2mem_frame_cfg(cfg);
 	} else {
-		DISP_PR_INFO("invalid session:0x%08x\n", cfg->session_id);
+		DISP_pr_no_info("invalid session:0x%08x\n", cfg->session_id);
 		return -1;
 	}
 
@@ -1005,7 +1005,7 @@ static long __frame_queue_config(unsigned long arg)
 	if (copy_from_user(cfg, (void __user *)arg,
 		    sizeof(*cfg))) {
 		ret_val = ERR_PTR(-EFAULT);
-		DISP_PR_INFO("copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_info("copy_from_user failed! line:%d\n", __LINE__);
 		goto Error;
 	}
 
@@ -1032,7 +1032,7 @@ static long __frame_queue_config(unsigned long arg)
 	if (cfg->prev_present_fence_fd != -1) {
 		present_fence = sync_fence_fdget(cfg->prev_present_fence_fd);
 		if (!present_fence) {
-			DISP_PR_ERR("fail to get prev_present_fence by fd %d\n",
+			DISP_pr_no_err("fail to get prev_present_fence by fd %d\n",
 				    cfg->prev_present_fence_fd);
 		}
 	}
@@ -1064,7 +1064,7 @@ long __frame_config(unsigned long arg)
 	int ret = 0;
 
 	if (!cfg) {
-		pr_info("error: kzalloc %zu memory fail!\n", sizeof(*cfg));
+		pr_no_info("error: kzalloc %zu memory fail!\n", sizeof(*cfg));
 		return -ENOMEM;
 	}
 
@@ -1152,7 +1152,7 @@ int disp_mgr_get_session_info(struct disp_session_info *info)
 	} else if (s_type == DISP_SESSION_MEMORY) {
 		ovl2mem_get_info(info);
 	} else {
-		DISP_PR_INFO("invalid session type:0x%08x\n", session_id);
+		DISP_pr_no_info("invalid session type:0x%08x\n", session_id);
 		return -1;
 	}
 
@@ -1166,14 +1166,14 @@ int _ioctl_get_info(unsigned long arg)
 	struct disp_session_info info;
 
 	if (copy_from_user(&info, argp, sizeof(info))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
 	ret = disp_mgr_get_session_info(&info);
 
 	if (copy_to_user(argp, &info, sizeof(info))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -1189,7 +1189,7 @@ int _ioctl_get_is_driver_suspend(unsigned long arg)
 	is_suspend = primary_display_is_sleepd();
 	DISPDBG("%s: is_suspend=%d\n", __func__, is_suspend);
 	if (copy_to_user(argp, &is_suspend, sizeof(int))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -1204,7 +1204,7 @@ int _ioctl_get_display_caps(unsigned long arg)
 	struct LCM_PARAMS *params = disp_lcm_get_params(primary_get_lcm());
 
 	if (copy_from_user(&caps_info, argp, sizeof(caps_info))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -1253,7 +1253,7 @@ int _ioctl_get_display_caps(unsigned long arg)
 		if (params)
 			caps_info.lcm_color_mode = params->lcm_color_mode;
 		else
-			DISP_PR_ERR("%s: failed to get lcm color mode\n",
+			DISP_pr_no_err("%s: failed to get lcm color mode\n",
 				__func__);
 	}
 
@@ -1262,7 +1262,7 @@ int _ioctl_get_display_caps(unsigned long arg)
 		caps_info.average_luminance = params->average_luminance;
 		caps_info.max_luminance = params->max_luminance;
 	} else {
-		DISP_PR_ERR("%s: failed to get lcm luminance\n",
+		DISP_pr_no_err("%s: failed to get lcm luminance\n",
 			__func__);
 	}
 	if (disp_helper_get_option(DISP_OPT_RSZ))
@@ -1278,7 +1278,7 @@ int _ioctl_get_display_caps(unsigned long arg)
 	}
 
 	if (copy_to_user(argp, &caps_info, sizeof(caps_info))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -1293,7 +1293,7 @@ int _ioctl_wait_vsync(unsigned long arg)
 	struct disp_session_sync_info *s_info;
 
 	if (copy_from_user(&vsync_config, argp, sizeof(vsync_config))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
@@ -1311,7 +1311,7 @@ int _ioctl_wait_vsync(unsigned long arg)
 		dprec_done(&s_info->event_waitvsync, 0, 0);
 
 	if (copy_to_user(argp, &vsync_config, sizeof(vsync_config))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 	return ret;
@@ -1326,7 +1326,7 @@ int _ioctl_get_vsync(unsigned long arg)
 	fps = primary_display_force_get_vsync_fps();
 	DISPMSG("%s: fps=%d\n", __func__, fps);
 	if (copy_to_user(argp, &fps, sizeof(int))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 
@@ -1339,7 +1339,7 @@ int _ioctl_set_vsync(unsigned long arg)
 	unsigned int fps = (unsigned int)arg;
 
 	if ((fps < 50) || (fps > 60)) {
-		DISP_PR_ERR("%s: fps setting is out of range, fps=%d\n",
+		DISP_pr_no_err("%s: fps setting is out of range, fps=%d\n",
 			    __func__, fps);
 		return  -EFAULT;
 	}
@@ -1356,7 +1356,7 @@ static long _ioctl_query_valid_layer(unsigned long arg)
 	void __user *argp = (void __user *)arg;
 
 	if (copy_from_user(&disp_info_user, argp, sizeof(disp_info_user))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
@@ -1365,7 +1365,7 @@ static long _ioctl_query_valid_layer(unsigned long arg)
 		disp_info_user.layer_num[0] > 0x300 ||
 		disp_info_user.layer_num[1] < 0 ||
 		disp_info_user.layer_num[1] > 0x300) {
-		DISP_PR_INFO(
+		DISP_pr_no_info(
 			"%s error, layer_num[0]= %d, layer_num[1]= %d!\n",
 			__func__, disp_info_user.layer_num[0],
 			disp_info_user.layer_num[1]);
@@ -1377,7 +1377,7 @@ static long _ioctl_query_valid_layer(unsigned long arg)
 	mutex_unlock(&disp_layer_lock);
 
 	if (copy_to_user(argp, &disp_info_user, sizeof(disp_info_user))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
@@ -1391,14 +1391,14 @@ int _ioctl_set_scenario(unsigned long arg)
 	void __user *argp = (void __user *)arg;
 
 	if (copy_from_user(&scenario_cfg, argp, sizeof(scenario_cfg))) {
-		DISP_PR_ERR("[FB] copy_to_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_to_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 
 	if (DISP_SESSION_TYPE(scenario_cfg.session_id) == DISP_SESSION_PRIMARY)
 		ret = primary_display_set_scenario(scenario_cfg.scenario);
 	if (ret)
-		DISP_PR_ERR("session(0x%08x) set scenario(%d) fail, ret=%d\n",
+		DISP_pr_no_err("session(0x%08x) set scenario(%d) fail, ret=%d\n",
 			    scenario_cfg.session_id, scenario_cfg.scenario,
 			    ret);
 
@@ -1424,7 +1424,7 @@ int set_session_mode(struct disp_session_config *cfg, int force)
 			primary_display_switch_mode(cfg->mode,
 						    cfg->session_id, 0);
 		else
-			DISP_PR_ERR("%s: session(0x%08x) set mode(%d) fail\n",
+			DISP_pr_no_err("%s: session(0x%08x) set mode(%d) fail\n",
 				    __func__, cfg->session_id, cfg->mode);
 	} else {
 		if (has_memory_session)
@@ -1434,7 +1434,7 @@ int set_session_mode(struct disp_session_config *cfg, int force)
 			primary_display_switch_mode(cfg->mode,
 						    cfg->session_id, 0);
 		else
-			DISP_PR_ERR("%s: session(0x%08x) set mode(%d) fail\n",
+			DISP_pr_no_err("%s: session(0x%08x) set mode(%d) fail\n",
 				    __func__, cfg->session_id, cfg->mode);
 
 		/*
@@ -1448,7 +1448,7 @@ int set_session_mode(struct disp_session_config *cfg, int force)
 	if (s_type == DISP_SESSION_PRIMARY)
 		primary_display_switch_mode(cfg->mode, cfg->session_id, 0);
 	else
-		DISP_PR_ERR("%s: session(0x%08x) set mode(%d) fail\n",
+		DISP_pr_no_err("%s: session(0x%08x) set mode(%d) fail\n",
 			    __func__, cfg->session_id, cfg->mode);
 
 	external_display_switch_mode(cfg->mode, g_session, cfg->session_id);
@@ -1462,7 +1462,7 @@ int _ioctl_set_session_mode(unsigned long arg)
 	struct disp_session_config config_info;
 
 	if (copy_from_user(&config_info, argp, sizeof(config_info))) {
-		DISP_PR_ERR("[FB] copy_from_user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB] copy_from_user failed! line:%d\n", __LINE__);
 		return -EFAULT;
 	}
 	return set_session_mode(&config_info, 0);
@@ -1533,7 +1533,7 @@ int _ioctl_wait_self_refresh_trigger(unsigned long arg)
 
 	DISPMSG("[REPAINT] trigger repaint, type: %d\n", type);
 	if (copy_to_user(argp, &type, sizeof(unsigned int))) {
-		DISP_PR_ERR("[FB]: copy to user failed! line:%d\n", __LINE__);
+		DISP_pr_no_err("[FB]: copy to user failed! line:%d\n", __LINE__);
 		ret = -EFAULT;
 	}
 	return ret;
@@ -1694,7 +1694,7 @@ long mtk_disp_mgr_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ret = primary_display_user_cmd(cmd, arg);
 		break;
 	default:
-		DISP_PR_INFO("[session]ioctl not supported, 0x%08x\n", cmd);
+		DISP_pr_no_info("[session]ioctl not supported, 0x%08x\n", cmd);
 		break;
 	}
 
@@ -1825,7 +1825,7 @@ static long mtk_disp_mgr_compat_ioctl(struct file *file, unsigned int cmd,
 		ret = primary_display_user_cmd(cmd, arg);
 		break;
 	default:
-		DISP_PR_INFO("[%s]ioctl not supported, 0x%08x\n",
+		DISP_pr_no_info("[%s]ioctl not supported, 0x%08x\n",
 			     __func__, cmd);
 		return -ENOIOCTLCMD;
 	}
@@ -1853,7 +1853,7 @@ static int mtk_disp_mgr_probe(struct platform_device *pdev)
 	struct class_device *class_dev = NULL;
 	int ret;
 
-	pr_debug("%s called\n", __func__);
+	pr_no_debug("%s called\n", __func__);
 
 	if (alloc_chrdev_region(&mtk_disp_mgr_devno, 0, 1, DISP_SESSION_DEVICE))
 		return -EFAULT;
@@ -1864,7 +1864,7 @@ static int mtk_disp_mgr_probe(struct platform_device *pdev)
 
 	ret = cdev_add(mtk_disp_mgr_cdev, mtk_disp_mgr_devno, 1);
 	if (ret) {
-		DISP_PR_ERR("cdev_add failed!\n");
+		DISP_pr_no_err("cdev_add failed!\n");
 		unregister_chrdev_region(mtk_disp_mgr_devno, 1);
 		return ret;
 	}
@@ -1933,7 +1933,7 @@ static struct platform_device mtk_disp_mgr_device = {
 
 static int __init mtk_disp_mgr_init(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	if (platform_device_register(&mtk_disp_mgr_device))
 		return -ENODEV;
 

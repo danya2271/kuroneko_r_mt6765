@@ -66,7 +66,7 @@ mtee_directly_invoke_cmd_locked(struct trusted_driver_cmd_params *invoke_params)
 		get_mtee_peer_ops(&mtee_ops);
 
 	if (mtee_ops->session_open(&mtee_session_data, &mtee_dev_desc)) {
-		pr_err("%s:%d mtee open session failed!\n", __func__, __LINE__);
+		pr_no_err("%s:%d mtee open session failed!\n", __func__, __LINE__);
 		return TMEM_MTEE_CREATE_SESSION_FAILED;
 	}
 
@@ -74,7 +74,7 @@ mtee_directly_invoke_cmd_locked(struct trusted_driver_cmd_params *invoke_params)
 				   &mtee_dev_desc);
 
 	if (mtee_ops->session_close(mtee_session_data, &mtee_dev_desc))
-		pr_err("%s:%d mtee close session failed!\n", __func__,
+		pr_no_err("%s:%d mtee close session failed!\n", __func__,
 		       __LINE__);
 
 	return ret;
@@ -103,7 +103,7 @@ int mtee_set_mchunks_region(u64 pa, u32 size, int remote_region_type)
 
 #ifdef TCORE_UT_TESTS_SUPPORT
 	if (is_multi_type_alloc_multithread_test_locked()) {
-		pr_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
+		pr_no_debug("%s:%d return for UT purpose!\n", __func__, __LINE__);
 		return TMEM_OK;
 	}
 #endif
@@ -111,7 +111,7 @@ int mtee_set_mchunks_region(u64 pa, u32 size, int remote_region_type)
 #if TEE_NOTIFY_MTEE_CHUNK_REGION_INFO_SUPPORT
 	return mtee_directly_invoke_cmd(&cmd_params);
 #else
-	pr_info("TEE notify reg mem to MTEE is not supported, mchunk=%d\n",
+	pr_no_info("TEE notify reg mem to MTEE is not supported, mchunk=%d\n",
 		(u32)cmd_params.param2);
 	return TMEM_OK;
 #endif

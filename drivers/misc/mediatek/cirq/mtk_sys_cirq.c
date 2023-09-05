@@ -89,7 +89,7 @@ static int mt_cirq_get_mask(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			__func__, cirq_num);
 		return -1;
 	}
@@ -170,7 +170,7 @@ static int mt_cirq_mask(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -191,7 +191,7 @@ static int mt_cirq_unmask(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -214,7 +214,7 @@ static int mt_cirq_get_sens(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -237,7 +237,7 @@ static int mt_cirq_set_sens(unsigned int cirq_num, unsigned int sens)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -247,7 +247,7 @@ static int mt_cirq_set_sens(unsigned int cirq_num, unsigned int sens)
 	} else if (sens == MT_LEVEL_SENSITIVE) {
 		base = (cirq_num / 32) * 4 + CIRQ_SENS_SET_BASE;
 	} else {
-		pr_debug("[CIRQ] set_sens invalid value %d\n",
+		pr_no_debug("[CIRQ] set_sens invalid value %d\n",
 			 sens);
 		return -1;
 	}
@@ -270,7 +270,7 @@ static int mt_cirq_get_pol(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -293,7 +293,7 @@ static int mt_cirq_set_pol(unsigned int cirq_num, unsigned int pol)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -303,7 +303,7 @@ static int mt_cirq_set_pol(unsigned int cirq_num, unsigned int pol)
 	} else if (pol == MT_CIRQ_POL_POS) {
 		base = (cirq_num / 32) * 4 + CIRQ_POL_SET_BASE;
 	} else {
-		pr_debug("[CIRQ] set_pol invalid polarity value %d\n", pol);
+		pr_no_debug("[CIRQ] set_pol invalid polarity value %d\n", pol);
 		return -1;
 	}
 
@@ -361,7 +361,7 @@ static bool mt_cirq_get_pending(unsigned int cirq_num)
 	unsigned int bit = 1 << (cirq_num % 32);
 
 	if (cirq_num >= CIRQ_IRQ_NUM) {
-		pr_debug("[CIRQ] %s: invalid cirq num %d\n",
+		pr_no_debug("[CIRQ] %s: invalid cirq num %d\n",
 			 __func__, cirq_num);
 		return -1;
 	}
@@ -422,9 +422,9 @@ void mt_cirq_flush(void)
 			pr_debug
 			("[CIRQ] no pattern to test, input pattern first\n");
 		}
-		pr_debug("[CIRQ] cirq_pattern %ld, cirq_p %d,",
+		pr_no_debug("[CIRQ] cirq_pattern %ld, cirq_p %d,",
 		cirq_pattern_list, mt_cirq_get_pending(cirq_pattern_list));
-		pr_debug("cirq_s %d, cirq_con 0x%x\n",
+		pr_no_debug("cirq_s %d, cirq_con 0x%x\n",
 		mt_cirq_get_sens(cirq_pattern_list), readl(IOMEM(CIRQ_CON)));
 	}
 
@@ -464,14 +464,14 @@ void mt_cirq_flush(void)
 
 	if (cirq_clone_flush_check_val == 1) {
 		if (first_cirq_found) {
-			pr_debug("[CIRQ] The first flush : CIRQ%d to IRQ%d\n",
+			pr_no_debug("[CIRQ] The first flush : CIRQ%d to IRQ%d\n",
 				  first_flushed_cirq, first_irq_flushedto);
-			pr_debug("[CIRQ] The last flush : CIRQ%d to IRQ%d\n",
+			pr_no_debug("[CIRQ] The last flush : CIRQ%d to IRQ%d\n",
 				  last_fluashed_cirq, last_irq_flushedto);
 		} else {
 			pr_debug
 			    ("[CIRQ] There are no pending interrupt in CIRQ");
-			pr_debug("so no flush operation happened\n");
+			pr_no_debug("so no flush operation happened\n");
 		}
 		pr_debug
 	("[CIRQ] The Flush Max Range : CIRQ%d to IRQ%d ~ CIRQ%d to IRQ%d\n",
@@ -487,8 +487,8 @@ void mt_cirq_flush(void)
 
 #ifdef LATENCY_CHECK
 	flush_t2 = sched_clock();
-	pr_notice("[CIRQ] clone takes %llu ns\n", clone_t2 - clone_t1);
-	pr_notice("[CIRQ] flush takes %llu ns\n", flush_t2 - flush_t1);
+	pr_no_notice("[CIRQ] clone takes %llu ns\n", clone_t2 - clone_t1);
+	pr_no_notice("[CIRQ] flush takes %llu ns\n", flush_t2 - flush_t1);
 #endif
 
 	return;
@@ -580,12 +580,12 @@ void mt_cirq_clone_mask(void)
 #ifdef FAST_CIRQ_DEBUG
 static void dump_cirq_reg(struct cirq_reg *r)
 {
-	pr_info("[CIRQ] reg_num:%d, used:%d, m:0x%x, ",
+	pr_no_info("[CIRQ] reg_num:%d, used:%d, m:0x%x, ",
 		r->reg_num, r->used, r->mask);
-	pr_info("p:0x%x, s:0x%x, pend:0x%lx, prev:%p,",
+	pr_no_info("p:0x%x, s:0x%x, pend:0x%lx, prev:%p,",
 		r->pol, r->sen, r->pending,
 		r->the_link.prev);
-	pr_info("next:%p\n", r->the_link.next);
+	pr_no_info("next:%p\n", r->the_link.next);
 }
 static void dump_cirq_events_mgr(struct cirq_events *events)
 {
@@ -594,12 +594,12 @@ static void dump_cirq_events_mgr(struct cirq_events *events)
 	struct cirq_reg *event;
 
 	if (events->num_of_events > 0) {
-		pr_info("[CIRQ]num of source %d",
+		pr_no_info("[CIRQ]num of source %d",
 			events->num_of_events);
 		for (i = 0; i < events->num_of_events; i++)
-			pr_info(", %d",
+			pr_no_info(", %d",
 				events->wakeup_events[i]);
-		pr_info("\n");
+		pr_no_info("\n");
 	}
 
 	if (events->table != 0) {
@@ -626,13 +626,13 @@ static int setup_cirq_settings(void)
 		kcalloc(cirq_all_events.num_reg,
 			sizeof(struct cirq_reg), GFP_KERNEL);
 	if (cirq_all_events.table == NULL) {
-		pr_info("[CIRQ] failed to alloc table\n");
+		pr_no_info("[CIRQ] failed to alloc table\n");
 		return -ENOSPC;
 	}
 	cirq_all_events.cirq_base = SYS_CIRQ_BASE;
 	cirq_all_events.dist_base = get_dist_base();
 	if (cirq_all_events.dist_base == NULL) {
-		pr_info("[CIRQ] get dist base failed\n");
+		pr_no_info("[CIRQ] get dist base failed\n");
 		return -ENXIO;
 	}
 	mt_cirq_mask_all();
@@ -713,16 +713,16 @@ void debug_setting_dump(void)
 
 	list_for_each(cur, &cirq_all_events.used_reg_head) {
 		event = list_entry(cur, struct cirq_reg, the_link);
-		pr_info("[CIRQ] reg%d,  write cirq pol 0x%x, sen 0x%x, mask 0x%x",
+		pr_no_info("[CIRQ] reg%d,  write cirq pol 0x%x, sen 0x%x, mask 0x%x",
 			 event->reg_num, event->pol, event->sen, event->mask);
-		pr_info("[CIRQ] &%p = 0x%x, &%p = 0x%x, &%p = 0x%x\n",
+		pr_no_info("[CIRQ] &%p = 0x%x, &%p = 0x%x, &%p = 0x%x\n",
 			CIRQ_POL_SET_BASE + (event->reg_num << 2),
 			readl(CIRQ_POL_BASE + (event->reg_num << 2)),
 			CIRQ_SENS_CLR_BASE + (event->reg_num << 2),
 			readl(CIRQ_SENS_BASE + (event->reg_num << 2)),
 			CIRQ_MASK_CLR_BASE + (event->reg_num << 2),
 			readl(CIRQ_MASK_BASE + (event->reg_num << 2)));
-		pr_info("[CIRQ] CIRQ CON &%p = 0x%x\n",
+		pr_no_info("[CIRQ] CIRQ CON &%p = 0x%x\n",
 			CIRQ_CON, readl(CIRQ_CON));
 	}
 }
@@ -747,7 +747,7 @@ static void __cirq_fast_clone(void)
 		for_each_set_bit(cur_bit, (unsigned long *) &event->mask, 32) {
 			cirq_id = (event->reg_num << 5) + cur_bit;
 #ifdef FAST_CIRQ_DEBUG
-			pr_info("[CIRQ] reg_num: %d, bit:%d, cirq_id %d\n",
+			pr_no_info("[CIRQ] reg_num: %d, bit:%d, cirq_id %d\n",
 				event->reg_num, cur_bit, cirq_id);
 #endif
 			irq_id = CIRQ_TO_IRQ_NUM(cirq_id);
@@ -764,7 +764,7 @@ static void __cirq_fast_clone(void)
 			else
 				mt_cirq_mask(cirq_id);
 #ifdef FAST_CIRQ_DEBUG
-			pr_info("[CIRQ] c:%d,i:%d, irq pol:%d,m:%d\n",
+			pr_no_info("[CIRQ] c:%d,i:%d, irq pol:%d,m:%d\n",
 				cirq_id, irq_id, pol, en);
 #endif
 		}
@@ -807,7 +807,7 @@ static void cirq_fast_sw_flush(void)
 				(unsigned long *) &event->pending, 32) {
 			cirq_id = (event->reg_num << 5) + cur_bit;
 #ifdef FAST_CIRQ_DEBUG
-			pr_debug("[CIRQ] reg%d, curbit=%d, fcirq=%d, mask=0x%x\n",
+			pr_no_debug("[CIRQ] reg%d, curbit=%d, fcirq=%d, mask=0x%x\n",
 				event->reg_num, cur_bit, cirq_id, event->mask);
 #endif
 			mt_irq_set_pending_hw(CIRQ_TO_IRQ_NUM(cirq_id));
@@ -1006,7 +1006,7 @@ void mt_cirq_dump_reg(void)
 	unsigned char pass = 1;
 #endif
 
-	pr_debug("[CIRQ] IRQ:\tPOL\tSENS\tMASK\tGIC_PENDING\n");
+	pr_no_debug("[CIRQ] IRQ:\tPOL\tSENS\tMASK\tGIC_PENDING\n");
 	for (cirq_num = 0; cirq_num < CIRQ_IRQ_NUM; cirq_num++) {
 		pol = mt_cirq_get_pol(cirq_num);
 		sens = mt_cirq_get_sens(cirq_num);
@@ -1014,7 +1014,7 @@ void mt_cirq_dump_reg(void)
 		pen =  mt_irq_get_pending_hw(CIRQ_TO_IRQ_NUM(cirq_num));
 #if defined(__CHECK_IRQ_TYPE)
 		if (mask == 0) {
-			pr_debug("[CIRQ] IRQ:%d\t%d\t%d\t%d\t%d\n",
+			pr_no_debug("[CIRQ] IRQ:%d\t%d\t%d\t%d\t%d\n",
 				 CIRQ_TO_IRQ_NUM(cirq_num),
 				 pol,
 				 sens,
@@ -1041,7 +1041,7 @@ void mt_cirq_dump_reg(void)
 				pr_debug
 				    ("[CIRQ] Error CIRQ num %d",
 					__check_irq_type[irq_iter].num);
-				pr_debug("Mapping to wrong GIC num %d\n",
+				pr_no_debug("Mapping to wrong GIC num %d\n",
 					CIRQ_TO_IRQ_NUM(cirq_num));
 				pass = 0;
 			}
@@ -1049,12 +1049,12 @@ void mt_cirq_dump_reg(void)
 #endif
 	}
 #if defined __CHECK_IRQ_TYPE
-	pr_debug("[CIRQ] CIRQ Clone To GIC Verfication %s !\n",
+	pr_no_debug("[CIRQ] CIRQ Clone To GIC Verfication %s !\n",
 		  pass == 1 ? "Pass" : "Failed");
 #else
 	pr_debug
 	    ("[CIRQ] Plz enable __CHECK_IRQ_TYE");
-	pr_debug("and update x_define.h for enable CIRQ Clone checking\n");
+	pr_no_debug("and update x_define.h for enable CIRQ Clone checking\n");
 #endif
 }
 
@@ -1067,38 +1067,38 @@ int mt_cirq_test(void)
 	/*test polarity */
 	mt_cirq_set_pol(cirq_num, MT_CIRQ_POL_NEG);
 	if (mt_cirq_get_pol(cirq_num) != MT_CIRQ_POL_NEG)
-		pr_debug("[CIRQ] mt_cirq_set_pol clear test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_pol clear test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_set_pol clear test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_pol clear test passed!!\n");
 	mt_cirq_set_pol(cirq_num, MT_CIRQ_POL_POS);
 	if (mt_cirq_get_pol(cirq_num) != MT_CIRQ_POL_POS)
-		pr_debug("[CIRQ] mt_cirq_set_pol set test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_pol set test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_set_pol set test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_pol set test passed!!\n");
 
 	/*test sensitivity */
 	mt_cirq_set_sens(cirq_num, MT_EDGE_SENSITIVE);
 	if (mt_cirq_get_sens(cirq_num) != MT_EDGE_SENSITIVE)
-		pr_debug("[CIRQ] mt_cirq_set_sens clear test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_sens clear test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_set_sens clear test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_sens clear test passed!!\n");
 	mt_cirq_set_sens(cirq_num, MT_LEVEL_SENSITIVE);
 	if (mt_cirq_get_sens(cirq_num) != MT_LEVEL_SENSITIVE)
-		pr_debug("[CIRQ] mt_cirq_set_sens set test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_sens set test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_set_sens set test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_set_sens set test passed!!\n");
 
 	/*test mask */
 	mt_cirq_mask(cirq_num);
 	if (mt_cirq_get_mask(cirq_num) != 1)
-		pr_debug("[CIRQ] mt_cirq_mask test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_mask test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_mask test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_mask test passed!!\n");
 	mt_cirq_unmask(cirq_num);
 	if (mt_cirq_get_mask(cirq_num) != 0)
-		pr_debug("[CIRQ] mt_cirq_unmask test failed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_unmask test failed!!\n");
 	else
-		pr_debug("[CIRQ] mt_cirq_unmask test passed!!\n");
+		pr_no_debug("[CIRQ] mt_cirq_unmask test passed!!\n");
 
 	mt_cirq_clone_gic();
 	mt_cirq_dump_reg();
@@ -1112,7 +1112,7 @@ int mt_cirq_test(void)
  */
 static irqreturn_t cirq_irq_handler(int irq, void *dev_id)
 {
-	pr_debug("[CIRQ] CIRQ_Handler\n");
+	pr_no_debug("[CIRQ] CIRQ_Handler\n");
 
 	mt_cirq_ack_all();
 
@@ -1131,34 +1131,34 @@ int __init mt_cirq_init(void)
 	unsigned int sys_cirq_num = 0;
 #endif
 
-	pr_debug("[CIRQ] CIRQ init...\n");
+	pr_no_debug("[CIRQ] CIRQ init...\n");
 
 #ifdef CONFIG_OF
 	node = of_find_compatible_node(NULL, NULL, "mediatek,sys_cirq");
 	if (!node) {
-		pr_debug("[CIRQ] find SYS_CIRQ node failed!!!\n");
+		pr_no_debug("[CIRQ] find SYS_CIRQ node failed!!!\n");
 		return -1;
 	}
 	SYS_CIRQ_BASE = of_iomap(node, 0);
-	pr_debug("[CIRQ] SYS_CIRQ_BASE = 0x%p\n", SYS_CIRQ_BASE);
+	pr_no_debug("[CIRQ] SYS_CIRQ_BASE = 0x%p\n", SYS_CIRQ_BASE);
 	WARN(!SYS_CIRQ_BASE,
 			"[CIRQ] unable to map SYS_CIRQ base registers!!!\n");
 
 	if (of_property_read_u32(node, "mediatek,cirq_num", &CIRQ_IRQ_NUM))
 		return -1;
-	pr_debug("[CIRQ] cirq_num = %d\n", CIRQ_IRQ_NUM);
+	pr_no_debug("[CIRQ] cirq_num = %d\n", CIRQ_IRQ_NUM);
 
 	if (of_property_read_u32(node, "mediatek,spi_start_offset",
 				&CIRQ_SPI_START))
 		return -1;
-	pr_debug("[CIRQ] spi_start_offset = %d\n", CIRQ_SPI_START);
+	pr_no_debug("[CIRQ] spi_start_offset = %d\n", CIRQ_SPI_START);
 
 	sys_cirq_num = irq_of_parse_and_map(node, 0);
-	pr_debug("[CIRQ] sys_cirq_num = %d\n", sys_cirq_num);
+	pr_no_debug("[CIRQ] sys_cirq_num = %d\n", sys_cirq_num);
 
 	if (of_property_read_u32(node, "sw_reset", &sw_reset))
 		sw_reset = 0;
-	pr_debug("[CIRQ] sw_reset = %d\n", sw_reset);
+	pr_no_debug("[CIRQ] sw_reset = %d\n", sw_reset);
 #endif
 
 #ifdef CONFIG_OF
@@ -1171,20 +1171,15 @@ int __init mt_cirq_init(void)
 				IRQF_TRIGGER_LOW, "CIRQ", NULL);
 #endif
 
-	if (ret > 0)
-		pr_debug("[CIRQ] CIRQ IRQ LINE NOT AVAILABLE!!\n");
-	else
-		pr_debug("[CIRQ] CIRQ handler init success.\n");
-
 	ret = platform_driver_register(&mt_cirq_drv.driver);
 	if (ret == 0)
-		pr_debug("[CIRQ] CIRQ init done...\n");
+		pr_no_debug("[CIRQ] CIRQ init done...\n");
 
 #ifdef LDVT
 	ret = driver_create_file(&mt_cirq_drv.driver.driver,
 					&driver_attr_cirq_dvt);
 	if (ret == 0)
-		pr_debug("[CIRQ] CIRQ create sysfs file for dvt done...\n");
+		pr_no_debug("[CIRQ] CIRQ create sysfs file for dvt done...\n");
 #endif
 
 	ret = driver_create_file(&mt_cirq_drv.driver.driver,
@@ -1208,13 +1203,13 @@ int __init mt_cirq_init(void)
 
 #ifdef CONFIG_FAST_CIRQ_CLONE_FLUSH
 	setup_cirq_settings();
-	pr_debug("[CIRQ] cirq wakeup source structure init done\n");
-	pr_debug("[CIRQ] dump init events\n");
+	pr_no_debug("[CIRQ] cirq wakeup source structure init done\n");
+	pr_no_debug("[CIRQ] dump init events\n");
 #ifdef FAST_CIRQ_DEBUG
 	dump_cirq_events_mgr(&cirq_all_events);
 #endif
 #endif
-	pr_debug("### CIRQ init done. ###\n");
+	pr_no_debug("### CIRQ init done. ###\n");
 
 	return 0;
 }

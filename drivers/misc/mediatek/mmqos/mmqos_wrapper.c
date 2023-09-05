@@ -33,12 +33,12 @@ s32 mm_qos_add_request(struct list_head *owner_list,
 	struct mm_qos_request *req, u32 smi_master_id)
 {
 	if (!req) {
-		pr_notice("mm_add: Invalid req pointer\n");
+		pr_no_notice("mm_add: Invalid req pointer\n");
 		return -EINVAL;
 	}
 
 	if (req->init) {
-		pr_notice("mm_add(0x%08x) req is init\n", req->master_id);
+		pr_no_notice("mm_add(0x%08x) req is init\n", req->master_id);
 		return -EINVAL;
 	}
 
@@ -49,7 +49,7 @@ s32 mm_qos_add_request(struct list_head *owner_list,
 	list_add_tail(&(req->owner_node), owner_list);
 	req->icc_path = icc_get(dev, smi_master_id, mmqos_wrapper->icc_dst_id);
 	if (IS_ERR_OR_NULL(req->icc_path)) {
-		pr_notice("get icc path fail: src=%#x dst=%#x\n",
+		pr_no_notice("get icc path fail: src=%#x dst=%#x\n",
 			smi_master_id, mmqos_wrapper->icc_dst_id);
 		return -EINVAL;
 	}
@@ -66,13 +66,13 @@ s32 mm_qos_set_request(struct mm_qos_request *req, u32 bw_value,
 		return -EINVAL;
 
 	if (!req->init || comp_type >= BW_COMP_END) {
-		pr_notice("mm_set(0x%08x) invalid req\n", req->master_id);
+		pr_no_notice("mm_set(0x%08x) invalid req\n", req->master_id);
 		return -EINVAL;
 	}
 
 	if (bw_value != MTK_MMQOS_MAX_BW && hrt_value != MTK_MMQOS_MAX_BW &&
 		(bw_value > max_bw_bound || hrt_value > max_bw_bound)) {
-		pr_notice("mm_set(0x%08x) invalid bw=%d hrt=%d bw_bound=%d\n",
+		pr_no_notice("mm_set(0x%08x) invalid bw=%d hrt=%d bw_bound=%d\n",
 			req->master_id, bw_value,
 			hrt_value, max_bw_bound);
 		return -EINVAL;
@@ -125,7 +125,7 @@ void mm_qos_update_all_request(struct list_head *owner_list)
 	u64 comp_bw;
 
 	if (!owner_list || list_empty(owner_list)) {
-		pr_notice("%s: owner_list is invalid\n", __func__);
+		pr_no_notice("%s: owner_list is invalid\n", __func__);
 		return;
 	}
 
@@ -151,7 +151,7 @@ void mm_qos_remove_all_request(struct list_head *owner_list)
 
 	mutex_lock(&bw_mutex);
 	list_for_each_entry_safe(req, temp, owner_list, owner_node) {
-		pr_notice("mm_del(0x%08x)\n", req->master_id);
+		pr_no_notice("mm_del(0x%08x)\n", req->master_id);
 		list_del(&(req->owner_node));
 		req->init = false;
 	}
@@ -197,7 +197,7 @@ s32 get_virtual_port(enum virtual_source_id id)
 	case VIRTUAL_CCU_COMMON:
 		return PORT_VIRTUAL_CCU_COMMON;
 	default:
-		pr_notice("invalid source id:%u\n", id);
+		pr_no_notice("invalid source id:%u\n", id);
 		return -1;
 	}
 }
@@ -238,7 +238,7 @@ static int __init mtk_mmqos_wrapper_init(void)
 
 	status = platform_driver_register(&mmqos_wrapper_drv);
 	if (status) {
-		pr_notice(
+		pr_no_notice(
 			"Failed to register MMQoS wrapper driver(%d)\n",
 			status);
 		return -ENODEV;
@@ -267,15 +267,15 @@ int mmqos_ut_set(const char *val, const struct kernel_param *kp)
 	result = sscanf(val, "%d %d %i %d", &qos_ut_case,
 		&req_id, &master, &value);
 	if (result != 4) {
-		pr_notice("invalid input: %s, result(%d)\n", val, result);
+		pr_no_notice("invalid input: %s, result(%d)\n", val, result);
 		return -EINVAL;
 	}
 	if (req_id >= UT_MAX_REQUEST) {
-		pr_notice("invalid req_id: %u\n", req_id);
+		pr_no_notice("invalid req_id: %u\n", req_id);
 		return -EINVAL;
 	}
 
-	pr_notice("ut with (case_id,req_id,master,value)=(%d,%u,%u,%d)\n",
+	pr_no_notice("ut with (case_id,req_id,master,value)=(%d,%u,%u,%d)\n",
 		qos_ut_case, req_id, master, value);
 	if (!ut_req_init) {
 		INIT_LIST_HEAD(&ut_req_list);
@@ -320,13 +320,13 @@ int mmqos_ut_set(const char *val, const struct kernel_param *kp)
 		mm_qos_update_all_request_zero(&ut_req_list);
 		break;
 	default:
-		pr_notice("invalid case_id: %d\n", qos_ut_case);
+		pr_no_notice("invalid case_id: %d\n", qos_ut_case);
 		break;
 	}
 
-	pr_notice("Call SMI Dump API Begin\n");
+	pr_no_notice("Call SMI Dump API Begin\n");
 	/* smi_debug_bus_hang_detect(false, "MMDVFS"); */
-	pr_notice("Call SMI Dump API END\n");
+	pr_no_notice("Call SMI Dump API END\n");
 	return 0;
 }
 

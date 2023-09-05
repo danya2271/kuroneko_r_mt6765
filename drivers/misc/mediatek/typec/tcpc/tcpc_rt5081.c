@@ -548,7 +548,7 @@ static int rt5081_init_alert(struct tcpc_device *tcpc)
 
 	snprintf(name, PAGE_SIZE, "%s-IRQ", chip->tcpc_desc->name);
 
-	pr_info("%s name = %s, gpio = %d\n", __func__,
+	pr_no_info("%s name = %s, gpio = %d\n", __func__,
 				chip->tcpc_desc->name, chip->irq_gpio);
 
 	ret = devm_gpio_request(chip->dev, chip->irq_gpio, name);
@@ -557,43 +557,43 @@ static int rt5081_init_alert(struct tcpc_device *tcpc)
 	gpio_direction_output(DEBUG_GPIO, 1);
 #endif
 	if (ret < 0) {
-		pr_err("Error: failed to request GPIO%d (ret = %d)\n",
+		pr_no_err("Error: failed to request GPIO%d (ret = %d)\n",
 		chip->irq_gpio, ret);
 		goto init_alert_err;
 	}
 
 	ret = gpio_direction_input(chip->irq_gpio);
 	if (ret < 0) {
-		pr_err("Error: failed to set GPIO%d as input pin(ret = %d)\n",
+		pr_no_err("Error: failed to set GPIO%d as input pin(ret = %d)\n",
 		chip->irq_gpio, ret);
 		goto init_alert_err;
 	}
 
 	chip->irq = gpio_to_irq(chip->irq_gpio);
 	if (chip->irq <= 0) {
-		pr_err("%s gpio to irq fail, chip->irq(%d)\n",
+		pr_no_err("%s gpio to irq fail, chip->irq(%d)\n",
 						__func__, chip->irq);
 		goto init_alert_err;
 	}
 
-	pr_info("%s : IRQ number = %d\n", __func__, chip->irq);
+	pr_no_info("%s : IRQ number = %d\n", __func__, chip->irq);
 
 	kthread_init_worker(&chip->irq_worker);
 	chip->irq_worker_task = kthread_run(kthread_worker_fn,
 			&chip->irq_worker, chip->tcpc_desc->name);
 	if (IS_ERR(chip->irq_worker_task)) {
-		pr_err("Error: Could not create tcpc task\n");
+		pr_no_err("Error: Could not create tcpc task\n");
 		goto init_alert_err;
 	}
 
 	sched_setscheduler(chip->irq_worker_task, SCHED_FIFO, &param);
 	kthread_init_work(&chip->irq_work, rt5081_irq_work_handler);
 
-	pr_info("IRQF_NO_THREAD Test\r\n");
+	pr_no_info("IRQF_NO_THREAD Test\r\n");
 	ret = request_irq(chip->irq, rt5081_intr_handler,
 		IRQF_TRIGGER_FALLING | IRQF_NO_THREAD, name, chip);
 	if (ret < 0) {
-		pr_err("Error: failed to request irq%d (gpio = %d, ret = %d)\n",
+		pr_no_err("Error: failed to request irq%d (gpio = %d, ret = %d)\n",
 			chip->irq, chip->irq_gpio, ret);
 		goto init_alert_err;
 	}
@@ -1253,18 +1253,18 @@ static int rt_parse_dt(struct rt5081_chip *chip, struct device *dev)
 	if (!np)
 		return -EINVAL;
 
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 
 	np = of_find_node_by_name(NULL, "type_c_port0");
 	if (!np) {
-		pr_err("%s find node rt5081 fail\n", __func__);
+		pr_no_err("%s find node rt5081 fail\n", __func__);
 		return -ENODEV;
 	}
 
 #if (!defined(CONFIG_MTK_GPIO) || defined(CONFIG_MTK_GPIOLIB_STAND))
 	ret = of_get_named_gpio(np, "rt5081pd,intr_gpio", 0);
 	if (ret < 0) {
-		pr_err("%s no intr_gpio info\n", __func__);
+		pr_no_err("%s no intr_gpio info\n", __func__);
 		return ret;
 	}
 	chip->irq_gpio = ret;
@@ -1272,7 +1272,7 @@ static int rt_parse_dt(struct rt5081_chip *chip, struct device *dev)
 	ret = of_property_read_u32(
 		np, "rt5081pd,intr_gpio_num", &chip->irq_gpio);
 	if (ret < 0)
-		pr_err("%s no intr_gpio info\n", __func__);
+		pr_no_err("%s no intr_gpio info\n", __func__);
 #endif
 	return ret;
 }
@@ -1302,21 +1302,21 @@ static void check_printk_performance(void)
 	}
 	for (i = 0; i < 10; i++) {
 		t1 = local_clock();
-		pr_info("%d\n", i);
+		pr_no_info("%d\n", i);
 		t2 = local_clock();
 		t2 -= t1;
 		nsrem = do_div(t2, 1000000000);
-		pr_info("pr_info : t2-t1 = %lu\n",
+		pr_no_info("pr_info : t2-t1 = %lu\n",
 				(unsigned long)nsrem / 1000);
 	}
 #else
 	for (i = 0; i < 10; i++) {
 		t1 = local_clock();
-		pr_info("%d\n", i);
+		pr_no_info("%d\n", i);
 		t2 = local_clock();
 		t2 -= t1;
 		nsrem = do_div(t2, 1000000000);
-		pr_info("t2-t1 = %lu\n",
+		pr_no_info("t2-t1 = %lu\n",
 				(unsigned long)nsrem /  1000);
 		PD_BUG_ON(nsrem > 100*1000);
 	}
@@ -1333,7 +1333,7 @@ static int rt5081_tcpcdev_init(struct rt5081_chip *chip, struct device *dev)
 
 	np = of_find_node_by_name(NULL, "type_c_port0");
 	if (!np) {
-		pr_err("%s find node rt5081 fail\n", __func__);
+		pr_no_err("%s find node rt5081 fail\n", __func__);
 		return -ENODEV;
 	}
 
@@ -1438,7 +1438,7 @@ static inline int rt5081_check_revision(struct i2c_client *client)
 	}
 
 	if (vid != MEDIATEK_5081_VID) {
-		pr_info("%s failed, VID=0x%04x\n", __func__, vid);
+		pr_no_info("%s failed, VID=0x%04x\n", __func__, vid);
 		return -ENODEV;
 	}
 
@@ -1449,7 +1449,7 @@ static inline int rt5081_check_revision(struct i2c_client *client)
 	}
 
 	if (pid != MEDIATEK_5081_PID) {
-		pr_info("%s failed, PID=0x%04x\n", __func__, pid);
+		pr_no_info("%s failed, PID=0x%04x\n", __func__, pid);
 		return -ENODEV;
 	}
 
@@ -1475,12 +1475,12 @@ static int rt5081_i2c_probe(struct i2c_client *client,
 	int ret = 0, chip_id;
 	bool use_dt = client->dev.of_node;
 
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	if (i2c_check_functionality(client->adapter,
 			I2C_FUNC_SMBUS_I2C_BLOCK | I2C_FUNC_SMBUS_BYTE_DATA))
-		pr_info("I2C functionality : OK...\n");
+		pr_no_info("I2C functionality : OK...\n");
 	else
-		pr_info("I2C functionality check : failuare...\n");
+		pr_no_info("I2C functionality check : failuare...\n");
 
 	chip_id = rt5081_check_revision(client);
 	if (chip_id < 0)
@@ -1510,7 +1510,7 @@ static int rt5081_i2c_probe(struct i2c_client *client,
 		wakeup_source_register(chip->dev, "rt5081_irq_wakelock");
 
 	chip->chip_id = chip_id;
-	pr_info("rt5081_chipID = 0x%0x\n", chip_id);
+	pr_no_info("rt5081_chipID = 0x%0x\n", chip_id);
 
 	ret = rt5081_regmap_init(chip);
 	if (ret < 0) {
@@ -1526,12 +1526,12 @@ static int rt5081_i2c_probe(struct i2c_client *client,
 
 	ret = rt5081_init_alert(chip->tcpc);
 	if (ret < 0) {
-		pr_err("rt5081 init alert fail\n");
+		pr_no_err("rt5081 init alert fail\n");
 		goto err_irq_init;
 	}
 
 	tcpc_schedule_init_work(chip->tcpc);
-	pr_info("%s probe OK!\n", __func__);
+	pr_no_info("%s probe OK!\n", __func__);
 	return 0;
 
 err_irq_init:
@@ -1659,12 +1659,12 @@ static int __init rt5081_init(void)
 {
 	struct device_node *np;
 
-	pr_info("rt5081h_init (%s): initializing...\n", RT5081_DRV_VERSION);
+	pr_no_info("rt5081h_init (%s): initializing...\n", RT5081_DRV_VERSION);
 	np = of_find_node_by_name(NULL, "usb_type_c");
 	if (np != NULL)
-		pr_info("usb_type_c node found...\n");
+		pr_no_info("usb_type_c node found...\n");
 	else
-		pr_info("usb_type_c node not found...\n");
+		pr_no_info("usb_type_c node not found...\n");
 
 	return i2c_add_driver(&rt5081_driver);
 }

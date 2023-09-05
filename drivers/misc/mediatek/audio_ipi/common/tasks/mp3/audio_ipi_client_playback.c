@@ -134,7 +134,7 @@ void playback_open_dump_file(void)
 
 	file_decode_pcm = filp_open(path_decode_pcm, O_CREAT | O_WRONLY, 0);
 	if (IS_ERR(file_decode_pcm)) {
-		pr_info("file_decode_pcm < 0,path_decode_pcm = %s\n",
+		pr_no_info("file_decode_pcm < 0,path_decode_pcm = %s\n",
 			path_decode_pcm);
 		return;
 	}
@@ -149,7 +149,7 @@ void playback_open_dump_file(void)
 		playback_dump_task = kthread_create(dump_kthread, NULL,
 						    "dump_kthread");
 		if (IS_ERR(playback_dump_task))
-			pr_notice("can not create playback_dump_task kthread\n");
+			pr_no_notice("can not create playback_dump_task kthread\n");
 
 		b_enable_dump = true;
 		wake_up_process(playback_dump_task);
@@ -167,13 +167,13 @@ void playback_close_dump_file(void)
 
 	b_enable_dump = false;
 
-	pr_debug("pass: %d\n", dump_data_routine_cnt_pass);
+	pr_no_debug("pass: %d\n", dump_data_routine_cnt_pass);
 
 	if (playback_dump_task) {
 		kthread_stop(playback_dump_task);
 		playback_dump_task = NULL;
 	}
-	pr_debug("dump_queue = %p\n", dump_queue);
+	pr_no_debug("dump_queue = %p\n", dump_queue);
 	kfree(dump_queue);
 	dump_queue = NULL;
 
@@ -243,7 +243,7 @@ static int dump_kthread(void *data)
 	sched_setscheduler(current, SCHED_RR, &param);
 
 
-	pr_debug("dump_queue = %p\n", dump_queue);
+	pr_no_debug("dump_queue = %p\n", dump_queue);
 
 	while (b_enable_dump && !kthread_should_stop()) {
 		spin_lock_irqsave(&dump_queue_lock, flags);
@@ -268,7 +268,7 @@ static int dump_kthread(void *data)
 			dump_queue->idx_r++;
 		}
 
-		pr_debug("current_idx = %d\n", current_idx);
+		pr_no_debug("current_idx = %d\n", current_idx);
 
 		dump_package = &dump_queue->dump_package[current_idx];
 
@@ -283,13 +283,13 @@ static int dump_kthread(void *data)
 						  dump_package->data_size,
 						  dump_package->rw_idx);
 			pcm_dump = (struct pcm_dump_t *)data_buf;
-			pr_debug("pcm_dump = %p size = %d\n", pcm_dump, size);
+			pr_no_debug("pcm_dump = %p size = %d\n", pcm_dump, size);
 			if (pcm_dump == NULL)
 				break;
 			while (size > 0) {
 				if (size < FRAME_BUF_SIZE)
 					writedata = size;
-				pr_debug("pcm_dump = %p writedata = %d\n",
+				pr_no_debug("pcm_dump = %p writedata = %d\n",
 					 pcm_dump, writedata);
 				if (!IS_ERR(file_decode_pcm)) {
 					ret = file_decode_pcm->f_op->write(
@@ -305,7 +305,7 @@ static int dump_kthread(void *data)
 			break;
 		}
 		default: {
-			pr_info("current_idx = %d, idx_r = %d, idx_w = %d, type = %d\n",
+			pr_no_info("current_idx = %d, idx_r = %d, idx_w = %d, type = %d\n",
 				current_idx,
 				dump_queue->idx_r, dump_queue->idx_w,
 				dump_package->dump_data_type);
@@ -314,7 +314,7 @@ static int dump_kthread(void *data)
 		}
 	}
 
-	pr_debug("%s(), exit\n", __func__);
+	pr_no_debug("%s(), exit\n", __func__);
 	return 0;
 }
 
@@ -324,7 +324,7 @@ void audio_ipi_client_playback_init(void)
 		aud_wake_lock_init("playback_pcm_dump_wake_lock");
 	dump_workqueue[DUMP_DECODE] = create_workqueue("dump_decode_pcm");
 	if (dump_workqueue[DUMP_DECODE] == NULL)
-		pr_notice("dump_workqueue[DUMP_DECODE] = %p\n",
+		pr_no_notice("dump_workqueue[DUMP_DECODE] = %p\n",
 			  dump_workqueue[DUMP_DECODE]);
 	AUD_ASSERT(dump_workqueue[DUMP_DECODE] != NULL);
 

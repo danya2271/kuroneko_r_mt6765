@@ -89,8 +89,8 @@
 /* # echo aal_dbg:1 > /sys/kernel/debug/dispsys */
 int aal_dbg_en;
 
-#define AAL_ERR(fmt, arg...) pr_notice("[AAL] %s: " fmt "\n", __func__, ##arg)
-#define AAL_NOTICE(fmt, arg...) pr_info("[AAL] %s: " fmt "\n", __func__, ##arg)
+#define AAL_ERR(fmt, arg...) pr_no_notice("[AAL] %s: " fmt "\n", __func__, ##arg)
+#define AAL_NOTICE(fmt, arg...) pr_no_info("[AAL] %s: " fmt "\n", __func__, ##arg)
 #define AAL_DBG(fmt, arg...) \
 	do { if (aal_dbg_en) pr_no_debug("[AAL] %s: " fmt "\n", __func__, ##arg); \
 		} while (0)
@@ -2586,7 +2586,7 @@ struct DDP_MODULE_DRIVER ddp_driver_aal = {
 /* Will not be linked in user build. */
 /* ---------------------------------------------------------------------- */
 
-#define AAL_TLOG(fmt, arg...) pr_info("[AAL] %s: " fmt "\n", __func__, ##arg)
+#define AAL_TLOG(fmt, arg...) pr_no_info("[AAL] %s: " fmt "\n", __func__, ##arg)
 
 static void aal_test_en(enum DISP_MODULE_ENUM module, const char *cmd)
 {

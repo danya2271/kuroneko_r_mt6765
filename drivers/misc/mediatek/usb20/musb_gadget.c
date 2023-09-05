@@ -555,7 +555,7 @@ void musb_g_tx(struct musb *musb, u8 epnum)
 			if (ep_in == &(musb_ep->end_point)) {
 				adbCmdLog(request->buf, request->actual,
 					musb_ep->is_in, "musb_g_tx");
-				/* pr_info("adb: musb_g_tx length = 0x%x,
+				/* pr_no_info("adb: musb_g_tx length = 0x%x,
 				 * actual = 0x%x, packet_sz = 0x%x\n",
 				 * request->length,
 				 * request->actual, musb_ep->packet_sz);
@@ -1684,7 +1684,7 @@ void musb_ep_restart(struct musb *musb, struct musb_request *req)
 	static DEFINE_RATELIMIT_STATE(ratelimit, HZ, 10);
 
 	if (__ratelimit(&ratelimit))
-		pr_debug("<ratelimit> <== %s request %p len %u on hw_ep%d"
+		pr_no_debug("<ratelimit> <== %s request %p len %u on hw_ep%d"
 			, req->tx ? "TX/IN" : "RX/OUT"
 			, &req->request
 			, req->request.length
@@ -2746,7 +2746,7 @@ void musb_g_resume(struct musb *musb)
 		}
 		break;
 	default:
-		pr_notice("unhandled RESUME transition (%s)\n"
+		pr_no_notice("unhandled RESUME transition (%s)\n"
 			, otg_state_string(musb->xceiv->otg->state));
 	}
 }
@@ -2777,7 +2777,7 @@ void musb_g_suspend(struct musb *musb)
 		/* REVISIT if B_HOST, clear DEVCTL.HOSTREQ;
 		 * A_PERIPHERAL may need care too
 		 */
-		pr_notice("unhandled SUSPEND transition (%s)\n",
+		pr_no_notice("unhandled SUSPEND transition (%s)\n",
 			otg_state_string(musb->xceiv->otg->state));
 	}
 }
@@ -2998,10 +2998,10 @@ void musb_g_disconnect(struct musb *musb)
 	DBG(2, "devctl %02x\n", devctl);
 
 #if defined(CONFIG_USBIF_COMPLIANCE)
-	pr_info("%s: %02x, otg_srp_rqd: 0x%x (%s)\n"
+	pr_no_info("%s: %02x, otg_srp_rqd: 0x%x (%s)\n"
 		, __func__, devctl, musb->g.otg_srp_reqd,
 		otg_state_string(musb->xceiv->otg->state));
-	pr_info("devctl %02x\n", devctl);
+	pr_no_info("devctl %02x\n", devctl);
 	if (musb->g.otg_srp_reqd)
 		musb->xceiv->otg->state = OTG_STATE_B_SRP_INIT;
 #endif
@@ -3036,16 +3036,16 @@ void musb_g_disconnect(struct musb *musb)
 	case OTG_STATE_B_IDLE:
 		musb->xceiv->otg->state = OTG_STATE_B_IDLE;
 #if defined(CONFIG_USBIF_COMPLIANCE)
-		pr_info("%s: %x\n", __func__, musb->g.host_request);
+		pr_no_info("%s: %x\n", __func__, musb->g.host_request);
 		musb_set_host_request_flag(musb, 0);
 #endif
 		break;
 	case OTG_STATE_B_SRP_INIT:
 #if defined(CONFIG_USBIF_COMPLIANCE)
-		pr_info("%s: %s\n", __func__,
+		pr_no_info("%s: %s\n", __func__,
 			otg_state_string(musb->xceiv->otg->state));
 		if (musb->g.otg_srp_reqd) {
-			pr_info("disconnect, Check otg_srp_reqd: 0x%x,  devctl %02x\n",
+			pr_no_info("disconnect, Check otg_srp_reqd: 0x%x,  devctl %02x\n",
 				musb->g.otg_srp_reqd, devctl);
 			musb->g.otg_srp_reqd = 0;
 

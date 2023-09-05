@@ -32,13 +32,13 @@ static inline void pd_parse_pdata_bat_info(
 
 	ret = of_property_read_u32(sub, "bat,vid", (u32 *)&vid);
 	if (ret < 0) {
-		pr_err("%s get pd vid fail\n", __func__);
+		pr_no_err("%s get pd vid fail\n", __func__);
 		vid = PD_IDH_VID(pd_port->id_vdos[0]);
 	}
 
 	ret = of_property_read_u32(sub, "bat,pid", (u32 *)&pid);
 	if (ret < 0) {
-		pr_err("%s get pd pid fail\n", __func__);
+		pr_no_err("%s get pd pid fail\n", __func__);
 		pid = PD_PRODUCT_PID(pd_port->id_vdos[2]);
 	}
 
@@ -48,19 +48,19 @@ static inline void pd_parse_pdata_bat_info(
 
 	ret = of_property_read_string(sub, "bat,mfrs", &mstring);
 	if (ret < 0) {
-		pr_err("%s get bat,mfrs fail\n", __func__);
+		pr_no_err("%s get bat,mfrs fail\n", __func__);
 		mstring = "no_bat_mfrs_string";
 	}
 	ret = snprintf(mfrs_info->mfrs_string,
 		strlen(mstring)+1, "%s", mstring);
 	if (ret < 0 || ret >= (strlen(mstring)+1))
-		pr_info("%s-%d snprintf fail\n", __func__, __LINE__);
+		pr_no_info("%s-%d snprintf fail\n", __func__, __LINE__);
 #endif	/* CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL */
 
 	ret = of_property_read_u32(sub, "bat,design_cap", &design_cap);
 	if (ret < 0) {
 		bat_cap->bat_design_cap = PD_BCDB_BAT_CAP_UNKNOWN;
-		pr_err("%s get bat,dsn_cat fail\n", __func__);
+		pr_no_err("%s get bat,dsn_cat fail\n", __func__);
 	} else {
 		bat_cap->bat_design_cap = (uint16_t)
 			PD_BCDB_BAT_CAP_RAW(design_cap);
@@ -84,20 +84,20 @@ static inline int pd_parse_pdata_bats(
 
 	ret = of_property_read_u32(np, "bat,nr", &val);
 	if (ret < 0) {
-		pr_err("%s get pd bat NR fail\n", __func__);
+		pr_no_err("%s get pd bat NR fail\n", __func__);
 		pd_port->bat_nr = 0;
 		return 0;
 	}
 
 	pd_port->bat_nr = val;
-	pr_info("%s Battery NR = %d\n", __func__, pd_port->bat_nr);
+	pr_no_info("%s Battery NR = %d\n", __func__, pd_port->bat_nr);
 
 	pd_port->fix_bat_info = devm_kzalloc(&pd_port->tcpc_dev->dev,
 		sizeof(struct pd_battery_info)*pd_port->bat_nr,
 		GFP_KERNEL);
 
 	if (!pd_port->fix_bat_info) {
-		pr_err("%s get fix_bat_info memory fail\n", __func__);
+		pr_no_err("%s get fix_bat_info memory fail\n", __func__);
 		return -ENOMEM;
 	}
 
@@ -105,7 +105,7 @@ static inline int pd_parse_pdata_bats(
 		snprintf(temp_string, 26, "bat-info%d", i);
 		sub = of_find_node_by_name(np, temp_string);
 		if (!sub) {
-			pr_err("%s get sub bat node fail\n", __func__);
+			pr_no_err("%s get sub bat node fail\n", __func__);
 			return -ENODEV;
 		}
 
@@ -114,7 +114,7 @@ static inline int pd_parse_pdata_bats(
 	}
 
 	for (i = 0; i < pd_port->bat_nr; i++) {
-		pr_info("%s fix_bat_info[%d].mfrs_info.vid = 0x%x, .mfrs_info.pid = 0x%x, .mfrs_string = %s, .bat_design_cap = %d\n",
+		pr_no_info("%s fix_bat_info[%d].mfrs_info.vid = 0x%x, .mfrs_info.pid = 0x%x, .mfrs_string = %s, .bat_design_cap = %d\n",
 			__func__, i,
 			pd_port->fix_bat_info[i].mfrs_info.vid,
 			pd_port->fix_bat_info[i].mfrs_info.pid,
@@ -138,7 +138,7 @@ static inline int pd_parse_pdata_country(
 
 	ret = of_property_read_u32(sub, "pd,country_code", &val);
 	if (ret < 0) {
-		pr_err("%s get country code fail\n", __func__);
+		pr_no_err("%s get country code fail\n", __func__);
 		return -ENODEV;
 	}
 
@@ -146,7 +146,7 @@ static inline int pd_parse_pdata_country(
 
 	ret = of_property_read_u32(sub, "pd,country_len", &val);
 	if (ret < 0) {
-		pr_err("%s get country len fail\n", __func__);
+		pr_no_err("%s get country len fail\n", __func__);
 		return -ENODEV;
 	}
 
@@ -158,7 +158,7 @@ static inline int pd_parse_pdata_country(
 		GFP_KERNEL);
 
 	if (!country_info->data) {
-		pr_err("%s get country info data mem fail\n",
+		pr_no_err("%s get country info data mem fail\n",
 			__func__);
 		return -ENOMEM;
 	}
@@ -170,7 +170,7 @@ static inline int pd_parse_pdata_country(
 		temp_u32,
 		country_info->len);
 	if (ret < 0)
-		pr_err("%s get country data fail\n", __func__);
+		pr_no_err("%s get country data fail\n", __func__);
 
 	for (j = 0; j < country_info->len; j++)
 		country_info->data[j] = (uint8_t) temp_u32[j];
@@ -190,19 +190,19 @@ static inline int pd_parse_pdata_countries(
 	ret = of_property_read_u32(np, "pd,country_nr",
 			(u32 *)&pd_port->country_nr);
 	if (ret < 0) {
-		pr_err("%s get country nr fail\n", __func__);
+		pr_no_err("%s get country nr fail\n", __func__);
 		pd_port->country_nr = 0;
 		return 0;
 	}
 
-	pr_info("%s Country NR = %d\n", __func__, pd_port->country_nr);
+	pr_no_info("%s Country NR = %d\n", __func__, pd_port->country_nr);
 
 	pd_port->country_info = devm_kzalloc(&pd_port->tcpc_dev->dev,
 		sizeof(struct pd_country_authority)*pd_port->country_nr,
 		GFP_KERNEL);
 
 	if (!pd_port->country_info) {
-		pr_err("%s get country info memory fail\n", __func__);
+		pr_no_err("%s get country info memory fail\n", __func__);
 		return -ENOMEM;
 	}
 
@@ -210,7 +210,7 @@ static inline int pd_parse_pdata_countries(
 		snprintf(temp_string, 26, "country%d", i);
 		sub = of_find_node_by_name(np, temp_string);
 		if (!sub) {
-			pr_err("%s get sub country node fail\n",
+			pr_no_err("%s get sub country node fail\n",
 				__func__);
 			return -ENODEV;
 		}
@@ -222,12 +222,12 @@ static inline int pd_parse_pdata_countries(
 	}
 
 	for (i = 0; i < pd_port->country_nr; i++) {
-		pr_info("%s country_info[%d].code = 0x%x, .len = %d\n",
+		pr_no_info("%s country_info[%d].code = 0x%x, .len = %d\n",
 			__func__, i,
 			pd_port->country_info[i].code,
 			pd_port->country_info[i].len);
 		for (j = 0; j < pd_port->country_info[i].len; j++) {
-			pr_info("%s country_info[%d].data[%d] = 0x%x\n",
+			pr_no_info("%s country_info[%d].data[%d] = 0x%x\n",
 				__func__, i, j,
 				pd_port->country_info[i].data[j]);
 		}
@@ -239,12 +239,12 @@ static inline int pd_parse_pdata_countries(
 #ifdef CONFIG_USB_PD_REV30_SRC_CAP_EXT_LOCAL
 static void pd_parse_log_src_cap_ext(struct pd_source_cap_ext *cap)
 {
-	pr_info("%s vid = 0x%x, pid = 0x%x, xid = 0x%x, fw_ver = 0x%x, hw_ver = 0x%0x\n",
+	pr_no_info("%s vid = 0x%x, pid = 0x%x, xid = 0x%x, fw_ver = 0x%x, hw_ver = 0x%0x\n",
 		__func__,
 		cap->vid, cap->pid, cap->xid,
 		cap->fw_ver, cap->hw_ver);
 
-	pr_info("%s voltage_regulation = %d, hold_time_ms = %d, compliance = 0x%x, touch_current = 0x%x, peak_current = %d %d %d\n",
+	pr_no_info("%s voltage_regulation = %d, hold_time_ms = %d, compliance = 0x%x, touch_current = 0x%x, peak_current = %d %d %d\n",
 		__func__,
 		cap->voltage_regulation,
 		cap->hold_time_ms,
@@ -254,7 +254,7 @@ static void pd_parse_log_src_cap_ext(struct pd_source_cap_ext *cap)
 		cap->peak_current[1],
 		cap->peak_current[2]);
 
-	pr_info("%s touch_temp = %d, source_inputs = 0x%x, batteries = 0x%x, source_pdp = 0x%x\n",
+	pr_no_info("%s touch_temp = %d, source_inputs = 0x%x, batteries = 0x%x, source_pdp = 0x%x\n",
 		__func__,
 		cap->touch_temp,
 		cap->source_inputs,
@@ -274,7 +274,7 @@ static inline void pd_parse_pdata_src_cap_ext(
 		sizeof(struct pd_source_cap_ext)/4);
 
 	if (ret < 0)
-		pr_err("%s get source-cap-ext fail\n", __func__);
+		pr_no_err("%s get source-cap-ext fail\n", __func__);
 	else
 		pd_parse_log_src_cap_ext(&pd_port->src_cap_ext);
 
@@ -303,17 +303,17 @@ static inline void pd_parse_pdata_mfrs(
 
 	ret = of_property_read_u32(np, "pd,vid", (u32 *)&vid);
 	if (ret < 0) {
-		pr_err("%s get pd vid fail\n", __func__);
+		pr_no_err("%s get pd vid fail\n", __func__);
 		vid = PD_IDH_VID(pd_port->id_vdos[0]);
 	}
 
 	ret = of_property_read_u32(np, "pd,pid", (u32 *)&pid);
 	if (ret < 0) {
-		pr_err("%s get pd pid fail\n", __func__);
+		pr_no_err("%s get pd pid fail\n", __func__);
 		pid = PD_PRODUCT_PID(pd_port->id_vdos[2]);
 	}
 
-	pr_info("%s VID = 0x%x, PID = 0x%x\n", __func__, vid, pid);
+	pr_no_info("%s VID = 0x%x, PID = 0x%x\n", __func__, vid, pid);
 
 #ifdef CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL
 	mfrs_info->vid = vid;
@@ -322,14 +322,14 @@ static inline void pd_parse_pdata_mfrs(
 	ret = of_property_read_string(np, "pd,mfrs", &mstring);
 	if (ret < 0) {
 		mstring = "no_mfrs_string";
-		pr_err("%s get pd mfrs fail\n", __func__);
+		pr_no_err("%s get pd mfrs fail\n", __func__);
 	}
 	ret = snprintf(mfrs_info->mfrs_string,
 		strlen(mstring)+1, "%s", mstring);
 	if (ret < 0 || ret >= (strlen(mstring)+1))
-		pr_info("%s-%d snprintf fail\n", __func__, __LINE__);
+		pr_no_info("%s-%d snprintf fail\n", __func__, __LINE__);
 
-	pr_info("%s PD mfrs_string = %s\n",
+	pr_no_info("%s PD mfrs_string = %s\n",
 		__func__, mfrs_info->mfrs_string);
 #endif	/* CONFIG_USB_PD_REV30_MFRS_INFO_LOCAL */
 
@@ -356,41 +356,41 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 	struct device_node *np;
 	int ret = 0, i;
 
-	pr_info("%s\n", __func__);
+	pr_no_info("%s\n", __func__);
 	np = of_find_node_by_name(pd_port->tcpc_dev->dev.of_node, "pd-data");
 
 	if (np) {
 		ret = of_property_read_u32(np, "pd,source-pdo-size",
 				(u32 *)&pd_port->local_src_cap_default.nr);
 		if (ret < 0)
-			pr_err("%s get source pdo size fail\n", __func__);
+			pr_no_err("%s get source pdo size fail\n", __func__);
 
 		ret = of_property_read_u32_array(np, "pd,source-pdo-data",
 			(u32 *)pd_port->local_src_cap_default.pdos,
 			pd_port->local_src_cap_default.nr);
 		if (ret < 0)
-			pr_err("%s get source pdo data fail\n", __func__);
+			pr_no_err("%s get source pdo data fail\n", __func__);
 
-		pr_info("%s src pdo data =\n", __func__);
+		pr_no_info("%s src pdo data =\n", __func__);
 		for (i = 0; i < pd_port->local_src_cap_default.nr; i++) {
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_no_info("%s %d: 0x%08x\n", __func__, i,
 				pd_port->local_src_cap_default.pdos[i]);
 		}
 
 		ret = of_property_read_u32(np, "pd,sink-pdo-size",
 					(u32 *)&pd_port->local_snk_cap.nr);
 		if (ret < 0)
-			pr_err("%s get sink pdo size fail\n", __func__);
+			pr_no_err("%s get sink pdo size fail\n", __func__);
 
 		ret = of_property_read_u32_array(np, "pd,sink-pdo-data",
 			(u32 *)pd_port->local_snk_cap.pdos,
 				pd_port->local_snk_cap.nr);
 		if (ret < 0)
-			pr_err("%s get sink pdo data fail\n", __func__);
+			pr_no_err("%s get sink pdo data fail\n", __func__);
 
-		pr_info("%s snk pdo data =\n", __func__);
+		pr_no_info("%s snk pdo data =\n", __func__);
 		for (i = 0; i < pd_port->local_snk_cap.nr; i++) {
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_no_info("%s %d: 0x%08x\n", __func__, i,
 				pd_port->local_snk_cap.pdos[i]);
 
 #ifdef CONFIG_USB_PD_REV30_PPS_SINK
@@ -407,15 +407,15 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 		ret = of_property_read_u32(np, "pd,id-vdo-size",
 					(u32 *)&pd_port->id_vdo_nr);
 		if (ret < 0)
-			pr_err("%s get id vdo size fail\n", __func__);
+			pr_no_err("%s get id vdo size fail\n", __func__);
 		ret = of_property_read_u32_array(np, "pd,id-vdo-data",
 			(u32 *)pd_port->id_vdos, pd_port->id_vdo_nr);
 		if (ret < 0)
-			pr_err("%s get id vdo data fail\n", __func__);
+			pr_no_err("%s get id vdo data fail\n", __func__);
 
-		pr_info("%s id vdos data =\n", __func__);
+		pr_no_info("%s id vdos data =\n", __func__);
 		for (i = 0; i < pd_port->id_vdo_nr; i++)
-			pr_info("%s %d: 0x%08x\n", __func__, i,
+			pr_no_info("%s %d: 0x%08x\n", __func__, i,
 			pd_port->id_vdos[i]);
 
 #ifdef CONFIG_USB_PD_REV30
@@ -424,11 +424,11 @@ static int pd_parse_pdata(struct pd_port *pd_port)
 
 		val = DPM_CHARGING_POLICY_MAX_POWER_LVIC;
 		if (of_property_read_u32(np, "pd,charging_policy", &val) < 0)
-			pr_info("%s get charging policy fail\n", __func__);
+			pr_no_info("%s get charging policy fail\n", __func__);
 
 		pd_port->dpm_charging_policy = val;
 		pd_port->dpm_charging_policy_default = val;
-		pr_info("%s charging_policy = %d\n", __func__, val);
+		pr_no_info("%s charging_policy = %d\n", __func__, val);
 
 #ifdef CONFIG_USB_PD_REV30_BAT_INFO
 		ret = pd_parse_pdata_bats(pd_port, np);
@@ -493,21 +493,21 @@ static void pd_core_power_flags_init(struct pd_port *pd_port)
 			supported_dpm_caps[i].prop_name))
 			pd_port->dpm_caps |=
 				supported_dpm_caps[i].val;
-			pr_info("dpm_caps: %s\n",
+			pr_no_info("dpm_caps: %s\n",
 				supported_dpm_caps[i].prop_name);
 	}
 
 	if (of_property_read_u32(np, "pr_check", &val) == 0)
 		pd_port->dpm_caps |= DPM_CAP_PR_CHECK_PROP(val);
 	else
-		pr_err("%s get pr_check data fail\n", __func__);
+		pr_no_err("%s get pr_check data fail\n", __func__);
 
 	if (of_property_read_u32(np, "dr_check", &val) == 0)
 		pd_port->dpm_caps |= DPM_CAP_DR_CHECK_PROP(val);
 	else
-		pr_err("%s get dr_check data fail\n", __func__);
+		pr_no_err("%s get dr_check data fail\n", __func__);
 
-	pr_info("dpm_caps = 0x%08x\n", pd_port->dpm_caps);
+	pr_no_info("dpm_caps = 0x%08x\n", pd_port->dpm_caps);
 
 	src_flag = 0;
 	if (pd_port->dpm_caps & DPM_CAP_LOCAL_DR_POWER)
@@ -543,7 +543,7 @@ static void fg_bat_absent_work(struct work_struct *work)
 
 	ret = tcpm_shutdown(tcpc_dev);
 	if (ret < 0)
-		pr_notice("%s: tcpm shutdown fail\n", __func__);
+		pr_no_notice("%s: tcpm shutdown fail\n", __func__);
 }
 #endif /* ONFIG_RECV_BAT_ABSENT_NOTIFY */
 

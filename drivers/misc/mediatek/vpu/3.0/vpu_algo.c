@@ -544,7 +544,7 @@ int vpu_dump_algo(struct seq_file *s)
 				ret = sprintf(line_buffer + pos * 3, "%02X",
 						*info_data);
 				if (ret < 0) {
-					pr_info("%s: vsnprintf: %d\n", __func__, ret);
+					pr_no_info("%s: vsnprintf: %d\n", __func__, ret);
 					continue;
 				}
 

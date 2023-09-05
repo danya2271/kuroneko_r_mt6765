@@ -85,7 +85,7 @@ int disp_register_irq_callback(DDP_IRQ_CALLBACK cb)
 			break;
 	}
 	if (i == DISP_MAX_IRQ_CALLBACK) {
-		DDP_PR_ERR("not enough irq callback entries for module\n");
+		DDP_pr_no_err("not enough irq callback entries for module\n");
 		return -1;
 	}
 
@@ -125,12 +125,12 @@ int disp_register_module_irq_callback(enum DISP_MODULE_ENUM module,
 	int i;
 
 	if (module >= DISP_MODULE_NUM) {
-		DDP_PR_ERR("Register IRQ with invalid module ID. module=%d\n",
+		DDP_pr_no_err("Register IRQ with invalid module ID. module=%d\n",
 			   module);
 		return -1;
 	}
 	if (cb == NULL) {
-		DDP_PR_ERR("Register IRQ with invalid cb.\n");
+		DDP_pr_no_err("Register IRQ with invalid cb.\n");
 		return -1;
 	}
 	for (i = 0; i < DISP_MAX_IRQ_CALLBACK; i++) {
@@ -145,7 +145,7 @@ int disp_register_module_irq_callback(enum DISP_MODULE_ENUM module,
 			break;
 	}
 	if (i == DISP_MAX_IRQ_CALLBACK) {
-		DDP_PR_ERR("No enough callback entries for module %d.\n",
+		DDP_pr_no_err("No enough callback entries for module %d.\n",
 			   module);
 		return -1;
 	}
@@ -269,7 +269,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 			       ddp_get_module_name(module));
 
 		if (reg_val & (1 << 2)) {
-			DDP_PR_ERR("IRQ: %s frame underflow! cnt=%d\n",
+			DDP_pr_no_err("IRQ: %s frame underflow! cnt=%d\n",
 				   ddp_get_module_name(module),
 				   cnt_ovl_underflow[index]);
 
@@ -281,24 +281,24 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 			       ddp_get_module_name(module));
 
 		if (reg_val & (1 << 4))
-			DDP_PR_ERR("IRQ: %s hw reset done\n",
+			DDP_pr_no_err("IRQ: %s hw reset done\n",
 				   ddp_get_module_name(module));
 
 		if (reg_val & (1 << 5))
-			DDP_PR_ERR("IRQ: %s-L0 not complete until EOF!\n",
+			DDP_pr_no_err("IRQ: %s-L0 not complete until EOF!\n",
 				   ddp_get_module_name(module));
 		if (reg_val & (1 << 6))
-			DDP_PR_ERR("IRQ: %s-L1 not complete until EOF!\n",
+			DDP_pr_no_err("IRQ: %s-L1 not complete until EOF!\n",
 				   ddp_get_module_name(module));
 		if (reg_val & (1 << 7))
-			DDP_PR_ERR("IRQ: %s-L2 not complete until EOF!\n",
+			DDP_pr_no_err("IRQ: %s-L2 not complete until EOF!\n",
 				   ddp_get_module_name(module));
 		if (reg_val & (1 << 8))
-			DDP_PR_ERR("IRQ: %s-L3 not complete until EOF!\n",
+			DDP_pr_no_err("IRQ: %s-L3 not complete until EOF!\n",
 				   ddp_get_module_name(module));
 
 		if (reg_val & (1 << 13)) {
-			DDP_PR_ERR("IRQ: %s abnormal SOF!\n",
+			DDP_pr_no_err("IRQ: %s abnormal SOF!\n",
 				   ddp_get_module_name(module));
 			primary_display_set_recovery_module(module);
 			/* The DISP_RECOVERY event waiting by recovery thread
@@ -333,7 +333,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 		}
 
 		if (reg_val & (1 << 1)) {
-			DDP_PR_ERR("IRQ: WDMA%d underrun! cnt=%d\n",
+			DDP_pr_no_err("IRQ: WDMA%d underrun! cnt=%d\n",
 				   index, cnt_wdma_underflow[index]);
 			cnt_wdma_underflow[index]++;
 			disp_irq_log_module |= 1 << module;
@@ -404,7 +404,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 				MMPROFILE_FLAG_PULSE, reg_val,
 				DISP_REG_GET(DISPSYS_RDMA0_BASE + 0x4));
 
-			DDP_PR_ERR("IRQ: RDMA%d abnormal! cnt=%d\n",
+			DDP_pr_no_err("IRQ: RDMA%d abnormal! cnt=%d\n",
 				   index, cnt_rdma_abnormal[index]);
 			cnt_rdma_abnormal[index]++;
 			disp_irq_log_module |= 1 << module;
@@ -423,7 +423,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 					    DISP_RDMA_INDEX_OFFSET * index),
 			       DISP_REG_GET(DISP_REG_RDMA_OUT_LINE_CNT +
 					    DISP_RDMA_INDEX_OFFSET * index));
-			DDP_PR_ERR("IRQ: RDMA%d underflow! cnt=%d\n", index,
+			DDP_pr_no_err("IRQ: RDMA%d underflow! cnt=%d\n", index,
 				   cnt_rdma_underflow[index]);
 
 			if (disp_helper_get_option(DISP_OPT_RDMA_UNDERFLOW_AEE))
@@ -496,18 +496,18 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 			n = scnprintf(msg, len, "MMSYS to MFG APB TX Error, ");
 			n += scnprintf(msg + n, len - n,
 				      "MMSYS clock off but MFG clock on!\n");
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 		}
 
 		if (reg_val & (1 << 1)) {
 			n = scnprintf(msg, len, "MMSYS to MJC APB TX Error, ");
 			n += scnprintf(msg + n, len - n,
 				      "MMSYS clock off but MJC clock on!\n");
-			DDP_PR_ERR("%s", msg);
+			DDP_pr_no_err("%s", msg);
 		}
 
 		if (reg_val & (1 << 2))
-			DDP_PR_ERR("PWM APB TX Error!\n");
+			DDP_pr_no_err("PWM APB TX Error!\n");
 
 	} else if (irq == ddp_get_module_irq(DISP_MODULE_POSTMASK)) {
 		module = DISP_MODULE_POSTMASK;
@@ -530,7 +530,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 				ddp_get_module_name(module));
 
 		if (reg_val & (1 << 4)) {
-			DDP_PR_ERR("IRQ: %s abnormal SOF! cnt=%d\n",
+			DDP_pr_no_err("IRQ: %s abnormal SOF! cnt=%d\n",
 					ddp_get_module_name(module),
 					cnt_postmask_abnormal);
 
@@ -538,7 +538,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 		}
 
 		if (reg_val & (1 << 8)) {
-			DDP_PR_ERR("IRQ: %s frame underflow! cnt=%d\n",
+			DDP_pr_no_err("IRQ: %s frame underflow! cnt=%d\n",
 			       ddp_get_module_name(module),
 			       cnt_postmask_underflow);
 
@@ -555,7 +555,7 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 	} else {
 		module = DISP_MODULE_UNKNOWN;
 		reg_val = 0;
-		DDP_PR_ERR("invalid irq=%d\n ", irq);
+		DDP_pr_no_err("invalid irq=%d\n ", irq);
 	}
 
 	disp_invoke_irq_callbacks(module, reg_val);
@@ -598,7 +598,7 @@ int disp_init_irq(void)
 	disp_irq_log_task = kthread_create(disp_irq_log_kthread_func,
 					   NULL, "ddp_irq_log_kthread");
 	if (IS_ERR(disp_irq_log_task))
-		DDP_PR_ERR("can not create disp_irq_log_task kthread\n");
+		DDP_pr_no_err("can not create disp_irq_log_task kthread\n");
 
 	/* wake_up_process(disp_irq_log_task); */
 	return 0;

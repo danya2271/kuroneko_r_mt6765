@@ -47,10 +47,10 @@ static int maghub_m_setPowerMode(bool enable)
 {
 	int res = 0;
 
-	pr_debug("magnetic enable value = %d\n", enable);
+	pr_no_debug("magnetic enable value = %d\n", enable);
 	res = sensor_enable_to_hub(ID_MAGNETIC, enable);
 	if (res < 0)
-		pr_err("%s is failed!!\n", __func__);
+		pr_no_err("%s is failed!!\n", __func__);
 
 	return res;
 }
@@ -71,7 +71,7 @@ static int maghub_GetMData(char *buf, int size)
 		return -1;
 	err = sensor_get_data_from_hub(ID_MAGNETIC, &data);
 	if (err < 0) {
-		pr_err("sensor_get_data_from_hub fail!\n");
+		pr_no_err("sensor_get_data_from_hub fail!\n");
 		return err;
 	}
 
@@ -85,7 +85,7 @@ static int maghub_GetMData(char *buf, int size)
 		mag_m[MAGHUB_AXIS_Y], mag_m[MAGHUB_AXIS_Z], status);
 
 	if (atomic_read(&obj->trace) & MAG_MDATA_DEBUG)
-		pr_debug("RAW DATA: %s!\n", buf);
+		pr_no_debug("RAW DATA: %s!\n", buf);
 
 
 	return 0;
@@ -123,7 +123,7 @@ static ssize_t trace_show(struct device_driver *ddri, char *buf)
 	struct maghub_ipi_data *obj = mag_ipi_data;
 
 	if (obj == NULL) {
-		pr_err("maghub_ipi_data is null!!\n");
+		pr_no_err("maghub_ipi_data is null!!\n");
 		return 0;
 	}
 
@@ -138,18 +138,18 @@ static ssize_t trace_store(struct device_driver *ddri,
 	int res = 0;
 
 	if (obj == NULL) {
-		pr_err("maghub_ipi_data is null!!\n");
+		pr_no_err("maghub_ipi_data is null!!\n");
 		return 0;
 	}
 
 	if (sscanf(buf, "0x%x", &trace) != 1) {
-		pr_err("invalid content: '%s',length = %zu\n", buf, count);
+		pr_no_err("invalid content: '%s',length = %zu\n", buf, count);
 		return count;
 	}
 	atomic_set(&obj->trace, trace);
 	res = sensor_set_cmd_to_hub(ID_MAGNETIC, CUST_ACTION_SET_TRACE, &trace);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID:%d),(action:%d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID:%d),(action:%d)\n",
 			ID_MAGNETIC, CUST_ACTION_SET_TRACE);
 		return 0;
 	}
@@ -162,7 +162,7 @@ static ssize_t orientation_show(struct device_driver *ddri, char *buf)
 	ssize_t _tLength = 0;
 	struct maghub_ipi_data *obj = mag_ipi_data;
 
-	pr_debug("[%s] default direction: %d\n", __func__, obj->direction);
+	pr_no_debug("[%s] default direction: %d\n", __func__, obj->direction);
 
 	_tLength = snprintf(buf, PAGE_SIZE, "default direction = %d\n",
 		obj->direction);
@@ -182,7 +182,7 @@ static ssize_t orientation_store(struct device_driver *ddri,
 	err = kstrtoint(buf, 10, &_nDirection);
 
 	if (err != 0) {
-		pr_debug("[%s] set direction: %d\n", __func__, _nDirection);
+		pr_no_debug("[%s] set direction: %d\n", __func__, _nDirection);
 		return tCount;
 	}
 
@@ -190,12 +190,12 @@ static ssize_t orientation_store(struct device_driver *ddri,
 	res = sensor_set_cmd_to_hub(ID_MAGNETIC,
 		CUST_ACTION_SET_DIRECTION, &_nDirection);
 	if (res < 0) {
-		pr_err("sensor_set_cmd_to_hub fail,(ID:%d),(action:%d)\n",
+		pr_no_err("sensor_set_cmd_to_hub fail,(ID:%d),(action:%d)\n",
 			ID_MAGNETIC, CUST_ACTION_SET_DIRECTION);
 		return 0;
 	}
 
-	pr_debug("[%s] set direction: %d\n", __func__, _nDirection);
+	pr_no_debug("[%s] set direction: %d\n", __func__, _nDirection);
 
 	return tCount;
 }
@@ -230,7 +230,7 @@ static int maghub_create_attr(struct device_driver *driver)
 	for (idx = 0; idx < num; idx++) {
 		err = driver_create_file(driver, maghub_attr_list[idx]);
 		if (err) {
-			pr_err("driver_create_file (%s) = %d\n",
+			pr_no_err("driver_create_file (%s) = %d\n",
 				maghub_attr_list[idx]->attr.name, err);
 			break;
 		}
@@ -259,14 +259,14 @@ static void scp_init_work_done(struct work_struct *work)
 	struct mag_libinfo_t mag_libinfo;
 
 	if (atomic_read(&obj->scp_init_done) == 0) {
-		pr_err("scp is not ready to send cmd\n");
+		pr_no_err("scp is not ready to send cmd\n");
 		return;
 	}
 	if (atomic_xchg(&obj->first_ready_after_boot, 1) == 0) {
 		err = sensor_set_cmd_to_hub(ID_MAGNETIC,
 			CUST_ACTION_GET_SENSOR_INFO, &obj->mag_info);
 		if (err < 0) {
-			pr_err("set_cmd_to_hub fail, (ID: %d),(action: %d)\n",
+			pr_no_err("set_cmd_to_hub fail, (ID: %d),(action: %d)\n",
 				ID_MAGNETIC, CUST_ACTION_GET_SENSOR_INFO);
 			return;
 		}
@@ -295,7 +295,7 @@ static void scp_init_work_done(struct work_struct *work)
 	err = sensor_cfg_to_hub(ID_MAGNETIC,
 		(uint8_t *)cfg_data, sizeof(cfg_data));
 			if (err < 0)
-				pr_err("sensor_cfg_to_hub fail\n");
+				pr_no_err("sensor_cfg_to_hub fail\n");
 }
 static int mag_recv_data(struct data_unit_t *event, void *reserved)
 {
@@ -353,7 +353,7 @@ static int maghub_enable(int en)
 
 	res = maghub_m_setPowerMode(en);
 	if (res)
-		pr_err("maghub_m_setPowerMode is failed!!\n");
+		pr_no_err("maghub_m_setPowerMode is failed!!\n");
 	return res;
 }
 
@@ -366,11 +366,11 @@ static int maghub_set_delay(u64 ns)
 	delayms = (int)ns / 1000 / 1000;
 	err = sensor_set_delay_to_hub(ID_MAGNETIC, delayms);
 	if (err < 0) {
-		pr_err("maghub_m_set_delay fail!\n");
+		pr_no_err("maghub_m_set_delay fail!\n");
 		return err;
 	}
 
-	pr_debug("maghub_m_set_delay (%d)\n", delayms);
+	pr_no_debug("maghub_m_set_delay (%d)\n", delayms);
 	return err;
 #elif defined CONFIG_NANOHUB
 	return 0;
@@ -425,12 +425,12 @@ static int maghub_get_data(int *x, int *y, int *z, int *status)
 
 	ret = maghub_GetMData(buff, MAGHUB_BUFSIZE);
 	if (ret < 0) {
-		pr_err("maghub_GetMData fail, ret:%d\n", ret);
+		pr_no_err("maghub_GetMData fail, ret:%d\n", ret);
 		return ret;
 	}
 
 	if (sscanf(buff, "%x %x %x %x", x, y, z, status) != 4)
-		pr_err("maghub_m_get_data sscanf fail!!\n");
+		pr_no_err("maghub_m_get_data sscanf fail!!\n");
 	return 0;
 }
 static int scp_ready_event(uint8_t event, void *ptr)
@@ -466,13 +466,13 @@ static int maghub_factory_enable_sensor(bool enabledisable,
 	if (enabledisable == 1) {
 		err = sensor_set_delay_to_hub(ID_MAGNETIC, sample_periods_ms);
 		if (err < 0) {
-			pr_err("sensor_set_delay_to_hub fail!\r\n");
+			pr_no_err("sensor_set_delay_to_hub fail!\r\n");
 			return -1;
 		}
 	}
 	err = sensor_enable_to_hub(ID_MAGNETIC, enabledisable == true ? 1 : 0);
 	if (err < 0) {
-		pr_err("sensor_enable_to_hub fail!\r\n");
+		pr_no_err("sensor_enable_to_hub fail!\r\n");
 		return -1;
 	}
 	return 0;
@@ -491,7 +491,7 @@ static int maghub_factory_get_data(int32_t data[3], int *status)
 }
 static int maghub_factory_get_raw_data(int32_t data[3])
 {
-	pr_debug("%s do not support!\n", __func__);
+	pr_no_debug("%s do not support!\n", __func__);
 	return 0;
 }
 static int maghub_factory_enable_calibration(void)
@@ -552,7 +552,7 @@ static int maghub_probe(struct platform_device *pdev)
 	struct platform_driver *paddr =
 					maghub_init_info.platform_diver_addr;
 
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 	data = kzalloc(sizeof(struct maghub_ipi_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
@@ -569,18 +569,18 @@ static int maghub_probe(struct platform_device *pdev)
 
 	err = scp_sensorHub_data_registration(ID_MAGNETIC, mag_recv_data);
 	if (err < 0) {
-		pr_err("scp_sensorHub_data_registration failed\n");
+		pr_no_err("scp_sensorHub_data_registration failed\n");
 		goto exit_kfree;
 	}
 	err = mag_factory_device_register(&maghub_factory_device);
 	if (err) {
-		pr_err("mag_factory_device_register register failed\n");
+		pr_no_err("mag_factory_device_register register failed\n");
 		goto exit_kfree;
 	}
 	/* Register sysfs attribute */
 	err = maghub_create_attr(&paddr->driver);
 	if (err) {
-		pr_err("create attribute err = %d\n", err);
+		pr_no_err("create attribute err = %d\n", err);
 		goto exit_misc_device_register_failed;
 	}
 	ctl.is_use_common_factory = false;
@@ -601,7 +601,7 @@ static int maghub_probe(struct platform_device *pdev)
 
 	err = mag_register_control_path(&ctl);
 	if (err) {
-		pr_err("register mag control path err\n");
+		pr_no_err("register mag control path err\n");
 		goto create_attr_failed;
 	}
 
@@ -610,10 +610,10 @@ static int maghub_probe(struct platform_device *pdev)
 
 	err = mag_register_data_path(&mag_data);
 	if (err) {
-		pr_err("register data control path err\n");
+		pr_no_err("register data control path err\n");
 		goto create_attr_failed;
 	}
-	pr_debug("%s: OK\n", __func__);
+	pr_no_debug("%s: OK\n", __func__);
 	maghub_init_flag = 1;
 	/*Mointor scp ready notify,
 	 *need monitor at the end of probe for two function:
@@ -633,7 +633,7 @@ exit_misc_device_register_failed:
 exit_kfree:
 	kfree(data);
 exit:
-	pr_err("%s: err = %d\n", __func__, err);
+	pr_no_err("%s: err = %d\n", __func__, err);
 	maghub_init_flag = -1;
 	return err;
 }
@@ -647,7 +647,7 @@ static int maghub_remove(struct platform_device *pdev)
 
 	err = maghub_delete_attr(&paddr->driver);
 	if (err)
-		pr_err("maghub_delete_attr fail: %d\n", err);
+		pr_no_err("maghub_delete_attr fail: %d\n", err);
 
 	kfree(platform_get_drvdata(pdev));
 	mag_factory_device_deregister(&maghub_factory_device);
@@ -687,7 +687,7 @@ static int maghub_local_remove(void)
 static int maghub_local_init(void)
 {
 	if (platform_driver_register(&maghub_driver)) {
-		pr_err("add_driver error\n");
+		pr_no_err("add_driver error\n");
 		return -1;
 	}
 	if (-1 == maghub_init_flag)
@@ -703,7 +703,7 @@ static struct mag_init_info maghub_init_info = {
 static int __init maghub_init(void)
 {
 	if (platform_device_register(&maghub_device)) {
-		pr_err("platform device error\n");
+		pr_no_err("platform device error\n");
 		return -1;
 	}
 	mag_driver_add(&maghub_init_info);
@@ -712,7 +712,7 @@ static int __init maghub_init(void)
 
 static void __exit maghub_exit(void)
 {
-	pr_debug("%s\n", __func__);
+	pr_no_debug("%s\n", __func__);
 }
 
 module_init(maghub_init);

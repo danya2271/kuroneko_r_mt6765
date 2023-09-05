@@ -102,16 +102,16 @@ static int __init amms_sysfs_init(void)
 	kobj = kset_find_obj(module_kset, KBUILD_MODNAME);
 	if (kobj) {
 		if (sysfs_create_group(kobj, &attr_group)) {
-			pr_notice("AMMS: sysfs create sysfs failed\n");
+			pr_no_notice("AMMS: sysfs create sysfs failed\n");
 			return -ENOMEM;
 		}
 	} else {
-		pr_notice("AMMS: Cannot find module %s object\n",
+		pr_no_notice("AMMS: Cannot find module %s object\n",
 				KBUILD_MODNAME);
 		return -EINVAL;
 	}
 
-	pr_debug("%s: done.\n", __func__);
+	pr_no_debug("%s: done.\n", __func__);
 	return 0;
 }
 
@@ -125,7 +125,7 @@ static irqreturn_t amms_irq_handler(int irq, void *dev_id)
 		disable_irq_nosync(irq);
 		wake_up_process(amms_task);
 	} else
-		pr_info("%s:amms_task is null\n", __func__);
+		pr_no_info("%s:amms_task is null\n", __func__);
 	amms_irq_count++;
 	return IRQ_HANDLED;
 }
@@ -139,13 +139,13 @@ int free_reserved_memory(phys_addr_t start_phys,
 
 	if (end_phys <= start_phys) {
 
-		pr_notice("%s end_phys is smaller than start_phys start_phys:%pa end_phys:%pa\n"
+		pr_no_notice("%s end_phys is smaller than start_phys start_phys:%pa end_phys:%pa\n"
 			, __func__, &start_phys, &end_phys);
 		return -1;
 	}
 
 	if (!memblock_is_region_reserved(start_phys, end_phys - start_phys)) {
-		pr_notice("%s:not reserved memory phys_start:%pa phys_end:%pa\n"
+		pr_no_notice("%s:not reserved memory phys_start:%pa phys_end:%pa\n"
 			, __func__, &start_phys, &end_phys);
 		return -1;
 	}
@@ -156,7 +156,7 @@ int free_reserved_memory(phys_addr_t start_phys,
 		free_reserved_page(phys_to_page(pos));
 
 	if (pages)
-		pr_info("Freeing modem memory: %ldK from phys %llx\n",
+		pr_no_info("Freeing modem memory: %ldK from phys %llx\n",
 			pages << (PAGE_SHIFT - 10),
 			(unsigned long long)start_phys);
 
@@ -176,8 +176,8 @@ void amms_handle_event(void)
 	arm_smccc_smc(MTK_SIP_KERNEL_AMMS_GET_PENDING,
 			0, 0, 0, 0, 0, 0, 0, &res);
 	pending = res.a0;
-	pr_info("%s:pending = 0x%llx\n", __func__, pending);
-	pr_info("%s:pending = %lld\n", __func__, (long long)pending);
+	pr_no_info("%s:pending = 0x%llx\n", __func__, pending);
+	pr_no_info("%s:pending = %lld\n", __func__, (long long)pending);
 
 	// Not support clear pending for legacy chip
 	if (((long long)pending) != AMMS_PENDING_DRDI_FREE_BIT) {
@@ -192,13 +192,13 @@ void amms_handle_event(void)
 			if (pfn_valid(__phys_to_pfn(addr))
 				&& pfn_valid(__phys_to_pfn(
 				addr + length - 1))) {
-				pr_info("%s:addr=%pa length=%pa\n", __func__,
+				pr_no_info("%s:addr=%pa length=%pa\n", __func__,
 				&addr, &length);
 				free_reserved_memory(addr, addr+length);
 				amms_static_free = true;
 			} else {
-				pr_info("AMMS: error addr and length is not set properly\n");
-				pr_info("can not free_reserved_memory\n");
+				pr_no_info("AMMS: error addr and length is not set properly\n");
+				pr_no_info("can not free_reserved_memory\n");
 			}
 		}
 		return;
@@ -216,7 +216,7 @@ void amms_handle_event(void)
 			if (pfn_valid(__phys_to_pfn(addr))
 				&& pfn_valid(__phys_to_pfn(
 				addr + length - 1))) {
-				pr_info("%s:addr=%pa length=%pa\n", __func__,
+				pr_no_info("%s:addr=%pa length=%pa\n", __func__,
 				&addr, &length);
 				free_reserved_memory(addr, addr+length);
 				amms_static_free = true;
@@ -224,19 +224,19 @@ void amms_handle_event(void)
 					AMMS_PENDING_DRDI_FREE_BIT, 0,
 					0, 0, 0, 0, 0, &res);
 			} else {
-				pr_info("AMMS: error addr and length is not set properly\n");
-				pr_info("can not free_reserved_memory\n");
+				pr_no_info("AMMS: error addr and length is not set properly\n");
+				pr_no_info("can not free_reserved_memory\n");
 			}
 		} else {
 			arm_smccc_smc(MTK_SIP_KERNEL_AMMS_ACK_PENDING,
 				AMMS_PENDING_DRDI_FREE_BIT,
 				0, 0, 0, 0, 0, 0, &res);
-			pr_info("amms: static memory already free, should not happened\n");
+			pr_no_info("amms: static memory already free, should not happened\n");
 		}
 	}
 
 	if (pending & (~(AMMS_PENDING_DRDI_FREE_BIT)))
-		pr_info("amms:unknown pending interrupt\n");
+		pr_no_info("amms:unknown pending interrupt\n");
 
 }
 
@@ -260,7 +260,7 @@ static int __init amms_probe(struct platform_device *pdev)
 
 	amms_irq_num = platform_get_irq(pdev, 0);
 	if (amms_irq_num < 0) {
-		pr_info("Fail to get amms irq number from device tree\n");
+		pr_no_info("Fail to get amms irq number from device tree\n");
 		WARN_ON(amms_irq_num == -ENXIO);
 		return -EINVAL;
 	}
@@ -268,18 +268,18 @@ static int __init amms_probe(struct platform_device *pdev)
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(36));
 
 	if (ret) {
-		pr_info("fatal error dma_set_mask failed %d\n", ret);
+		pr_no_info("fatal error dma_set_mask failed %d\n", ret);
 		return -EINVAL;
 	}
 
 	amms_dev = &pdev->dev;
-	pr_info("amms_dev->dma_ops=%pS\n", amms_dev->dma_ops);
-	pr_info("amms irq num %d\n", amms_irq_num);
+	pr_no_info("amms_dev->dma_ops=%pS\n", amms_dev->dma_ops);
+	pr_no_info("amms irq num %d\n", amms_irq_num);
 
 	amms_task = kthread_create(amms_task_process,
 			NULL, "amms_task");
 	if (!amms_task) {
-		pr_info("amms_task thread create failed\n");
+		pr_no_info("amms_task thread create failed\n");
 		return -EBUSY;
 	}
 
@@ -287,7 +287,7 @@ static int __init amms_probe(struct platform_device *pdev)
 
 	if (request_irq(amms_irq_num, (irq_handler_t)amms_irq_handler,
 		IRQF_TRIGGER_NONE, "amms_irq", NULL) != 0) {
-		pr_info("Fail to request amms_irq interrupt!\n");
+		pr_no_info("Fail to request amms_irq interrupt!\n");
 		return -EBUSY;
 	}
 #if CONFIG_SYSFS
@@ -323,7 +323,7 @@ static int __init amms_init(void)
 	int ret = 0;
 	ret = platform_driver_register(&amms_driver_probe);
 	if (ret)
-		pr_info("amms init FAIL, ret 0x%x!!!\n", ret);
+		pr_no_info("amms init FAIL, ret 0x%x!!!\n", ret);
 
 	return ret;
 }

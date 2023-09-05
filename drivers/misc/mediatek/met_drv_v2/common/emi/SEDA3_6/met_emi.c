@@ -1738,7 +1738,7 @@ static int met_emi_create(struct kobject *parent)
 
 	ret = MET_BM_Init();
 	if (ret != 0) {
-		pr_notice("MET_BM_Init failed!!!\n");
+		pr_no_notice("MET_BM_Init failed!!!\n");
 		ret = 0;        /* will retry later */
 	} else {
 		emi_inited = 1;
@@ -1750,7 +1750,7 @@ static int met_emi_create(struct kobject *parent)
 	do { \
 		ret = sysfs_create_file(kobj_emi, &attr_name ## _attr.attr); \
 		if (ret != 0) { \
-			pr_notice("Failed to create " #attr_name " in sysfs\n"); \
+			pr_no_notice("Failed to create " #attr_name " in sysfs\n"); \
 			return ret; \
 		} \
 	} while (0)
@@ -2276,7 +2276,7 @@ static void ondiemet_emi_start(void)
 	if (!emi_inited) {
 		if (MET_BM_Init() != 0) {
 			met_sspm_emi.mode = 0;
-			pr_notice("MET_BM_Init failed!!!\n");
+			pr_no_notice("MET_BM_Init failed!!!\n");
 			return;
 		}
 		emi_inited = 1;

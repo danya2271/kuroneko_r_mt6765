@@ -372,14 +372,54 @@ extern int kptr_restrict;
 #endif
 
 #ifdef CONFIG_FK_LOG
-#define pr_no_emerg( fmt, ... ) 	do { } while (0);
-#define pr_no_alert( fmt, ... )		do { } while (0);
-#define pr_no_crit( fmt, ... )		do { } while (0);
-#define pr_no_err( fmt, ... )		do { } while (0);
-#define pr_no_warn( fmt, ... )		do { } while (0);
-#define pr_no_notice( fmt, ... )	do { } while (0);
-#define pr_no_info( fmt, ... )		do { } while (0);
-#define pr_no_debug( fmt, ... )		do { } while (0);
+#define pr_no_emerg(fmt, ... ) 					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_alert(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_crit(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_err(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_warn(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_notice(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_info(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
+#define pr_no_debug(fmt, ... )					\
+({							\
+	if (0)						\
+		printk(fmt, ##__VA_ARGS__);		\
+	0;						\
+})
 
 #else
 #define pr_no_emerg(fmt, ...) 	printk(KERN_EMERG pr_fmt(fmt), ##__VA_ARGS__)

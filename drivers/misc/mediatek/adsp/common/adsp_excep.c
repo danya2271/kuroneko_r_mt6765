@@ -87,7 +87,7 @@ static uint8_t *core_write_cpu_note(int cpu, struct elf32_phdr *nhdr,
 	memset(&prstatus, 0, sizeof(struct elf32_prstatus));
 	n = snprintf(cpustr, sizeof(cpustr), "CPU%d", cpu);
 	if (n < 0)
-		pr_info("%s, snprintf return error", __func__);
+		pr_no_info("%s, snprintf return error", __func__);
 
 	/* set up the process status */
 	notes.name = cpustr;
@@ -193,7 +193,7 @@ static u32 copy_from_buffer(void *dest, size_t destsize, void *src,
 
 	/* if destsize == -1, don't check the request size */
 	if (!dest || destsize < request) {
-		pr_warn("%s, buffer null or not enough space", __func__);
+		pr_no_warn("%s, buffer null or not enough space", __func__);
 		return 0;
 	}
 
@@ -279,7 +279,7 @@ static u32 adsp_crash_dump(struct MemoryDump *pMemoryDump,
 			       CRASH_CFG_REG_SIZE);
 
 	if (n != sizeof(struct MemoryDump))
-		pr_info("%s(), size not match n(%x) != MemoryDump(%zd)",
+		pr_no_info("%s(), size not match n(%x) != MemoryDump(%zd)",
 			__func__, n, sizeof(struct MemoryDump));
 
 	mutex_unlock(&adsp_sw_reset_mutex);
@@ -302,7 +302,7 @@ static void adsp_prepare_aed_dump(void)
 	/*prepare adsp A db file*/
 	pMemoryDump = (struct MemoryDump *)adsp_A_dump_buffer;
 	if (!pMemoryDump) {
-		pr_debug("[ADSP AEE]MemoryDump buf is null");
+		pr_no_debug("[ADSP AEE]MemoryDump buf is null");
 	} else {
 		memset(pMemoryDump, 0, sizeof(*pMemoryDump));
 		n = adsp_crash_dump(pMemoryDump, ADSP_A_ID);
@@ -372,14 +372,14 @@ void adsp_aed(enum adsp_excep_id type, enum adsp_core_id id)
 		      coredump->task_name);
 	n += snprintf(detail + n, ADSP_AED_STR_LEN - n, "%s",
 		      coredump->assert_log);
-	pr_debug("%s", detail);
+	pr_no_debug("%s", detail);
 
 #ifdef CFG_RECOVERY_SUPPORT
 	if (ret > 0 && /* if dram backup done, notify reset.work it's okay */
 	    (atomic_read(&adsp_reset_status) == ADSP_RESET_STATUS_START ||
 	     adsp_recovery_flag[ADSP_A_ID] == ADSP_RECOVERY_START)) {
 		/*complete adsp ee, if adsp reset by wdt or awake fail*/
-		pr_info("[ADSP]aed finished, complete it\n");
+		pr_no_info("[ADSP]aed finished, complete it\n");
 		complete(&adsp_sys_reset_cp);
 
 	}
@@ -387,7 +387,7 @@ void adsp_aed(enum adsp_excep_id type, enum adsp_core_id id)
 	/* adsp aed api, only detail information available*/
 	aed_common_exception_api("adsp", NULL, 0, NULL, 0, detail, db_opt);
 
-	pr_info("[ADSP] adsp exception dump is done\n");
+	pr_no_info("[ADSP] adsp exception dump is done\n");
 	mutex_unlock(&adsp_excep_mutex);
 }
 
@@ -404,7 +404,7 @@ static void adsp_aed_reset_ws(struct work_struct *ws)
 	enum adsp_excep_id type = sws->flags;
 	enum adsp_core_id id = sws->id;
 
-	pr_debug("[ADSP]%s: adsp_excep_id=%u adsp_core_id=%u\n",
+	pr_no_debug("[ADSP]%s: adsp_excep_id=%u adsp_core_id=%u\n",
 		__func__, type, id);
 	adsp_reset_ready(ADSP_A_ID);
 	adsp_aed(type, id);
@@ -429,7 +429,7 @@ static ssize_t adsp_A_trax_show(struct file *filep, struct kobject *kobj,
 	unsigned int length = 0;
 	void *trax_addr = adsp_get_reserve_mem_virt(ADSP_A_TRAX_MEM_ID);
 
-	pr_debug("[ADSP] trax initiated=%d, done=%d, length=%d, offset=%lld\n",
+	pr_no_debug("[ADSP] trax initiated=%d, done=%d, length=%d, offset=%lld\n",
 		adsp_get_trax_initiated(), adsp_get_trax_done(),
 		adsp_get_trax_length(), offset);
 
@@ -552,7 +552,7 @@ static ssize_t adsp_A_ramdump(char *buf, loff_t offset, size_t size)
 	    (atomic_read(&adsp_reset_status) == ADSP_RESET_STATUS_START ||
 	     adsp_recovery_flag[ADSP_A_ID] == ADSP_RECOVERY_START)) {
 		/*complete scp ee, if scp reset by wdt or awake fail*/
-		pr_info("[ADSP]aed finished, complete it\n");
+		pr_no_info("[ADSP]aed finished, complete it\n");
 		complete(&adsp_sys_reset_cp);
 	}
 #endif
@@ -639,7 +639,7 @@ void adsp_excep_cleanup(void)
 	vfree(adsp_A_dump_buffer);
 	kfree(adsp_ke_buffer);
 
-	pr_debug("[ADSP] %s done\n", __func__);
+	pr_no_debug("[ADSP] %s done\n", __func__);
 }
 
 void get_adsp_aee_buffer(unsigned long *vaddr, unsigned long *size)

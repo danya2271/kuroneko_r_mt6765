@@ -83,7 +83,7 @@ static void adsp_timesync_sync_base_internal(unsigned int flag)
 
 	spin_unlock_irqrestore(&adsp_ts_ctx.lock, irq_flags);
 
-	pr_info("%s update base: updated=%d, ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
+	pr_no_info("%s update base: updated=%d, ts=%llu, tick=0x%llx, fz=%d, ver=%d\n",
 		TIMESYNC_TAG, updated, ts, tick, freeze, adsp_base_ver);
 }
 
@@ -139,7 +139,7 @@ int __init adsp_timesync_init(void)
 	hrtimer_start(&adsp_ts_refresh_timer,
 		adsp_ts_ctx.wrap_kt, HRTIMER_MODE_REL);
 
-	pr_info("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
+	pr_no_info("%s ts: cycle_last %lld, time_base:%lld, wrap:%lld\n",
 		TIMESYNC_TAG, adsp_ts_counter.cycle_last,
 		adsp_ts_counter.nsec, adsp_ts_ctx.wrap_kt);
 

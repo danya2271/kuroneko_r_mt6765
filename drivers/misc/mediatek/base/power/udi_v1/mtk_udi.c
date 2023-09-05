@@ -50,10 +50,10 @@
 #ifdef USING_XLOG
 #include <linux/xlog.h>
 #define udi_info(fmt, args...)	\
-	pr_info(ANDROID_LOG_INFO, UDI_TAG, fmt, ##args)
+	pr_no_info(ANDROID_LOG_INFO, UDI_TAG, fmt, ##args)
 #else
 #define udi_info(fmt, args...)	\
-	pr_info(UDI_TAG	fmt, ##args)
+	pr_no_info(UDI_TAG	fmt, ##args)
 #endif
 #else
 #define udi_info(fmt, args...)	\

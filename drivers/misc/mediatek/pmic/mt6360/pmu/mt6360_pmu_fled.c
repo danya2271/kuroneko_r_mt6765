@@ -227,10 +227,10 @@ static u32 mt6360_transform_tor_cur(u32 val)
 static u32 mt6360_transform_strb_cur(u32 val)
 {
 	if (val <= 750000) {
-		pr_err("%s %d\n", __func__, val);
+		pr_no_err("%s %d\n", __func__, val);
 		val = mt6360_closest_reg(25000, 750000, 6250, val);
 		val |= 0x80; /* UTRAL_ISTRB */
-		pr_err("%s 0x%02X\n", __func__, val);
+		pr_no_err("%s 0x%02X\n", __func__, val);
 		return val;
 	}
 	return mt6360_closest_reg(50000, 1500000, 12500, val);
@@ -747,7 +747,7 @@ static int mt6360_pmu_fled_probe(struct platform_device *pdev)
 	bool use_dt = pdev->dev.of_node;
 	int ret, i;
 
-	pr_info("%s (%s) id = %d\n", __func__, MT6360_PMU_FLED_DRV_VERSION,
+	pr_no_info("%s (%s) id = %d\n", __func__, MT6360_PMU_FLED_DRV_VERSION,
 					       pdev->id);
 	if (!mt6360_fled_inited) {
 		if (use_dt) {
