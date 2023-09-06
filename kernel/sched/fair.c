@@ -5553,7 +5553,10 @@ static struct {
 } nohz ____cacheline_aligned;
 
 #endif /* CONFIG_NO_HZ_COMMON */
-
+static inline unsigned long cfs_rq_runnable_load_avg(struct cfs_rq *cfs_rq)
+{
+	return cfs_rq->avg.load_avg; // or cfs_rq->avg.runnable_avg;?
+}
 static unsigned long cpu_runnable_load(struct rq *rq)
 {
 	return cfs_rq_runnable_load_avg(&rq->cfs);
@@ -9815,6 +9818,7 @@ redo:
 
 more_balance:
 		rq_lock_irqsave(busiest, &rf);
+
 		update_rq_clock(busiest);
 
 		/*
