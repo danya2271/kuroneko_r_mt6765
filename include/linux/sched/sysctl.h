@@ -25,7 +25,6 @@ extern unsigned int sysctl_sched_min_granularity;
 extern unsigned int sysctl_sched_sync_hint_enable;
 extern unsigned int sysctl_sched_cstate_aware;
 extern unsigned int sysctl_sched_wakeup_granularity;
-extern unsigned int sysctl_sched_child_runs_first;
 
 enum sched_tunable_scaling {
 	SCHED_TUNABLESCALING_NONE,
