@@ -20,11 +20,9 @@ extern int proc_dohung_task_timeout_secs(struct ctl_table *table, int write,
 enum { sysctl_hung_task_timeout_secs = 0 };
 #endif
 
-extern unsigned int sysctl_sched_latency;
 extern unsigned int sysctl_sched_min_granularity;
 extern unsigned int sysctl_sched_sync_hint_enable;
 extern unsigned int sysctl_sched_cstate_aware;
-extern unsigned int sysctl_sched_wakeup_granularity;
 
 enum sched_tunable_scaling {
 	SCHED_TUNABLESCALING_NONE,
