@@ -4,9 +4,9 @@
  * Using the avg_vruntime, do the right thing and preserve lag across
  * sleep+wake cycles. EEVDF placement strategy #1, #2 if disabled.
  */
-#define SCHED_FEAT_PLACE_LAG 1
-#define SCHED_FEAT_PLACE_DEADLINE_INITIAL 1
-#define SCHED_FEAT_RUN_TO_PARITY 1
+SCHED_FEAT(PLACE_LAG, true)
+SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
+SCHED_FEAT(RUN_TO_PARITY, true)
 
 /*
  * Prefer to schedule the task we woke last (assuming it failed
@@ -16,18 +16,7 @@
 SCHED_FEAT(NEXT_BUDDY, true)
 
 /*
-<<<<<<< HEAD
- * Prefer to schedule the task that ran last (when we did
- * wake-preempt) as that likely will touch the same data, increases
- * cache locality.
- */
-SCHED_FEAT(LAST_BUDDY, true)
-
-/*
- * Consider buddies to be cache hot, decreases the likelyness of a
-=======
  * Consider buddies to be cache hot, decreases the likeliness of a
->>>>>>> cb28dd8b7662 (sched/fair: Commit to EEVDF)
  * cache buddy being migrated away, increases cache locality.
  */
 SCHED_FEAT(CACHE_HOT_BUDDY, true)
@@ -129,17 +118,12 @@ SCHED_FEAT(SUGOV_RT_MAX_FREQ, false)
  * If disabled, this behaviour will only apply to tasks of the
  * RT class.
  */
-<<<<<<< HEAD
 SCHED_FEAT(SCHEDTUNE_BOOST_HOLD_ALL, false)
 
-#define SCHED_FEAT_EEVDF 1
-=======
-#define SCHED_FEAT_SCHEDTUNE_BOOST_HOLD_ALL 0
 
 /*
  * Inflate the effective utilization of SchedTune-boosted tasks, which
  * generally leads to usage of higher frequencies.
  * If disabled, boosts will only bias tasks to higher-capacity CPUs.
  */
-#define SCHED_FEAT_SCHEDTUNE_BOOST_UTIL 0
->>>>>>> cb28dd8b7662 (sched/fair: Commit to EEVDF)
+SCHED_FEAT(SCHEDTUNE_BOOST_UTIL, false)
