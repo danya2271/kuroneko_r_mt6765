@@ -120,7 +120,7 @@ unsigned int sysctl_sched_wakeup_granularity			= 1000000UL;
 unsigned int normalized_sysctl_sched_wakeup_granularity	= 1000000UL;
 #endif // CONFIG_SCHED_BORE
 
-const_debug unsigned int sysctl_sched_migration_cost	= 500000UL;
+const_debug unsigned int sysctl_sched_migration_cost	= 0UL;
 
 #ifdef CONFIG_SCHED_BORE
 uint __read_mostly sched_bore                   = 1;
