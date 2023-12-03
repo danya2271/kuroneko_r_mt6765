@@ -93,46 +93,11 @@ static DEFINE_TIMER(rtnl_chk_timer, rtnl_print_btrace);
 
 void rtnl_get_btrace(struct task_struct *who)
 {
-	struct stack_trace debug_trace;
-
-	debug_trace.max_entries = RTNL_DEBUG_ADDRS_COUNT;
-	debug_trace.nr_entries = 0;
-	debug_trace.entries = rtnl_instance.addrs;
-	debug_trace.skip = 0;
-	save_stack_trace(&debug_trace);
-	rtnl_instance.task = who;
-	rtnl_instance.start = sched_clock();
-	rtnl_instance.end = 0;
-	rtnl_instance.flag = 1;
-	rtnl_instance.pid = current->pid;
-	rtnl_instance.rtnl_lock_owner  = current;
-	rtnl_instance.entry_nr = debug_trace.nr_entries;
-	rtnl_instance.flag = 1;
-	mod_timer(&rtnl_chk_timer, jiffies + RTNL_LOCK_MAX_HOLD_TIME * HZ);
 }
 
 #include <linux/sched/debug.h>
 static void rtnl_print_btrace(struct timer_list *unused)
 {
-	if (rtnl_instance.flag) {
-		struct stack_trace show_trace;
-
-		show_trace.nr_entries = rtnl_instance.entry_nr;
-		show_trace.entries = rtnl_instance.addrs;
-		show_trace.max_entries = RTNL_DEBUG_ADDRS_COUNT;
-		pr_info("-----------%s start-----------\n", __func__);
-		pr_info("[mtk_net][rtnl_lock] %s[%d][%c] hold lock more than 2 sec,start time: %lld\n",
-			rtnl_instance.task->comm,
-			rtnl_instance.pid,
-			task_state_to_char(rtnl_instance.task),
-			rtnl_instance.start);
-
-		print_stack_trace(&show_trace, 0);
-		show_stack(rtnl_instance.task, NULL);
-		pr_info("------------%s end-----------\n", __func__);
-	} else {
-		pr_info("[mtk_net][rtnl_lock]There is no process hold rtnl lock\n");
-	}
 }
 
 void rtnl_relase_btrace(void)
