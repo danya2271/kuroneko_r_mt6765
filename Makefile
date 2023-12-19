@@ -687,6 +687,12 @@ endif
 ifdef CONFIG_LTO_CLANG
 KBUILD_LDFLAGS  += --plugin-opt=-import-instr-limit=40
 endif
+
+ifeq ($(cc-name),clang)
+#Enable fast FMA optimizations
+KBUILD_CFLAGS   += -ffp-contract=fast
+endif
+
 ifdef CONFIG_POLLY_CLANG
 POLLY_FLAGS	+= -mllvm -polly \
 		   -mllvm -polly-ast-use-context \
