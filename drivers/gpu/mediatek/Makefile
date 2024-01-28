@@ -10,6 +10,7 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
+ccflags-y += -Ofast
 
 MTK_GPU_VERSION := $(subst ",,$(CONFIG_MTK_GPU_VERSION))
 export MTK_GPU_VERSION
