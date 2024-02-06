@@ -885,6 +885,8 @@ LD_FLAGS_LTO_CLANG := -mllvm -import-instr-limit=1
 KBUILD_LDFLAGS += $(LD_FLAGS_LTO_CLANG)
 KBUILD_LDFLAGS_MODULE += $(LD_FLAGS_LTO_CLANG)
 
+lto-clang-flags += -fsplit-machine-functions
+
 KBUILD_LDFLAGS_MODULE += -T scripts/module-lto.lds
 
 # allow disabling only clang LTO where needed
