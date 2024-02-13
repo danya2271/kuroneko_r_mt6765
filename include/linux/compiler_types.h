@@ -175,6 +175,12 @@ struct ftrace_likely_data {
 #define __noclone
 #endif
 
+#if defined(__KERNEL__) && !defined(__ASSEMBLY__)
+/* Section for code which can't be instrumented at all */
+#define noinstr								\
+	noinline notrace __attribute((__section__(".noinstr.text")))
+#endif
+
 /* Helpers for emitting diagnostics in pragmas. */
 #ifndef __diag
 #define __diag(string)
