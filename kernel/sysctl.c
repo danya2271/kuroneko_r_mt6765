@@ -1565,7 +1565,7 @@ static struct ctl_table vm_table[] = {
 		.procname	= "max_map_count",
 		.data		= &sysctl_max_map_count,
 		.maxlen		= sizeof(sysctl_max_map_count),
-		.mode		= 0644,
+		.mode		= 0444,
 		.proc_handler	= proc_dointvec_minmax,
 		.extra1		= &zero,
 	},
