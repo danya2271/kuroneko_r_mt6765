@@ -2428,7 +2428,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			ret = sprintf(feature_para,
 			"configure S5K2L7 as mode 1");
 			if (ret < 0) {
-				pr_no_info("Error! sprintf allocate 0, ret = %d",
+				pr_info("Error! sprintf allocate 0, ret = %d",
 				ret);
 				return ret;
 			}
@@ -2436,7 +2436,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			ret = sprintf(feature_para,
 			"configure S5K2L7 as mode 2");
 			if (ret < 0) {
-				pr_no_info("Error! sprintf allocate 0, ret = %d",
+				pr_info("Error! sprintf allocate 0, ret = %d",
 				ret);
 				return ret;
 			}
@@ -2444,7 +2444,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			ret = sprintf(feature_para,
 			"configure S5K2L7 as mode 3");
 			if (ret < 0) {
-				pr_no_info("Error! sprintf allocate 0, ret = %d",
+				pr_info("Error! sprintf allocate 0, ret = %d",
 				ret);
 				return ret;
 			}
@@ -2452,7 +2452,7 @@ static kal_uint32 feature_control(MSDK_SENSOR_FEATURE_ENUM feature_id,
 			ret = sprintf(
 			    feature_para, "configure S5K2L7 as unknown mode");
 			if (ret < 0) {
-				pr_no_info("Error! sprintf allocate 0, ret = %d",
+				pr_info("Error! sprintf allocate 0, ret = %d",
 				ret);
 				return ret;
 			}

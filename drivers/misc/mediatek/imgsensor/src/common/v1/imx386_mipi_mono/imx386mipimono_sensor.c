@@ -22,7 +22,7 @@
 
 /*******************Modify Following Strings for Debug************************/
 #define PFX "imx386_camera_primax mono"
-#define LOG_INF(fmt, args...)	pr_no_info(PFX "[%s] " fmt, __func__, ##args)
+#define LOG_INF(fmt, args...)	pr_info(PFX "[%s] " fmt, __func__, ##args)
 #define LOG_1 LOG_INF("IMX386,MIPI 4LANE\n")
 #define SENSORDB LOG_INF
 /**********************   Modify end	**************************************/

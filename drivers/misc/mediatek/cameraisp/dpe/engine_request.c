@@ -31,25 +31,25 @@ MODULE_PARM_DESC(dpe_egn_debug, " activates debug info");
 #define LOG_DBG(format, args...)				 \
 	do {							 \
 		if (dpe_egn_debug >= 2)				 \
-			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 #define LOG_INF(format, args...)				 \
 	do {							 \
 		if (dpe_egn_debug >= 1)				 \
-			pr_no_info(MyTag "[%s] " format, __func__, ##args);\
+			pr_info(MyTag "[%s] " format, __func__, ##args);\
 	} while (0)
 
 #define LOG_WRN(format, args...)				 \
 	do {							 \
 		if (dpe_egn_debug >= 0)				 \
-			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 #define LOG_ERR(format, args...)				 \
 	do {							 \
 		if (dpe_egn_debug >= 0)				 \
-			pr_no_info(MyTag "[%s] " format, __func__, ##args); \
+			pr_info(MyTag "[%s] " format, __func__, ##args); \
 	} while (0)
 
 

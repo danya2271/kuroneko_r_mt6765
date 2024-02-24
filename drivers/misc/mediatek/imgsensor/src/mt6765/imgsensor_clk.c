@@ -63,7 +63,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 {
 	int i4RetValue = 0;
 
-	/*pr_no_info("%s\n", __func__);*/
+	/*pr_info("%s\n", __func__);*/
 
 	switch (option) {
 	case DFS_CTRL_ENABLE:
@@ -105,7 +105,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 			freq_steps, (u32 *)&pIspclks->clklevelcnt);
 
 		if (result < 0) {
-			pr_no_info(
+			pr_info(
 				"ERR: get MMDVFS freq steps failed, result: %d\n",
 				result);
 			i4RetValue = -EFAULT;
@@ -113,7 +113,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 		}
 
 		if (pIspclks->clklevelcnt > ISP_CLK_LEVEL_CNT) {
-			pr_no_info("ERR: clklevelcnt is exceeded");
+			pr_info("ERR: clklevelcnt is exceeded");
 			i4RetValue = -EFAULT;
 			break;
 		}
@@ -137,7 +137,7 @@ int imgsensor_dfs_ctrl(enum DFS_OPTION option, void *pbuff)
 	}
 		break;
 	default:
-		pr_no_info("None\n");
+		pr_info("None\n");
 		break;
 	}
 	return i4RetValue;
@@ -163,7 +163,7 @@ enum IMGSENSOR_RETURN imgsensor_clk_init(struct IMGSENSOR_CLK *pclk)
 	struct platform_device *pplatform_dev = gpimgsensor_hw_platform_device;
 
 	if (pplatform_dev == NULL) {
-		pr_no_info("[%s] pdev is null\n", __func__);
+		pr_info("[%s] pdev is null\n", __func__);
 		return IMGSENSOR_RETURN_ERROR;
 	}
 	/* get all possible using clocks */
@@ -190,7 +190,7 @@ int imgsensor_clk_set(
 	if (pmclk->TG >= IMGSENSOR_CCF_MCLK_TG_MAX_NUM ||
 		pmclk->TG < IMGSENSOR_CCF_MCLK_TG_MIN_NUM ||
 		mclk_index == MCLK_MAX) {
-		pr_no_info(
+		pr_info(
 		    "[CAMERA SENSOR]kdSetSensorMclk out of range, tg=%d, freq= %d\n",
 		    pmclk->TG,
 		    pmclk->freq);
@@ -204,18 +204,25 @@ int imgsensor_clk_set(
 
 		/* Workaround for timestamp: TG1 always ON */
 		if (clk_prepare_enable(
-		    pclk->imgsensor_ccf[IMGSENSOR_CCF_MCLK_TOP_CAMTG_SEL])) {}
+		    pclk->imgsensor_ccf[IMGSENSOR_CCF_MCLK_TOP_CAMTG_SEL]))
 
+			pr_info(
+			    "[CAMERA SENSOR] failed tg=%d\n",
+			    IMGSENSOR_CCF_MCLK_TOP_CAMTG_SEL);
 		else
 			atomic_inc(
 			   &pclk->enable_cnt[IMGSENSOR_CCF_MCLK_TOP_CAMTG_SEL]);
 
-		if (clk_prepare_enable(pclk->imgsensor_ccf[pmclk->TG])) {}
+		if (clk_prepare_enable(pclk->imgsensor_ccf[pmclk->TG]))
+			pr_info("[CAMERA SENSOR] failed tg=%d\n", pmclk->TG);
 		else
 			atomic_inc(&pclk->enable_cnt[pmclk->TG]);
 
-		if (clk_prepare_enable(pclk->imgsensor_ccf[mclk_index])) {}
-
+		if (clk_prepare_enable(pclk->imgsensor_ccf[mclk_index]))
+			pr_info(
+			    "[CAMERA SENSOR]imgsensor_ccf failed freq= %d, mclk_index %d\n",
+			    pmclk->freq,
+			    mclk_index);
 		else
 			atomic_inc(&pclk->enable_cnt[mclk_index]);
 
@@ -244,12 +251,15 @@ void imgsensor_clk_enable_all(struct IMGSENSOR_CLK *pclk)
 {
 	int i;
 
-	pr_no_info("imgsensor_clk_enable_all_cg\n");
+	pr_info("imgsensor_clk_enable_all_cg\n");
 	for (i = IMGSENSOR_CCF_MTCMOS_MIN_NUM;
 		i < IMGSENSOR_CCF_MTCMOS_MAX_NUM;
 		i++) {
 		if (!IS_ERR(pclk->imgsensor_ccf[i])) {
-			if (clk_prepare_enable(pclk->imgsensor_ccf[i])) {}
+			if (clk_prepare_enable(pclk->imgsensor_ccf[i]))
+				pr_no_debug(
+					"[CAMERA SENSOR]imgsensor_ccf enable cmos fail cg_index = %d\n",
+					i);
 			else
 				atomic_inc(&pclk->enable_cnt[i]);
 			/*pr_no_debug("imgsensor_clk_enable_all %s ok\n",*/
@@ -258,7 +268,10 @@ void imgsensor_clk_enable_all(struct IMGSENSOR_CLK *pclk)
 	}
 	for (i = IMGSENSOR_CCF_CG_MIN_NUM; i < IMGSENSOR_CCF_CG_MAX_NUM; i++) {
 		if (!IS_ERR(pclk->imgsensor_ccf[i])) {
-			if (clk_prepare_enable(pclk->imgsensor_ccf[i])) {}
+			if (clk_prepare_enable(pclk->imgsensor_ccf[i]))
+				pr_no_debug(
+					"[CAMERA SENSOR]imgsensor_ccf enable cg fail cg_index = %d\n",
+					i);
 			else
 				atomic_inc(&pclk->enable_cnt[i]);
 			/*pr_no_debug("imgsensor_clk_enable_all %s ok\n",*/
@@ -276,7 +289,7 @@ void imgsensor_clk_disable_all(struct IMGSENSOR_CLK *pclk)
 {
 	int i;
 
-	pr_no_info("%s\n", __func__);
+	pr_info("%s\n", __func__);
 	for (i = IMGSENSOR_CCF_MCLK_TG_MIN_NUM;
 		i < IMGSENSOR_CCF_MAX_NUM;
 		i++) {
@@ -297,7 +310,7 @@ int imgsensor_clk_ioctrl_handler(void *pbuff)
 {
 #ifndef NO_CLK_METER
 	*(unsigned int *)pbuff = mt_get_ckgen_freq(*(unsigned int *)pbuff);
-	pr_no_info("hf_fcamtg_ck = %d, hf_fmm_ck = %d, f_fseninf_ck = %d\n",
+	pr_info("hf_fcamtg_ck = %d, hf_fmm_ck = %d, f_fseninf_ck = %d\n",
 		mt_get_ckgen_freq(7),
 		mt_get_ckgen_freq(3),
 		mt_get_ckgen_freq(27));

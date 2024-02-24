@@ -346,7 +346,7 @@ static kal_uint16 imx576_table_write_cmos_sensor(kal_uint16 *para,
 		GFP_KERNEL);
 
 	if (puSendCmd == NULL) {
-		pr_no_info("allocate mem failed\n");
+		pr_info("allocate mem failed\n");
 		return -ENOMEM;
 	}
 

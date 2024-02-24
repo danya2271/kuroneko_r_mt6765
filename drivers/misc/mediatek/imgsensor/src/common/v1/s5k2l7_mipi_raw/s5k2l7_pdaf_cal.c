@@ -33,7 +33,7 @@
 
 
 /* #define LOG_1 pr_no_debug("s5k2l7,MIPI 4LANE\n") */
-/* #define LOG_2 pr_debug
+/* #define LOG_2 pr_no_debug
  * ("preview 2096*1552@30fps,640Mbps/lane; video 4192*3104@30fps,1.2Gbps/lane;
  * capture 13M@30fps,1.2Gbps/lane\n")
  */

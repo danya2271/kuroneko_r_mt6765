@@ -43,7 +43,7 @@ static enum IMGSENSOR_RETURN mclk_init(void *pinstance)
 
 	pinst->ppinctrl = devm_pinctrl_get(&pplatform_dev->dev);
 	if (IS_ERR(pinst->ppinctrl)) {
-		pr_no_info("%s : Cannot find camera pinctrl!\n", __func__);
+		pr_info("%s : Cannot find camera pinctrl!\n", __func__);
 		return IMGSENSOR_RETURN_ERROR;
 	}
 
@@ -58,7 +58,7 @@ static enum IMGSENSOR_RETURN mclk_init(void *pinstance)
 					i,
 					mclk_pinctrl_list[j].ppinctrl_names);
 				if (ret_snprintf < 0) {
-					pr_no_info(
+					pr_info(
 					"snprintf alloc error!, ret = %d", ret);
 					return IMGSENSOR_RETURN_ERROR;
 				}
@@ -117,7 +117,7 @@ static enum IMGSENSOR_RETURN mclk_set(
 		if (ppinctrl_state != NULL && !IS_ERR(ppinctrl_state))
 			pinctrl_select_state(pinst->ppinctrl, ppinctrl_state);
 		else
-			pr_no_info(
+			pr_info(
 			    "%s : sensor_idx %d fail to set pinctrl, PinIdx %d, Val %d\n",
 			    __func__,
 			    sensor_idx,

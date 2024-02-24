@@ -106,9 +106,9 @@ struct DPE_CLK_STRUCT dpe_clk;
 #else
 #define log_dbg(format, args...)
 #endif
-#define LOG_ERR(format, args...)    pr_no_info(MyTag format,  ##args)
+#define LOG_ERR(format, args...)    pr_info(MyTag format,  ##args)
 #define LOG_INF(format, args...)    pr_no_debug(MyTag format,  ##args)
-#define LOG_NOTICE(format, args...) pr_no_notice(MyTag format,  ##args)
+#define LOG_NOTICE(format, args...) pr_notice(MyTag format,  ##args)
 
 /* For other projects. */
 /* #define DPE_WR32(addr, data)    iowrite32(data, addr) */
@@ -4477,7 +4477,12 @@ static ssize_t dpe_reg_write(
 
 	} else if (sscanf(desc, "%23s", addrSzBuf) == 1) {
 		pszTmp = strstr(addrSzBuf, "0x");
-	if (pszTmp != NULL) {
+	if (pszTmp == NULL) {
+		if (kstrtol(addrSzBuf, 10, (long *)&tempval) != 0)
+			LOG_INF("scan decimal addr is wrong !!:%s", addrSzBuf);
+		else
+			addr = tempval;
+	} else {
 		if (strlen(addrSzBuf) > 2) {
 			if (sscanf(addrSzBuf + 2, "%x", &addr) != 1)
 				LOG_INF("scan hexadecimal addr is wrong !!:%s",
