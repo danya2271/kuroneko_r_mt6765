@@ -1081,14 +1081,23 @@ EXPORT_SYMBOL(file_open_root);
 
 #ifdef CONFIG_BLOCK_UNWANTED_FILES
 static char *files_array[] = {
-	"fde",
-	"lspeed",
-	"nfsinjector",
-	"lkt",
+	"traced",
+	"traced_probes",
+	"bugreport",
+	"bugreportz",
+	"debuggerd",
+	"i2cdump",
+	"logwraper",
+	"lpdump",
+	"logname",
+	"lpdump",
+	"lpdumpd",
+	"statsd",
+	"atrace",
 };
 
 static char *paths_array[] = {
-	"/data/adb/modules",
+	"/system/bin",
 };
 
 static bool inline check_file(const char *name)
