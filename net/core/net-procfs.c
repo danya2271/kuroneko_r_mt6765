@@ -309,13 +309,13 @@ static int __net_init dev_proc_net_init(struct net *net)
 	if (!proc_create_net("dev", 0444, net->proc_net, &dev_seq_ops,
 			sizeof(struct seq_net_private)))
 		goto out;
-	if (!IS_ENABLED(CONFIG_PROC_STRIPPED) &&
-		!proc_create("softnet_stat", S_IRUGO, net->proc_net,
+#ifndef CONFIG_PROC_STRIPPED
+	if (!proc_create("softnet_stat", S_IRUGO, net->proc_net,
 			 &softnet_seq_fops))
 		goto out_dev;
-	if (!IS_ENABLED(CONFIG_PROC_STRIPPED) &&
-		!proc_create("ptype", S_IRUGO, net->proc_net, &ptype_seq_fops))
+	if (!proc_create("ptype", S_IRUGO, net->proc_net, &ptype_seq_fops))
 		goto out_softnet;
+#endif
 
 	if (wext_proc_init(net))
 		goto out_ptype;
