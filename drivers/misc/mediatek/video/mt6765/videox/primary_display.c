@@ -91,6 +91,7 @@
 #ifdef MTK_FB_MMDVFS_SUPPORT
 #include <linux/soc/mediatek/mtk-pm-qos.h>
 #endif
+#include <linux/cpumask.h>
 
 #define MMSYS_CLK_LOW (0)
 #define MMSYS_CLK_HIGH (1)
@@ -4644,6 +4645,10 @@ int suspend_to_full_roi(void)
 int primary_display_suspend(void)
 {
 	enum DISP_STATUS ret = DISP_STATUS_OK;
+	unsigned int cpu;
+	for_each_present_cpu(cpu)
+		if ((cpu != 0) && (cpu != 4) && cpu_online(cpu))
+				cpu_down(cpu);
 
 #ifdef MTK_FB_MMDVFS_SUPPORT
 #ifdef CONFIG_MTK_HIGH_FRAME_RATE
@@ -4908,6 +4913,7 @@ int primary_display_resume(void)
 	unsigned int in_fps = 60;
 	unsigned int out_fps = 60;
 #endif
+	unsigned int cpu;
 
 	DISPCHECK("primary_display_resume begin\n");
 	mmprofile_log_ex(ddp_mmp_get_events()->primary_resume,
@@ -5090,8 +5096,12 @@ int primary_display_resume(void)
 			LCM_ON_LOW_POWER) {
 			if (pgc->plcm->drv->aod)
 				disp_lcm_aod(pgc->plcm, 1);
-			else
+			else {
 				disp_lcm_resume(pgc->plcm);
+				for_each_present_cpu(cpu)
+					if ((cpu != 0) && (cpu != 4) && !cpu_online(cpu))
+						cpu_up(cpu);
+			}
 			primary_display_set_lcm_power_state_nolock(
 				LCM_ON_LOW_POWER);
 		}
@@ -5101,6 +5111,9 @@ int primary_display_resume(void)
 			if (primary_display_get_lcm_power_state_nolock() !=
 				LCM_ON_LOW_POWER) {
 				disp_lcm_resume(pgc->plcm);
+				for_each_present_cpu(cpu)
+					if ((cpu != 0) && (cpu != 4) && !cpu_online(cpu))
+						cpu_up(cpu);
 			} else {
 				disp_lcm_aod(pgc->plcm, 0);
 				skip_update = 1;

@@ -7474,7 +7474,7 @@ unlock:
 	if (prev_energy == ULONG_MAX)
 		return best_energy_cpu;
 
-#ifdef CONFIG_MTK_SCHED_LB_ENHANCEMENT
+#ifdef CONFIG_EXP_SCHED_OPTIM
 	if (prev_energy > best_energy)
 		return best_energy_cpu;
 
@@ -9799,20 +9799,15 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
 
 	if (static_branch_unlikely(&sched_energy_present)) {
 		struct root_domain *rd = env->dst_rq->rd;
-#ifdef CONFIG_MTK_SCHED_LB_ENHANCEMENT
-		int intra = 0;
-
+#ifdef CONFIG_EXP_SCHED_OPTIM
 		if (sds.busiest) {
 			int local_cpu, busiest_cpu;
-
 			local_cpu = env->dst_cpu;
 			busiest_cpu = group_first_cpu(sds.busiest);
-			intra = is_intra_domain(local_cpu, busiest_cpu);
 		}
 
 		if (rcu_dereference(rd->pd) && !READ_ONCE(rd->overutilized))
-			if (!sched_feat(SCHED_MTK_EAS) ||
-				(sched_feat(SCHED_MTK_EAS) && !intra))
+			if 	(sched_feat(SCHED_MTK_EAS))
 				goto out_balanced;
 #else
 		if (rcu_dereference(rd->pd) && !READ_ONCE(rd->overutilized))

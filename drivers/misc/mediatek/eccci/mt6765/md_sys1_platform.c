@@ -1066,9 +1066,6 @@ static int md_cd_power_on(struct ccci_modem *md)
 		ret = clk_prepare_enable(clk_table[0].clk_ref);
 		CCCI_BOOTUP_LOG(md->index, TAG,
 			"enable md sys clk done,ret = %d\n", ret);
-		kicker_pbm_by_md(KR_MD1, true);
-		CCCI_BOOTUP_LOG(md->index, TAG,
-			"Call end kicker_pbm_by_md(0,true)\n");
 		break;
 	}
 	if (ret)
@@ -1173,10 +1170,6 @@ static int md_cd_power_off(struct ccci_modem *md, unsigned int timeout)
 			__func__,
 			ccci_read32(hw_info->ap_topclkgen_base, 0));
 
-		/* 5. DLPT */
-		kicker_pbm_by_md(KR_MD1, false);
-		CCCI_BOOTUP_LOG(md->index, TAG,
-			"Call end kicker_pbm_by_md(0,false)\n");
 		break;
 	}
 	return ret;

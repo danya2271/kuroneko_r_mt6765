@@ -315,8 +315,6 @@ static int teo_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
 		      bool *stop_tick)
 {
 	struct teo_cpu *cpu_data = per_cpu_ptr(&teo_cpus, dev->cpu);
-	s64 latency_req = pm_qos_request_for_cpu(PM_QOS_CPU_DMA_LATENCY,
-							dev->cpu);
 	ktime_t delta_tick = TICK_NSEC / 2;
 	unsigned int tick_intercept_sum = 0;
 	unsigned int idx_intercept_sum = 0;
@@ -372,9 +370,6 @@ static int teo_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
 			idx0 = i; /* first enabled state */
 
 		idx = i;
-
-		if (s->exit_latency <= latency_req)
-			constraint_idx = i;
 
 		/* Save the sums for the current state. */
 		idx_intercept_sum = intercept_sum;

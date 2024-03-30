@@ -48,15 +48,6 @@ int32_t kalBoostCpu(IN struct ADAPTER *prAdapter,
 	int32_t i = 0, i4Freq = -1;
 	static struct pm_qos_request wifi_qos_request;
 	static u_int8_t fgRequested;
-	uint32_t u4ClusterNum = topo_ctrl_get_nr_clusters();
-
-	ASSERT(u4ClusterNum <= MAX_CLUSTER_NUM);
-	/* ACAO, we dont have to set core number */
-	i4Freq = (u4TarPerfLevel >= u4BoostCpuTh) ? MAX_CPU_FREQ : -1;
-	for (i = 0; i < u4ClusterNum; i++) {
-		freq_to_set[i].min = i4Freq;
-		freq_to_set[i].max = i4Freq;
-	}
 
 	if (u4TarPerfLevel >= u4BoostCpuTh) {
 		if (!fgRequested) {

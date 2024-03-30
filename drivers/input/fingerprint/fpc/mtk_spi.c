@@ -278,17 +278,6 @@ static const struct attribute_group performance_attr_group = {
 
 static void freq_release(struct work_struct *work)
 {
-	int i;
-
-	for (i = 0; i < cluster_num; i++) {
-		freq_to_set[i].min = -1;
-		freq_to_set[i].max = -1;
-	}
-	if (atomic_read(&boosted) == 1) {
-		pr_info("%s  release freq lock\n", __func__);
-		update_userlimit_cpu_freq(CPU_KIR_FP, cluster_num, freq_to_set);
-		atomic_dec(&boosted);
-	}
 }
 
 static void freq_release_timer(struct timer_list *timer)
@@ -299,21 +288,6 @@ static void freq_release_timer(struct timer_list *timer)
 
 static int freq_hold(int sec)
 {
-
-	int i;
-
-	for (i = 0; i < cluster_num; i++) {
-		freq_to_set[i].min = 2301000;
-		freq_to_set[i].max = -1;
-	}
-	if (atomic_read(&boosted) == 0) {
-		pr_info( "%s for %d * 500 msec \n", __func__, sec);
-		update_userlimit_cpu_freq(CPU_KIR_FP, cluster_num, freq_to_set);
-		atomic_inc(&boosted);
-		release_timer.expires = jiffies + (HZ / 2) * sec;
-		add_timer(&release_timer);
-	}
-	schedule_work(&fp_display_work);
 	return 0;
 }
 
