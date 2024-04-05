@@ -3,6 +3,12 @@
 # Makefile for the linux memory manager.
 #
 
+ccflags-y += -fforce-emit-vtables
+ccflags-y += -mllvm --enable-merge-functions
+ccflags-y += -mllvm -inline-threshold=343
+ccflags-y += -mllvm -unroll-threshold=98
+ccflags-y += -mllvm -inlinehint-threshold=169
+
 KASAN_SANITIZE_slab_common.o := n
 KASAN_SANITIZE_slab.o := n
 KASAN_SANITIZE_slub.o := n
