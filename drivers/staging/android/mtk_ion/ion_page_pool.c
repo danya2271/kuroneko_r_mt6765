@@ -28,6 +28,7 @@ static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool)
 {
 	unsigned long long start, end;
 	struct page *page;
+	unsigned int i;
 
 	start = sched_clock();
 	page = alloc_pages(pool->gfp_mask, pool->order);
@@ -74,6 +75,9 @@ static int ion_page_pool_add(struct ion_page_pool *pool, struct page *page)
 	}
 
 	nr_total_pages += 1 << pool->order;
+	mod_node_page_state(page_pgdat(page),
+			    NR_KERNEL_MISC_RECLAIMABLE,
+			    1 << pool->order);
 	mutex_unlock(&pool->mutex);
 	return 0;
 }
@@ -94,6 +98,9 @@ static struct page *ion_page_pool_remove(struct ion_page_pool *pool, bool high)
 
 	list_del(&page->lru);
 	nr_total_pages -= 1 << pool->order;
+	mod_node_page_state(page_pgdat(page),
+			    NR_KERNEL_MISC_RECLAIMABLE,
+			    -(1 << pool->order));
 	return page;
 }
 
