@@ -1437,8 +1437,8 @@ static struct request *__get_request(struct request_list *rl, unsigned int op,
 			icq = ioc_lookup_icq(ioc, q);
 	}
 
-	if (blk_queue_io_stat(q))
-		rq_flags |= RQF_IO_STAT;
+//	if (blk_queue_io_stat(q))
+//		rq_flags |= RQF_IO_STAT;
 	spin_unlock_irq(q->queue_lock);
 
 	/* allocate and init request */
@@ -2676,8 +2676,8 @@ blk_status_t blk_insert_cloned_request(struct request_queue *q, struct request *
 		return BLK_STS_IOERR;
 
 	if (q->mq_ops) {
-		if (blk_queue_io_stat(q))
-			blk_account_io_start(rq, true);
+//		if (blk_queue_io_stat(q))
+//			blk_account_io_start(rq, true);
 		/*
 		 * Since we have a scheduler attached on the top device,
 		 * bypass a potential scheduler on the bottom device for
