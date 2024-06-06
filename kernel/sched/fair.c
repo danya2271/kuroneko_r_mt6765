@@ -225,6 +225,17 @@ static u64 __calc_delta(u64 delta_exec, unsigned long weight, struct load_weight
 	return mul_u64_u32_shr(delta_exec, fact, shift);
 }
 
+/*
+ * delta /= w
+ */
+static inline u64 calc_delta_fair(u64 delta, struct sched_entity *se)
+{
+	if (unlikely(se->load.weight != NICE_0_LOAD))
+		delta = __calc_delta(delta, NICE_0_LOAD, &se->load);
+
+	return delta;
+}
+
 const struct sched_class fair_sched_class;
 
 /**************************************************************
@@ -5609,6 +5620,8 @@ enqueue_task_fair(struct rq *rq, struct task_struct *p, int flags)
 	struct cfs_rq *cfs_rq;
 	struct sched_entity *se = &p->se;
 	int idle_h_nr_running = task_has_idle_policy(p);
+	bool prefer_idle = sched_feat(EAS_PREFER_IDLE) ?
+	(schedtune_prefer_idle(p) > 0) : 0;
 
 #ifdef CONFIG_SCHED_BORE
 	int task_sleep = flags & DEQUEUE_SLEEP;

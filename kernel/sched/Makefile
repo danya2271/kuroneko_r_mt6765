@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-2.0
-ccflags-y += -Wno-constant-logical-operand
+ccflags-y += -Wno-constant-logical-operand -Wno-compare-distinct-pointer-types
 
 ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_clock.o = $(CC_FLAGS_FTRACE)
