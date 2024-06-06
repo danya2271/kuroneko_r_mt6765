@@ -341,9 +341,6 @@ static unsigned long cached_align;
 
 static unsigned long vmap_area_pcpu_hole;
 
-RB_DECLARE_CALLBACKS_MAX(static, free_vmap_area_rb_augment_cb,
-						 struct vmap_area, rb_node, unsigned long, subtree_max_size, va_size)
-
 
 static atomic_long_t nr_vmalloc_pages;
 
