@@ -182,15 +182,7 @@ static int opp_list_debug_create_link(struct opp_device *opp_dev,
  */
 int opp_debug_register(struct opp_device *opp_dev, struct opp_table *opp_table)
 {
-	if (!rootdir) {
-		pr_debug("%s: Uninitialized rootdir\n", __func__);
-		return -EINVAL;
-	}
-
-	if (opp_table->dentry)
-		return opp_list_debug_create_link(opp_dev, opp_table);
-
-	return opp_list_debug_create_dir(opp_dev, opp_table);
+	return 0;
 }
 
 static void opp_migrate_dentry(struct opp_device *opp_dev,
