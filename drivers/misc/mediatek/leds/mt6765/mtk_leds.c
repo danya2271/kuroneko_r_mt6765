@@ -92,36 +92,6 @@ static char buffer[4096] = "[BL] Set Backlight directly ";
 
 static void backlight_debug_log(int level, int mappingLevel)
 {
-	unsigned long cur_time_mod = 0;
-	unsigned long long cur_time_display = 0;
-	int ret = 0;
-
-	current_t = sched_clock();
-	cur_time_display = current_t;
-	do_div(cur_time_display, 1000000);
-	cur_time_mod = do_div(cur_time_display, 1000);
-
-
-	ret = snprintf(buffer + strlen(buffer),
-		4095 - strlen(buffer),
-		"T:%lld.%ld,L:%d map:%d    ",
-		cur_time_display, cur_time_mod, level, mappingLevel);
-
-	count++;
-
-	if (ret < 0 || ret >= 4096) {
-		pr_no_info("print log error!");
-		count = 5;
-	}
-
-	if (level == 0 || count >= 5 ||
-		(current_t - last_time) > 1000000000) {
-		pr_no_info("%s", buffer);
-		count = 0;
-		buffer[strlen("[BL] Set Backlight directly ")] = '\0';
-	}
-
-	last_time = sched_clock();
 }
 
 void mt_leds_wake_lock_init(void)

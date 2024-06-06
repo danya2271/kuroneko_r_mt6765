@@ -188,12 +188,8 @@ static void mcdi_usage_enable(int en)
 				dev->state[j].dur = 0;
 		}
 
-		mcdi_usage.start = sched_clock();
 
 	} else {
-
-		mcdi_usage.prof_dur = div64_u64(
-				sched_clock() - mcdi_usage.start, 1000);
 
 		for (i = 0; i < NF_CPU; i++) {
 
@@ -202,10 +198,6 @@ static void mcdi_usage_enable(int en)
 			if (dev->actual_state < 0
 				|| dev->actual_state > MCDI_STATE_CPU_OFF)
 				continue;
-
-			if (dev->enter > dev->leave)
-				mcdi_usage_save(dev, dev->actual_state,
-					dev->enter, sched_clock());
 		}
 
 	}
@@ -248,8 +240,6 @@ void mcdi_usage_time_start(int cpu)
 		return;
 	if ((cpu < 0) || (cpu >= NF_CPU))
 		return;
-
-	mcdi_usage.dev[cpu].enter = sched_clock();
 }
 
 void mcdi_usage_time_stop(int cpu)
@@ -258,8 +248,6 @@ void mcdi_usage_time_stop(int cpu)
 		return;
 	if ((cpu < 0) || (cpu >= NF_CPU))
 		return;
-
-	mcdi_usage.dev[cpu].leave = sched_clock();
 }
 
 void mcdi_usage_calc(int cpu)
@@ -284,8 +272,6 @@ void mcdi_usage_calc(int cpu)
 
 	if (dev->leave && !dev->enter)
 		enter_ts = mcdi_usage.start;
-	else if (!dev->leave && dev->enter)
-		leave_ts = sched_clock();
 
 	mcdi_usage_save(dev, entered_state, enter_ts, leave_ts);
 }
@@ -308,8 +294,6 @@ void mcdi_profile_ts(int cpu_idx, unsigned int prof_idx)
 
 	if (unlikely(prof_idx >= NF_MCDI_PROFILE))
 		return;
-
-	mcdi_lat.section[prof_idx].ts[cpu_idx] = sched_clock();
 }
 
 void mcdi_profile_calc(int cpu)
