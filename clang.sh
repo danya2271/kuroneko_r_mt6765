@@ -1,5 +1,5 @@
 #!/bin/bash
-make CC=$(pwd)/clang/bin/clang-15 \
+make CC=$(pwd)/clang/bin/clang \
 LD=$(pwd)/clang/bin/ld.lld \
 NM=$(pwd)/clang/bin/llvm-nm \
 AR=$(pwd)/clang/bin/llvm-ar \
