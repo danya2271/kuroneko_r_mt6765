@@ -80,7 +80,7 @@ void ion_client_buf_add(struct ion_heap *heap, struct ion_client *client,
 	u64 total_size;
 
 	client->hnd_cnt++;
-	if (heap->type == ION_HEAP_TYPE_MULTIMEDIA_SEC)
+	if (heap->type == (enum ion_heap_type)ION_HEAP_TYPE_MULTIMEDIA_SEC)
 		total_size =
 		atomic64_add_return(size, &client->total_size[SECURE_HEAP]);
 	else if (heap->type == ION_HEAP_TYPE_SYSTEM)
@@ -118,7 +118,7 @@ void ion_client_buf_sub(struct ion_heap *heap, struct ion_client *client,
 	long long total_size;
 
 	client->hnd_cnt--;
-	if (heap->type == ION_HEAP_TYPE_MULTIMEDIA_SEC) {
+	if (heap->type == (enum ion_heap_type)ION_HEAP_TYPE_MULTIMEDIA_SEC) {
 		total_size =
 		atomic64_sub_return(size, &client->total_size[SECURE_HEAP]);
 		if (total_size < 0) {
@@ -160,7 +160,7 @@ void ion_client_buf_sub(struct ion_heap *heap, struct ion_client *client,
 u64 ion_client_buf_dump(struct ion_heap *heap, struct ion_client *client)
 {
 #ifdef ION_RECORD_TOTAL_SIZE_SUPPORT
-	if (heap->type == ION_HEAP_TYPE_MULTIMEDIA_SEC)
+	if (heap->type == (enum ion_heap_type)ION_HEAP_TYPE_MULTIMEDIA_SEC)
 		return (u64)(atomic64_read(&client->total_size[SECURE_HEAP]));
 	else if (heap->type == ION_HEAP_TYPE_SYSTEM)
 		return (u64)(atomic64_read(&client->total_size[SYSTEM_HEAP]));
@@ -315,7 +315,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	INIT_LIST_HEAD(&buffer->attachments);
 #endif
 	mutex_init(&buffer->lock);
-	if (heap->type == ION_HEAP_TYPE_MULTIMEDIA_SEC)
+	if (heap->type == (enum ion_heap_type)ION_HEAP_TYPE_MULTIMEDIA_SEC)
 		goto exit;
 	/*
 	 * this will set up dma addresses for the sglist -- it is not
@@ -2168,239 +2168,8 @@ static const struct file_operations ion_fops = {
 	.compat_ioctl   = compat_ion_ioctl,
 };
 
-#if IS_ENABLED(CONFIG_DEBUG_FS) || IS_ENABLED(CONFIG_PROC_FS)
-static size_t ion_debug_heap_total(struct ion_client *client,
-				   unsigned int id)
-{
-	size_t size = 0;
-	struct rb_node *n;
-	unsigned int heapid;
-	enum ion_heap_type type;
-
-	mutex_lock(&client->lock);
-	for (n = rb_first(&client->handles); n; n = rb_next(n)) {
-		struct ion_handle *handle = rb_entry(n,
-						     struct ion_handle,
-						     node);
-		heapid = handle->buffer->heap->id;
-		type = handle->buffer->heap->type;
-		if (heapid == id ||
-			/* for exception dump ion_mm_heap info */
-		    (id == ION_HEAP_TYPE_MULTIMEDIA &&
-		     (type == ION_HEAP_TYPE_SYSTEM ||
-		      type == ION_HEAP_TYPE_MULTIMEDIA ||
-		      type == ION_HEAP_TYPE_MULTIMEDIA_SEC))) {
-			client->dbg_hnd_cnt++;
-			size += handle->buffer->size;
-		}
-	}
-	mutex_unlock(&client->lock);
-	return size;
-}
-
-static int ion_debug_heap_show(struct seq_file *s, void *unused)
-{
-	struct ion_heap *heap = s->private;
-	struct ion_device *dev = heap->dev;
-	struct rb_node *n;
-	struct ion_heap *cam_heap = NULL;
-	size_t total_size = 0;
-	size_t camera_total_size = 0;
-	size_t total_orphaned_size = 0;
-	unsigned long long current_ts = 0;
-	unsigned int heap_id = heap->id;
-	unsigned int mm_id = ION_HEAP_TYPE_MULTIMEDIA;
-	unsigned int cam_id = ION_HEAP_TYPE_MULTIMEDIA_FOR_CAMERA;
-
-	seq_printf(s, "total sz[%llu]\n",
-		   (unsigned long long)(4096 * atomic64_read(&page_sz_cnt)));
-	seq_printf(s, "%16.s(%16.s) %16.s %16.s %16.s %16.s\n",
-		   "client", "dbg_name", "pid",
-		   "size(cnt)--size(cnt)", "address", "threshold");
-	seq_puts(s, "----------------------------------------------------\n");
-
-	down_read(&dev->lock);
-
-	current_ts = sched_clock();
-	do_div(current_ts, 1000000);
-	seq_printf(s, "time 1 %lld ms\n", current_ts);
-
-	for (n = rb_first(&dev->clients); n; n = rb_next(n)) {
-		struct ion_client *client = rb_entry(n, struct ion_client,
-						     node);
-		size_t size = ion_debug_heap_total(client, heap_id);
-		u64 total = ion_client_buf_dump(heap, client);
-
-		if (!size)
-			continue;
-		if (client->task) {
-			char task_comm[TASK_COMM_LEN];
-
-			get_task_comm(task_comm, client->task);
-			seq_printf(s, "%16.s(%16.s) %16u %16zu(%d)--%llu(%d) 0x%p %llu\n",
-				   task_comm,
-				   (*client->dbg_name) ?
-				   client->dbg_name :
-				   client->name,
-				   client->pid, size, client->dbg_hnd_cnt,
-				   total, client->hnd_cnt, client,
-				   client->threshold_size);
-		} else {
-			seq_printf(s, "%16.s(%16.s) %16u %16zu(%d)--%llu(%d) 0x%p %llu\n",
-				   client->name, "from_kernel",
-				   client->pid, size, client->dbg_hnd_cnt,
-				   total, client->hnd_cnt, client,
-				   client->threshold_size);
-		}
-		client->dbg_hnd_cnt = 0;
-	}
-	up_read(&dev->lock);
-
-	seq_puts(s, "----------------------------------------------------\n");
-	seq_puts(s, "orphaned allocation (info is from last known client):\n");
-	mutex_lock(&dev->buffer_lock);
-
-	current_ts = sched_clock();
-	do_div(current_ts, 1000000);
-	seq_printf(s, "time 2 %lld ms\n", current_ts);
-
-	for (n = rb_first(&dev->buffers); n; n = rb_next(n)) {
-		struct ion_buffer *buffer = rb_entry(n, struct ion_buffer,
-						     node);
-
-		if (buffer->heap->id != heap->id) {
-			if (heap->id == ION_HEAP_TYPE_MULTIMEDIA &&
-			    buffer->heap->id == cam_id) {
-				cam_heap = buffer->heap;
-				camera_total_size += buffer->size;
-			} else {
-				continue;
-			}
-		}
-		total_size += buffer->size;
-		if (!buffer->handle_count) {
-			seq_printf(s, "0x%p %16.s %16u %16zu %d %d\n",
-				   buffer,
-				   buffer->task_comm, buffer->pid,
-				   buffer->size, buffer->kmap_cnt,
-				   atomic_read(&buffer->ref.refcount.refs));
-			total_orphaned_size += buffer->size;
-		}
-	}
-	mutex_unlock(&dev->buffer_lock);
-	seq_puts(s, "----------------------------------------------------\n");
-	seq_printf(s, "%16.s %16zu\n", "total orphaned",
-		   total_orphaned_size);
-	seq_printf(s, "%16.s %16zu\n", "total ", total_size);
-	if (heap->id == ION_HEAP_TYPE_MULTIMEDIA)
-		seq_printf(s, "%16.s %16zu\n", "cam total",
-			   camera_total_size);
-	if (heap->flags & ION_HEAP_FLAG_DEFER_FREE)
-		seq_printf(s, "%16.s %u %16zu\n", "defer free heap_id",
-			   heap->id, heap->free_list_size);
-	if (cam_heap && (cam_heap->flags & ION_HEAP_FLAG_DEFER_FREE))
-		seq_printf(s, "%16.s %u %16zu\n",
-			   "cam heap deferred free heap_id",
-			   cam_heap->id, cam_heap->free_list_size);
-	seq_puts(s, "----------------------------------------------------\n");
-
-	if (heap->debug_show)
-		heap->debug_show(heap, s, unused);
-
-	return 0;
-}
-
-static int debug_shrink_set(void *data, u64 val)
-{
-	struct ion_heap *heap = data;
-	struct shrink_control sc;
-	int objs;
-
-	sc.gfp_mask = GFP_HIGHUSER;
-	sc.nr_to_scan = val;
-
-	if (!val) {
-		objs = heap->shrinker.count_objects(&heap->shrinker, &sc);
-		sc.nr_to_scan = objs;
-	}
-
-	heap->shrinker.scan_objects(&heap->shrinker, &sc);
-	return 0;
-}
-
-static int debug_shrink_get(void *data, u64 *val)
-{
-	struct ion_heap *heap = data;
-	struct shrink_control sc;
-	int objs;
-
-	sc.gfp_mask = GFP_HIGHUSER;
-	sc.nr_to_scan = 0;
-
-	objs = heap->shrinker.count_objects(&heap->shrinker, &sc);
-	*val = objs;
-	return 0;
-}
-
-#if IS_ENABLED(CONFIG_DEBUG_FS)
-static int ion_debug_heap_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, ion_debug_heap_show, inode->i_private);
-}
-
-static const struct file_operations debug_heap_fops = {
-	.open = ion_debug_heap_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-};
-
-DEFINE_SIMPLE_ATTRIBUTE(debug_shrink_fops, debug_shrink_get,
-			debug_shrink_set, "%llu\n");
-#endif
-
-#if IS_ENABLED(CONFIG_PROC_FS)
-static int ion_proc_heap_open(struct inode *inode, struct file *file)
-{
-	return single_open(file, ion_debug_heap_show, PDE_DATA(inode));
-}
-
-static const struct file_operations proc_heap_fops = {
-	.open = ion_proc_heap_open,
-	.read = seq_read,
-	.llseek = seq_lseek,
-	.release = single_release,
-};
-
-static int proc_shrink_fops_open(struct inode *inode, struct file *file)
-{
-	struct inode local_inode = *inode;
-
-	local_inode.i_private = PDE_DATA(inode);
-
-	return simple_attr_open(&local_inode, file, debug_shrink_get,
-				debug_shrink_set, "%llu\n");
-}
-
-static const struct file_operations proc_shrink_fops = {
-	.owner	 = THIS_MODULE,
-	.open	 = proc_shrink_fops_open,
-	.release = simple_attr_release,
-	.read	 = simple_attr_read,
-	.write	 = simple_attr_write,
-	.llseek	 = generic_file_llseek,
-};
-#endif
-#endif
-
 void ion_device_add_heap(struct ion_device *dev, struct ion_heap *heap)
 {
-#if IS_ENABLED(CONFIG_DEBUG_FS)
-	struct dentry *debug_file;
-#endif
-#if IS_ENABLED(CONFIG_PROC_FS)
-	struct proc_dir_entry *proc_file;
-#endif
 
 	if (!heap->ops->allocate || !heap->ops->free)
 		IONMSG("%s: can not add heap with invalid ops struct.\n",
@@ -2423,70 +2192,6 @@ void ion_device_add_heap(struct ion_device *dev, struct ion_heap *heap)
 	 */
 	plist_node_init(&heap->node, -heap->id);
 	plist_add(&heap->node, &dev->heaps);
-
-#if IS_ENABLED(CONFIG_DEBUG_FS)
-	debug_file = debugfs_create_file(heap->name, 0664,
-					 dev->heaps_debug_root, heap,
-					 &debug_heap_fops);
-
-	if (!debug_file) {
-		char buf[256], *path;
-
-		path = dentry_path(dev->heaps_debug_root, buf, 256);
-		IONMSG("Failed to create heap debugfs at %s/%s\n",
-		       path, heap->name);
-	}
-
-	if (heap->shrinker.count_objects && heap->shrinker.scan_objects) {
-		char debug_name[64];
-		int name_length = 0;
-
-		name_length = snprintf(debug_name, 64, "%s_shrink", heap->name);
-		if (name_length <= 0)
-			IONMSG("%s set debug name error, heap %s\n",
-			       __func__, heap->name);
-		debug_file = debugfs_create_file(debug_name, 0644,
-						 dev->heaps_debug_root,
-						 heap, &debug_shrink_fops);
-		if (!debug_file) {
-			char buf[256], *path;
-
-			path = dentry_path(dev->heaps_debug_root, buf, 256);
-			ion_info("Failed to create heap shrinker debugfs at %s/%s\n",
-				 path, debug_name);
-		}
-	}
-#endif
-
-#if IS_ENABLED(CONFIG_PROC_FS)
-	proc_file = proc_create_data(heap->name,
-				     S_IFREG | 0644,
-				     dev->heaps_proc_root,
-				     &proc_heap_fops,
-				     heap);
-
-	if (!proc_file)
-		IONMSG("Failed to create heap procfs at /proc/ion/heaps/%s\n",
-		       heap->name);
-
-	if (heap->shrinker.count_objects && heap->shrinker.scan_objects) {
-		char debug_name[64];
-		int name_length = 0;
-
-		name_length = snprintf(debug_name, 64, "%s_shrink", heap->name);
-		if (name_length <= 0)
-			IONMSG("%s set debug name error, heap %s\n",
-			       __func__, heap->name);
-		proc_file = proc_create_data(debug_name,
-					     S_IFREG | 0644,
-					     dev->heaps_proc_root,
-					     &proc_shrink_fops,
-					     heap);
-		if (!proc_file)
-			ion_info("Failed to create heap shrinker procfs at /proc/ion/heaps/%s\n",
-				 debug_name);
-	}
-#endif
 
 	dev->heap_cnt++;
 	up_write(&dev->lock);

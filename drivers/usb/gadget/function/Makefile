@@ -2,7 +2,7 @@
 #
 # USB peripheral controller drivers
 #
-
+KBUILD_CFLAGS += -Wno-single-bit-bitfield-constant-conversion
 ccflags-y			:= -I$(srctree)/drivers/usb/gadget/
 ccflags-y			+= -I$(srctree)/drivers/usb/gadget/udc/
 ccflags-y			+= -I$(srctree)/drivers/misc/mediatek/usb_boost/

@@ -10,5 +10,5 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-
+KBUILD_CFLAGS += -Wno-deprecated-non-prototype
 obj-y += power/

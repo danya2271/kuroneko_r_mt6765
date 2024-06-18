@@ -1,3 +1,5 @@
+KBUILD_CFLAGS += -Wno-single-bit-bitfield-constant-conversion
+
 obj-$(CONFIG_MTK_PMQOS) += mtk-pm-qos.o
 obj-$(CONFIG_MTK_CMDQ) += mtk-cmdq-helper.o
 obj-$(CONFIG_MTK_INFRACFG) += mtk-infracfg.o mtk-scpsys-ext.o
