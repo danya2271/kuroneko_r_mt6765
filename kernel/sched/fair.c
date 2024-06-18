@@ -696,7 +696,7 @@ static int vruntime_eligible(struct cfs_rq *cfs_rq, u64 vruntime)
 
 int entity_eligible(struct cfs_rq *cfs_rq, struct sched_entity *se)
 {
-	return vruntime_eligible(cfs_rq, se->vruntime);
+	return 1;
 }
 
 static u64 __update_min_vruntime(struct cfs_rq *cfs_rq, u64 vruntime)
