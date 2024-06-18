@@ -694,9 +694,9 @@ KBUILD_CFLAGS   += -ffp-contract=fast
 endif
 
 ifeq ($(cc-name),clang)
-KBUILD_CFLAGS	+= -mllvm -inline-threshold=2500
-KBUILD_CFLAGS	+= -mllvm -inlinehint-threshold=2000
-KBUILD_CFLAGS   += -mllvm -inlinehint-threshold=1200
+KBUILD_CFLAGS	+= -mllvm -inline-threshold=1
+KBUILD_CFLAGS	+= -mllvm -inlinehint-threshold=1
+KBUILD_CFLAGS   += -mllvm -inlinehint-threshold=1
 else ifeq ($(cc-name),gcc)
 KBUILD_CFLAGS	+= --param max-inline-insns-auto=500
 
@@ -706,10 +706,15 @@ KBUILD_CFLAGS	+= --param large-stack-frame=1288
 KBUILD_CFLAGS	+= --param inline-min-speedup=5
 KBUILD_CFLAGS	+= --param inline-unit-growth=60
 endif
-
+ifeq ($(cc-name),clang)
+KBUILD_CFLAGS   += -march=armv8.2-a
+endif
+#Enable MLGO
+KBUILD_CFLAGS   += -mllvm -regalloc-enable-advisor=release
+KBUILD_LDFLAGS  += -mllvm -regalloc-enable-advisor=release
 ifeq ($(cc-name),clang)
 # Additional optimizations for better kernel speed
-KBUILD_CFLAGS +=  -fno-semantic-interposition -fno-signed-zeros  -ffinite-math-only -freciprocal-math -fcf-protection=none -fno-trapping-math -fno-math-errno -ffast-math -funroll-loops
+KBUILD_CFLAGS +=  -fno-semantic-interposition -fno-signed-zeros  -ffinite-math-only -freciprocal-math -fcf-protection=none -fno-trapping-math -fno-math-errno
 else
 KBUILD_CFLAGS += -fno-trapping-math -fno-math-errno
 KBUILD_CFLAGS +=  -fipa-pta -fipa-sra -frename-registers
