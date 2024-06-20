@@ -706,7 +706,8 @@ KBUILD_CFLAGS	+= --param large-stack-frame=1288
 KBUILD_CFLAGS	+= --param inline-min-speedup=5
 KBUILD_CFLAGS	+= --param inline-unit-growth=60
 endif
-
+# Enable hot cold split optimization
+KBUILD_CFLAGS   += -mllvm -hot-cold-split=true
 ifeq ($(cc-name),clang)
 # Additional optimizations for better kernel speed
 KBUILD_CFLAGS +=  -fno-semantic-interposition -fno-signed-zeros  -ffinite-math-only -freciprocal-math -fcf-protection=none -fno-trapping-math -fno-math-errno -ffast-math -funroll-loops
