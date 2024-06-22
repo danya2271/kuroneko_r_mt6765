@@ -8,12 +8,12 @@ SCHED_FEAT(PLACE_LAG, false)
 /*
  * Give new tasks half a slice to ease into the competition.
  */
-SCHED_FEAT(PLACE_DEADLINE_INITIAL, true)
+SCHED_FEAT(PLACE_DEADLINE_INITIAL, false)
 /*
  * Inhibit (wakeup) preemption until the current task has either matched the
  * 0-lag point or until is has exhausted it's slice.
  */
-SCHED_FEAT(RUN_TO_PARITY, true)
+SCHED_FEAT(RUN_TO_PARITY, false)
 
 /*
  * Prefer to schedule the task we woke last (assuming it failed
