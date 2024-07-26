@@ -2,6 +2,10 @@
 #
 # Makefile for the linux kernel.
 #
+# Inlining optimization
+KBUILD_CFLAGS	+= -mllvm -inline-threshold=3750
+KBUILD_CFLAGS	+= -mllvm -inlinehint-threshold=2000
+KBUILD_CFLAGS   += -mllvm -inlinehint-threshold=1800
 
 ccflags-y += -Ofast
 ccflags-y += -fforce-emit-vtables
