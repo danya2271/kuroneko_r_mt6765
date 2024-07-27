@@ -1,4 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0
+
+# Inlining optimization
+KBUILD_CFLAGS  += -mllvm -inline-threshold=3750
+KBUILD_CFLAGS  += -mllvm -inlinehint-threshold=2000
+KBUILD_CFLAGS   += -mllvm -inlinehint-threshold=1800
+
 obj-y				:= dma-mapping.o extable.o fault.o init.o \
 				   cache.o copypage.o flush.o \
 				   ioremap.o mmap.o pgd.o mmu.o \
