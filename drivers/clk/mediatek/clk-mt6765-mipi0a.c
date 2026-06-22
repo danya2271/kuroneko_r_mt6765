@@ -29,7 +29,7 @@ static const struct mtk_gate_regs mipi0a_cg_regs = {
 		.ops = &mtk_clk_gate_ops_no_setclr_inv,	\
 	}
 
-static const struct mtk_gate mipi0a_clks[] __initconst = {
+static const struct mtk_gate mipi0a_clks[] = {
 	GATE_MIPI0A(CLK_MIPI0A_CSR_CSI_EN_0A,
 		"mipi0a_csr_0a", "f_fseninf_ck", 1),
 };

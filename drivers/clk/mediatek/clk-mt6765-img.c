@@ -33,7 +33,7 @@ static const struct mtk_gate_regs img_cg_regs = {
 		.pwr_stat = &pwr_stat,			\
 	}
 
-static const struct mtk_gate img_clks[] __initconst = {
+static const struct mtk_gate img_clks[] = {
 	GATE_IMG(CLK_IMG_LARB2, "img_larb2", "mm_ck", 0),/*use dummy*/
 	GATE_IMG(CLK_IMG_DIP, "img_dip", "mm_ck", 2),
 	GATE_IMG(CLK_IMG_FDVT, "img_fdvt", "mm_ck", 3),
