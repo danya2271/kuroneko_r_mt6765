@@ -666,9 +666,6 @@ const char *cmdq_virtual_parse_module_from_reg_addr(u32 reg_addr)
 {
 	const u32 addr_base_and_page = (reg_addr & 0xFFFFF000);
 
-#ifdef CMDQ_USE_LEGACY
-	return cmdq_virtual_parse_module_from_reg_addr_legacy(reg_addr);
-#else
 	/* for well-known base, we check them with 12-bit mask
 	 * defined in mt_reg_base.h
 	 * TODO: comfirm with SS if IO_VIRT_TO_PHYS workable when enable
@@ -714,7 +711,6 @@ const char *cmdq_virtual_parse_module_from_reg_addr(u32 reg_addr)
 	 * with 16-bit mask.
 	 */
 	return cmdq_core_parse_subsys_from_reg_addr(reg_addr);
-#endif
 }
 
 s32 cmdq_virtual_can_module_entry_suspend(struct EngineStruct *engineList)
@@ -848,13 +844,8 @@ int cmdq_virtual_dump_smi(const int showSmiDump)
 {
 	int isSMIHang = 0;
 
-#if defined(CONFIG_MTK_SMI_EXT) && !defined(CONFIG_FPGA_EARLY_PORTING) && \
-	!defined(CONFIG_MTK_SMI_VARIANT)
 	isSMIHang = smi_debug_bus_hang_detect(showSmiDump, "CMDQ");
 	CMDQ_ERR("SMI Hang? = %d\n", isSMIHang);
-#else
-	CMDQ_LOG("[WARNING]not enable SMI dump now\n");
-#endif
 
 	return isSMIHang;
 }

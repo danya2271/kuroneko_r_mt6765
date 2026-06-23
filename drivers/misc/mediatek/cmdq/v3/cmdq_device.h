@@ -16,9 +16,6 @@
 	u32 cmdq_dev_enable_clock_##HW_NAME(bool enable)
 DECLARE_ENABLE_HW_CLOCK(SMI_COMMON);
 DECLARE_ENABLE_HW_CLOCK(SMI_LARB0);
-#ifdef CMDQ_USE_LEGACY
-DECLARE_ENABLE_HW_CLOCK(MUTEX_32K);
-#endif
 #undef DECLARE_ENABLE_HW_CLOCK
 
 void cmdq_dev_get_module_clock_by_name(const char *ref_name,

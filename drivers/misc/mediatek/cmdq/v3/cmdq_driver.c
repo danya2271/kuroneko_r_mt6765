@@ -38,9 +38,6 @@
 #include <linux/suspend.h>
 #include <linux/soc/mediatek/mtk-cmdq.h>
 #include <linux/sched/clock.h>
-#ifdef CMDQ_USE_LEGACY
-#include <mach/mt_boot.h>
-#endif
 
 /*
  * @device tree porting note

@@ -78,20 +78,12 @@
 #endif
 #define CMDQ_ARG_A_SUBSYS_MASK          (0x001F0000)
 
-#ifdef CONFIG_FPGA_EARLY_PORTING
-#define CMDQ_DEFAULT_TIMEOUT_MS         (10000)
-#else
 #define CMDQ_DEFAULT_TIMEOUT_MS         (1000)
-#endif
 
 #define CMDQ_ACQUIRE_THREAD_TIMEOUT_MS  (2000)
 #define CMDQ_PREDUMP_TIMEOUT_MS         (200)
 
-#ifndef CONFIG_FPGA_EARLY_PORTING
 #define CMDQ_PWR_AWARE		/* FPGA does not have ClkMgr */
-#else
-#undef CMDQ_PWR_AWARE
-#endif
 
 typedef u64 CMDQ_VARIABLE;
 

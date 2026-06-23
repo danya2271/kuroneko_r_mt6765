@@ -58,7 +58,6 @@ else
 ccflags-y += -DCMDQ_COMMON_ENG_SUPPORT
 endif
 
-ccflags-y += -DCMDQ_TEST_PROC
 ifeq ($(CONFIG_MTK_ENG_BUILD),y)
 ccflags-y += -DCMDQ_PROFILE_LOCK
 ccflags-y += -DCMDQ_DEBUG_LOOP_IRQ
