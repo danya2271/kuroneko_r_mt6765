@@ -187,7 +187,7 @@ static int init_cmdq_slots(cmdqBackupSlotHandle *pSlot, int count, int init_val)
 	return 0;
 }
 
-static int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst, struct disp_input_config *src)
+static inline int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst, struct disp_input_config *src)
 {
 	enum UNIFIED_COLOR_FMT tmp_fmt;
 	unsigned int Bpp = 0;
@@ -481,7 +481,7 @@ static int fps_ctx_init(struct fps_ctx_t *fps_ctx, int wnd_sz)
 	return 0;
 }
 
-static unsigned int _fps_ctx_calc_cur_fps(struct fps_ctx_t *fps_ctx, unsigned long long cur_ns)
+static inline unsigned int _fps_ctx_calc_cur_fps(struct fps_ctx_t *fps_ctx, unsigned long long cur_ns)
 {
 	unsigned long long delta;
 	unsigned long long fps = 1000000000;
@@ -493,13 +493,13 @@ static unsigned int _fps_ctx_calc_cur_fps(struct fps_ctx_t *fps_ctx, unsigned lo
 	return (unsigned int)fps;
 }
 
-static unsigned int _fps_ctx_get_avg_fps(struct fps_ctx_t *fps_ctx)
+static inline unsigned int _fps_ctx_get_avg_fps(struct fps_ctx_t *fps_ctx)
 {
 	if (fps_ctx->cur_wnd_sz == 0) return 0;
 	return fps_ctx->total / fps_ctx->cur_wnd_sz;
 }
 
-static unsigned int _fps_ctx_get_avg_fps_ext(struct fps_ctx_t *fps_ctx, unsigned int abs_fps)
+static inline unsigned int _fps_ctx_get_avg_fps_ext(struct fps_ctx_t *fps_ctx, unsigned int abs_fps)
 {
 	return (fps_ctx->total + abs_fps) / (fps_ctx->cur_wnd_sz + 1);
 }
@@ -1814,7 +1814,7 @@ static int _ovl_fence_release_callback(unsigned long userdata)
 	for (i = 0; i < PRIMARY_SESSION_INPUT_LAYER_COUNT; i++) {
 		int fence_idx = 0, subtractor = 0;
 
-		if (i == primary_display_get_option("ASSERT_LAYER") && is_DAL_Enabled()) {
+		if (i == (PRIMARY_SESSION_INPUT_LAYER_COUNT - 1) && is_DAL_Enabled()) {
 			mtkfb_release_layer_fence(primary_session_id, i);
 		} else {
 			cmdqBackupReadSlot(pgc->cur_config_fence, i, &fence_idx);
@@ -2468,7 +2468,7 @@ int primary_display_release_fence_fake(void)
 	int i = 0;
 
 	for (i = 0; i < PRIMARY_SESSION_INPUT_LAYER_COUNT; i++) {
-		if (i == primary_display_get_option("ASSERT_LAYER") && is_DAL_Enabled()) {
+		if (i == (PRIMARY_SESSION_INPUT_LAYER_COUNT - 1) && is_DAL_Enabled()) {
 			mtkfb_release_layer_fence(session_id, 3);
 		} else {
 			disp_sync_get_cached_layer_info(session_id, i, &layer_en, (unsigned long *)&addr, &fence_idx);
@@ -3389,14 +3389,14 @@ static void rsz_in_out_roi(struct disp_frame_cfg_t *cfg, struct disp_ddp_path_co
 	data_config->rsz_dst_roi = dst_total_roi;
 }
 
-static int _is_overlap(struct disp_input_config *src, struct disp_input_config *dst)
+static inline int _is_overlap(struct disp_input_config *src, struct disp_input_config *dst)
 {
 	if ((src->tgt_offset_y + src->tgt_height <= dst->tgt_offset_y) || (dst->tgt_offset_y + dst->tgt_height <= src->tgt_offset_y)) return 0;
 	else if ((src->tgt_offset_x + src->tgt_width <= dst->tgt_offset_x) || (dst->tgt_offset_x + dst->tgt_width <= src->tgt_offset_x)) return 0;
 	return 1;
 }
 
-static int _is_yuv_overlap(struct disp_frame_cfg_t *cfg)
+static inline int _is_yuv_overlap(struct disp_frame_cfg_t *cfg)
 {
 	int i = 0, j = 0, is_yuv_overlap = 0;
 	unsigned int yuv_num = 0;
@@ -3526,6 +3526,8 @@ static int _config_ovl_input(struct disp_frame_cfg_t *cfg, disp_path_handle disp
 	if (disp_rsz_frame_has_rsz_layer(cfg)) assign_full_lcm_roi(&total_dirty_roi);
 	rsz_in_out_roi(cfg, data_config);
 
+	aee_layer = PRIMARY_SESSION_INPUT_LAYER_COUNT - 1;
+
 	for (i = 0; i < cfg->input_layer_num; i++) {
 		struct disp_input_config *input_cfg = &cfg->input_cfg[i];
 		struct OVL_CONFIG_STRUCT *ovl_cfg;
@@ -3534,7 +3536,6 @@ static int _config_ovl_input(struct disp_frame_cfg_t *cfg, disp_path_handle disp
 		ovl_cfg = &(data_config->ovl_config[layer]);
 
 		if (cfg->setter != SESSION_USER_AEE) {
-			aee_layer = primary_display_get_option("ASSERT_LAYER");
 			if (is_DAL_Enabled() && layer == aee_layer) continue;
 		}
 
@@ -3703,7 +3704,7 @@ static int primary_frame_cfg_input(struct disp_frame_cfg_t *cfg)
 	}
 
 	if (pgc->state == DISP_SLEPT) {
-		if (is_DAL_Enabled() && cfg->setter == SESSION_USER_AEE && (cfg->input_cfg[0].layer_id == primary_display_get_option("ASSERT_LAYER"))) {
+		if (is_DAL_Enabled() && cfg->setter == SESSION_USER_AEE && (cfg->input_cfg[0].layer_id == (PRIMARY_SESSION_INPUT_LAYER_COUNT - 1))) {
 			struct disp_ddp_path_config *data_config = dpmgr_path_get_last_config(disp_handle);
 			int layer = cfg->input_cfg[0].layer_id;
 			ret = _convert_disp_input_to_ovl(&(data_config->ovl_config[layer]), &cfg->input_cfg[0]);
@@ -4483,9 +4484,9 @@ UINT32 DISP_GetVRamSizeBoot(char *cmdline) { return mtkfb_get_fb_size(); }
 
 unsigned int primary_display_get_option(const char *option)
 {
-	if (!strcmp(option, "FB_LAYER")) return 0;
-	if (!strcmp(option, "ASSERT_LAYER")) return PRIMARY_SESSION_INPUT_LAYER_COUNT - 1;
-	if (!strcmp(option, "M4U_ENABLE")) return disp_helper_get_option(DISP_OPT_USE_M4U);
+	if (option[0] == 'F' && option[1] == 'B') return 0;
+	if (option[0] == 'A' && option[1] == 'S') return PRIMARY_SESSION_INPUT_LAYER_COUNT - 1;
+	if (option[0] == 'M' && option[1] == '4') return disp_helper_get_option(DISP_OPT_USE_M4U);
 	return -1;
 }
 
