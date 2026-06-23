@@ -103,36 +103,8 @@ if (status < 0)		\
 
 #define CMDQ_AEE(tag, string, args...) ((void)0)
 
-/*#define CMDQ_PROFILE*/
-
 /* typedef unsigned long long CMDQ_TIME; */
 #define CMDQ_TIME unsigned long long
-
-#ifdef CMDQ_PROFILE
-#define CMDQ_PROF_INIT()	((void)0)
-
-#define CMDQ_PROF_START(args...)	((void)0)
-
-#define CMDQ_PROF_END(args...)	((void)0)
-#define CMDQ_PROF_ONESHOT(args...)	((void)0)
-#else
-#define CMDQ_PROF_INIT()
-#define CMDQ_PROF_START(args...)
-#define CMDQ_PROF_END(args...)
-#define CMDQ_PROF_ONESHOT(args...)
-#endif
-
-#define CMDQ_PROF_MMP(args...)
-
-/* CMDQ FTRACE */
-#define CMDQ_TRACE_FORCE_BEGIN(fmt, args...) ((void)0)
-
-#define CMDQ_TRACE_FORCE_END() ((void)0)
-
-
-#define CMDQ_SYSTRACE_BEGIN(fmt, args...) ((void)0)
-
-#define CMDQ_SYSTRACE_END() ((void)0)
 
 #define CMDQ_GET_TIME_IN_MS(start, end, duration)	\
 {	\

@@ -8,9 +8,6 @@
 #include "cmdq_record.h"
 #include "cmdq_reg.h"
 #include "cmdq_sec.h"
-#if IS_ENABLED(CONFIG_MMPROFILE)
-#include "cmdq_mmp.h"
-#endif
 #ifdef CMDQ_COMMON_ENG_SUPPORT
 #include "cmdq_engine_common.h"
 #else
@@ -396,9 +393,6 @@ static void cmdq_mdp_common_clock_enable(void)
 
 	CMDQ_MSG("[CLOCK]MDP SMI clock enable %d\n", smi_ref);
 	cmdq_mdp_get_func()->mdpEnableCommonClock(true);
-
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_clock_smi,
-		MMPROFILE_FLAG_PULSE, smi_ref, 1);
 }
 
 static void cmdq_mdp_common_clock_disable(void)
@@ -407,9 +401,6 @@ static void cmdq_mdp_common_clock_disable(void)
 
 	CMDQ_MSG("[CLOCK]MDP SMI clock disable %d\n", smi_ref);
 	cmdq_mdp_get_func()->mdpEnableCommonClock(false);
-
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_clock_smi,
-		MMPROFILE_FLAG_PULSE, smi_ref, 0);
 }
 
 static s32 cmdq_mdp_clock_enable(u64 engine_flag)
@@ -427,10 +418,6 @@ static s32 cmdq_mdp_clock_enable(u64 engine_flag)
 
 	mutex_unlock(&mdp_clock_mutex);
 
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_clock_on,
-		MMPROFILE_FLAG_PULSE, (u32)(engine_flag >> 32),
-		(u32)engine_flag);
-
 	return ret;
 }
 
@@ -443,10 +430,6 @@ static s32 cmdq_mdp_clock_disable(u64 engine_flag)
 	mutex_lock(&mdp_clock_mutex);
 
 	ret = cmdq_mdp_get_func()->mdpClockOff(engine_flag);
-
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_clock_off,
-	      MMPROFILE_FLAG_PULSE, (u32)(engine_flag >> 32),
-	      (u32)engine_flag);
 
 	mutex_unlock(&mdp_clock_mutex);
 
@@ -721,8 +704,6 @@ static void cmdq_mdp_lock_thread(struct cmdqRecStruct *handle)
 		__func__, handle, handle->pkt, handle->engineFlag);
 	cmdq_mdp_common_clock_enable();
 
-	CMDQ_PROF_START(current->pid, __func__);
-
 	handle->engine_clk = cmdq_mdp_get_engine_flag_for_enable_clock(
 		engine_flag, thread);
 
@@ -734,8 +715,6 @@ static void cmdq_mdp_lock_thread(struct cmdqRecStruct *handle)
 			thread, mdp_ctx.thread[thread].task_count,
 			mdp_ctx.thread[thread].engine_flag);
 	}
-
-	CMDQ_PROF_END(current->pid, __func__);
 }
 
 static u64 cmdq_mdp_get_not_used_engine(const u64 engine_flag)
@@ -988,9 +967,6 @@ static s32 cmdq_mdp_consume_handle(void)
 	/* operation for tasks_wait list need task mutex */
 	mutex_lock(&mdp_task_mutex);
 
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->consume_done, MMPROFILE_FLAG_START,
-		current->pid, 0);
-
 	handle = list_first_entry_or_null(&mdp_ctx.tasks_wait, typeof(*handle),
 		list_entry);
 	if (handle)
@@ -1078,9 +1054,6 @@ static s32 cmdq_mdp_consume_handle(void)
 		acquired = true;
 	}
 
-	CMDQ_PROF_MMP(cmdq_mmp_get_event()->consume_done, MMPROFILE_FLAG_END,
-		current->pid, 0);
-
 	mutex_unlock(&mdp_task_mutex);
 	if (conflict)
 		cmdq_core_dump_active();
@@ -1106,8 +1079,6 @@ static void cmdq_mdp_consume_wait_item(struct work_struct *ignore)
 void cmdq_mdp_add_consume_item(void)
 {
 	if (!work_pending(&mdp_ctx.handle_consume_item)) {
-		CMDQ_PROF_MMP(cmdq_mmp_get_event()->consume_add,
-			MMPROFILE_FLAG_PULSE, 0, 0);
 		queue_work(mdp_ctx.handle_consume_queue,
 			&mdp_ctx.handle_consume_item);
 	}
@@ -1411,7 +1382,6 @@ s32 cmdq_mdp_handle_flush(struct cmdqRecStruct *handle)
 {
 	s32 status;
 
-	CMDQ_TRACE_FORCE_BEGIN("%s %llx\n", __func__, handle->engineFlag);
 	CMDQ_MSG("%s %llx\n", __func__, handle->engineFlag);
 	if (handle->profile_exec)
 		cmdq_pkt_perf_end(handle->pkt);
@@ -1438,7 +1408,6 @@ s32 cmdq_mdp_handle_flush(struct cmdqRecStruct *handle)
 	 */
 	CMDQ_MSG("%s flush impl\n", __func__);
 	status = cmdq_mdp_flush_async_impl(handle);
-	CMDQ_TRACE_FORCE_END();
 	return status;
 }
 
@@ -1450,8 +1419,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 	s32 err;
 	u32 copy_size;
 	const u64 inorder_mask = 1ll << CMDQ_ENG_INORDER;
-
-	CMDQ_TRACE_FORCE_BEGIN("%s\n", __func__);
 
 	cmdq_task_create(desc->scenario, &handle);
 	/* force assign buffer pool since mdp task assign clients later
@@ -1500,7 +1467,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 			copy_size, user_space);
 		if (err < 0) {
 			cmdq_task_destroy(handle);
-			CMDQ_TRACE_FORCE_END();
 			return err;
 		}
 	}
@@ -1517,7 +1483,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 			(u32 *)(unsigned long)desc->regRequest.regAddresses);
 		if (err < 0) {
 			cmdq_task_destroy(handle);
-			CMDQ_TRACE_FORCE_END();
 			return err;
 		}
 	}
@@ -1541,7 +1506,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 		2 * CMDQ_INST_SIZE, user_space);
 	if (err < 0) {
 		cmdq_task_destroy(handle);
-		CMDQ_SYSTRACE_END();
 		return err;
 	}
 
@@ -1556,8 +1520,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 	 * holds same engines.
 	 */
 	cmdq_mdp_flush_async_impl(handle);
-
-	CMDQ_TRACE_FORCE_END();
 
 	return 0;
 }
@@ -1625,8 +1587,6 @@ s32 cmdq_mdp_wait(struct cmdqRecStruct *handle,
 	u32 i;
 	u64 exec_cost;
 
-	CMDQ_TRACE_FORCE_BEGIN("%s\n", __func__);
-
 	/* we have to wait handle has valid thread first */
 	if (handle->thread == CMDQ_INVALID_THREAD) {
 		CMDQ_LOG("pid:%d handle:0x%p wait for valid thread first\n",
@@ -1653,7 +1613,6 @@ s32 cmdq_mdp_wait(struct cmdqRecStruct *handle,
 				 */
 				list_del_init(&handle->list_entry);
 				mutex_unlock(&mdp_task_mutex);
-				CMDQ_TRACE_FORCE_END();
 				return -ETIMEDOUT;
 			}
 			/* valid thread, so we keep going */
@@ -1697,8 +1656,6 @@ s32 cmdq_mdp_wait(struct cmdqRecStruct *handle,
 
 	/* consume again since maybe more conflict task in waiting */
 	cmdq_mdp_add_consume_item();
-
-	CMDQ_TRACE_FORCE_END();
 
 	return status;
 }
@@ -3168,11 +3125,6 @@ int cmdq_mdp_loop_reset(enum CMDQ_ENG_ENUM engine,
 	int initStatus = 0;
 
 	if (cmdq_mdp_get_func()->mdpClockIsOn(engine)) {
-		CMDQ_PROF_START(current->pid, __func__);
-		CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_reset,
-			      MMPROFILE_FLAG_START, resetReg, resetStateReg);
-
-
 		/* loop reset */
 		resetStatus = cmdq_mdp_loop_reset_impl(resetReg, 0x1,
 			resetStateReg, resetMask, resetValue,
@@ -3189,10 +3141,6 @@ int cmdq_mdp_loop_reset(enum CMDQ_ENG_ENUM engine,
 			 */
 			CMDQ_REG_SET32(resetReg, 0x0);
 		}
-
-		CMDQ_PROF_MMP(cmdq_mmp_get_event()->MDP_reset,
-			      MMPROFILE_FLAG_END, resetReg, resetStateReg);
-		CMDQ_PROF_END(current->pid, __func__);
 
 		/* retrun failed if loop failed */
 		if ((resetStatus < 0) || (initStatus < 0)) {

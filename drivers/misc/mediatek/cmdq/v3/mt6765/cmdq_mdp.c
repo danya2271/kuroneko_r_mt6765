@@ -703,7 +703,6 @@ int32_t cmdqMdpResetEng(uint64_t engineFlag)
 	uint32_t mout_bits = 0L;
 	long MMSYS_MOUT_RST_REG = MMSYS_CONFIG_BASE + (0x048);
 
-	CMDQ_PROF_START(0, "MDP_Rst");
 	CMDQ_VERBOSE("Reset MDP(0x%llx) begin\n", engineFlag);
 	/* After resetting each component, */
 	/* we need also reset corresponding MOUT config. */
@@ -797,7 +796,6 @@ int32_t cmdqMdpResetEng(uint64_t engineFlag)
 	CMDQ_REG_SET32(MMSYS_MOUT_RST_REG, (mout_bits_old | mout_bits));
 	CMDQ_REG_SET32(MMSYS_MOUT_RST_REG, (mout_bits_old & (~mout_bits)));
 	CMDQ_MSG("Reset MDP(0x%llx) end\n", engineFlag);
-	CMDQ_PROF_END(0, "MDP_Rst");
 	return status;
 #endif				/* #ifdef CMDQ_PWR_AWARE */
 }

@@ -197,8 +197,6 @@ s32 cmdq_sec_execute_session(struct cmdq_sec_tee_context *tee,
 	const s32 sec_timeout = timeout_ms > 0 ?
 		timeout_ms : MC_INFINITE_TIMEOUT;
 
-	CMDQ_PROF_START(current->pid, "CMDQ_SEC_EXE");
-
 	do {
 		/* notify to secure world */
 		mcRet = mc_notify(&tee->session);
@@ -229,8 +227,6 @@ s32 cmdq_sec_execute_session(struct cmdq_sec_tee_context *tee,
 
 		CMDQ_MSG("[SEC]EXEC: mc_wait_notification err:%d\n", mcRet);
 	} while (0);
-
-	CMDQ_PROF_END(current->pid, "CMDQ_SEC_EXE");
 
 	return status;
 }

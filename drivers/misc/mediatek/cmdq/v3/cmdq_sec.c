@@ -183,8 +183,6 @@ int32_t cmdq_sec_init_session_unlocked(struct cmdqSecContextStruct *handle)
 		CMDQ_MSG("[SEC]SESSION_INIT: open new session[%d]\n",
 			handle->state);
 #endif
-		CMDQ_PROF_START(current->pid, "CMDQ_SEC_INIT");
-
 		if (handle->state < IWC_CONTEXT_INITED) {
 			/* open mobicore device */
 #ifdef CMDQ_SECURE_TEE_SUPPORT
@@ -249,8 +247,6 @@ int32_t cmdq_sec_init_session_unlocked(struct cmdqSecContextStruct *handle)
 			break;
 #endif
 		handle->state = IWC_SES_OPENED;
-
-		CMDQ_PROF_END(current->pid, "CMDQ_SEC_INIT");
 	} while (0);
 
 	CMDQ_MSG("[SEC]<--SESSION_INIT[%d], iwcState[%d]\n", status,
