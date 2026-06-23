@@ -2500,10 +2500,6 @@ static int mtkfb_probe(struct platform_device *pdev)
 	wake_up_process(test_task);
 #endif
 
-	if (disp_helper_get_stage() != DISP_HELPER_STAGE_NORMAL)
-		primary_display_diagnose();
-
-
 	/* this function will get fb_heap base address to ion
 	 * for management frame buffer
 	 */
@@ -2572,8 +2568,6 @@ static void mtkfb_shutdown(struct platform_device *pdev)
 	else
 		msleep(2 * 100000 / lcd_fps);	/* Delay 2 frames. */
 
-	g_idle_skip = 0;
-	g_idle_skip_trigger = 0;
 	if (primary_display_is_sleepd()) {
 		MTKFB_LOG("mtkfb has been power off\n");
 		return;

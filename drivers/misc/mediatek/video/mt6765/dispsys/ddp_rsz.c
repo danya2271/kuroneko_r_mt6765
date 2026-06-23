@@ -245,7 +245,6 @@ static int rsz_config(enum DISP_MODULE_ENUM module,
 			c->dst_x, c->dst_y, c->dst_w, c->dst_h);
 		if (!dump) {
 			dump = true;
-			primary_display_diagnose();
 			disp_aee_print("need rsz but input w(%u) > (%u)\n",
 				       rsz_config->frm_in_w, RSZ_TILE_LENGTH);
 		}

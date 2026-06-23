@@ -533,13 +533,11 @@ static void _DSI_INTERNAL_IRQ_Handler(enum DISP_MODULE_ENUM module,
 				DDPAEE("%s:buffer underrun,sys_time=%u\n",
 					ddp_get_module_name(module),
 					(u32)arch_counter_get_cntvct());
-				primary_display_diagnose();
 				dsi_underrun_trigger = 0;
 			}
 		}
 
 		DDPERR("%s:buffer underrun\n", ddp_get_module_name(module));
-		primary_display_diagnose();
 	}
 
 	if (status.INP_UNFINISH_INT_EN)

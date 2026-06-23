@@ -88,8 +88,6 @@ extern unsigned int ap_fps_changed;
 extern unsigned int arr_fps_backup;
 extern unsigned int arr_fps_enable;
 extern unsigned int round_corner_offset_enable;
-extern bool g_force_cfg;
-extern unsigned int g_force_cfg_id;
 
 struct DISP_LAYER_INFO {
 	unsigned int id;
@@ -405,7 +403,6 @@ int primary_display_switch_mode(int sess_mode, unsigned int session,
 	int force);
 int primary_display_switch_mode_blocked(int sess_mode, unsigned int session,
 	int force);
-int primary_display_diagnose(void);
 
 int primary_display_get_info(struct disp_session_info *info);
 int primary_display_capture_framebuffer(unsigned long pbuf);
@@ -475,7 +472,6 @@ long primary_display_wait_state(enum DISP_POWER_STATE state, long timeout);
 long primary_display_wait_not_state(enum DISP_POWER_STATE state, long timeout);
 int do_primary_display_switch_mode(int sess_mode, unsigned int session,
 	int need_lock, struct cmdqRecStruct *handle, int block);
-int primary_display_check_test(void);
 void _primary_path_switch_dst_lock(void);
 void _primary_path_switch_dst_unlock(void);
 
@@ -510,14 +506,9 @@ int Panel_Master_dsi_config_entry(const char *name, void *config_value);
 int fbconfig_get_esd_check_test(UINT32 dsi_id, UINT32 cmd, UINT8 *buffer,
 	UINT32 num);
 
-/* 0: normal, 1: lcd only, 2: none of lcd and lcm */
-extern unsigned int gTriggerDispMode;
-
 /* defined in mtkfb.c should move to mtkfb.h*/
 extern unsigned int islcmconnected;
 
-extern int g_idle_skip;
-extern int g_idle_skip_trigger;
 size_t mtkfb_get_fb_size(void);
 
 int primary_fps_ctx_set_wnd_sz(unsigned int wnd_sz);

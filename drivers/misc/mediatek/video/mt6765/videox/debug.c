@@ -941,10 +941,7 @@ static void process_dbg_opt(const char *opt)
 		return;
 #endif
 	} else if (strncmp(opt, "diagnose", 8) == 0) {
-		primary_display_diagnose();
 		return;
-	} else if (strncmp(opt, "_efuse_test", 11) == 0) {
-		primary_display_check_test();
 	} else if (strncmp(opt, "dprec_reset", 11) == 0) {
 		dprec_logger_reset_all();
 		return;
@@ -1187,11 +1184,8 @@ static void process_dbg_opt(const char *opt)
 		unsigned long int disp_mode = 0;
 
 		ret = kstrtoul(p, 10, &disp_mode);
-		gTriggerDispMode = (int)disp_mode;
 		if (ret)
 			DISPWARN("DISP/%s: errno %d\n", __func__, ret);
-
-		DISPMSG("DDP: gTriggerDispMode=%d\n", gTriggerDispMode);
 	} else if (strncmp(opt, "disp_set_fps:", 13) == 0) {
 		char *p = (char *)opt + 13;
 		unsigned int disp_fps = 0;
@@ -1276,15 +1270,12 @@ static void process_dbg_opt(const char *opt)
 #ifdef CONFIG_MTK_HIGH_FRAME_RATE
 		primary_display_dynfps_chg_fps(cfg_id);
 #endif
-		g_force_cfg_id = cfg_id;
 		DDPMSG("debug:set_cfg_id:%d end\n", cfg_id);
 	} else if (!strncmp(opt, "enable_force_fps:", 17)) {
 		char *p = (char *)opt + 17;
 		unsigned int enable_force_fps = 0;
 
 		ret = kstrtouint(p, 10, &enable_force_fps);
-		g_force_cfg = !!enable_force_fps;
-		DDPMSG("debug:g_force_cfg:%d\n", g_force_cfg);
 	} else if (!strncmp(opt, "get_multi_cfg", 13)) {
 		struct multi_configs cfgs;
 		unsigned int i = 0;
@@ -1316,7 +1307,6 @@ static void process_dbg_opt(const char *opt)
 
 	if (strncmp(opt, "dsi_ut:restart_vdo_mode", 23) == 0) {
 		dpmgr_path_stop(primary_get_dpmgr_handle(), CMDQ_DISABLE);
-		primary_display_diagnose();
 		dpmgr_path_start(primary_get_dpmgr_handle(), CMDQ_DISABLE);
 		dpmgr_path_trigger(primary_get_dpmgr_handle(),
 			NULL, CMDQ_DISABLE);
@@ -1324,13 +1314,11 @@ static void process_dbg_opt(const char *opt)
 
 	if (strncmp(opt, "dsi_ut:restart_cmd_mode", 23) == 0) {
 		dpmgr_path_stop(primary_get_dpmgr_handle(), CMDQ_DISABLE);
-		primary_display_diagnose();
 
 		dpmgr_path_start(primary_get_dpmgr_handle(), CMDQ_DISABLE);
 		dpmgr_path_trigger(primary_get_dpmgr_handle(),
 			NULL, CMDQ_DISABLE);
 		dpmgr_path_stop(primary_get_dpmgr_handle(), CMDQ_DISABLE);
-		primary_display_diagnose();
 
 		dpmgr_path_start(primary_get_dpmgr_handle(), CMDQ_DISABLE);
 		dpmgr_path_trigger(primary_get_dpmgr_handle(),
@@ -1483,9 +1471,6 @@ int debug_get_info(unsigned char *stringbuf, int buf_len)
 	DISPFUNC();
 
 	n += mtkfb_get_debug_state(stringbuf + n,
-		buf_len - n);
-
-	n += primary_display_get_debug_state(stringbuf + n,
 		buf_len - n);
 
 	n += disp_sync_get_debug_info(stringbuf + n,
