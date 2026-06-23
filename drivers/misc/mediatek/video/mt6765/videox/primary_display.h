@@ -487,8 +487,6 @@ enum mtkfb_power_mode primary_display_set_power_mode(
 	enum mtkfb_power_mode new_mode);
 enum mtkfb_power_mode primary_display_get_power_mode(void);
 enum mtkfb_power_mode primary_display_check_power_mode(void);
-void debug_print_power_mode_check(enum mtkfb_power_mode prev,
-	enum mtkfb_power_mode cur);
 bool primary_is_aod_supported(void);
 
 /* legancy */

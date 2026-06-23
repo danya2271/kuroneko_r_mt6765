@@ -269,7 +269,6 @@ static int mtkfb_blank(int blank_mode, struct fb_info *info)
 		primary_display_set_power_mode(FB_RESUME);
 		mtkfb_late_resume();
 
-		debug_print_power_mode_check(prev_pm, FB_RESUME);
 		break;
 	case FB_BLANK_VSYNC_SUSPEND:
 	case FB_BLANK_HSYNC_SUSPEND:
@@ -284,8 +283,6 @@ static int mtkfb_blank(int blank_mode, struct fb_info *info)
 
 		primary_display_set_power_mode(FB_SUSPEND);
 		mtkfb_early_suspend();
-
-		debug_print_power_mode_check(prev_pm, FB_SUSPEND);
 
 		break;
 	default:
@@ -1078,19 +1075,13 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 				primary_display_get_lcm_power_state()) {
 				primary_display_set_power_mode(DOZE);
 				primary_display_resume();
-
-				debug_print_power_mode_check(prev_pm, DOZE);
 			}
 
 			primary_display_set_power_mode(DOZE_SUSPEND);
 			ret = primary_display_suspend();
-
-			debug_print_power_mode_check(prev_pm, DOZE_SUSPEND);
 		} else if (aod_pm == MTKFB_AOD_DOZE) {
 			primary_display_set_power_mode(DOZE);
 			ret = primary_display_resume();
-
-			debug_print_power_mode_check(prev_pm, DOZE);
 		} else {
 			DISPERR("AOD: error: unknown AOD power mode %d\n",
 				aod_pm);
