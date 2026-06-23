@@ -290,7 +290,9 @@ static void lcm_get_params(struct LCM_PARAMS *params)
 	params->dsi.horizontal_active_pixel = FRAME_WIDTH;
 	params->dsi.ssc_disable = 0;
 #ifndef CONFIG_FPGA_EARLY_PORTING
-	params->dsi.PLL_CLOCK = 285;
+	params->dsi.PLL_CLOCK = 300;
+	params->min_refresh_rate = 64;
+	params->max_refresh_rate = 75;
 	/* this value must be in MTK suggested table */
 #else
 	params->dsi.pll_div1 = 0;
@@ -299,7 +301,7 @@ static void lcm_get_params(struct LCM_PARAMS *params)
 #endif
 
 	params->dsi.clk_lp_per_line_enable = 0;
-	params->dsi.esd_check_enable = 1;
+	params->dsi.esd_check_enable = 0;
 	params->dsi.customization_esd_check_enable = 1;
 	params->dsi.lcm_esd_check_table[0].cmd = 0x0A;
 	params->dsi.lcm_esd_check_table[0].count = 1;
