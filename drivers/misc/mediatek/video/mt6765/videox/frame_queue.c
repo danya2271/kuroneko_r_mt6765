@@ -175,7 +175,6 @@ static int frame_queue_head_init(struct frame_queue_head_t *head,
 	/* create fence wait worker thread */
 	head->worker = kthread_run(fence_wait_worker_func,
 				head, "disp_queue_%s%d",
-				disp_session_mode_spy(session_id),
 				DISP_SESSION_DEV(session_id));
 
 	if (IS_ERR_OR_NULL(head->worker)) {
