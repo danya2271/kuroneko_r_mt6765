@@ -19,6 +19,7 @@
 #include <linux/pm_wakeup.h>
 #include <linux/cpu_suspend.h>
 #include <linux/printk.h>
+#include <linux/workqueue.h>
 
 #include "disp_drv_log.h"
 #include "disp_drv_platform.h"
@@ -94,7 +95,6 @@ static unsigned int primary_session_id = MAKE_DISP_SESSION(DISP_SESSION_PRIMARY,
 
 extern int lcm_mode_status;
 
-static struct task_struct *primary_display_switch_dst_mode_task;
 #ifdef MTK_FB_ION_SUPPORT
 static struct task_struct *present_fence_release_worker_task;
 #endif
@@ -103,7 +103,6 @@ static struct task_struct *primary_delay_trigger_task;
 static struct task_struct *primary_od_trigger_task;
 static struct task_struct *decouple_update_rdma_config_thread;
 static struct task_struct *decouple_trigger_thread;
-static struct task_struct *init_decouple_buffer_thread;
 
 #ifdef MTK_FB_MMDVFS_SUPPORT
 struct mtk_pm_qos_request primary_display_qos_request;
@@ -220,16 +219,10 @@ static inline int _convert_disp_input_to_ovl(struct OVL_CONFIG_STRUCT *dst, stru
 	return 0;
 }
 
+static struct display_primary_path_context g_context = {0};
+
 struct display_primary_path_context *_get_context(void)
 {
-	static int is_context_inited;
-	static struct display_primary_path_context g_context;
-
-	if (!is_context_inited) {
-		memset(&g_context, 0, sizeof(g_context));
-		is_context_inited = 1;
-	}
-
 	return &g_context;
 }
 
@@ -296,18 +289,16 @@ int primary_display_config_full_roi(struct disp_ddp_path_config *pconfig, disp_p
 	return 0;
 }
 
-static int _disp_primary_path_switch_dst_mode_thread(void *data)
+static void _disp_primary_path_switch_dst_mode_work(struct work_struct *work)
 {
-	while (1) {
-		msleep(1000);
-		if (((sched_clock() - last_primary_trigger_time) / 1000) > 500000) {
-			primary_display_switch_dst_mode(0);
-			is_switched_dst_mode = true;
-		}
-		if (kthread_should_stop()) break;
+	if (((sched_clock() - last_primary_trigger_time) / 1000) > 500000) {
+		primary_display_switch_dst_mode(0);
+		is_switched_dst_mode = true;
+	} else {
+		schedule_delayed_work(to_delayed_work(work), msecs_to_jiffies(1000));
 	}
-	return 0;
 }
+static DECLARE_DELAYED_WORK(primary_display_switch_dst_mode_work, _disp_primary_path_switch_dst_mode_work);
 
 static DECLARE_WAIT_QUEUE_HEAD(display_state_wait_queue);
 
@@ -541,16 +532,16 @@ enum DISP_MODULE_ENUM _get_dst_module_by_lcm(struct disp_lcm_handle *plcm)
 	return DISP_MODULE_UNKNOWN;
 }
 
-int _should_wait_path_idle(void) { return primary_display_cmdq_enabled() ? 0 : dpmgr_path_is_busy(pgc->dpmgr_handle); }
-int _should_update_lcm(void) { return primary_display_cmdq_enabled() || primary_display_is_video_mode() ? 0 : 1; }
-int _should_start_path(void) { return primary_display_cmdq_enabled() ? 0 : (primary_display_is_video_mode() ? dpmgr_path_is_idle(pgc->dpmgr_handle) : 1); }
-int _should_trigger_path(void) { return primary_display_cmdq_enabled() ? 0 : (primary_display_is_video_mode() ? dpmgr_path_is_idle(pgc->dpmgr_handle) : 1); }
-int _should_set_cmdq_dirty(void) { return primary_display_cmdq_enabled() && !primary_display_is_video_mode(); }
-int _should_flush_cmdq_config_handle(void) { return primary_display_cmdq_enabled(); }
-int _should_reset_cmdq_config_handle(void) { return primary_display_cmdq_enabled(); }
-int _should_insert_wait_frame_done_token(void) { return primary_display_cmdq_enabled(); }
-int _should_trigger_interface(void) { return pgc->mode == DECOUPLE_MODE ? 0 : 1; }
-int _should_config_ovl_input(void) { return (pgc->mode == SINGLE_LAYER_MODE || pgc->mode == DEBUG_RDMA1_DSI0_MODE) ? 0 : 1; }
+static inline int _should_wait_path_idle(void) { return primary_display_cmdq_enabled() ? 0 : dpmgr_path_is_busy(pgc->dpmgr_handle); }
+static inline int _should_update_lcm(void) { return primary_display_cmdq_enabled() || primary_display_is_video_mode() ? 0 : 1; }
+static inline int _should_start_path(void) { return primary_display_cmdq_enabled() ? 0 : (primary_display_is_video_mode() ? dpmgr_path_is_idle(pgc->dpmgr_handle) : 1); }
+static inline int _should_trigger_path(void) { return primary_display_cmdq_enabled() ? 0 : (primary_display_is_video_mode() ? dpmgr_path_is_idle(pgc->dpmgr_handle) : 1); }
+static inline int _should_set_cmdq_dirty(void) { return primary_display_cmdq_enabled() && !primary_display_is_video_mode(); }
+static inline int _should_flush_cmdq_config_handle(void) { return primary_display_cmdq_enabled(); }
+static inline int _should_reset_cmdq_config_handle(void) { return primary_display_cmdq_enabled(); }
+static inline int _should_insert_wait_frame_done_token(void) { return primary_display_cmdq_enabled(); }
+static inline int _should_trigger_interface(void) { return pgc->mode == DECOUPLE_MODE ? 0 : 1; }
+static inline int _should_config_ovl_input(void) { return (pgc->mode == SINGLE_LAYER_MODE || pgc->mode == DEBUG_RDMA1_DSI0_MODE) ? 0 : 1; }
 
 static void change_dsi_vfp(struct cmdqRecStruct *handle, unsigned int fps)
 {
@@ -1285,12 +1276,6 @@ static int init_decouple_buffers(void)
 	return 0;
 }
 
-static int _init_decouple_buffers_thread(void *data)
-{
-	init_decouple_buffers();
-	return 0;
-}
-
 static int _build_path_direct_link(void)
 {
 	pgc->mode = DIRECT_LINK_MODE;
@@ -1465,15 +1450,12 @@ static int _disp_primary_path_check_trigger_od(void *data)
 	return 0;
 }
 
-unsigned int cmdqDdpClockOn(uint64_t engineFlag) { return 0; }
-unsigned int cmdqDdpClockOff(uint64_t engineFlag) { return 0; }
 unsigned int cmdqDdpDumpInfo(uint64_t engineFlag, char *pOutBuf, unsigned int bufSize)
 {
 	if (primary_display_is_decouple_mode()) ddp_dump_analysis(DISP_MODULE_OVL0);
 	ddp_dump_analysis(DISP_MODULE_WDMA0);
 	return 0;
 }
-unsigned int cmdqDdpResetEng(uint64_t engineFlag) { return 0; }
 
 int primary_display_change_lcm_resolution(unsigned int width, unsigned int height)
 {
@@ -1832,7 +1814,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps, int is_lcm_inited
 	update_primary_intferface_module();
 
 	if (use_cmdq) {
-		ret = cmdqCoreRegisterCB(CMDQ_GROUP_DISP, (CmdqClockOnCB)cmdqDdpClockOn, (CmdqDumpInfoCB)cmdqDdpDumpInfo, (CmdqResetEngCB)cmdqDdpResetEng, (CmdqClockOffCB)cmdqDdpClockOff);
+		ret = cmdqCoreRegisterCB(CMDQ_GROUP_DISP, NULL, (CmdqDumpInfoCB)cmdqDdpDumpInfo, NULL, NULL);
 		if (ret) {
 			ret = DISP_STATUS_ERROR;
 			goto done;
@@ -1870,7 +1852,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps, int is_lcm_inited
 
 	primary_display_set_max_layer(PRIMARY_SESSION_INPUT_LAYER_COUNT);
 
-	init_decouple_buffer_thread = kthread_run(_init_decouple_buffers_thread, NULL, "init_decouple_buffer");
+	init_decouple_buffers();
 
 	dpmgr_path_set_video_mode(pgc->dpmgr_handle, primary_display_is_video_mode());
 	dpmgr_path_init(pgc->dpmgr_handle, use_cmdq);
@@ -1939,8 +1921,7 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps, int is_lcm_inited
 	primary_display_check_recovery_init();
 
 	if (disp_helper_get_option(DISP_OPT_SWITCH_DST_MODE)) {
-		primary_display_switch_dst_mode_task = kthread_create(_disp_primary_path_switch_dst_mode_thread, NULL, "display_switch_dst_mode");
-		wake_up_process(primary_display_switch_dst_mode_task);
+		schedule_delayed_work(&primary_display_switch_dst_mode_work, msecs_to_jiffies(1000));
 	}
 
 	if (decouple_update_rdma_config_thread == NULL) {
@@ -2015,8 +1996,6 @@ static void _primary_protect_mode_switch(void)
 static int request_lcm_refresh_rate_change(int fps);
 int primary_display_set_lcm_refresh_rate(int fps)
 {
-	int ret = 0;
-
 	_primary_protect_mode_switch();
 
 	_primary_path_lock(__func__);
@@ -2025,17 +2004,11 @@ int primary_display_set_lcm_refresh_rate(int fps)
 		return -1;
 	}
 
-	ret = _display_set_lcm_refresh_rate(fps);
 	_primary_path_unlock(__func__);
-	return ret;
+	return 0;
 }
 
 int primary_display_get_lcm_refresh_rate(void) { return pgc->lcm_refresh_rate; }
-
-int _display_set_lcm_refresh_rate(int fps)
-{
-	return 0;
-}
 
 int primary_display_get_lcm_max_refresh_rate(void) { return 120; }
 
@@ -2055,9 +2028,6 @@ int primary_display_deinit(void)
 
 	return 0;
 }
-
-int primary_display_wait_for_idle(void) { return 0; }
-int primary_display_wait_for_dump(void) { return 0; }
 
 int primary_display_release_fence_fake(void)
 {

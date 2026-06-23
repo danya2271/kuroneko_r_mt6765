@@ -1177,7 +1177,6 @@ static void process_dbg_opt(const char *opt)
 		int fps = kstrtoul(p, 10, (unsigned long int *)&p);
 
 		DDPMSG("change fps\n");
-		primary_display_set_lcm_refresh_rate(fps);
 		return;
 	} else if (strncmp(opt, "disp_mode:", 10) == 0) {
 		char *p = (char *)opt + 10;
