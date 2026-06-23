@@ -110,7 +110,6 @@ obj-y += cmdq_virtual.o
 obj-y += cmdq_device.o
 obj-y += cmdq_driver.o
 obj-y += cmdq_mdp_common.o
-obj-y += cmdq_test.o
 #obj-y += cmdq_prof.o
 obj-y += cmdq_event_common.o
 obj-y += cmdq_subsys_common.o

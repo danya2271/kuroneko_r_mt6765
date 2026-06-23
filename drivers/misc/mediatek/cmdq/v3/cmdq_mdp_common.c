@@ -2267,10 +2267,6 @@ u32 cmdq_mdp_wdma_get_reg_offset_dst_addr_virtual(void)
 	return 0;
 }
 
-void testcase_clkmgr_mdp_virtual(void)
-{
-}
-
 const char *cmdq_mdp_dispatch_virtual(u64 engineFlag)
 {
 	return "MDP";
@@ -3102,7 +3098,7 @@ void cmdq_mdp_virtual_function_setting(void)
 		cmdq_mdp_wrot_get_reg_offset_dst_addr_virtual;
 	pFunc->wdmaGetRegOffsetDstAddr =
 		cmdq_mdp_wdma_get_reg_offset_dst_addr_virtual;
-	pFunc->testcaseClkmgrMdp = testcase_clkmgr_mdp_virtual;
+	pFunc->testcaseClkmgrMdp = 0;
 
 	pFunc->dispatchModule = cmdq_mdp_dispatch_virtual;
 

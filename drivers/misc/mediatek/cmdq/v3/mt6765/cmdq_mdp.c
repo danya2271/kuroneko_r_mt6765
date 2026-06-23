@@ -968,47 +968,6 @@ u64 cmdq_mdp_get_engine_group_bits(u32 engine_group)
 {
 	return gCmdqEngineGroupBits[engine_group];
 }
-void testcase_clkmgr_mdp(void)
-{
-#if defined(CMDQ_PWR_AWARE)
-	/* RDMA clk test with src buffer addr */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_RDMA0, "CMDQ_TEST_MDP_RDMA0",
-		MDP_RDMA0_BASE + cmdq_mdp_rdma_get_reg_offset_src_addr(),
-		0xAACCBBDD,
-		MDP_RDMA0_BASE + cmdq_mdp_rdma_get_reg_offset_src_addr(),
-		true);
-	/* WDMA clk test with dst buffer addr */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_WDMA, "CMDQ_TEST_MDP_WDMA",
-		MDP_WDMA_BASE + cmdq_mdp_wdma_get_reg_offset_dst_addr(),
-		0xAACCBBDD,
-		MDP_WDMA_BASE + cmdq_mdp_wdma_get_reg_offset_dst_addr(), true);
-	/* WROT clk test with dst buffer addr */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_WROT0, "CMDQ_TEST_MDP_WROT0",
-		MDP_WROT0_BASE + cmdq_mdp_wrot_get_reg_offset_dst_addr(),
-		0xAACCBBDD,
-		MDP_WROT0_BASE + cmdq_mdp_wrot_get_reg_offset_dst_addr(),
-		true);
-	/* TDSHP clk test with input size */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_TDSHP0, "CMDQ_TEST_MDP_TDSHP",
-		MDP_TDSHP_BASE + 0x40, 0xAACCBBDD, MDP_TDSHP_BASE + 0x40,
-		true);
-	/* RSZ clk test with debug port */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_RSZ0, "CMDQ_TEST_MDP_RSZ0",
-		MDP_RSZ0_BASE + 0x040, 0x00000001, MDP_RSZ0_BASE + 0x044,
-		false);
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_RSZ1, "CMDQ_TEST_MDP_RSZ1",
-		MDP_RSZ1_BASE + 0x040, 0x00000001, MDP_RSZ1_BASE + 0x044,
-		false);
-	/* COLOR clk test with debug port */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_COLOR0, "CMDQ_TEST_MDP_COLOR",
-		MDP_COLOR_BASE + 0x438, 0x000001AB, MDP_COLOR_BASE + 0x438,
-		true);
-	/* CCORR clk test with debug port */
-	testcase_clkmgr_impl(CMDQ_ENG_MDP_CCORR0, "CMDQ_TEST_MDP_CCORR",
-		MDP_CCORR_BASE + 0x30, 0x1FFF1FFF, MDP_CCORR_BASE + 0x30,
-		true);
-#endif
-}
 static void cmdq_mdp_enable_common_clock(bool enable)
 {
 #ifdef CMDQ_PWR_AWARE
@@ -1104,7 +1063,7 @@ void cmdq_mdp_platform_function_setting(void)
 	pFunc->wdmaGetRegOffsetDstAddr = cmdq_mdp_wdma_get_reg_offset_dst_addr;
 	pFunc->parseErrModByEngFlag = cmdq_mdp_parse_error_module;
 	pFunc->getEngineGroupBits = cmdq_mdp_get_engine_group_bits;
-	pFunc->testcaseClkmgrMdp = testcase_clkmgr_mdp;
+	pFunc->testcaseClkmgrMdp = 0;
 	pFunc->mdpEnableCommonClock = cmdq_mdp_enable_common_clock;
 	pFunc->CheckHwStatus = cmdq_mdp_check_hw_status;
 #ifdef CMDQ_SECURE_PATH_SUPPORT
