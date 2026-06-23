@@ -10,12 +10,12 @@
 
 /* ================================================= */
 /* common macro definitions */
-#define F_VAL(val, msb, lsb) (((val)&((1<<(msb-lsb+1))-1))<<lsb)
-#define F_VAL_L(val, msb, lsb) (((val)&((1L<<(msb-lsb+1))-1))<<lsb)
-#define F_MSK(msb, lsb)     F_VAL(0xffffffff, msb, lsb)
-#define F_MSK_L(msb, lsb)     F_VAL_L(0xffffffffffffffffL, msb, lsb)
-#define F_BIT_SET(bit)	  (1<<(bit))
-#define F_BIT_VAL(val, bit)  ((!!(val))<<(bit))
+#define F_VAL(val, msb, lsb) (((val) & ((~0U) >> (31 - (msb) + (lsb)))) << (lsb))
+#define F_VAL_L(val, msb, lsb) (((val) & ((~0ULL) >> (63 - (msb) + (lsb)))) << (lsb))
+#define F_MSK(msb, lsb)     F_VAL(~0U, msb, lsb)
+#define F_MSK_L(msb, lsb)     F_VAL_L(~0ULL, msb, lsb)
+#define F_BIT_SET(bit)	  (1U << (bit))
+#define F_BIT_VAL(val, bit)  ((!!(val)) << (bit))
 #define F_MSK_SHIFT(regval, msb, lsb) (((regval)&F_MSK(msb, lsb))>>lsb)
 
 
@@ -365,64 +365,31 @@
 #define REG_PERIAXI_BUS_CTL3   (0x208)
 #define F_PERI_MMU_EN(port, en)       ((en)<<((port)))
 
-/* #include <sync_write.h>
- * for kernel-4.19, remove this file,
- * mt_reg_sync_writel & ioread32 should remove
- * use standard flow:
- *     use readl / readl_relaxed & writel / writel_relaxed,
- *     and add barrier in appropriate place.
- */
-
-static inline unsigned int
-M4U_ReadReg32(unsigned long M4uBase, unsigned int Offset)
+static inline unsigned int M4U_ReadReg32(unsigned long M4uBase, unsigned int Offset)
 {
-	unsigned int val;
-
-	val = readl_relaxed((void __iomem *)(M4uBase + Offset));
-	/*
-	 * pr_info("M4U_ReadReg32: M4uBase: 0x%lx, Offset:0x%x, val:0x%x\n",
-	 *	 M4uBase, Offset, val);
-	 */
-	return val;
+	return readl_relaxed((void __iomem *)(M4uBase + Offset));
 }
 
-static inline void
-M4U_WriteReg32(unsigned long M4uBase, unsigned int Offset, unsigned int Val)
+static inline void M4U_WriteReg32(unsigned long M4uBase, unsigned int Offset, unsigned int Val)
 {
-	writel(Val, (void __iomem *)(M4uBase + (unsigned long)Offset));
-	/*
-	 * pr_info("M4U_WriteReg32: M4uBase: 0x%lx, Offset:0x%x, val:0x%x\n",
-	 *	M4uBase, Offset, Val);
-	 */
+	writel(Val, (void __iomem *)(M4uBase + Offset));
 }
 
-static inline unsigned int
-m4uHw_set_field(unsigned long M4UBase,
-	unsigned int Reg, unsigned int bit_width,
-	unsigned int shift, unsigned int value) {
+static inline unsigned int m4uHw_set_field(unsigned long M4UBase, unsigned int Reg, unsigned int bit_width, unsigned int shift, unsigned int value)
+{
 	unsigned int mask = ((1 << bit_width) - 1) << shift;
-	unsigned int old;
-
-	value = (value << shift) & mask;
-	old = M4U_ReadReg32(M4UBase, Reg);
-	M4U_WriteReg32(M4UBase, Reg, (old & (~mask)) | value);
-	return (old & mask) >> shift;
+	unsigned int regval = M4U_ReadReg32(M4UBase, Reg);
+	M4U_WriteReg32(M4UBase, Reg, (regval & ~mask) | ((value << shift) & mask));
+	return (regval & mask) >> shift;
 }
 
-static inline void
-m4uHw_set_field_by_mask(unsigned long M4UBase,
-	unsigned int reg, unsigned long mask, unsigned int val)
+static inline void m4uHw_set_field_by_mask(unsigned long M4UBase, unsigned int reg, unsigned long mask, unsigned int val)
 {
-	unsigned int regval;
-
-	regval = M4U_ReadReg32(M4UBase, reg);
-	regval = (regval & (~mask)) | val;
-	M4U_WriteReg32(M4UBase, reg, regval);
+	unsigned int regval = M4U_ReadReg32(M4UBase, reg);
+	M4U_WriteReg32(M4UBase, reg, (regval & ~mask) | val);
 }
 
-static inline unsigned int
-m4uHw_get_field_by_mask(unsigned long M4UBase,
-	unsigned int reg, unsigned int mask)
+static inline unsigned int m4uHw_get_field_by_mask(unsigned long M4UBase, unsigned int reg, unsigned int mask)
 {
 	return M4U_ReadReg32(M4UBase, reg) & mask;
 }

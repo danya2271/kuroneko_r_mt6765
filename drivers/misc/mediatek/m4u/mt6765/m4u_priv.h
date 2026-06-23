@@ -76,22 +76,21 @@ extern int gM4U_log_to_uart;
 #define M4UERR(string, args...)  pr_debug("[M4U]:"string, ##args)
 
 #define m4u_aee_err(string, args...) \
-	{ \
+	do { \
 		char m4u_name[100]; \
-		int name_length = snprintf(m4u_name, 100, \
-			"[M4U]"string, ##args); \
+		int name_length = snprintf(m4u_name, 100, "[M4U]"string, ##args); \
 		if (name_length > 0) \
 			pr_debug("[M4U]:"string, ##args); \
-	}
+	} while (0)
 
 #endif
 #define M4U_PRINT_SEQ(seq_file, fmt, args...) \
-	{\
-		if (seq_file)\
-			seq_printf(seq_file, fmt, ##args);\
-		else\
-			pr_info(fmt, ##args);\
-	}
+	do { \
+		if (seq_file) \
+			seq_printf(seq_file, fmt, ##args); \
+		else \
+			pr_info(fmt, ##args); \
+	} while (0)
 
 #if (defined(CONFIG_TRUSTONIC_TEE_SUPPORT) || \
 	defined(CONFIG_MICROTRUST_TEE_SUPPORT)) && \

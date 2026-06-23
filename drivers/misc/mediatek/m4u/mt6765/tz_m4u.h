@@ -60,12 +60,6 @@ enum m4u_cmd {
 
 #define EXIT_ERROR                  ((uint32_t)(-1))
 
-struct m4u_add_param {
-	int a;
-	int b;
-	int result;
-};
-
 #define M4U_SIN_NAME_LEN 12
 
 struct m4u_session_param {
