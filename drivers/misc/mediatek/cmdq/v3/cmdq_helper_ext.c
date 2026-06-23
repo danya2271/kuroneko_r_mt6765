@@ -995,41 +995,6 @@ bool cmdq_core_profile_exec_enabled(void)
 }
 EXPORT_SYMBOL(cmdq_core_profile_exec_enabled);
 
-void cmdq_long_string_init(bool force, char *buf, u32 *offset, s32 *max_size)
-{
-	buf[0] = '\0';
-	*offset = 0;
-	if (force || cmdq_core_should_print_msg())
-		*max_size = CMDQ_LONGSTRING_MAX - 1;
-	else
-		*max_size = 0;
-}
-EXPORT_SYMBOL(cmdq_long_string_init);
-
-void cmdq_long_string(char *buf, u32 *offset, s32 *max_size,
-	const char *string, ...)
-{
-	int msg_len;
-	va_list arg_ptr;
-	char *buffer;
-
-	if (*max_size <= 0)
-		return;
-
-	va_start(arg_ptr, string);
-	buffer = buf + (*offset);
-	msg_len = vsnprintf(buffer, *max_size, string, arg_ptr);
-	if (msg_len >= *max_size)
-		pr_debug("%s:%d msg_len:%d over max_size:%d\n%s\n",
-			__func__, __LINE__, msg_len, *max_size, buffer);
-	*max_size -= msg_len;
-	if (*max_size < 0)
-		*max_size = 0;
-	*offset += msg_len;
-	va_end(arg_ptr);
-}
-EXPORT_SYMBOL(cmdq_long_string);
-
 s32 cmdq_core_reg_dump_begin(u32 taskID, u32 *regCount, u32 **regAddress)
 {
 	if (!cmdq_debug_cb.beginDebugRegDump) {
@@ -2127,9 +2092,6 @@ u32 cmdqCoreWriteWriteAddress(dma_addr_t pa, u32 value)
 	struct WriteAddrStruct *pWriteAddr = NULL;
 	s32 offset = 0;
 	unsigned long flags;
-	char long_msg[CMDQ_LONGSTRING_MAX];
-	u32 msg_offset;
-	s32 msg_max_size;
 
 	if (!pa) {
 		CMDQ_ERR("%s null input pa\n", __func__);
@@ -2149,16 +2111,8 @@ u32 cmdqCoreWriteWriteAddress(dma_addr_t pa, u32 value)
 		 */
 		if (offset >= 0 && (offset / sizeof(u32)) <
 			pWriteAddr->count) {
-			cmdq_long_string_init(false, long_msg, &msg_offset,
-				&msg_max_size);
-			cmdq_long_string(long_msg, &msg_offset, &msg_max_size,
-				"%s input:%pa", __func__, &pa);
-			cmdq_long_string(long_msg, &msg_offset, &msg_max_size,
-				" got offset:%d va:%p pa_start:%pa value:0x%08x\n",
-				offset, pWriteAddr->va + offset,
-				&pWriteAddr->pa, value);
-			CMDQ_VERBOSE("%s", long_msg);
-
+			pr_debug("%s input:%pa got offset:%d va:%p pa_start:%pa value:0x%08x\n",
+				__func__, &pa, offset, pWriteAddr->va + offset, &pWriteAddr->pa, value);
 			*((u32 *)(pWriteAddr->va + offset)) = value;
 			break;
 		}
@@ -5335,9 +5289,8 @@ void cmdq_core_initialize(void)
 	s32 status;
 	u32 index;
 	u32 thread_id;
-	char long_msg[CMDQ_LONGSTRING_MAX];
-	u32 msg_offset;
-	s32 msg_max_size;
+	char thread_pool_str[64] = "";
+	int len = 0;
 
 	cmdq_helper_mbox_register(cmdq_dev_get());
 
@@ -5370,14 +5323,12 @@ void cmdq_core_initialize(void)
 	cmdq_ctx.thread[CMDQ_SEC_IRQ_THREAD].used = true;
 #endif
 
-	cmdq_long_string_init(false, long_msg, &msg_offset, &msg_max_size);
 	for (index = 0; index < max_thread_count; index++) {
-		if (!cmdq_ctx.thread[index].used)
-			cmdq_long_string(long_msg, &msg_offset, &msg_max_size,
-				"%d, ", index);
+		if (!cmdq_ctx.thread[index].used) {
+			len += snprintf(thread_pool_str + len, sizeof(thread_pool_str) - len, "%d, ", index);
+		}
 	}
-	CMDQ_LOG("available thread pool:%s max:%u\n",
-		long_msg, max_thread_count);
+	CMDQ_LOG("available thread pool:%s max:%u\n", thread_pool_str, max_thread_count);
 
 	/* Initialize task lists */
 	INIT_LIST_HEAD(&cmdq_ctx.handle_active);

@@ -69,30 +69,13 @@ struct DumpFirstErrorStruct {
 };
 #endif
 
-#define CMDQ_LOG(string, args...) \
-do {			\
-	pr_notice("[CMDQ]"string, ##args); \
-	cmdq_core_save_first_dump("[CMDQ]"string, ##args); \
-} while (0)
+#define CMDQ_LOG(string, args...) pr_notice("[CMDQ] " string, ##args)
 
-#define CMDQ_MSG(string, args...) \
-do {			\
-	if (cmdq_core_should_print_msg()) { \
-		pr_notice("[CMDQ]"string, ##args); \
-	} \
-} while (0)
+#define CMDQ_MSG(string, args...) pr_debug("[CMDQ] " string, ##args)
 
-#define CMDQ_VERBOSE(string, args...) \
-do { \
-	if (cmdq_core_should_print_msg()) { \
-		pr_debug("[CMDQ]"string, ##args); \
-	} \
-} while (0)
+#define CMDQ_VERBOSE(string, args...) pr_debug("[CMDQ] " string, ##args)
 
-
-
-
-#define CMDQ_ERR(string, args...) ((void)0)
+#define CMDQ_ERR(string, args...) pr_err("[CMDQ] " string, ##args)
 
 #define CMDQ_CHECK_AND_BREAK_STATUS(status)\
 {					\
@@ -100,8 +83,7 @@ if (status < 0)		\
 	break;			\
 }
 
-
-#define CMDQ_AEE(tag, string, args...) ((void)0)
+#define CMDQ_AEE(tag, string, args...) pr_err("[CMDQ_AEE][%s] " string, tag, ##args)
 
 /* typedef unsigned long long CMDQ_TIME; */
 #define CMDQ_TIME unsigned long long
@@ -726,9 +708,6 @@ void cmdq_core_set_aee(bool enable);
 
 bool cmdq_core_ftrace_enabled(void);
 bool cmdq_core_profile_exec_enabled(void);
-void cmdq_long_string_init(bool force, char *buf, u32 *offset, s32 *max_size);
-void cmdq_long_string(char *buf, u32 *offset, s32 *max_size,
-	const char *string, ...);
 
 s32 cmdq_core_reg_dump_begin(u32 taskID, u32 *regCount,
 	u32 **regAddress);
