@@ -21,7 +21,6 @@
 #include <linux/printk.h>
 #include <linux/workqueue.h>
 
-#include "disp_drv_log.h"
 #include "disp_drv_platform.h"
 #ifdef MTK_FB_ION_SUPPORT
 #include "mtk_ion.h"

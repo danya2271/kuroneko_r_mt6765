@@ -3,9 +3,6 @@
 # Makefile for the linux kernel.
 #
 
-ccflags-y += -Ofast
-ccflags-y += -fforce-emit-vtables
-ccflags-y += -mllvm --enable-merge-functions
 ccflags-y += -mllvm -inline-threshold=788
 ccflags-y += -mllvm -unroll-threshold=569
 ccflags-y += -mllvm -inlinehint-threshold=455
