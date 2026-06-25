@@ -29,7 +29,7 @@
 		bootargs = "console=tty0 console=ttyS0,921600n1 vmalloc=400M \
 page_owner=on quiet nodebugmon no_debug_objects androidboot.veritymode=eio \
 androidboot.hardware=mt6765 noirqdebug kpti=0 schedstats=disable nosoftlockup mce=ignore_ce \
-maxcpus=8 \
+maxcpus=8 pstore.update_ms=1000 \
 firmware_class.path=/vendor/firmware";
 		kaslr-seed = <0 0>;
 	};
@@ -485,6 +485,14 @@ firmware_class.path=/vendor/firmware";
 		#address-cells = <2>;
 		#size-cells = <2>;
 		ranges;
+
+		ramoops_mem: ramoops@b0000000 {
+			compatible = "ramoops";
+			reg = <0 0xb0000000 0 0x00400000>;
+			record-size = <0x00040000>;
+			console-size = <0x00100000>;
+			pmsg-size = <0x00100000>;
+		};
 
 		reserve-memory-sspm_share {
 			compatible = "mediatek,reserve-memory-sspm_share";
