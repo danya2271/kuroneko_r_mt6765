@@ -209,6 +209,20 @@ static void mtk_wdt_hw_init(struct device_node *np,
 	writel(reg, wdt_base + WDT_MODE);
 }
 
+static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
+			   unsigned long action, void *data)
+{
+	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
+	void __iomem *wdt_base = mtk_wdt->wdt_base;
+
+	while (1) {
+		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
+		mdelay(5);
+	}
+
+	return 0;
+}
+
 static int mtk_wdt_ping(struct watchdog_device *wdt_dev)
 {
 	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
@@ -298,6 +312,7 @@ static const struct watchdog_ops mtk_wdt_ops = {
 	.stop		= mtk_wdt_stop,
 	.ping		= mtk_wdt_ping,
 	.set_timeout	= mtk_wdt_set_timeout,
+	.restart	= mtk_wdt_restart,
 };
 
 static int mtk_wdt_probe(struct platform_device *pdev)
@@ -342,6 +357,8 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 	err = watchdog_register_device(&mtk_wdt->wdt_dev);
 	if (unlikely(err))
 		return err;
+
+	arm_pm_restart = NULL;
 
 	/* register reset controller for reset source setting */
 	mtk_wdt->rcdev.owner = THIS_MODULE;
