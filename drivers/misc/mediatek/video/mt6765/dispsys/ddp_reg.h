@@ -11,6 +11,9 @@
 #include "cmdq_core.h"
 #include "ddp_hal.h"
 
+unsigned long ddp_get_module_pa(enum DISP_MODULE_ENUM module);
+unsigned long ddp_get_module_va(enum DISP_MODULE_ENUM module);
+
 #define ENABLE_CLK_MGR
 
 #define UINT32 unsigned int

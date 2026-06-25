@@ -12,11 +12,11 @@
 #include "disp_session.h"
 #include "disp_lcm.h"
 #include "disp_helper.h"
+#include "disp_refresh_rate.h"
 #ifdef MTK_FB_MMDVFS_SUPPORT
 #include <linux/soc/mediatek/mtk-pm-qos.h>
 #endif
 #include "mt-plat/mtk_smi.h"
-#include "mtk_smi.h"
 
 
 #ifdef MTK_FB_MMDVFS_SUPPORT

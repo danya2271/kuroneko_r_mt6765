@@ -100,22 +100,9 @@ obj-y += ddp_color_format.o
 obj-y += ddp_pwm_mux.o
 
 
-ifeq ($(CONFIG_MMPROFILE), y)
-obj-y += ddp_mmp.o
-endif
-obj-y += ddp_met.o
-
-obj-y += display_recorder.o
-
-ifeq ($(CONFIG_MMPROFILE),y)
-ccflags-y += -DDEFAULT_MMP_ENABLE
-endif
-
 ifeq ($(MTK_MIRAVISION_SUPPORT), yes)
     ccflags-y += -DCONFIG_FOR_SOURCE_PQ
 endif
-
-ccflags-y += -DMET_USER_EVENT_SUPPORT
 
 ifeq ($(CONFIG_CUSTOM_KERNEL_HDMI), "MT8193")
 ccflags-y +=	-DHDMI_MT8193_SUPPORT

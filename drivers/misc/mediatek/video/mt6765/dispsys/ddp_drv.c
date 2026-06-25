@@ -55,6 +55,7 @@
 #include "ddp_log.h"
 #include "ddp_irq.h"
 #include "ddp_info.h"
+#include "ddp_path.h"
 #include "ddp_m4u.h"
 #include "display_recorder.h"
 

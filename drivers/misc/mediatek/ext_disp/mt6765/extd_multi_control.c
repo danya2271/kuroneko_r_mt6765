@@ -630,8 +630,8 @@ int external_display_frame_cfg(struct disp_frame_cfg_t *cfg)
 	session_id = cfg->session_id;
 
 	if (session_info) {
-		input_event = &session_info->event_setinput;
-		trigger_event = &session_info->event_trigger;
+		input_event = session_info->event_setinput;
+		trigger_event = session_info->event_trigger;
 	} else {
 		input_event = trigger_event = NULL;
 	}

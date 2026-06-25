@@ -5,49 +5,38 @@
 
 #ifndef _H_DDP_LOG_
 #define _H_DDP_LOG_
-#ifdef CONFIG_MTK_AEE_FEATURE
-#include "mt-plat/aee.h"
-#endif
-#include "display_recorder.h"
-#include "ddp_debug.h"
+
+#include <linux/printk.h>
+#include <linux/ratelimit.h>
 #include "disp_drv_log.h"
 
 #ifndef LOG_TAG
-#define LOG_TAG
+#define LOG_TAG "core"
 #endif
 
-#define DDPSVPMSG(fmt, args...) ((void)0)
+#define DDPSVPMSG(fmt, args...) \
+	pr_debug("mtk-disp/" LOG_TAG ": " fmt, ##args)
+#define DISP_LOG_I(fmt, args...) \
+	pr_debug("mtk-disp/" LOG_TAG ": " fmt, ##args)
+#define DISP_LOG_V(fmt, args...) DISP_LOG_I(fmt, ##args)
+#define DISP_LOG_D(fmt, args...) DISP_LOG_I(fmt, ##args)
+#define DISP_LOG_W(fmt, args...) \
+	pr_warn_ratelimited("mtk-disp/" LOG_TAG ": " fmt, ##args)
+#define DISP_LOG_E(fmt, args...) \
+	pr_err_ratelimited("mtk-disp/" LOG_TAG ": " fmt, ##args)
 
-#define DISP_LOG_I(fmt, args...)	((void)0)
-
-#define DISP_LOG_V(fmt, args...)	((void)0)
-
-#define DISP_LOG_D(fmt, args...)	((void)0)
-
-#define DISP_LOG_W(fmt, args...)    ((void)0)
-
-#define DISP_LOG_E(fmt, args...)	((void)0)
-
-#define DDPIRQ(fmt, args...)	((void)0)
-
-#define DDPDBG(fmt, args...) ((void)0)
-
-#define DDPMSG(fmt, args...) ((void)0)
-
-#define DDPWRN(fmt, args...) ((void)0)
-
-#define DDPERR(fmt, args...) ((void)0)
-
-#define DDPDUMP(fmt, ...)	((void)0)
+#define DDPIRQ(fmt, args...) \
+	pr_debug_ratelimited("mtk-disp/irq: " fmt, ##args)
+#define DDPDBG(fmt, args...) DISP_LOG_D(fmt, ##args)
+#define DDPMSG(fmt, args...) DISP_LOG_I(fmt, ##args)
+#define DDPWRN(fmt, args...) DISP_LOG_W(fmt, ##args)
+#define DDPERR(fmt, args...) DISP_LOG_E(fmt, ##args)
+#define DDPDUMP(fmt, args...) DISP_LOG_D(fmt, ##args)
 
 #ifndef ASSERT
-#define ASSERT(expr)	((void)0)
+#define ASSERT(expr) WARN_ON_ONCE(!(expr))
 #endif
 
-#ifdef CONFIG_MTK_AEE_FEATURE
-#define DDPAEE(string, args...)	((void)0)
-#else
-#define DDPAEE(string, args...)	((void)0)
-#endif
+#define DDPAEE(fmt, args...) DISP_LOG_E(fmt, ##args)
 
 #endif

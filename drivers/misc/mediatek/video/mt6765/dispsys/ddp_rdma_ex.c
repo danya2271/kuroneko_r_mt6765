@@ -1240,7 +1240,7 @@ static int do_rdma_config_l(enum DISP_MODULE_ENUM module,
 
 	if (mode == RDMA_MODE_DIRECT_LINK &&
 		r_config->security != DISP_NORMAL_BUFFER)
-		DDPERR("%s: rdma directlink BUT is sec ??!!\n", __func__);
+		DDPERR("%s: secure buffer on direct-link path\n", __func__);
 
 	if (mode == RDMA_MODE_DIRECT_LINK) {
 		pConfig->rdma_config.bg_ctrl.top = 0;

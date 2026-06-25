@@ -30,7 +30,7 @@
 #include <primary_display.h>
 #include <disp_drv_platform.h>
 #ifdef CONFIG_MTK_SMI_EXT
-#include <mtk_smi.h>
+#include <mt-plat/mtk_smi.h>
 #include <smi_public.h>
 #endif
 #ifdef CONFIG_MTK_CLKMGR

@@ -17,7 +17,7 @@
 #include "disp_drv_log.h"
 #include "primary_display.h"
 
-#include "mtk_boot.h"
+#include "mt-plat/mtk_boot.h"
 #include "disp_helper.h"
 #include "disp_drv_platform.h"
 #include "primary_display.h"

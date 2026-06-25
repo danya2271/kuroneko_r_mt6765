@@ -11,8 +11,6 @@
 #include "ddp_mmp.h"
 #include "ddp_dump.h"
 
-extern unsigned int g_mobilelog;
-
 #define LP_CUST_DISABLE (0)
 #define LOW_POWER_MODE (1)
 #define JUST_MAKE_MODE (2)

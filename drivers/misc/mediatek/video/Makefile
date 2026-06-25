@@ -29,6 +29,7 @@ ifeq ($(CONFIG_MTK_DISP_PLATFORM), "mt6779")
 endif
 
 subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include
+subdir-ccflags-y += -I$(srctree)/drivers/misc/mediatek/include/mt-plat
 
 ifneq ($(CONFIG_MTK_LCM), y)
 	obj-y += mtdummy/

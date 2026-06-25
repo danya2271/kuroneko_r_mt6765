@@ -21,7 +21,7 @@
 #include "ion_drv.h"
 #include "mtk_ion.h"
 #endif
-#include "mtk_boot_common.h"
+#include "mt-plat/mtk_boot_common.h"
 #ifdef MTK_FB_SPM_SUPPORT
 #include "mtk_idle.h"
 #endif
@@ -1172,7 +1172,8 @@ static int _primary_path_idlemgr_monitor_thread(void *data)
 		}
 
 #ifdef CONFIG_MTK_DISPLAY_120HZ_SUPPORT
-		if (primary_display_get_lcm_refresh_rate() == 120) {
+		if (primary_display_get_lcm_refresh_rate() ==
+		    MTK_DISP_MAX_REFRESH_RATE_HZ) {
 			primary_display_manual_unlock();
 			continue;
 		}
@@ -1897,4 +1898,3 @@ void external_display_idlemgr_kick(const char *source, int need_lock)
 }
 
 #endif
-

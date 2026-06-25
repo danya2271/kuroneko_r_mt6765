@@ -78,7 +78,6 @@ static struct proc_dir_entry *mtkfb_procfs;
 static struct proc_dir_entry *disp_lowpower_proc;
 
 #endif
-unsigned int g_mobilelog;
 int bypass_blank;
 int lcm_mode_status;
 int layer_layout_allow_non_continuous;
@@ -807,11 +806,6 @@ static void process_dbg_opt(const char *opt)
 			primary_display_manual_unlock();
 			return;
 		}
-	} else if (strncmp(opt, "mobile:", 7) == 0) {
-		if (strncmp(opt + 7, "on", 2) == 0)
-			g_mobilelog = 1;
-		else if (strncmp(opt + 7, "off", 3) == 0)
-			g_mobilelog = 0;
 	} else if (strncmp(opt, "bypass_blank:", 13) == 0) {
 		char *p = (char *)opt + 13;
 		unsigned int blank;

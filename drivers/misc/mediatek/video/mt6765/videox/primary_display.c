@@ -547,7 +547,10 @@ static void change_dsi_vfp(struct cmdqRecStruct *handle, unsigned int fps)
 	unsigned int VFP_PORTCH = pgc->plcm->params->dsi.vertical_frontporch;
 	unsigned int line_num = VFP_PORTCH + pgc->plcm->params->dsi.vertical_sync_active + pgc->plcm->params->dsi.vertical_backporch + pgc->plcm->params->dsi.vertical_active_line;
 
-	if (fps < 60) VFP_PORTCH = (line_num * 60) / fps - line_num + pgc->plcm->params->dsi.vertical_frontporch;
+	if (fps < MTK_DISP_MIN_REFRESH_RATE_HZ)
+		VFP_PORTCH = (line_num * MTK_DISP_MIN_REFRESH_RATE_HZ) /
+			fps - line_num +
+			pgc->plcm->params->dsi.vertical_frontporch;
 	cmdqRecBackupUpdateSlot(handle, pgc->dsi_vfp_line, 0, VFP_PORTCH);
 }
 
@@ -607,10 +610,15 @@ static void _cmdq_build_trigger_loop(void)
 
 	if (primary_display_is_video_mode() && disp_helper_get_option(DISP_OPT_ARR_PHASE_1)) {
 		int VFP_PORTCH = pgc->plcm->params->dsi.vertical_frontporch;
-		unsigned int gsync_fps = (pgc->dynamic_fps ? pgc->dynamic_fps : 60);
+		unsigned int gsync_fps = pgc->dynamic_fps ?
+			pgc->dynamic_fps : MTK_DISP_MIN_REFRESH_RATE_HZ;
 		int line_num = VFP_PORTCH + pgc->plcm->params->dsi.vertical_sync_active + pgc->plcm->params->dsi.vertical_backporch + pgc->plcm->params->dsi.vertical_active_line;
 
-		if (gsync_fps < 60) VFP_PORTCH = (line_num * 60) / gsync_fps - line_num + pgc->plcm->params->dsi.vertical_frontporch;
+		if (gsync_fps < MTK_DISP_MIN_REFRESH_RATE_HZ)
+			VFP_PORTCH =
+				(line_num * MTK_DISP_MIN_REFRESH_RATE_HZ) /
+				gsync_fps - line_num +
+				pgc->plcm->params->dsi.vertical_frontporch;
 		cmdqBackupWriteSlot(pgc->dsi_vfp_line, 0, VFP_PORTCH);
 	}
 
@@ -1864,7 +1872,8 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps, int is_lcm_inited
 	}
 
 	if (use_cmdq) {
-		if (primary_display_is_video_mode() && pgc->dynamic_fps == 0) pgc->dynamic_fps = 60;
+		if (primary_display_is_video_mode() && pgc->dynamic_fps == 0)
+			pgc->dynamic_fps = MTK_DISP_MIN_REFRESH_RATE_HZ;
 		_cmdq_build_trigger_loop();
 		_cmdq_start_trigger_loop();
 	}
@@ -1968,8 +1977,8 @@ int primary_display_init(char *lcm_name, unsigned int lcm_fps, int is_lcm_inited
 		}
 	}
 
-	pgc->lcm_fps = 6400;
-	pgc->lcm_refresh_rate = 64;
+	pgc->lcm_fps = MTK_DISP_DEFAULT_REFRESH_RATE_X100;
+	pgc->lcm_refresh_rate = MTK_DISP_DEFAULT_REFRESH_RATE_HZ;
 	primary_display_lowpower_init();
 
 	primary_set_state(DISP_ALIVE);
@@ -1992,24 +2001,32 @@ static void _primary_protect_mode_switch(void)
 	}
 }
 
-static int request_lcm_refresh_rate_change(int fps);
 int primary_display_set_lcm_refresh_rate(int fps)
 {
+	int ret;
+
 	_primary_protect_mode_switch();
 
 	_primary_path_lock(__func__);
 	if (pgc->state == DISP_SLEPT) {
 		_primary_path_unlock(__func__);
-		return -1;
+		return -EBUSY;
 	}
-
 	_primary_path_unlock(__func__);
-	return 0;
+
+	ret = primary_display_set_refresh_rate(fps);
+	if (ret)
+		DISPWARN("unsupported refresh rate %d Hz\n", fps);
+
+	return ret;
 }
 
 int primary_display_get_lcm_refresh_rate(void) { return pgc->lcm_refresh_rate; }
 
-int primary_display_get_lcm_max_refresh_rate(void) { return 120; }
+int primary_display_get_lcm_max_refresh_rate(void)
+{
+	return MTK_DISP_MAX_REFRESH_RATE_HZ;
+}
 
 int primary_display_deinit(void)
 {
@@ -2180,7 +2197,7 @@ int primary_display_suspend(void)
 	mtk_pm_qos_update_request(&primary_display_qos_request, 0);
 #endif
 
-	pgc->lcm_refresh_rate = 64;
+	pgc->lcm_refresh_rate = MTK_DISP_DEFAULT_REFRESH_RATE_HZ;
 
 done:
 	primary_set_state(DISP_SLEPT);
@@ -3614,22 +3631,36 @@ int primary_display_force_set_fps(unsigned int keep, unsigned int skip)
 
 unsigned int primary_display_force_get_vsync_fps(void)
 {
-	if (primary_display_is_idle()) return (pgc->plcm->params->min_refresh_rate != 0) ? pgc->plcm->params->min_refresh_rate : 64;
-	else if (disp_helper_get_option(DISP_OPT_ARR_PHASE_1)) return pgc->dynamic_fps;
-	return 64;
+	if (primary_display_is_idle())
+		return pgc->plcm->params->min_refresh_rate ?
+			pgc->plcm->params->min_refresh_rate :
+			MTK_DISP_DEFAULT_REFRESH_RATE_HZ;
+	if (disp_helper_get_option(DISP_OPT_ARR_PHASE_1))
+		return pgc->dynamic_fps;
+	return MTK_DISP_DEFAULT_REFRESH_RATE_HZ;
 }
 
 int primary_display_force_set_vsync_fps(unsigned int fps, unsigned int scenario)
 {
-	if (!primary_display_is_video_mode()) return -1;
+	unsigned int min_fps;
+	unsigned int max_fps;
+
+	if (!primary_display_is_video_mode())
+		return -EOPNOTSUPP;
+
+	if (scenario == 0) {
+		min_fps = primary_display_get_min_refresh_rate();
+		max_fps = primary_display_get_max_refresh_rate();
+		if (fps < min_fps || fps > max_fps)
+			return -EINVAL;
+	}
 
 	if ((scenario == 0) && disp_helper_get_option(DISP_OPT_ARR_PHASE_1)) {
 		_primary_path_lock(__func__);
 		pgc->dynamic_fps = fps;
 		arr_fps_backup = fps;
 
-		if ((fps < primary_display_get_min_refresh_rate()) && (fps > primary_display_get_max_refresh_rate())) arr_fps_enable = 1;
-		else if (fps == 60) arr_fps_enable = 0;
+		arr_fps_enable = fps != MTK_DISP_DEFAULT_REFRESH_RATE_HZ;
 
 		if (primary_display_is_idle()) dynamic_fps_changed = 0;
 		else dynamic_fps_changed = 1;
@@ -4073,7 +4104,8 @@ int primary_display_switch_dst_mode(int mode)
 
 	if (pgc->plcm->params->type != LCM_TYPE_DSI) goto done;
 	if (pgc->state == DISP_SLEPT) goto done;
-	if (pgc->lcm_refresh_rate != 120) goto done;
+	if (pgc->lcm_refresh_rate != MTK_DISP_MAX_REFRESH_RATE_HZ)
+		goto done;
 	if (mode == primary_display_cur_dst_mode) goto done;
 
 	lcm_cmd = disp_lcm_switch_mode(pgc->plcm, mode);

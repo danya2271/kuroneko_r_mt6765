@@ -545,7 +545,6 @@ int disp_lcm_is_arr_support(struct disp_lcm_handle *plcm)
 {
 	if (!_is_lcm_inited(plcm) || plcm->params->type != LCM_TYPE_DSI || plcm->params->dsi.mode == CMD_MODE) return 0;
 	if (plcm->params->dsi.dynamic_fps_levels == 0 || plcm->params->dsi.dynamic_fps_levels > DYNAMIC_FPS_LEVELS) return 0;
-	if (!plcm->params->dsi.dynamic_fps_table) return 0;
 	return 1;
 }
 

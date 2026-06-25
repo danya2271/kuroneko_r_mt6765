@@ -59,7 +59,7 @@ int primary_display_get_max_refresh_rate(void)
 	if (pgc->plcm->params->max_refresh_rate != 0)
 		ret = pgc->plcm->params->max_refresh_rate;
 	else
-		ret = 60;
+		ret = MTK_DISP_MAX_REFRESH_RATE_HZ;
 	/* _primary_path_unlock(__func__); */
 
 	return ret;
@@ -73,7 +73,7 @@ int primary_display_get_min_refresh_rate(void)
 	if (pgc->plcm->params->min_refresh_rate != 0)
 		ret = pgc->plcm->params->min_refresh_rate;
 	else
-		ret = 60;
+		ret = MTK_DISP_MIN_REFRESH_RATE_HZ;
 	/* _primary_path_unlock(__func__); */
 
 	return ret;
@@ -81,7 +81,7 @@ int primary_display_get_min_refresh_rate(void)
 
 int primary_display_set_refresh_rate(unsigned int refresh_rate)
 {
-	int ret = -1;
+	int ret;
 	int temp_refresh_rate_min = 0;
 	int temp_refresh_rate_max = 0;
 
@@ -90,7 +90,7 @@ int primary_display_set_refresh_rate(unsigned int refresh_rate)
 
 	if ((refresh_rate > temp_refresh_rate_max) ||
 		(refresh_rate < temp_refresh_rate_min))
-		return ret;
+		return -EINVAL;
 
 	/* AP set refresh rate */
 	ret = primary_display_force_set_vsync_fps(refresh_rate, 0);

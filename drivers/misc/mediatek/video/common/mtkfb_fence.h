@@ -127,16 +127,16 @@ struct disp_sync_info {
 struct disp_session_sync_info {
 	unsigned int session_id;
 	struct disp_sync_info session_layer_info[DISP_SESSION_TIMELINE_COUNT];
-	struct dprec_logger_event event_prepare;
-	struct dprec_logger_event event_setinput;
-	struct dprec_logger_event event_setoutput;
-	struct dprec_logger_event event_trigger;
-	struct dprec_logger_event event_findidx;
-	struct dprec_logger_event event_release;
-	struct dprec_logger_event event_waitvsync;
-	struct dprec_logger_event event_err;
-	struct dprec_logger_event event_wait_fence;
-	struct dprec_logger_event event_frame_cfg;
+	struct dprec_logger_event *event_prepare;
+	struct dprec_logger_event *event_setinput;
+	struct dprec_logger_event *event_setoutput;
+	struct dprec_logger_event *event_trigger;
+	struct dprec_logger_event *event_findidx;
+	struct dprec_logger_event *event_release;
+	struct dprec_logger_event *event_waitvsync;
+	struct dprec_logger_event *event_err;
+	struct dprec_logger_event *event_wait_fence;
+	struct dprec_logger_event *event_frame_cfg;
 };
 
 
