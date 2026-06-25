@@ -78,6 +78,7 @@ struct mtk_wdt_dev {
 	struct reset_controller_dev rcdev;
 	void __iomem *wdt_base;
 	u32 dfd_timeout;
+	bool suspend_wdt_running;
 };
 
 /* Reset controller driver support.
@@ -380,7 +381,7 @@ static void mtk_wdt_shutdown(struct platform_device *pdev)
 {
 	struct mtk_wdt_dev *mtk_wdt = platform_get_drvdata(pdev);
 
-	if (watchdog_active(&mtk_wdt->wdt_dev))
+	if (watchdog_hw_running(&mtk_wdt->wdt_dev))
 		mtk_wdt_stop(&mtk_wdt->wdt_dev);
 }
 
@@ -398,7 +399,9 @@ static int mtk_wdt_suspend(struct device *dev)
 {
 	struct mtk_wdt_dev *mtk_wdt = dev_get_drvdata(dev);
 
-	if (watchdog_active(&mtk_wdt->wdt_dev))
+	mtk_wdt->suspend_wdt_running =
+		watchdog_hw_running(&mtk_wdt->wdt_dev);
+	if (mtk_wdt->suspend_wdt_running)
 		mtk_wdt_stop(&mtk_wdt->wdt_dev);
 
 	return 0;
@@ -408,9 +411,10 @@ static int mtk_wdt_resume(struct device *dev)
 {
 	struct mtk_wdt_dev *mtk_wdt = dev_get_drvdata(dev);
 
-	if (watchdog_active(&mtk_wdt->wdt_dev)) {
+	if (mtk_wdt->suspend_wdt_running) {
 		mtk_wdt_start(&mtk_wdt->wdt_dev);
 		mtk_wdt_ping(&mtk_wdt->wdt_dev);
+		mtk_wdt->suspend_wdt_running = false;
 	}
 
 	return 0;
