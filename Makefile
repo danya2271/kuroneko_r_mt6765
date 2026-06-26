@@ -924,8 +924,9 @@ endif
 
 ifdef CONFIG_LTO_CLANG
 ifdef CONFIG_THINLTO
-lto-clang-flags	:= -funified-lto
-lto-clang-flags	:= -flto=thin
+# Keep both ThinLTO and unified-LTO enabled.  A second := here would
+# silently discard -funified-lto and produce a different LTO pipeline.
+lto-clang-flags	:= -flto=thin -funified-lto
 KBUILD_LDFLAGS	+= --thinlto-cache-dir=.thinlto-cache
 else
 lto-clang-flags	:= -flto
