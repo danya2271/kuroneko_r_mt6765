@@ -5,6 +5,12 @@
 
 #ifndef __M4U_PRIV_H__
 #define __M4U_PRIV_H__
+
+#ifdef pr_fmt
+#undef pr_fmt
+#endif
+#define pr_fmt(fmt) "[M4U] " fmt
+
 #include <linux/ioctl.h>
 #include <linux/fs.h>
 #ifdef CONFIG_MTK_AEE_FEATURE
@@ -24,31 +30,19 @@
 #include "m4u_reg.h"
 #include "../2.0/m4u_pgtable.h"
 
-#define m4u_err(string, args...)	pr_err("[M4U] "string, ##args)
-#define m4u_warn(string, args...)	pr_warn("[M4U] "string, ##args)
-#define m4u_info(string, args...)       pr_info("[M4U] "string, ##args)
-#define m4u_notice(string, args...)     pr_notice("[M4U] "string, ##args)
-#define m4u_debug(string, args...)      pr_debug("[M4U] "string, ##args)
+#define m4u_err(string, args...)	pr_err(string, ##args)
+#define m4u_warn(string, args...)	pr_warn(string, ##args)
+#define m4u_info(string, args...)       pr_info(string, ##args)
+#define m4u_notice(string, args...)     pr_notice(string, ##args)
+#define m4u_debug(string, args...)      pr_debug(string, ##args)
 
 #define M4U_LOG_LEVEL_HIGH    3
 #define M4U_LOG_LEVEL_MID     2
 #define M4U_LOG_LEVEL_LOW     1
 
-extern int gM4U_log_level;
-extern int gM4U_log_to_uart;
-#define __M4ULOG(level, string, args...) \
-	do {\
-		if (level > gM4U_log_level) {\
-			if (level > gM4U_log_to_uart)\
-				pr_info("[M4U] "string, ##args);\
-			else\
-				pr_debug("[M4U] "string, ##args);\
-		} \
-	} while (0)
-
-#define M4U_LOW(string, args...)   __M4ULOG(M4U_LOG_LEVEL_LOW, string, ##args)
-#define M4U_MID(string, args...)   __M4ULOG(M4U_LOG_LEVEL_MID, string, ##args)
-#define M4U_HIGH(string, args...)  __M4ULOG(M4U_LOG_LEVEL_HIGH, string, ##args)
+#define M4U_LOW(string, args...)   pr_debug(string, ##args)
+#define M4U_MID(string, args...)   pr_debug(string, ##args)
+#define M4U_HIGH(string, args...)  pr_debug(string, ##args)
 
 /* for pass check service */
 #define m4u_low_info    M4U_LOW
@@ -57,31 +51,24 @@ extern int gM4U_log_to_uart;
 
 #ifdef CONFIG_MTK_AEE_FEATURE
 #define M4UERR(string, args...) do {\
-	pr_err("[M4U]:"string, ##args); \
-	       aee_kernel_exception("M4U", "[M4U] error:"string, ##args); \
+	pr_err(":" string, ##args); \
+	aee_kernel_exception("M4U", "[M4U] error:" string, ##args); \
 	} while (0)
 
 #define m4u_aee_err(string, args...) do {\
 	char m4u_name[100]; \
-	int name_length = snprintf(m4u_name, 100, \
-			"[M4U]"string, ##args); \
+	int name_length = snprintf(m4u_name, sizeof(m4u_name), \
+			"[M4U]" string, ##args); \
 	if (name_length > 0) \
 		aee_kernel_warning_api(__FILE__, __LINE__, \
 			DB_OPT_MMPROFILE_BUFFER | DB_OPT_DUMP_DISPLAY, \
-			m4u_name, "[M4U]"string, ##args); \
-	pr_err("[M4U]:"string, ##args); \
+			m4u_name, "[M4U]" string, ##args); \
+	pr_err(":" string, ##args); \
 	} while (0)
-/*aee_kernel_warning(m4u_name, "[M4U] error:"string,##args); */
 #else
-#define M4UERR(string, args...)  pr_debug("[M4U]:"string, ##args)
+#define M4UERR(string, args...)  pr_debug(":" string, ##args)
 
-#define m4u_aee_err(string, args...) \
-	do { \
-		char m4u_name[100]; \
-		int name_length = snprintf(m4u_name, 100, "[M4U]"string, ##args); \
-		if (name_length > 0) \
-			pr_debug("[M4U]:"string, ##args); \
-	} while (0)
+#define m4u_aee_err(string, args...) pr_debug(":" string, ##args)
 
 #endif
 #define M4U_PRINT_SEQ(seq_file, fmt, args...) \

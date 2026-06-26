@@ -59,8 +59,8 @@ int m4u_invalid_tlb(int m4u_id, int L2_en, int isInvAll, unsigned int mva_start,
 	if (isInvAll) {
 		M4U_WriteReg32(m4u_base, REG_MMU_INVLD, F_MMU_INV_ALL);
 	} else {
-		M4U_WriteReg32(m4u_base, REG_MMU_INVLD_SA, mva_start);
-		M4U_WriteReg32(m4u_base, REG_MMU_INVLD_EA, mva_end);
+		writel_relaxed(mva_start, (void __iomem *)(m4u_base + REG_MMU_INVLD_SA));
+		writel_relaxed(mva_end, (void __iomem *)(m4u_base + REG_MMU_INVLD_EA));
 		M4U_WriteReg32(m4u_base, REG_MMU_INVLD, F_MMU_INV_RANGE);
 
 		while (!M4U_ReadReg32(m4u_base, REG_MMU_CPE_DONE))
@@ -117,11 +117,11 @@ int mau_start_monitor(int m4u_id, int m4u_slave_id, int mau_set,
 	unsigned long m4u_base = gM4UBaseAddr[m4u_id];
 	if (!m4u_base) return -1;
 
-	M4U_WriteReg32(m4u_base, REG_MMU_MAU_START(m4u_slave_id, mau_set), start);
-	M4U_WriteReg32(m4u_base, REG_MMU_MAU_START_BIT32(m4u_slave_id, mau_set), !!(bit32));
-	M4U_WriteReg32(m4u_base, REG_MMU_MAU_END(m4u_slave_id, mau_set), end);
-	M4U_WriteReg32(m4u_base, REG_MMU_MAU_END_BIT32(m4u_slave_id, mau_set), !!(bit32));
-	M4U_WriteReg32(m4u_base, REG_MMU_MAU_PORT_EN(m4u_slave_id, mau_set), port_mask);
+	writel_relaxed(start, (void __iomem *)(m4u_base + REG_MMU_MAU_START(m4u_slave_id, mau_set)));
+	writel_relaxed(!!(bit32), (void __iomem *)(m4u_base + REG_MMU_MAU_START_BIT32(m4u_slave_id, mau_set)));
+	writel_relaxed(end, (void __iomem *)(m4u_base + REG_MMU_MAU_END(m4u_slave_id, mau_set)));
+	writel_relaxed(!!(bit32), (void __iomem *)(m4u_base + REG_MMU_MAU_END_BIT32(m4u_slave_id, mau_set)));
+	writel_relaxed(port_mask, (void __iomem *)(m4u_base + REG_MMU_MAU_PORT_EN(m4u_slave_id, mau_set)));
 
 	m4uHw_set_field_by_mask(m4u_base, REG_MMU_MAU_LARB_EN(m4u_slave_id), F_MAU_LARB_MSK(mau_set), F_MAU_LARB_VAL(mau_set, larb_mask));
 	m4uHw_set_field_by_mask(m4u_base, REG_MMU_MAU_IO(m4u_slave_id), F_MAU_BIT_VAL(1, mau_set), F_MAU_BIT_VAL(io, mau_set));
@@ -175,8 +175,8 @@ static unsigned int imu_pfh_tag_to_va(int mmu, int set, int way, unsigned int ta
 int m4u_confirm_main_range_invalidated(int m4u_index, int m4u_slave_id, unsigned int MVAStart, unsigned int MVAEnd)
 {
 	unsigned int i, regval;
-	unsigned int sa = MVAStart & ~(PAGE_SIZE - 1);
-	unsigned int ea = MVAEnd | (PAGE_SIZE - 1);
+	unsigned int sa = MVAStart & PAGE_MASK;
+	unsigned int ea = MVAEnd | ~PAGE_MASK;
 
 	for (i = 0; i < gM4UTagCount[m4u_index]; i++) {
 		regval = m4u_get_main_tag(m4u_index, m4u_slave_id, i);
@@ -209,8 +209,8 @@ int m4u_confirm_range_invalidated(int m4u_index, unsigned int MVAStart, unsigned
 	if (m4u_confirm_main_range_invalidated(m4u_index, 0, MVAStart, MVAEnd) < 0) return -1;
 	if (m4u_index == 0 && m4u_confirm_main_range_invalidated(m4u_index, 1, MVAStart, MVAEnd) < 0) return -1;
 
-	sa = MVAStart & ~(PAGE_SIZE - 1);
-	ea = MVAEnd | (PAGE_SIZE - 1);
+	sa = MVAStart & PAGE_MASK;
+	ea = MVAEnd | ~PAGE_MASK;
 
 	for (way = 0; way < MMU_WAY_NR; way++) {
 		for (set = 0; set < set_nr; set++) {
@@ -563,10 +563,7 @@ int m4u_monitor_stop(int m4u_id)
 static unsigned int *pM4URegBackUp;
 
 #define __M4U_BACKUP(base, reg, back) ((back) = M4U_ReadReg32(base, reg))
-void __M4U_RESTORE(unsigned long base, unsigned int reg, unsigned int back)
-{
-	M4U_WriteReg32(base, reg, back);
-}
+#define __M4U_RESTORE(base, reg, back) writel_relaxed(back, (void __iomem *)((base) + (reg)))
 
 int m4u_reg_backup(void)
 {
@@ -662,8 +659,8 @@ int m4u_reg_restore(void)
 		}
 		m4uHw_set_field_by_mask(m4u_base, REG_MMU_DUMMY, F_REG_MMU_IDLE_ENABLE, 0);
 	}
+	wmb();
 	return 0;
-
 }
 
 static unsigned int larb_reg_backup_buf[SMI_LARB_NR][64];
@@ -684,6 +681,7 @@ void m4u_larb_restore(unsigned int larb_idx)
 	if (larb_idx >= SMI_LARB_NR) return;
 	for (i = 0; i < 32; i++)
 		__M4U_RESTORE(larb_base, SMI_LARB_NON_SEC_CONx(i), larb_reg_backup_buf[larb_idx][i]);
+	wmb();
 }
 
 static unsigned int larb0_cnt;
@@ -781,18 +779,13 @@ static void m4u_isr_record(void)
 	static int m4u_isr_cnt;
 	static unsigned long first_jiffies;
 
-
 	if (!m4u_isr_cnt || time_after(jiffies, first_jiffies + m4u_isr_cnt * HZ)) {
 		m4u_isr_cnt = 1;
 		first_jiffies = jiffies;
-	} else {
-		m4u_isr_cnt++;
-		if (m4u_isr_cnt >= 5) {
-			m4u_isr_pause(10);
-			m4u_isr_cnt = 0;
-		}
+	} else if (++m4u_isr_cnt >= 5) {
+		m4u_isr_pause(10);
+		m4u_isr_cnt = 0;
 	}
-
 }
 
 irqreturn_t MTK_M4U_isr(int irq, void *dev_id)
@@ -924,7 +917,7 @@ int m4u_hw_init(struct m4u_device *m4u_dev, int m4u_id)
 		tf_protect_buffer = kzalloc(TF_PROTECT_BUFFER_SIZE * 2, GFP_KERNEL);
 		if (!tf_protect_buffer) return -ENOMEM;
 	}
-	ProtectPA = virt_to_phys((void *)(((unsigned long)tf_protect_buffer + TF_PROTECT_BUFFER_SIZE - 1) & ~ (TF_PROTECT_BUFFER_SIZE - 1)));
+	ProtectPA = virt_to_phys((void *)ALIGN((unsigned long)tf_protect_buffer, TF_PROTECT_BUFFER_SIZE));
 
 	if (!pM4URegBackUp) {
 		pM4URegBackUp = kmalloc(M4U_REG_BACKUP_SIZE, GFP_KERNEL | __GFP_ZERO);
