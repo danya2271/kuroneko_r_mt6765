@@ -77,6 +77,7 @@ mmp_event M4U_MMP_Events[M4U_MMP_MAX];
 
 #define M4U_DEV_NAME "m4u"
 struct m4u_device *gM4uDev;
+static struct kmem_cache *m4u_buf_cache;
 
 static int m4u_buf_show(void *priv, unsigned int mva_start,
 			unsigned int mva_end, void *data)
@@ -162,10 +163,10 @@ int m4u_put_sgtable_pages(struct sg_table *table)
 
 static struct m4u_buf_info *m4u_alloc_buf_info(void)
 {
-	struct m4u_buf_info *pList = NULL;
+	struct m4u_buf_info *pList;
 
-	pList = kzalloc(sizeof(struct m4u_buf_info), GFP_KERNEL);
-	if (pList == NULL)
+	pList = kmem_cache_zalloc(m4u_buf_cache, GFP_KERNEL);
+	if (!pList)
 		return NULL;
 
 	INIT_LIST_HEAD(&(pList->link));
@@ -174,7 +175,7 @@ static struct m4u_buf_info *m4u_alloc_buf_info(void)
 
 static int m4u_free_buf_info(struct m4u_buf_info *pList)
 {
-	kfree(pList);
+	kmem_cache_free(m4u_buf_cache, pList);
 	return 0;
 }
 
@@ -2217,6 +2218,15 @@ static int __init MTK_M4U_Init(void)
 		m4u_err("kmalloc for m4u_device fail\n");
 		return -ENOMEM;
 	}
+
+	m4u_buf_cache = kmem_cache_create("m4u_buf_info",
+					  sizeof(struct m4u_buf_info),
+					  0, 0, NULL);
+	if (!m4u_buf_cache) {
+		kfree(gM4uDev);
+		return -ENOMEM;
+	}
+
 #ifndef __M4U_USE_PROC_NODE
 	gM4uDev->dev.minor = MISC_DYNAMIC_MINOR;
 	gM4uDev->dev.name = M4U_DEV_NAME;
@@ -2280,6 +2290,8 @@ static int __init mtk_m4u_late_init(void)
 static void __exit MTK_M4U_Exit(void)
 {
 	platform_driver_unregister(&m4uDrv);
+	kmem_cache_destroy(m4u_buf_cache);
+	kfree(gM4uDev);
 }
 // #if !(defined(CONFIG_MACH_MT6765) || defined(CONFIG_MACH_MT6761))
 subsys_initcall(MTK_M4U_Init);
