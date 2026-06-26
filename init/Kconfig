@@ -1361,6 +1361,10 @@ config LD_DEAD_CODE_DATA_ELIMINATION
 	bool "Dead code and data elimination (EXPERIMENTAL)"
 	depends on HAVE_LD_DEAD_CODE_DATA_ELIMINATION
 	depends on EXPERT
+	# ThinLTO gives many kernel registrations private input sections.  This
+	# vendor linker script does not retain all of them when --gc-sections is
+	# enabled, which can leave the kernel unable to reach early init.
+	depends on !LTO_CLANG
 	depends on !(FUNCTION_TRACER && CC_IS_GCC && GCC_VERSION < 40800)
 	depends on $(cc-option,-ffunction-sections -fdata-sections)
 	depends on $(ld-option,--gc-sections)
