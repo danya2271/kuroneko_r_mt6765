@@ -241,7 +241,10 @@ foreach my $level (sort(keys(%{$sections}))) {
 	print "\t${section} : {\n";
 
 	foreach my $fsname (@{$sections->{$level}}) {
-		print "\t\t*(${section}..${fsname}) ;\n"
+		# LTO gives every initcall its own input section. Retain it when
+		# the final link uses --gc-sections, otherwise early drivers such
+		# as ramoops can be discarded.
+		print "\t\tKEEP(*(${section}..${fsname}))\n"
 	}
 
 	print "\t}\n";

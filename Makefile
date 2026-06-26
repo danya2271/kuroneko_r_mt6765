@@ -924,9 +924,9 @@ endif
 
 ifdef CONFIG_LTO_CLANG
 ifdef CONFIG_THINLTO
-# Keep both ThinLTO and unified-LTO enabled.  A second := here would
-# silently discard -funified-lto and produce a different LTO pipeline.
-lto-clang-flags	:= -flto=thin -funified-lto
+# Use unified LTO only when the selected Clang supports it.  The bundled
+# Neutron Clang 17 toolchain does not recognize -funified-lto.
+lto-clang-flags	:= -flto=thin $(call cc-option, -funified-lto)
 KBUILD_LDFLAGS	+= --thinlto-cache-dir=.thinlto-cache
 else
 lto-clang-flags	:= -flto
