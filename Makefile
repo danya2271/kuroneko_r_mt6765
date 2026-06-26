@@ -748,7 +748,13 @@ ifdef CONFIG_LD_DEAD_CODE_DATA_ELIMINATION
 POLLY_FLAGS	+= -mllvm -polly-run-dce
 endif
 OPT_FLAGS	+= $(POLLY_FLAGS)
+
+# LLD runs Polly over the complete program when linking LLVM IR. That is not
+# safe for the kernel's early boot code, while non-LTO links have no IR for
+# Polly to transform.
+ifneq ($(CONFIG_LTO_CLANG),y)
 KBUILD_LDFLAGS	+= $(POLLY_FLAGS)
+endif
 endif
 
 # Tell gcc to never replace conditional load with a non-conditional one
