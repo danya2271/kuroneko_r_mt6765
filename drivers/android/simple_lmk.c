@@ -5,8 +5,8 @@
 
 #define pr_fmt(fmt) "simple_lmk: " fmt
 
-#include <linux/delay.h>
 #include <linux/freezer.h>
+#include <linux/init.h>
 #include <linux/kthread.h>
 #include <linux/mm.h>
 #include <linux/moduleparam.h>
@@ -54,6 +54,7 @@ static __cacheline_aligned_in_smp DEFINE_RWLOCK(mm_free_lock);
 static int nr_victims;
 static atomic_t needs_reclaim = ATOMIC_INIT(0);
 static atomic_t nr_killed = ATOMIC_INIT(0);
+static atomic_t initialized = ATOMIC_INIT(0);
 
 static int victim_cmp(const void *lhs_ptr, const void *rhs_ptr)
 {
@@ -267,8 +268,6 @@ static void scan_and_kill(void)
 	/* Wait until all the victims die or until the timeout is reached */
 	if (!wait_for_completion_timeout(&reclaim_done, RECLAIM_EXPIRES))
 		pr_info("Timeout hit waiting for victims to die, proceeding\n");
-	else
-		msleep(28);
 
 	/* Clean up for future reclaim invocations */
 	write_lock(&mm_free_lock);
@@ -322,18 +321,33 @@ void simple_lmk_mm_freed(struct mm_struct *mm)
 	read_unlock(&mm_free_lock);
 }
 
-/* Initialize Simple LMK when lmkd in Android writes to the minfree parameter */
-static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
+static int simple_lmk_start(void)
 {
-	static atomic_t init_done = ATOMIC_INIT(0);
 	struct task_struct *thread;
 
-	if (!atomic_cmpxchg(&init_done, 0, 1)) {
+	if (!atomic_cmpxchg(&initialized, 0, 1)) {
 		thread = kthread_run(simple_lmk_reclaim_thread, NULL,
 				     "simple_lmkd");
-		BUG_ON(IS_ERR(thread));
+		if (IS_ERR(thread)) {
+			atomic_set(&initialized, 0);
+			return PTR_ERR(thread);
+		}
+		pr_info("Started\n");
 	}
 	return 0;
+}
+
+/* Start independently of the legacy lowmemorykiller.minfree write. */
+static int __init simple_lmk_init(void)
+{
+	return simple_lmk_start();
+}
+late_initcall(simple_lmk_init);
+
+/* Keep the legacy parameter so older Android lmkd implementations detect us. */
+static int simple_lmk_init_set(const char *val, const struct kernel_param *kp)
+{
+	return simple_lmk_start();
 }
 
 static const struct kernel_param_ops simple_lmk_init_ops = {
