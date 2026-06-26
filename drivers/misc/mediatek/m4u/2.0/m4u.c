@@ -204,9 +204,7 @@ static struct m4u_buf_info *m4u_client_find_buf(
 	struct m4u_client_t *client,
 	unsigned int mva, int del)
 {
-	struct list_head *pListHead;
-	struct m4u_buf_info *pList = NULL;
-	struct m4u_buf_info *ret = NULL;
+	struct m4u_buf_info *pList;
 
 	if (client == NULL) {
 		m4u_err("m4u_delete_from_garbage_list(), client is NULL!\n");
@@ -215,22 +213,17 @@ static struct m4u_buf_info *m4u_client_find_buf(
 	}
 
 	mutex_lock(&(client->dataMutex));
-	list_for_each(pListHead, &(client->mvaList)) {
-		pList = container_of(pListHead, struct m4u_buf_info, link);
-		if (pList->mva == mva)
-			break;
+	list_for_each_entry(pList, &(client->mvaList), link) {
+		if (pList->mva == mva) {
+			if (del)
+				list_del(&pList->link);
+			mutex_unlock(&(client->dataMutex));
+			return pList;
+		}
 	}
-	if (pListHead == &(client->mvaList)) {
-		ret = NULL;
-	} else {
-		if (del)
-			list_del(pListHead);
-		ret = pList;
-	}
-
 	mutex_unlock(&(client->dataMutex));
 
-	return ret;
+	return NULL;
 }
 
 
@@ -262,16 +255,14 @@ struct m4u_client_t *m4u_create_client(void)
 {
 	struct m4u_client_t *client;
 
-	client = kmalloc(sizeof(struct m4u_client_t), GFP_ATOMIC);
+	client = kzalloc(sizeof(struct m4u_client_t), GFP_KERNEL);
 	if (!client)
 		return NULL;
 
 	mutex_init(&(client->dataMutex));
-	mutex_lock(&(client->dataMutex));
 	client->open_pid = current->pid;
 	client->open_tgid = current->tgid;
 	INIT_LIST_HEAD(&(client->mvaList));
-	mutex_unlock(&(client->dataMutex));
 
 	return client;
 }
@@ -1066,9 +1057,9 @@ int m4u_mva_map_kernel(unsigned int mva, unsigned int size,
 	table = pMvaInfo->sg_table;
 
 	page_num = M4U_GET_PAGE_NUM(mva, size);
-	pages = vmalloc(sizeof(struct page *) * page_num);
+	pages = kvmalloc_array(page_num, sizeof(struct page *), GFP_KERNEL);
 	if (pages == NULL) {
-		m4u_err("mva_map_kernel:error to vmalloc for %d\n",
+		m4u_err("mva_map_kernel:error to kvmalloc for %d\n",
 		       (unsigned int)sizeof(struct page *) * page_num);
 		return -1;
 	}
@@ -1119,9 +1110,7 @@ get_pages_done:
 	*map_size = size;
 
 error_out:
-	vfree(pages);
-	m4u_low_info("mva_map_kernel:mva=0x%x,size=0x%x,map_va=0x%lx,map_size=0x%x\n",
-		     mva, size, *map_va, *map_size);
+	kvfree(pages);
 
 	return ret;
 }
@@ -1354,12 +1343,6 @@ int m4u_sec_init(void)
 
 	m4u_err("tz_m4u: open DCI session returned: %d\n", mcRet);
 #endif
-	{
-		int i, j;
-
-		for (i = 0; i < 10000000; i++)
-			j++;
-	}
 
 	m4u_sec_set_context();
 
@@ -2057,10 +2040,8 @@ static int m4u_probe(struct platform_device *pdev)
 {
 	struct device_node *node = pdev->dev.of_node;
 
-	m4u_info("%s 0\n", __func__);
 #if defined(CONFIG_MACH_MT6765) || defined(CONFIG_MACH_MT6761)
 #if defined(CONFIG_MTK_SMI_EXT)
-	m4u_err("%s: %d\n", __func__, smi_mm_first_get());
 	if (!smi_mm_first_get()) {
 		m4u_err("SMI not start probe\n");
 		return -EPROBE_DEFER;
@@ -2070,16 +2051,10 @@ static int m4u_probe(struct platform_device *pdev)
 	if (pdev->dev.of_node) {
 		of_property_read_u32(node, "cell-index", &pdev->id);
 	}
-	m4u_info("%s 1, pdev id = %d name = %s\n", __func__, pdev->id,
-		pdev->name);
 
 	gM4uDev->pDev[pdev->id] = &pdev->dev;
 	gM4uDev->m4u_base[pdev->id] = (unsigned long)of_iomap(node, 0);
 	gM4uDev->irq_num[pdev->id] = irq_of_parse_and_map(node, 0);
-
-	m4u_err("%s 2, of_iomap: 0x%lx, irq_num: %d, pDev: %p\n", __func__,
-	       gM4uDev->m4u_base[pdev->id], gM4uDev->irq_num[pdev->id],
-	       gM4uDev->pDev[pdev->id]);
 
 	if (pdev->id == 0) {
 		m4u_domain_init(gM4uDev, &gMvaNode_unknown);
@@ -2100,15 +2075,12 @@ static int m4u_probe(struct platform_device *pdev)
 						M4U_NONSEC_MVA_START - 0x100000,
 						pMvaInfo);
 			pMvaInfo->mva = mva;
-			m4u_info("reserve sec mva: 0x%x\n", mva);
 		}
 #endif
 
 	}
 
 	m4u_hw_init(gM4uDev, pdev->id);
-
-	m4u_info("%s 3 finish...\n", __func__);
 
 	return 0;
 }
