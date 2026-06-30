@@ -126,7 +126,6 @@ pvrsrvkm-y += \
 	services/server/common/di_server.o \
 	services/server/env/linux/km_apphint.o \
 	services/server/env/linux/osmmap_stub.o \
-	services/server/env/linux/physmem_test.o \
 	services/server/env/linux/allocmem.o \
 	services/server/env/linux/pvr_bridge_k.o \
 	services/server/env/linux/physmem_dmabuf.o \
@@ -138,9 +137,7 @@ pvrsrvkm-y += \
 	services/server/env/linux/module_common.o \
 	services/server/env/linux/physmem_osmem_linux.o \
 	services/server/env/linux/osfunc.o \
-	services/server/env/linux/pvr_gputrace.o \
 	services/server/env/linux/pvr_debug.o \
-	services/server/env/linux/pvr_procfs.o \
 	services/shared/devices/rogue/rgx_hwperf_table.o \
 	services/shared/common/devicemem_utils.o \
 	services/shared/common/hash.o \
@@ -155,6 +152,16 @@ pvrsrvkm-y += \
 	kernel/drivers/staging/imgtec/pvr_drm.o \
 	kernel/drivers/staging/imgtec/pvr_platform_drv.o \
 
+pvrsrvkm-$(CONFIG_MTK_ENG_BUILD) += \
+	services/server/env/linux/physmem_test.o \
+	services/server/env/linux/pvr_ion_stats.o
+
+ifeq ($(CONFIG_DEBUG_FS),y)
+pvrsrvkm-y += services/server/env/linux/pvr_debugfs.o
+else
+pvrsrvkm-$(CONFIG_PROC_FS) += services/server/env/linux/pvr_procfs.o
+endif
+
 ifeq ($(CONFIG_SYNC_FILE),y)
 	pvrsrvkm-y += \
 		kernel/drivers/staging/imgtec/pvr_sync_file.o \
@@ -168,7 +175,9 @@ endif
 
 pvrsrvkm-$(CONFIG_ARM) += services/server/env/linux/osfunc_arm.o
 pvrsrvkm-$(CONFIG_ARM64) += services/server/env/linux/osfunc_arm64.o
-pvrsrvkm-$(CONFIG_EVENT_TRACING) += services/server/env/linux/trace_events.o
+pvrsrvkm-$(CONFIG_EVENT_TRACING) += \
+	services/server/env/linux/pvr_gputrace.o \
+	services/server/env/linux/trace_events.o
 
 ifeq ($(MTK_PLATFORM),mt6799)
 	pvrsrvkm-y += \

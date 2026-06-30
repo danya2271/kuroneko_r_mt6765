@@ -48,7 +48,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "rgx_hwperf.h"
 #include "device.h"
 
-#if defined(LINUX)
+#if defined(LINUX) && defined(CONFIG_EVENT_TRACING)
 
 void PVRGpuTraceEnqueueEvent(
 		PVRSRV_DEVICE_NODE *psDevNode,
@@ -98,7 +98,7 @@ void PVRGpuTraceDisableUfoCallback(void);
 void PVRGpuTraceEnableFirmwareActivityCallback(void);
 void PVRGpuTraceDisableFirmwareActivityCallback(void);
 
-#else /* define(LINUX) */
+#else /* defined(LINUX) && defined(CONFIG_EVENT_TRACING) */
 
 static inline void PVRGpuTraceEnqueueEvent(
 		PVRSRV_DEVICE_NODE *psDevNode,
@@ -162,6 +162,6 @@ static inline void PVRGpuTraceDisableUfoCallback(void) {}
 static inline void PVRGpuTraceEnableFirmwareActivityCallback(void) {}
 static inline void PVRGpuTraceDisableFirmwareActivityCallback(void) {}
 
-#endif /* define(LINUX) */
+#endif /* defined(LINUX) && defined(CONFIG_EVENT_TRACING) */
 
 #endif /* PVR_GPUTRACE_H_ */
