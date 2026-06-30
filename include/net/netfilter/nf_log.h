@@ -92,7 +92,7 @@ void nf_log_trace(struct net *net,
 		   const struct net_device *in,
 		   const struct net_device *out,
 		   const struct nf_loginfo *li,
-		   const char *fmt, ...)
+		   const char *fmt, ...);
 
 #else
 static inline void nf_log_packet(struct net *net,
