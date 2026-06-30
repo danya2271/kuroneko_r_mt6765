@@ -44,7 +44,6 @@ pvrsrvkm-y += \
 	generated/rogue/rgxcmp_bridge/server_rgxcmp_bridge.o \
 	generated/rogue/rgxhwperf_bridge/server_rgxhwperf_bridge.o \
 	generated/rogue/rgxfwdbg_bridge/server_rgxfwdbg_bridge.o \
-	generated/rogue/rgxbreakpoint_bridge/server_rgxbreakpoint_bridge.o \
 	generated/rogue/rgxregconfig_bridge/server_rgxregconfig_bridge.o \
 	generated/rogue/htbuffer_bridge/client_htbuffer_direct_bridge.o \
 	generated/rogue/htbuffer_bridge/server_htbuffer_bridge.o \
@@ -76,7 +75,6 @@ pvrsrvkm-y += \
 	services/server/devices/rogue/rgxccb.o \
 	services/server/devices/rogue/rgxmmuinit.o \
 	services/server/devices/rogue/rgxtransfer.o \
-	services/server/devices/rogue/rgxbreakpoint.o \
 	services/server/devices/rogue/rgxmipsmmuinit.o \
 	services/server/devices/rogue/rgxinit.o \
 	services/server/devices/rogue/rgxsignals.o \
@@ -132,7 +130,6 @@ pvrsrvkm-y += \
 	services/server/env/linux/allocmem.o \
 	services/server/env/linux/pvr_bridge_k.o \
 	services/server/env/linux/physmem_dmabuf.o \
-	services/server/env/linux/pvr_debugfs.o \
 	services/server/env/linux/osconnection_server.o \
 	services/server/env/linux/handle_idr.o \
 	services/server/env/linux/event.o \
@@ -144,7 +141,6 @@ pvrsrvkm-y += \
 	services/server/env/linux/pvr_gputrace.o \
 	services/server/env/linux/pvr_debug.o \
 	services/server/env/linux/pvr_procfs.o \
-	services/server/env/linux/pvr_ion_stats.o \
 	services/shared/devices/rogue/rgx_hwperf_table.o \
 	services/shared/common/devicemem_utils.o \
 	services/shared/common/hash.o \
@@ -195,7 +191,6 @@ ccflags-y += \
 	-I$(RGX_TOP)/generated/rogue/htbuffer_bridge \
 	-I$(RGX_TOP)/generated/rogue/mm_bridge \
 	-I$(RGX_TOP)/generated/rogue/pvrtl_bridge \
-	-I$(RGX_TOP)/generated/rogue/rgxbreakpoint_bridge \
 	-I$(RGX_TOP)/generated/rogue/rgxcmp_bridge \
 	-I$(RGX_TOP)/generated/rogue/rgxfwdbg_bridge \
 	-I$(RGX_TOP)/generated/rogue/rgxhwperf_bridge \
