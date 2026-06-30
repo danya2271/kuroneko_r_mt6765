@@ -18,6 +18,7 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
+#include <linux/string.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
 #include <linux/delay.h>
@@ -169,6 +170,54 @@ static void mtk_wdt_mark_stage(struct mtk_wdt_dev *mtk_wdt)
 	writel(reg, wdt_base + WDT_NONRST2);
 }
 
+static bool mtk_wdt_cmd_matches(const char *cmd, const char *mode)
+{
+	size_t len;
+
+	if (!cmd)
+		return false;
+
+	len = strlen(mode);
+
+	return !strcmp(cmd, mode) ||
+	       (!strncmp(cmd, mode, len) && cmd[len] == ',') ||
+	       (!strncmp(cmd, "reboot,", 7) &&
+		!strncmp(cmd + 7, mode, len) &&
+		(cmd[7 + len] == '\0' || cmd[7 + len] == ','));
+}
+
+static void mtk_wdt_set_restart_mode(struct mtk_wdt_dev *mtk_wdt,
+				     const char *cmd)
+{
+	void __iomem *wdt_base;
+	u32 magic = 0;
+	u32 reg;
+
+	if (!mtk_wdt || !cmd)
+		return;
+
+	if (mtk_wdt_cmd_matches(cmd, "recovery") ||
+	    !strcmp(cmd, "recovery-update") ||
+	    !strcmp(cmd, "reboot,recovery-update"))
+		magic = BOOT_RECOVERY;
+	else if (mtk_wdt_cmd_matches(cmd, "bootloader") ||
+		 mtk_wdt_cmd_matches(cmd, "fastboot"))
+		magic = BOOT_BOOTLOADER;
+
+	if (!magic)
+		return;
+
+	wdt_base = mtk_wdt->wdt_base;
+	if (!wdt_base)
+		return;
+
+	reg = readl(wdt_base + WDT_NONRST2);
+	reg &= ~RGU_REBOOT_MASK;
+	reg |= magic & RGU_REBOOT_MASK;
+	writel(reg, wdt_base + WDT_NONRST2);
+	readl(wdt_base + WDT_NONRST2);
+}
+
 static void mtk_wdt_parse_dt(struct device_node *np,
 			     struct mtk_wdt_dev *mtk_wdt)
 {
@@ -234,6 +283,8 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 	mode = readl(wdt_base + WDT_MODE);
 	mode &= ~(WDT_MODE_DUAL_EN | WDT_MODE_IRQ_EN);
 	writel(WDT_MODE_KEY | mode, wdt_base + WDT_MODE);
+
+	mtk_wdt_set_restart_mode(mtk_wdt, data);
 
 	while (1) {
 		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
