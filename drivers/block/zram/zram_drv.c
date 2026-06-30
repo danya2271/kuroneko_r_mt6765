@@ -76,6 +76,23 @@ static inline bool init_done(struct zram *zram)
 	return zram->disksize;
 }
 
+static void zram_report_io_error(struct zram *zram, const char *reason,
+				 int err, u32 index, int offset,
+				 unsigned int len)
+{
+	unsigned long used_pages = zram->mem_pool ?
+				  zs_get_total_pages(zram->mem_pool) : 0;
+	const char *disk_name = zram->disk ? zram->disk->disk_name : "zram";
+
+	pr_err_ratelimited(
+		"%s: %s failed err=%d index=%u offset=%d len=%u stored=%llu failed_r=%llu failed_w=%llu used=%lu limit=%lu\n",
+		disk_name, reason, err, index, offset, len,
+		(u64)atomic64_read(&zram->stats.pages_stored),
+		(u64)atomic64_read(&zram->stats.failed_reads),
+		(u64)atomic64_read(&zram->stats.failed_writes),
+		used_pages, zram->limit_pages);
+}
+
 static inline struct zram *dev_to_zram(struct device *dev)
 {
 	return (struct zram *)dev_to_disk(dev)->private_data;
@@ -1420,7 +1437,8 @@ compress_again:
 
 	if (unlikely(ret)) {
 		zcomp_stream_put(zram->comp);
-		pr_err("Compression failed! err=%d\n", ret);
+		zram_report_io_error(zram, "compression", ret, index, 0,
+				      bvec->bv_len);
 		zs_free(zram->mem_pool, handle);
 		return ret;
 	}
@@ -1454,6 +1472,8 @@ compress_again:
 				__GFP_MOVABLE);
 		if (handle)
 			goto compress_again;
+		zram_report_io_error(zram, "object alloc", -ENOMEM,
+				      index, 0, bvec->bv_len);
 		return -ENOMEM;
 	}
 
@@ -1463,6 +1483,8 @@ compress_again:
 	if (zram->limit_pages && alloced_pages > zram->limit_pages) {
 		zcomp_stream_put(zram->comp);
 		zs_free(zram->mem_pool, handle);
+		zram_report_io_error(zram, "limit exceeded", -ENOMEM,
+				      index, 0, bvec->bv_len);
 		return -ENOMEM;
 	}
 
@@ -1521,12 +1543,19 @@ static int zram_bvec_write(struct zram *zram, struct bio_vec *bvec,
 		 * before to write the changes.
 		 */
 		page = alloc_page(GFP_NOIO|__GFP_HIGHMEM);
-		if (!page)
+		if (!page) {
+			zram_report_io_error(zram, "partial page alloc",
+					      -ENOMEM, index, offset,
+					      bvec->bv_len);
 			return -ENOMEM;
+		}
 
 		ret = __zram_bvec_read(zram, page, index, bio, true, true);
-		if (ret)
+		if (ret) {
+			zram_report_io_error(zram, "partial read", ret, index,
+					      offset, bvec->bv_len);
 			goto out;
+		}
 
 		src = kmap_atomic(bvec->bv_page);
 		dst = kmap_atomic(page);
@@ -1622,7 +1651,7 @@ static int zram_bvec_rw(struct zram *zram, struct bio_vec *bvec, u32 index,
 
 static void __zram_make_request(struct zram *zram, struct bio *bio)
 {
-	int offset;
+	int offset, ret;
 	u32 index;
 	struct bio_vec bvec;
 	struct bvec_iter iter;
@@ -1648,9 +1677,16 @@ static void __zram_make_request(struct zram *zram, struct bio *bio)
 		do {
 			bv.bv_len = min_t(unsigned int, PAGE_SIZE - offset,
 							unwritten);
-			if (zram_bvec_rw(zram, &bv, index, offset,
-					 bio_op(bio), bio) < 0)
+			ret = zram_bvec_rw(zram, &bv, index, offset,
+					   bio_op(bio), bio);
+			if (ret < 0) {
+				zram_report_io_error(zram,
+						     op_is_write(bio_op(bio)) ?
+						     "bio write" : "bio read",
+						     ret, index, offset,
+						     bv.bv_len);
 				goto out;
+			}
 
 			bv.bv_offset += bv.bv_len;
 			unwritten -= bv.bv_len;
@@ -1674,8 +1710,14 @@ static blk_qc_t zram_make_request(struct request_queue *queue, struct bio *bio)
 	struct zram *zram = queue->queuedata;
 
 	if (!valid_io_request(zram, bio->bi_iter.bi_sector,
-					bio->bi_iter.bi_size)) {
+				bio->bi_iter.bi_size)) {
 		atomic64_inc(&zram->stats.invalid_io);
+		zram_report_io_error(zram, "invalid bio", -EINVAL,
+				      bio->bi_iter.bi_sector >>
+				      SECTORS_PER_PAGE_SHIFT,
+				      (bio->bi_iter.bi_sector &
+				       (SECTORS_PER_PAGE - 1)) << SECTOR_SHIFT,
+				      bio->bi_iter.bi_size);
 		goto error;
 	}
 
@@ -1719,6 +1761,10 @@ static int zram_rw_page(struct block_device *bdev, sector_t sector,
 	if (!valid_io_request(zram, sector, PAGE_SIZE)) {
 		atomic64_inc(&zram->stats.invalid_io);
 		ret = -EINVAL;
+		zram_report_io_error(zram, "invalid rw_page", ret,
+				      sector >> SECTORS_PER_PAGE_SHIFT,
+				      (sector & (SECTORS_PER_PAGE - 1)) <<
+				      SECTOR_SHIFT, PAGE_SIZE);
 		goto out;
 	}
 
@@ -1739,8 +1785,13 @@ out:
 	 * bio->bi_end_io does things to handle the error
 	 * (e.g., SetPageError, set_page_dirty and extra works).
 	 */
-	if (unlikely(ret < 0))
+	if (unlikely(ret < 0)) {
+		zram_report_io_error(zram,
+				      op_is_write(op) ? "rw_page write" :
+				      "rw_page read",
+				      ret, index, offset, PAGE_SIZE);
 		return ret;
+	}
 
 	switch (ret) {
 	case 0:
