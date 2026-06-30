@@ -26,6 +26,13 @@ ccflags-y += \
 	-Wmissing-prototypes \
 	-Wstrict-prototypes \
 	-Wno-unused-parameter \
+	-Wno-unused-variable \
+	-Wno-unused-but-set-variable \
+	-Wno-unused-label \
+	-Wno-unused-function \
+	-Wno-sometimes-uninitialized \
+	-Wno-enum-conversion \
+	-Wno-misleading-indentation \
 	-Wno-sign-compare \
 	-Wno-type-limits \
 	-Wno-error
