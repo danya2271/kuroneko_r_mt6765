@@ -2385,15 +2385,16 @@ int ion_mm_heap_cache_allocate(struct ion_heap *heap,
 	struct page_info *tmp_info = NULL;
 	int i = 0;
 	unsigned long size_remaining = PAGE_ALIGN(size);
-	unsigned int max_order = orders[0];
+	unsigned int max_order = orders[1];
 	unsigned long long start, end;
 
 	INIT_LIST_HEAD(&pages);
 	start = sched_clock();
 
-	/* add time interval to alloc 64k page in low memory status*/
-	if ((start - alloc_large_fail_ts) < 500000000)
-		max_order = orders[1];
+	/*
+	 * Cache prefill is speculative. Keep order-4 pages for real clients and
+	 * avoid forcing high-order allocation attempts from this idle worker.
+	 */
 
 	while (size_remaining > 0) {
 		info = alloc_largest_available(sys_heap, buffer,
@@ -2413,7 +2414,7 @@ int ion_mm_heap_cache_allocate(struct ion_heap *heap,
 	if (!info) {
 		IONMSG("%s err info, size %ld, remain %ld.\n",
 		       __func__, size, size_remaining);
-		return -ENOMEM;
+		goto err;
 	}
 
 	table = kzalloc(sizeof(*table), GFP_KERNEL);

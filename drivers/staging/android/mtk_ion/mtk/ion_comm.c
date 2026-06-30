@@ -89,11 +89,18 @@ static int ion_comm_cache_pool(void *data)
 		if (cache_buffer == 0)
 			buffer->flags = 0;
 		buffer->size = req_cache_size;
-		ion_mm_heap_cache_allocate(ion_cam_heap,
-					   buffer,
-					   buffer->size,
-					   0,
-					   0);
+		ret = ion_mm_heap_cache_allocate(ion_cam_heap,
+						 buffer,
+						 buffer->size,
+						 0,
+						 0);
+		if (ret) {
+			IONMSG("%s cache alloc failed: ret %d, req %u, cached %u\n",
+			       __func__, ret, req_cache_size, cached_size);
+			kfree(buffer);
+			buffer = NULL;
+			continue;
+		}
 		IONMSG("%s push buffer to cam_pool\n", __func__);
 		ion_mm_heap_cache_free(buffer);
 		kfree(buffer);
