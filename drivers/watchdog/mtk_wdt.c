@@ -29,7 +29,8 @@
 
 #define WDT_MAX_TIMEOUT		31
 #define WDT_MIN_TIMEOUT		1
-#define WDT_RESTART_TIMEOUT	10
+#define WDT_RESTART_FALLBACK_TIMEOUT	10
+#define WDT_RESTART_DIRECT_TIMEOUT	2
 #define WDT_LENGTH_TIMEOUT(n)	((n) << 5)
 
 #define WDT_LENGTH		0x04
@@ -245,12 +246,13 @@ static void mtk_wdt_force_reset_mode(struct mtk_wdt_dev *mtk_wdt)
 	readl(wdt_base + WDT_MODE);
 }
 
-static void mtk_wdt_arm_restart_fallback(struct mtk_wdt_dev *mtk_wdt)
+static void mtk_wdt_arm_restart_timeout(struct mtk_wdt_dev *mtk_wdt,
+					unsigned int timeout)
 {
 	void __iomem *wdt_base = mtk_wdt->wdt_base;
 	u32 reg;
 
-	reg = WDT_LENGTH_TIMEOUT(WDT_RESTART_TIMEOUT << 6) | WDT_LENGTH_KEY;
+	reg = WDT_LENGTH_TIMEOUT(timeout << 6) | WDT_LENGTH_KEY;
 	writel(reg, wdt_base + WDT_LENGTH);
 	writel(WDT_RST_RELOAD, wdt_base + WDT_RST);
 	mtk_wdt_force_reset_mode(mtk_wdt);
@@ -269,7 +271,7 @@ static int mtk_wdt_reboot_notify(struct notifier_block *nb,
 		return NOTIFY_DONE;
 
 	mtk_wdt_set_restart_mode(mtk_wdt, cmd);
-	mtk_wdt_arm_restart_fallback(mtk_wdt);
+	mtk_wdt_arm_restart_timeout(mtk_wdt, WDT_RESTART_FALLBACK_TIMEOUT);
 
 	return NOTIFY_DONE;
 }
@@ -330,6 +332,21 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
 	void __iomem *wdt_base = mtk_wdt->wdt_base;
 
+	mtk_wdt_set_restart_mode(mtk_wdt, data);
+
+	if (mtk_wdt_needs_restart_fallback(data)) {
+		/*
+		 * On this platform a direct WDT_SWRST can store the boot mode
+		 * and then leave the AP at a black screen. Let TOPRGU expire
+		 * instead; this matches the reset class produced by holding
+		 * power after the failed reboot.
+		 */
+		mtk_wdt_arm_restart_timeout(mtk_wdt,
+					    WDT_RESTART_DIRECT_TIMEOUT);
+		while (1)
+			mdelay(100);
+	}
+
 	/*
 	 * device_shutdown() can stop the watchdog before machine_restart()
 	 * reaches us, so re-enable TOPRGU reset generation here. Leaving dual
@@ -337,8 +354,6 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 	 * watchdog interrupt followed by a delayed timeout reset.
 	 */
 	mtk_wdt_force_reset_mode(mtk_wdt);
-
-	mtk_wdt_set_restart_mode(mtk_wdt, data);
 
 	while (1) {
 		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
