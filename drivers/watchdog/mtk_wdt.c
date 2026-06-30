@@ -276,13 +276,16 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 	u32 mode;
 
 	/*
-	 * Force the RGU into reset mode before asserting SWRST. Leaving dual
+	 * device_shutdown() can stop the watchdog before machine_restart()
+	 * reaches us, so re-enable TOPRGU reset generation here. Leaving dual
 	 * mode or the interrupt path enabled can turn a reboot request into a
 	 * watchdog interrupt followed by a delayed timeout reset.
 	 */
 	mode = readl(wdt_base + WDT_MODE);
 	mode &= ~(WDT_MODE_DUAL_EN | WDT_MODE_IRQ_EN);
+	mode |= WDT_MODE_EN | WDT_MODE_EXRST_EN | WDT_BYPASS_PWR_KEY;
 	writel(WDT_MODE_KEY | mode, wdt_base + WDT_MODE);
+	readl(wdt_base + WDT_MODE);
 
 	mtk_wdt_set_restart_mode(mtk_wdt, data);
 
