@@ -474,10 +474,14 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 
 	mtk_wdt_hw_init(pdev->dev.of_node, mtk_wdt);
 
-	if (readl(mtk_wdt->wdt_base + WDT_MODE) & WDT_MODE_EN)
-		mtk_wdt_start(&mtk_wdt->wdt_dev);
-	else
-		mtk_wdt_stop(&mtk_wdt->wdt_dev);
+	/*
+	 * LK can leave TOPRGU running. Keeping that watchdog alive from the
+	 * generic watchdog worker makes random resets possible if the worker is
+	 * starved, and those resets do not create panic/pstore records. Leave
+	 * the watchdog stopped until userspace opens it or a restart path arms
+	 * it explicitly.
+	 */
+	mtk_wdt_stop(&mtk_wdt->wdt_dev);
 
 	err = watchdog_register_device(&mtk_wdt->wdt_dev);
 	if (unlikely(err))
