@@ -1107,10 +1107,12 @@ _PutPagesToPoolLocked(IMG_UINT32 ui32CPUCacheFlags,
 					  IMG_UINT32 uiOrder,
 					  IMG_UINT32 uiNumPages)
 {
+#if defined(PVR_LINUX_PHYSMEM_ZERO_ALL_PAGES)
 	LinuxCleanupData *psCleanupData;
 	PVRSRV_CLEANUP_THREAD_WORK *psCleanupThreadFn;
 #if defined(SUPPORT_PHYSMEM_TEST)
 	PVRSRV_DATA *psPVRSRVData = PVRSRVGetPVRSRVData();
+#endif
 #endif
 
 	if (uiOrder == 0 &&
@@ -1132,6 +1134,47 @@ _PutPagesToPoolLocked(IMG_UINT32 ui32CPUCacheFlags,
 		     ((uiEntries + uiNumPages) <
 		      (g_ui32PagePoolMaxEntries + g_ui32PagePoolMaxExcessEntries) ))
 		{
+#if !defined(PVR_LINUX_PHYSMEM_ZERO_ALL_PAGES)
+			LinuxPagePoolEntry *psPoolEntry;
+
+			if (!_GetPoolListHead(ui32CPUCacheFlags, &psPoolHead, &puiCounter))
+			{
+				PVR_DPF((PVR_DBG_ERROR,
+						 "%s: Failed to get correct page pool",
+						 __func__));
+				goto eUnlock;
+			}
+
+			psPoolEntry = kmem_cache_alloc(g_psLinuxPagePoolCache, GFP_KERNEL);
+			if (!psPoolEntry)
+			{
+				PVR_DPF((PVR_DBG_ERROR,
+						 "%s: Failed to get memory for page pool entry. "
+						 "Trying to free pages immediately",
+						 __func__));
+				goto eUnlock;
+			}
+
+			*puiCounter = *puiCounter + uiNumPages;
+
+			psPoolEntry->ppsPageArray = ppsPageArray;
+			psPoolEntry->uiItemsRemaining = uiNumPages;
+			list_add_tail(&psPoolEntry->sPagePoolItem, psPoolHead);
+
+#if defined(PVRSRV_ENABLE_PROCESS_STATS)
+			/* MemStats usually relies on having the bridge lock held, however
+			 * the page pool code may call PVRSRVStatsIncrMemAllocPoolStat and
+			 * PVRSRVStatsDecrMemAllocPoolStat without the bridge lock held, so
+			 * the page pool lock is used to ensure these calls are mutually
+			 * exclusive
+			 */
+			PVRSRVStatsIncrMemAllocPoolStat(PAGE_SIZE * uiNumPages);
+#endif
+
+			_DumpPoolStructure();
+			_PagePoolUnlock();
+			return IMG_TRUE;
+#else
 			if (OSAtomicIncrement(&g_iPoolCleanTasks) <=
 					PVR_LINUX_PHYSMEM_MAX_ASYNC_CLEAN_TASKS)
 			{
@@ -1208,6 +1251,7 @@ _PutPagesToPoolLocked(IMG_UINT32 ui32CPUCacheFlags,
 			{
 				goto eDecrement;
 			}
+#endif
 
 		}
 		else
@@ -1222,12 +1266,14 @@ _PutPagesToPoolLocked(IMG_UINT32 ui32CPUCacheFlags,
 
 	return IMG_TRUE;
 
+#if defined(PVR_LINUX_PHYSMEM_ZERO_ALL_PAGES)
 eFreePoolEntry:
 	OSFreeMem(psCleanupData->psPoolEntry);
 eFreeCleanupData:
 	OSFreeMem(psCleanupData);
 eDecrement:
 	OSAtomicDecrement(&g_iPoolCleanTasks);
+#endif
 eUnlock:
 	_PagePoolUnlock();
 eExitFalse:
