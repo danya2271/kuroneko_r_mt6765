@@ -1018,7 +1018,7 @@ static void cmdq_core_dump_secure_metadata(struct cmdqRecStruct *task)
 
 void cmdq_sec_dump_secure_thread_cookie(s32 thread)
 {
-	if (!cmdq_get_func()->isSecureThread(thread))
+	if (!cmdq_virtual_is_a_secure_thread(thread))
 		return;
 
 	CMDQ_LOG("secure shared cookie:%u wait:%u next:%u count:%u\n",
@@ -1455,7 +1455,7 @@ s32 cmdq_sec_handle_wait_result_impl(struct cmdqRecStruct *handle, s32 thread,
 		 */
 		cmdq_sec_cancel_error_task_unlocked(handle, thread, &result);
 		/* shall we pass the error instru back from secure path?? */
-		module = cmdq_get_func()->parseErrorModule(handle);
+		module = cmdq_virtual_parse_error_module_by_hwflag_impl(handle);
 
 		/* module dump */
 		cmdq_core_attach_error_handle(handle, handle->thread);
@@ -1530,7 +1530,7 @@ s32 cmdq_sec_handle_wait_result(struct cmdqRecStruct *handle, s32 thread)
 
 static s32 cmdq_sec_get_thread_id(s32 scenario)
 {
-	return cmdq_get_func()->getThreadID(scenario, true);
+	return cmdq_virtual_get_thread_index(scenario, true);
 }
 
 /* core controller for secure function */
@@ -1630,7 +1630,7 @@ int32_t cmdq_sec_cancel_error_task_unlocked(
 #ifdef CMDQ_SECURE_PATH_SUPPORT
 	int32_t status = 0;
 
-	if (!pTask || !cmdq_get_func()->isSecureThread(thread) || !pResult) {
+	if (!pTask || !cmdq_virtual_is_a_secure_thread(thread) || !pResult) {
 
 		CMDQ_ERR("%s invalid param, pTask:0x%p thread:%d pResult:%p\n",
 			 __func__, pTask, thread, pResult);
@@ -1700,7 +1700,7 @@ s32 cmdq_sec_get_secure_thread_exec_counter(const s32 thread)
 	u32 *pVA;
 	u32 value;
 
-	if (!cmdq_get_func()->isSecureThread(thread)) {
+	if (!cmdq_virtual_is_a_secure_thread(thread)) {
 		CMDQ_ERR("%s invalid param, thread:%d\n", __func__, thread);
 		return -EFAULT;
 	}

@@ -15,8 +15,6 @@
 #include "smi_public.h"
 #endif
 
-static struct cmdqCoreFuncStruct gFunctionPointer;
-
 u64 cmdq_virtual_flag_from_scenario_default(enum CMDQ_SCENARIO_ENUM scn)
 {
 	u64 flag = 0;
@@ -342,7 +340,7 @@ int cmdq_virtual_get_thread_index(enum CMDQ_SCENARIO_ENUM scenario,
 	const bool secure)
 {
 	if (!secure)
-		return cmdq_get_func()->dispThread(scenario);
+		return cmdq_virtual_disp_thread(scenario);
 
 	/* dispatch secure thread according to scenario */
 	switch (scenario) {
@@ -443,7 +441,7 @@ enum CMDQ_HW_THREAD_PRIORITY_ENUM cmdq_virtual_priority_from_scenario(
 		break;
 	}
 
-	if (cmdq_get_func()->is_disp_loop(scenario))
+	if (cmdq_virtual_is_disp_loop(scenario))
 		return CMDQ_THR_PRIO_DISPLAY_TRIGGER;
 	else
 		return CMDQ_THR_PRIO_NORMAL;
@@ -813,7 +811,7 @@ const char *cmdq_virtual_parse_handle_error_module_by_hwflag_impl(
 {
 	const char *module = NULL;
 
-	if (cmdq_get_func()->isDispScenario(pHandle->scenario))
+	if (cmdq_virtual_is_disp_scenario(pHandle->scenario))
 		module = "DISP";
 	else
 		module = cmdq_mdp_parse_handle_error_module_by_hwflag(pHandle);
@@ -828,7 +826,7 @@ const char *cmdq_virtual_parse_error_module_by_hwflag_impl(
 	const char *module = NULL;
 
 	/* TODO: fill in correct dispatch module */
-	if (cmdq_get_func()->isDispScenario(task->scenario))
+	if (cmdq_virtual_is_disp_scenario(task->scenario))
 		module = "DISP";
 	else
 		module = cmdq_mdp_parse_handle_error_module_by_hwflag(task);
@@ -1028,81 +1026,4 @@ void cmdq_virtual_test_cleanup(void)
 
 void cmdq_virtual_init_module_PA_stat(void)
 {
-}
-
-void cmdq_virtual_function_setting(void)
-{
-	struct cmdqCoreFuncStruct *pFunc;
-
-	pFunc = &(gFunctionPointer);
-
-	/*
-	 * GCE capability
-	 */
-	pFunc->getSubsysLSBArgA = cmdq_virtual_get_subsys_LSB_in_arg_a;
-
-	/* HW thread related */
-	pFunc->isSecureThread = cmdq_virtual_is_a_secure_thread;
-
-	/**
-	 * Scenario related
-	 *
-	 */
-	pFunc->isDispScenario = cmdq_virtual_is_disp_scenario;
-	pFunc->isDynamic = cmdq_virtual_is_dynamic_scenario;
-	pFunc->shouldEnablePrefetch = cmdq_virtual_should_enable_prefetch;
-	pFunc->dispThread = cmdq_virtual_disp_thread;
-	pFunc->getThreadID = cmdq_virtual_get_thread_index;
-	pFunc->priority = cmdq_virtual_priority_from_scenario;
-	pFunc->force_loop_irq = cmdq_virtual_force_loop_irq;
-	pFunc->is_disp_loop = cmdq_virtual_is_disp_loop;
-
-	/**
-	 * Module dependent
-	 *
-	 */
-	pFunc->getRegID = cmdq_virtual_get_reg_id_from_hwflag;
-	pFunc->moduleFromEvent = cmdq_virtual_module_from_event_id;
-	pFunc->parseModule = cmdq_virtual_parse_module_from_reg_addr;
-	pFunc->moduleEntrySuspend = cmdq_virtual_can_module_entry_suspend;
-	pFunc->printStatusClock = cmdq_virtual_print_status_clock;
-	pFunc->printStatusSeqClock = cmdq_virtual_print_status_seq_clock;
-	pFunc->enableGCEClockLocked = cmdq_virtual_enable_gce_clock_locked;
-	pFunc->parseErrorModule =
-		cmdq_virtual_parse_error_module_by_hwflag_impl;
-	pFunc->parseHandleErrorModule =
-		cmdq_virtual_parse_handle_error_module_by_hwflag_impl;
-
-	/**
-	 * Debug
-	 *
-	 */
-	pFunc->dumpSMI = cmdq_virtual_dump_smi;
-	pFunc->dumpGPR = cmdq_virtual_dump_gpr;
-
-	/**
-	 * Record usage
-	 *
-	 */
-	pFunc->flagFromScenario = cmdq_virtual_flag_from_scenario;
-
-	/**
-	 * Event backup
-	 *
-	 */
-	pFunc->eventBackup = cmdq_virtual_event_backup;
-	pFunc->eventRestore = cmdq_virtual_event_restore;
-
-	/**
-	 * Test
-	 *
-	 */
-	pFunc->testSetup = cmdq_virtual_test_setup;
-	pFunc->testCleanup = cmdq_virtual_test_cleanup;
-	pFunc->initModulePAStat = cmdq_virtual_init_module_PA_stat;
-}
-
-struct cmdqCoreFuncStruct *cmdq_get_func(void)
-{
-	return &gFunctionPointer;
 }

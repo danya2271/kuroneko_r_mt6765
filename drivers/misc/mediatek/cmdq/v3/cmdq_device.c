@@ -530,7 +530,7 @@ void cmdq_dev_init(struct platform_device *pDevice)
 	/* init module clock */
 	cmdq_dev_init_module_clk();
 	/* init module PA for instruction count */
-	cmdq_get_func()->initModulePAStat();
+	cmdq_virtual_init_module_PA_stat();
 	/* init load HW information from device tree */
 	cmdq_dev_init_device_tree(node);
 }
