@@ -80,7 +80,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 static IMG_HANDLE ghGpuUtilUserDebugFS;
 #endif
 
-#if defined(PVRSRV_NEED_PVR_DPF)
+#if defined(PVRSRV_NEED_PVR_DPF) && defined(CONFIG_MTK_ENG_BUILD)
 
 /******** BUFFERED LOG MESSAGES ********/
 
@@ -160,9 +160,9 @@ void PVRSRVDebugPrintfDumpCCB(void)
 
 #endif /* defined(PVRSRV_DEBUG_CCB_MAX) */
 
-#endif /* defined(PVRSRV_NEED_PVR_DPF) */
+#endif /* defined(PVRSRV_NEED_PVR_DPF) && defined(CONFIG_MTK_ENG_BUILD) */
 
-#if defined(PVRSRV_NEED_PVR_DPF)
+#if defined(PVRSRV_NEED_PVR_DPF) && defined(CONFIG_MTK_ENG_BUILD)
 
 #define PVR_MAX_FILEPATH_LEN 256
 
@@ -186,7 +186,7 @@ module_param(gPVRDebugLevel, uint, 0644);
 MODULE_PARM_DESC(gPVRDebugLevel,
 				 "Sets the level of debug output (default 0x7)");
 
-#endif /* defined(PVRSRV_NEED_PVR_DPF) || defined(PVRSRV_NEED_PVR_TRACE) */
+#endif /* defined(PVRSRV_NEED_PVR_DPF) && defined(CONFIG_MTK_ENG_BUILD) */
 
 #define	PVR_MAX_MSG_LEN PVR_MAX_DEBUG_MESSAGE_LEN
 
@@ -467,6 +467,7 @@ inline void PVRSRVDebugPrintf(IMG_UINT32 ui32DebugLevel,
 
 #endif /* PVRSRV_NEED_PVR_DPF */
 
+#if defined(CONFIG_MTK_ENG_BUILD)
 
 /*************************************************************************/ /*!
  Version DebugFS entry
@@ -1848,3 +1849,16 @@ void PVRDebugRemoveDIEntries(void)
 		DIDestroyEntry(gpsVersionDIEntry);
 	}
 }
+
+#else /* defined(CONFIG_MTK_ENG_BUILD) */
+
+int PVRDebugCreateDIEntries(void)
+{
+	return 0;
+}
+
+void PVRDebugRemoveDIEntries(void)
+{
+}
+
+#endif /* defined(CONFIG_MTK_ENG_BUILD) */

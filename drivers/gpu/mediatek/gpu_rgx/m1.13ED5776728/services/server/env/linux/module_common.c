@@ -42,10 +42,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <linux/module.h>
 
-#if defined(CONFIG_DEBUG_FS)
+#if defined(CONFIG_MTK_ENG_BUILD) && defined(CONFIG_DEBUG_FS)
 #include "pvr_debugfs.h"
 #endif /* defined(CONFIG_DEBUG_FS) */
-#if defined(CONFIG_PROC_FS)
+#if defined(CONFIG_MTK_ENG_BUILD) && defined(CONFIG_PROC_FS)
 #include "pvr_procfs.h"
 #endif /* defined(CONFIG_PROC_FS) */
 #include "di_server.h"
@@ -172,6 +172,7 @@ int PVRSRVDriverInit(void)
 		return -ENOMEM;
 	}
 
+#if defined(CONFIG_MTK_ENG_BUILD)
 #if defined(CONFIG_DEBUG_FS)
 	error = PVRDebugFsRegister();
 	if (error != PVRSRV_OK)
@@ -185,6 +186,7 @@ int PVRSRVDriverInit(void)
 		return -ENOMEM;
 	}
 #endif /* defined(CONFIG_DEBUG_FS) || defined(CONFIG_PROC_FS) */
+#endif /* defined(CONFIG_MTK_ENG_BUILD) */
 
 #if defined(PVRSRV_ENABLE_PROCESS_STATS)
 	error = PVRSRVStatsInitialise();

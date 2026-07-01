@@ -1112,8 +1112,10 @@ PVRSRVCommonDriverInit(void)
 	PVR_GOTO_IF_ERROR(eError, Error);
 #endif /* PVRSRV_ENABLE_PROCESS_STATS */
 
+#if defined(CONFIG_MTK_ENG_BUILD)
 	eError = HTB_CreateDIEntry();
 	PVR_GOTO_IF_ERROR(eError, Error);
+#endif
 
 #ifdef LINUX
 	{
@@ -1493,7 +1495,9 @@ PVRSRVCommonDriverDeInit(void)
 	pvr_apphint_deinit();
 #endif
 
+#if defined(CONFIG_MTK_ENG_BUILD)
 	HTB_DestroyDIEntry();
+#endif
 
 #ifdef PVRSRV_ENABLE_PROCESS_STATS
 	PVRSRVStatsDestroyDI();

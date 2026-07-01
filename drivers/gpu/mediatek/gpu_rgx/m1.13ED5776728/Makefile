@@ -129,7 +129,6 @@ pvrsrvkm-y += \
 	services/server/common/vz_vmm_vm.o \
 	services/server/common/vmm_pvz_client.o \
 	services/server/common/vmm_pvz_server.o \
-	services/server/common/htb_debug.o \
 	services/server/common/di_server.o \
 	services/server/env/linux/km_apphint.o \
 	services/server/env/linux/osmmap_stub.o \
@@ -160,13 +159,16 @@ pvrsrvkm-y += \
 	kernel/drivers/staging/imgtec/pvr_platform_drv.o \
 
 pvrsrvkm-$(CONFIG_MTK_ENG_BUILD) += \
+	services/server/common/htb_debug.o \
 	services/server/env/linux/physmem_test.o \
 	services/server/env/linux/pvr_ion_stats.o
 
+ifeq ($(CONFIG_MTK_ENG_BUILD),y)
 ifeq ($(CONFIG_DEBUG_FS),y)
 pvrsrvkm-y += services/server/env/linux/pvr_debugfs.o
 else
 pvrsrvkm-$(CONFIG_PROC_FS) += services/server/env/linux/pvr_procfs.o
+endif
 endif
 
 ifeq ($(CONFIG_SYNC_FILE),y)
