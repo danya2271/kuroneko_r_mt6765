@@ -49,8 +49,8 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(CMDQ_PLATFORM)/
 
 else
 ccflags-y += \
-		-I$(srctree)/drivers/misc/mediatek/cmdq/v2/ \
-		-I$(srctree)/drivers/misc/mediatek/cmdq/v2/$(MTK_PLATFORM)/
+		-I$(srctree)/drivers/misc/mediatek/cmdq/v3/ \
+		-I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(MTK_PLATFORM)/
 endif
 
 obj-y += ddp_color.o

@@ -45,8 +45,8 @@ ccflags-y += -I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(CMDQ_PLATFORM)/
 
 else
 ccflags-y += \
-                                -I$(srctree)/drivers/misc/mediatek/cmdq/v2/ \
-                                -I$(srctree)/drivers/misc/mediatek/cmdq/v2/$(MTK_PLATFORM)/
+                                -I$(srctree)/drivers/misc/mediatek/cmdq/v3/ \
+                                -I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(MTK_PLATFORM)/
 endif
 
 ifeq (y, $(filter y, $(CONFIG_MACH_MT6763) $(CONFIG_MACH_MT6739) $(CONFIG_MACH_MT6765) \
@@ -58,10 +58,8 @@ ifeq (y, $(filter y, $(CONFIG_MACH_MT6765) $(CONFIG_MACH_MT6761)))
 ccflags-y += -DGAMMA_ROUND_CORNER
 endif
 
-ifneq ($(CONFIG_MTK_CMDQ_TAB), y)
 ifeq (y, $(filter y, $(CONFIG_MACH_MT6758) $(CONFIG_MACH_MT6765) $(CONFIG_MACH_MT6761) $(CONFIG_MACH_MT6779)))
 ccflags-y += -DCCORR_TRANSITION
-endif
 endif
 
 ifeq ($(CONFIG_MACH_MT6779), y)
