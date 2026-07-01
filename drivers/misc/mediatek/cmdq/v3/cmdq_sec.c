@@ -332,7 +332,7 @@ static u64 cmdq_sec_get_secure_engine(u64 engine_flags)
 	CMDQ_ENGINE_TRANS(engine_flags, engine_flags_sec, MDP_WDMA);
 	CMDQ_ENGINE_TRANS(engine_flags, engine_flags_sec, MDP_WROT0);
 	CMDQ_ENGINE_TRANS(engine_flags, engine_flags_sec, MDP_WROT1);
-	engine_flags_sec |= cmdq_mdp_get_func()->mdpGetSecEngine(engine_flags);
+	engine_flags_sec |= cmdq_mdp_get_secure_engine(engine_flags);
 
 	/* DISP engines */
 	CMDQ_ENGINE_TRANS(engine_flags, engine_flags_sec, DISP_RDMA0);

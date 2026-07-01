@@ -637,11 +637,11 @@ int32_t cmdqMdpDumpInfo(uint64_t engineFlag, int logLevel)
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RDMA0))
 		cmdq_mdp_dump_rdma(MDP_RDMA0_BASE, "RDMA0");
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ0))
-		cmdq_mdp_get_func()->mdpDumpRsz(MDP_RSZ0_BASE, "RSZ0");
+		cmdq_mdp_dump_rsz(MDP_RSZ0_BASE, "RSZ0");
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ1))
-		cmdq_mdp_get_func()->mdpDumpRsz(MDP_RSZ1_BASE, "RSZ1");
+		cmdq_mdp_dump_rsz(MDP_RSZ1_BASE, "RSZ1");
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_TDSHP0))
-		cmdq_mdp_get_func()->mdpDumpTdshp(MDP_TDSHP_BASE, "TDSHP");
+		cmdq_mdp_dump_tdshp(MDP_TDSHP_BASE, "TDSHP");
 #ifdef CMDQ_MDP_COLOR
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_COLOR0)) {
 		CMDQ_ERR("COLOR : %s\n", "MDP");
@@ -718,7 +718,7 @@ int32_t cmdqMdpResetEng(uint64_t engineFlag)
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ0)) {
 		mout_bits |= (1 << MOUT_BITS_MDP_PRZ0);
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_RSZ0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_RSZ0)) {
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x0);
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x10000);
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x0);
@@ -726,14 +726,14 @@ int32_t cmdqMdpResetEng(uint64_t engineFlag)
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ1)) {
 		mout_bits |= (1 << MOUT_BITS_MDP_PRZ1);
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_RSZ1)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_RSZ1)) {
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x0);
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x10000);
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x0);
 		}
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_TDSHP0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_TDSHP0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_TDSHP0)) {
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x0);
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x2);
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x0);
@@ -761,7 +761,7 @@ int32_t cmdqMdpResetEng(uint64_t engineFlag)
 		cmdq_mdp_reset_with_mmsys((1LL << CMDQ_ENG_MDP_CAMIN));
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_CCORR0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_CCORR0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_CCORR0)) {
 			CMDQ_REG_SET32(MDP_CCORR_BASE + 0x04, 0x1);
 			CMDQ_REG_SET32(MDP_CCORR_BASE + 0x04, 0x0);
 		}
@@ -814,39 +814,39 @@ int32_t cmdqMdpClockOff(uint64_t engineFlag)
 			0x1, 0x1, true);
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_TDSHP0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_TDSHP0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_TDSHP0)) {
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x0);
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x2);
 			CMDQ_REG_SET32(MDP_TDSHP_BASE + 0x100, 0x0);
 			CMDQ_MSG("Disable MDP_TDSHP0 clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_TDSHP0);
 		}
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_CCORR0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_CCORR0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_CCORR0)) {
 			CMDQ_MSG("Disable MDP_CCORR clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_CCORR0);
 		}
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ1)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_RSZ1)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_RSZ1)) {
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x0);
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x10000);
 			CMDQ_REG_SET32(MDP_RSZ1_BASE, 0x0);
 			CMDQ_MSG("Disable MDP_RSZ1 clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_RSZ1);
 		}
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_RSZ0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_RSZ0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_RSZ0)) {
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x0);
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x10000);
 			CMDQ_REG_SET32(MDP_RSZ0_BASE, 0x0);
 			CMDQ_MSG("Disable MDP_RSZ0 clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_RSZ0);
 		}
 	}
@@ -855,18 +855,18 @@ int32_t cmdqMdpClockOff(uint64_t engineFlag)
 			MDP_RDMA0_BASE + 0x408, 0x7FF00, 0x100, false);
 	}
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_CAMIN)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_CAMIN)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_CAMIN)) {
 			cmdq_mdp_reset_with_mmsys((1LL << CMDQ_ENG_MDP_CAMIN));
 			CMDQ_MSG("Disable MDP_CAMIN clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_CAMIN);
 		}
 	}
 #ifdef CMDQ_MDP_COLOR
 	if (engineFlag & (1LL << CMDQ_ENG_MDP_COLOR0)) {
-		if (cmdq_mdp_get_func()->mdpClockIsOn(CMDQ_ENG_MDP_COLOR0)) {
+		if (cmdq_mdp_clock_is_on(CMDQ_ENG_MDP_COLOR0)) {
 			CMDQ_MSG("Disable MDP_COLOR0 clock\n");
-			cmdq_mdp_get_func()->enableMdpClock(false,
+			cmdq_mdp_enable_clock(false,
 				CMDQ_ENG_MDP_COLOR0);
 		}
 	}
@@ -915,58 +915,12 @@ uint32_t cmdq_mdp_wdma_get_reg_offset_dst_addr(void)
 {
 	return 0xF00;
 }
-const char *cmdq_mdp_parse_error_module(const struct cmdqRecStruct *task)
-{
-	const char *module = NULL;
-	const u32 ISP_ONLY[2] = {
-		((1LL << CMDQ_ENG_ISP_IMGI) | (1LL << CMDQ_ENG_ISP_IMG2O)),
-		((1LL << CMDQ_ENG_ISP_IMGI) | (1LL << CMDQ_ENG_ISP_IMG2O) |
-		 (1LL << CMDQ_ENG_ISP_IMGO))
-	};
-	/* common part for both normal and secure path */
-	/* for JPEG scenario, use HW flag is sufficient */
-	if (task->engineFlag & (1LL << CMDQ_ENG_JPEG_ENC))
-		module = "JPGENC";
-	else if (task->engineFlag & (1LL << CMDQ_ENG_JPEG_DEC))
-		module = "JPGDEC";
-	else if ((ISP_ONLY[0] == task->engineFlag) ||
-		(ISP_ONLY[1] == task->engineFlag))
-		module = "DIP_ONLY";
-	/* for secure path, use HW flag is sufficient */
-	do {
-		if (module != NULL)
-			break;
-		if (!task->secData.is_secure) {
-			/* normal path,
-			 * need parse current running instruciton
-			 * for more detail
-			 */
-			break;
-		} else if (CMDQ_ENG_MDP_GROUP_FLAG(task->engineFlag)) {
-			module = "MDP";
-			break;
-		} else if (CMDQ_ENG_DPE_GROUP_FLAG(task->engineFlag)) {
-			module = "DPE";
-			break;
-		} else if (CMDQ_ENG_RSC_GROUP_FLAG(task->engineFlag)) {
-			module = "RSC";
-			break;
-		} else if (CMDQ_ENG_GEPF_GROUP_FLAG(task->engineFlag)) {
-			module = "GEPF";
-			break;
-		} else if (CMDQ_ENG_EAF_GROUP_FLAG(task->engineFlag)) {
-			module = "EAF";
-			break;
-		}
-		module = "CMDQ";
-	} while (0);
-	return module;
-}
+
 u64 cmdq_mdp_get_engine_group_bits(u32 engine_group)
 {
 	return gCmdqEngineGroupBits[engine_group];
 }
-static void cmdq_mdp_enable_common_clock(bool enable)
+void cmdq_mdp_enable_common_clock(bool enable)
 {
 #ifdef CMDQ_PWR_AWARE
 #ifdef CONFIG_MTK_SMI_EXT
@@ -1004,7 +958,7 @@ u64 cmdq_mdp_get_secure_engine(u64 engine_flags)
 	return sec_eng_flag;
 }
 #endif
-static void cmdq_mdp_check_hw_status(struct cmdqRecStruct *handle)
+void cmdq_mdp_check_hw_status(struct cmdqRecStruct *handle)
 {
 #if defined(CONFIG_MACH_MT6761)
 	unsigned long register_address;
@@ -1036,35 +990,5 @@ static void cmdq_mdp_check_hw_status(struct cmdqRecStruct *handle)
 				"0x14000864 = 0x%08x, needs to be 0x0000002B\n",
 				register_value);
 	}
-#endif
-}
-void cmdq_mdp_platform_function_setting(void)
-{
-	struct cmdqMDPFuncStruct *pFunc = cmdq_mdp_get_func();
-
-	pFunc->dumpMMSYSConfig = cmdq_mdp_dump_mmsys_config;
-	pFunc->vEncDumpInfo = cmdqVEncDumpInfo;
-	pFunc->initModuleBaseVA = cmdq_mdp_init_module_base_VA;
-	pFunc->deinitModuleBaseVA = cmdq_mdp_deinit_module_base_VA;
-	pFunc->mdpClockIsOn = cmdq_mdp_clock_is_on;
-	pFunc->enableMdpClock = cmdq_mdp_enable_clock;
-	pFunc->initModuleCLK = cmdq_mdp_init_module_clk;
-	pFunc->mdpDumpRsz = cmdq_mdp_dump_rsz;
-	pFunc->mdpDumpTdshp = cmdq_mdp_dump_tdshp;
-	pFunc->mdpClockOn = cmdqMdpClockOn;
-	pFunc->mdpDumpInfo = cmdqMdpDumpInfo;
-	pFunc->mdpResetEng = cmdqMdpResetEng;
-	pFunc->mdpClockOff = cmdqMdpClockOff;
-	pFunc->mdpInitialSet = cmdqMdpInitialSetting;
-	pFunc->rdmaGetRegOffsetSrcAddr = cmdq_mdp_rdma_get_reg_offset_src_addr;
-	pFunc->wrotGetRegOffsetDstAddr = cmdq_mdp_wrot_get_reg_offset_dst_addr;
-	pFunc->wdmaGetRegOffsetDstAddr = cmdq_mdp_wdma_get_reg_offset_dst_addr;
-	pFunc->parseErrModByEngFlag = cmdq_mdp_parse_error_module;
-	pFunc->getEngineGroupBits = cmdq_mdp_get_engine_group_bits;
-	pFunc->testcaseClkmgrMdp = 0;
-	pFunc->mdpEnableCommonClock = cmdq_mdp_enable_common_clock;
-	pFunc->CheckHwStatus = cmdq_mdp_check_hw_status;
-#ifdef CMDQ_SECURE_PATH_SUPPORT
-	pFunc->mdpGetSecEngine = cmdq_mdp_get_secure_engine;
 #endif
 }

@@ -1323,22 +1323,17 @@ late_initcall(mdp_late_init);
 static int __init cmdq_init(void)
 {
 	int status;
-	struct cmdqMDPFuncStruct *mdp_func = cmdq_mdp_get_func();
 
 	CMDQ_LOG("%s CMDQ driver init begin\n", __func__);
 
-	/* MDP function link */
-	cmdq_mdp_virtual_function_setting();
-	cmdq_mdp_platform_function_setting();
-
 	/* Register VENC callback */
-	cmdqCoreRegisterCB(CMDQ_GROUP_VENC, NULL, mdp_func->vEncDumpInfo,
+	cmdqCoreRegisterCB(CMDQ_GROUP_VENC, NULL, cmdqVEncDumpInfo,
 		NULL, NULL);
 
 	/* Register PMQoS */
 	cmdq_core_register_task_cycle_cb(CMDQ_GROUP_MDP,
-			cmdq_mdp_get_func()->beginTask,
-			cmdq_mdp_get_func()->endTask);
+			cmdq_mdp_begin_task_virtual,
+			cmdq_mdp_end_task_virtual);
 
 	status = platform_driver_register(&gCmdqDriver);
 	if (status != 0) {

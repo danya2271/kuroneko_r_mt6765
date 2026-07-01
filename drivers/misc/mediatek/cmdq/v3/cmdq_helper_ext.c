@@ -3038,7 +3038,7 @@ s32 cmdq_core_is_group_flag(enum CMDQ_GROUP_ENUM engGroup, u64 engineFlag)
 	if (!cmdq_core_is_valid_group(engGroup))
 		return false;
 
-	if (cmdq_mdp_get_func()->getEngineGroupBits(engGroup) & engineFlag)
+	if (cmdq_mdp_get_engine_group_bits(engGroup) & engineFlag)
 		return true;
 
 	return false;
@@ -3053,7 +3053,6 @@ static void cmdq_core_attach_engine_error(
 	bool disp_scn = false;
 	u64 print_eng_flag = 0;
 	u64 engine_bit = 0;
-	CmdqMdpGetEngineGroupBits get_engine_group_bit = NULL;
 	struct CmdqCBkStruct *callback = NULL;
 	static const char *const engineGroupName[] = {
 		CMDQ_FOREACH_GROUP(GENERATE_STRING)
@@ -3068,7 +3067,6 @@ static void cmdq_core_attach_engine_error(
 	}
 
 	print_eng_flag = handle->engineFlag;
-	get_engine_group_bit = cmdq_mdp_get_func()->getEngineGroupBits;
 
 	if (nginfo)
 		print_eng_flag |= nginfo->engine_flag;
@@ -3077,7 +3075,7 @@ static void cmdq_core_attach_engine_error(
 	if ((handle->engineFlag & CMDQ_ENG_MDP_GROUP_BITS) ||
 		(handle->engineFlag & CMDQ_ENG_DISP_GROUP_BITS)) {
 		CMDQ_ERR("============ [CMDQ] MMSYS_CONFIG ============\n");
-		cmdq_mdp_get_func()->dumpMMSYSConfig();
+		cmdq_mdp_dump_mmsys_config();
 	}
 
 	/* ask each module to print their status */
@@ -3097,7 +3095,7 @@ static void cmdq_core_attach_engine_error(
 		}
 
 		callback[index].dumpInfo(
-			(get_engine_group_bit(index) & print_eng_flag),
+			cmdq_mdp_get_engine_group_bits(index) & print_eng_flag,
 			cmdq_ctx.logLevel);
 	}
 
@@ -3112,7 +3110,8 @@ static void cmdq_core_attach_engine_error(
 		index = CMDQ_GROUP_DISP;
 		if (callback[index].dumpInfo) {
 			engine_bit =
-				get_engine_group_bit(index) & print_eng_flag;
+				cmdq_mdp_get_engine_group_bits(index) &
+				print_eng_flag;
 
 			callback[index].dumpInfo(engine_bit,
 				cmdq_ctx.logLevel);
@@ -3126,7 +3125,8 @@ static void cmdq_core_attach_engine_error(
 
 		if (callback[index].errorReset) {
 			callback[index].errorReset(
-				get_engine_group_bit(index) & print_eng_flag);
+				cmdq_mdp_get_engine_group_bits(index) &
+				print_eng_flag);
 			CMDQ_LOG(
 				"engine group (%s): function is called\n",
 				engineGroupName[index]);
@@ -3377,7 +3377,7 @@ static void cmdq_core_group_reset_hw(u64 engine_flag)
 				continue;
 			}
 			status = callback[i].resetEng(
-				cmdq_mdp_get_func()->getEngineGroupBits(i) &
+				cmdq_mdp_get_engine_group_bits(i) &
 				engine_flag);
 			if (status < 0) {
 				/* Error status print */
@@ -3401,7 +3401,7 @@ static void cmdq_core_group_clk_on(enum CMDQ_GROUP_ENUM group,
 	}
 
 	status = callback[group].clockOn(
-		cmdq_mdp_get_func()->getEngineGroupBits(group) & engine_flag);
+		cmdq_mdp_get_engine_group_bits(group) & engine_flag);
 	if (status < 0)
 		CMDQ_ERR("[CLOCK]enable group %d clockOn failed\n", group);
 }
@@ -3419,7 +3419,7 @@ static void cmdq_core_group_clk_off(enum CMDQ_GROUP_ENUM group,
 	}
 
 	status = callback[group].clockOff(
-		cmdq_mdp_get_func()->getEngineGroupBits(group) & engine_flag);
+		cmdq_mdp_get_engine_group_bits(group) & engine_flag);
 	if (status < 0)
 		CMDQ_ERR("[CLOCK]enable group %d clockOn failed\n", group);
 }

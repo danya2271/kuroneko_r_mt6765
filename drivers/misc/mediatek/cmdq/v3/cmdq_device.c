@@ -78,12 +78,12 @@ u32 cmdq_dev_get_mmsys_dummy_reg_offset(void)
 
 void cmdq_dev_init_module_base_VA(void)
 {
-	cmdq_mdp_get_func()->initModuleBaseVA();
+	cmdq_mdp_init_module_base_VA();
 }
 
 void cmdq_dev_deinit_module_base_VA(void)
 {
-	cmdq_mdp_get_func()->deinitModuleBaseVA();
+	cmdq_mdp_deinit_module_base_VA();
 }
 
 unsigned long cmdq_dev_alloc_reference_VA_by_name(const char *ref_name)
@@ -193,7 +193,7 @@ bool cmdq_dev_device_clock_is_enable(struct clk *clk_module)
 /* Common Clock Framework */
 void cmdq_dev_init_module_clk(void)
 {
-	cmdq_mdp_get_func()->initModuleCLK();
+	cmdq_mdp_init_module_clk();
 }
 
 void cmdq_dev_enable_gce_clock(bool enable)
