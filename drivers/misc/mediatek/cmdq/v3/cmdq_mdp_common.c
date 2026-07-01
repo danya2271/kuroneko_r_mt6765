@@ -2315,16 +2315,18 @@ void cmdq_mdp_begin_task_virtual(struct cmdqRecStruct *handle,
 	total_pixel = target_pmqos->mdp_total_pixel ?
 		target_pmqos->mdp_total_pixel :
 		target_pmqos->isp_total_pixel;
-	DP_BANDWIDTH(
-		target_pmqos->mdp_total_datasize,
-		total_pixel,
-		act_throughput,
-		mdp_curr_bandwidth);
-	DP_BANDWIDTH(
-		target_pmqos->isp_total_datasize,
-		total_pixel,
-		act_throughput,
-		isp_curr_bandwidth);
+	if (target_pmqos->mdp_total_datasize)
+		DP_BANDWIDTH(
+			target_pmqos->mdp_total_datasize,
+			total_pixel,
+			act_throughput,
+			mdp_curr_bandwidth);
+	if (target_pmqos->isp_total_datasize)
+		DP_BANDWIDTH(
+			target_pmqos->isp_total_datasize,
+			total_pixel,
+			act_throughput,
+			isp_curr_bandwidth);
 
 	CMDQ_LOG_PMQOS(
 		"[MDP][%d]mdp_curr_bandwidth %d, isp_curr_bandwidth %d, act_throughput %d\n",
@@ -2588,16 +2590,18 @@ void cmdq_mdp_end_task_virtual(struct cmdqRecStruct *handle,
 	else
 		act_throughput = max_throughput;
 
-	DP_BANDWIDTH(
-		mdp_data_size,
-		curr_pixel_size,
-		act_throughput,
-		mdp_curr_bandwidth);
-	DP_BANDWIDTH(
-		isp_data_size,
-		curr_pixel_size,
-		act_throughput,
-		isp_curr_bandwidth);
+	if (mdp_data_size)
+		DP_BANDWIDTH(
+			mdp_data_size,
+			curr_pixel_size,
+			act_throughput,
+			mdp_curr_bandwidth);
+	if (isp_data_size)
+		DP_BANDWIDTH(
+			isp_data_size,
+			curr_pixel_size,
+			act_throughput,
+			isp_curr_bandwidth);
 
 	CMDQ_LOG_PMQOS(
 		"[MDP][%d]mdp_curr_bandwidth %d, isp_curr_bandwidth %d, act_throughput %d\n",
