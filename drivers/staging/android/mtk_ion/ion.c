@@ -251,7 +251,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 	buffer->heap = heap;
 	buffer->flags = flags;
 
-	/* log task pid for debug +by k.zhang */
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	{
 		struct task_struct *task;
 
@@ -262,6 +262,7 @@ static struct ion_buffer *ion_buffer_create(struct ion_heap *heap,
 		get_task_comm(buffer->thread_comm, current);
 		buffer->timestamp = sched_clock();
 	}
+#endif
 
 	kref_init(&buffer->ref);
 
@@ -621,7 +622,9 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 	struct ion_buffer *buffer = NULL;
 	struct ion_heap *heap;
 	int ret;
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	unsigned long long start, end;
+#endif
 	unsigned int heap_mask = ~0;
 	unsigned int alloc_err_heap = 0;
 
@@ -650,7 +653,9 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 	/*avoid camelcase, will modify in a letter*/
 	mmprofile_log_ex(ion_mmp_events[PROFILE_ALLOC], MMPROFILE_FLAG_START,
 			 (unsigned long)client, len);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	start = sched_clock();
+#endif
 
 	/*
 	 * traverse the list of heaps available in this system in priority
@@ -715,6 +720,7 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 		IONMSG("%s ion handle add failed %d.\n", __func__, ret);
 	}
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	end = sched_clock();
 
 	if (end - start > 100000000ULL) {/* unit is ns */
@@ -734,6 +740,7 @@ struct ion_handle *ion_alloc(struct ion_client *client, size_t len,
 	handle->dbg.user_ts = end;
 	do_div(handle->dbg.user_ts, 1000000);
 	memcpy(buffer->alloc_dbg, client->dbg_name, ION_MM_DBG_NAME_LEN);
+#endif
 
 	return handle;
 }
@@ -1989,11 +1996,13 @@ struct ion_handle *ion_import_dma_buf_fd(struct ion_client *client, int fd)
 	mmprofile_log_ex(ion_mmp_events[PROFILE_IMPORT], MMPROFILE_FLAG_END,
 			 (unsigned long)client,
 			 (unsigned long)handle);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	if (!IS_ERR(handle)) {
 		handle->dbg.fd = fd;
 		handle->dbg.user_ts = sched_clock();
 		do_div(handle->dbg.user_ts, 1000000);
 	}
+#endif
 	return handle;
 }
 EXPORT_SYMBOL(ion_import_dma_buf_fd);

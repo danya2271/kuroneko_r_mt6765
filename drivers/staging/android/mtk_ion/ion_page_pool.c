@@ -12,10 +12,14 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/swap.h>
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 #include <linux/sched/clock.h>
+#endif
 #include "ion_priv.h"
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 static unsigned long long last_alloc_ts;
+#endif
 
 /*
  * We avoid atomic_long_t to minimize cache flushes at the cost of possible
@@ -26,12 +30,17 @@ static long nr_total_pages;
 
 static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool)
 {
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	unsigned long long start, end;
+#endif
 	struct page *page;
 	unsigned int i;
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	start = sched_clock();
+#endif
 	page = alloc_pages(pool->gfp_mask, pool->order);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	end = sched_clock();
 
 	if ((end - start > 10000000ULL) &&
@@ -41,6 +50,7 @@ static void *ion_page_pool_alloc_pages(struct ion_page_pool *pool)
 		show_free_areas(0, NULL);
 		last_alloc_ts = end;
 	}
+#endif
 
 	if (!page)
 		return NULL;
