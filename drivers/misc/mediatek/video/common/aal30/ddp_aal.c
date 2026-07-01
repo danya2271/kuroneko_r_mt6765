@@ -2466,24 +2466,6 @@ static int aal_io(enum DISP_MODULE_ENUM module, unsigned int msg,
 	if (disp_aal_check_module(module, __func__, __LINE__) == false)
 		return ret;
 
-	if (disp_aal_is_support() == false) {
-		switch (msg) {
-		case DISP_IOCTL_AAL_GET_HIST:
-			if (clear_user((void __user *)arg,
-			    sizeof(struct DISP_AAL_HIST)) != 0)
-				return -EFAULT;
-			return 0;
-		case DISP_IOCTL_AAL_EVENTCTL:
-		case DISP_IOCTL_AAL_INIT_REG:
-		case DISP_IOCTL_AAL_SET_PARAM:
-		case DISP_IOCTL_AAL_GET_SIZE:
-		case DISP_IOCTL_SET_SMARTBACKLIGHT:
-			return 0;
-		default:
-			break;
-		}
-	}
-
 	switch (msg) {
 	case DISP_IOCTL_AAL_EVENTCTL:
 		if (copy_from_user(&enabled, (void *)arg,
