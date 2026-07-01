@@ -2466,6 +2466,24 @@ static int aal_io(enum DISP_MODULE_ENUM module, unsigned int msg,
 	if (disp_aal_check_module(module, __func__, __LINE__) == false)
 		return ret;
 
+	if (disp_aal_is_support() == false) {
+		switch (msg) {
+		case DISP_IOCTL_AAL_GET_HIST:
+			if (clear_user((void __user *)arg,
+			    sizeof(struct DISP_AAL_HIST)) != 0)
+				return -EFAULT;
+			return 0;
+		case DISP_IOCTL_AAL_EVENTCTL:
+		case DISP_IOCTL_AAL_INIT_REG:
+		case DISP_IOCTL_AAL_SET_PARAM:
+		case DISP_IOCTL_AAL_GET_SIZE:
+		case DISP_IOCTL_SET_SMARTBACKLIGHT:
+			return 0;
+		default:
+			break;
+		}
+	}
+
 	switch (msg) {
 	case DISP_IOCTL_AAL_EVENTCTL:
 		if (copy_from_user(&enabled, (void *)arg,
@@ -2586,6 +2604,7 @@ struct DDP_MODULE_DRIVER ddp_driver_aal = {
 /* Will not be linked in user build. */
 /* ---------------------------------------------------------------------- */
 
+#if 0
 #define AAL_TLOG(fmt, arg...) pr_info("[AAL] %s: " fmt "\n", __func__, ##arg)
 
 static void aal_test_en(enum DISP_MODULE_ENUM module, const char *cmd)
@@ -2760,62 +2779,12 @@ static void aal_ut_cmd(const char *cmd)
 		AAL_DBG("ut:ioctl off");
 	}
 }
+#endif
 
 void aal_test(const char *cmd, char *debug_output)
 {
-	enum DISP_MODULE_ENUM module = AAL0_MODULE_NAMING;
-	int i;
-	int config_module_num = 1;
-#if defined(CONFIG_MACH_MT6799)
-	if (primary_display_get_pipe_status() == DUAL_PIPE)
-		config_module_num = AAL_TOTAL_MODULE_NUM;
-#endif
-	debug_output[0] = '\0';
-	AAL_TLOG("test cmd(%s)", cmd);
+	if (debug_output != NULL)
+		debug_output[0] = '\0';
 
-	if (strncmp(cmd, "en:", 3) == 0) {
-		for (i = 0; i < config_module_num; i++) {
-			module += i;
-			aal_test_en(module, cmd + 3);
-		}
-	} else if (strncmp(cmd, "histogram", 5) == 0) {
-		aal_dump_histogram();
-	} else if (strncmp(cmd, "ink:", 4) == 0) {
-		for (i = 0; i < config_module_num; i++) {
-			module += i;
-			aal_test_ink(module, cmd + 4);
-		}
-		disp_aal_trigger_refresh(AAL_REFRESH_17MS);
-	} else if (strncmp(cmd, "bypass:", 7) == 0) {
-		int bypass = (cmd[7] == '1');
-
-		atomic_set(&g_aal_force_relay, bypass);
-		disp_aal_trigger_refresh(AAL_REFRESH_17MS);
-	} else if (strncmp(cmd, "getBypass:", 10) == 0) {
-		scnprintf(debug_output, 30,
-			"AAL HW Relay: %d\n",
-			atomic_read(&g_aal_force_relay));
-	} else if (strncmp(cmd, "ut:", 3) == 0) { /* debug command for UT */
-		aal_ut_cmd(cmd + 3);
-	} else if (strncmp(cmd, "dre", 3) == 0) {
-		aal_dump_dre();
-#ifdef AAL_SUPPORT_KERNEL_API
-	} else if (strncmp(cmd, "lcm_type:", 9) == 0) {
-		unsigned int panel_type = cmd[9] - '0';
-
-		disp_aal_set_lcm_type(panel_type);
-	} else if (strncmp(cmd, "set_ess_level:", 14) == 0) {
-		int level = cmd[14] - '0';
-
-		disp_aal_set_ess_level(level);
-	} else if (strncmp(cmd, "set_ess_en:", 11) == 0) {
-		int en = (cmd[11] == '1') ? 1 : 0;
-
-		disp_aal_set_ess_en(en);
-	} else if (strncmp(cmd, "set_dre_en:", 11) == 0) {
-		int en = (cmd[11] == '1') ? 1 : 0;
-
-		disp_aal_set_dre_en(en);
-#endif
-	}
+	(void)cmd;
 }
