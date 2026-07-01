@@ -23,6 +23,7 @@
 #define CMDQ_AREG_TO_PHYS(addr) ((addr) | 0L)
 
 struct cmdqRecStruct;
+struct gen_pool;
 
 enum TASK_STATE_ENUM {
 	TASK_STATE_IDLE,	/* free task */
@@ -420,18 +421,6 @@ struct ResourceUnitStruct {
 	struct delayed_work delayCheckWork;
 };
 
-/* SRAM chunk structure
- *	allocated_start: allocated start address
- *	allocated_size: allocated SRAM size
- *	allocated_owner: allocate owner name
- */
-struct SRAMChunk {
-	struct list_head list_node;
-	u32 start_offset;
-	size_t count;
-	char owner[CMDQ_MAX_SRAM_OWNER_NAME];
-};
-
 /**
  * shared memory between normal and secure world
  */
@@ -471,8 +460,7 @@ struct ContextStruct {
 	bool aee;
 
 	/* SRAM manager information */
-	struct list_head sram_allocated_list;	/* all allocated SRAM chunk */
-	size_t allocated_sram_count;
+	struct gen_pool *sram_pool;
 
 	/* Delay set CPR start information */
 	u32 delay_cpr_start;

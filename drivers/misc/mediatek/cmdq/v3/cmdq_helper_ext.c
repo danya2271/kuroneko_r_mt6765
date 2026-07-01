@@ -9,6 +9,7 @@
 #include <linux/workqueue.h>
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
+#include <linux/genalloc.h>
 #include <linux/uaccess.h>
 #include <linux/notifier.h>
 #ifdef CONFIG_MTK_GIC_V3_EXT
@@ -39,6 +40,7 @@
 #define CMDQ_PROFILE_LIMIT_0	3000000
 #define CMDQ_PROFILE_LIMIT_1	10000000
 #define CMDQ_PROFILE_LIMIT_2	20000000
+#define CMDQ_SRAM_POOL_BASE	1UL
 
 struct cmdq_cmd_struct {
 	void *p_va_base;	/* VA: denote CMD virtual address space */
@@ -1219,7 +1221,6 @@ struct EngineStruct *cmdq_mdp_get_engines(void);
 int cmdq_core_print_status_seq(struct seq_file *m, void *v)
 {
 	s32 index = 0;
-	struct SRAMChunk *p_sram_chunk;
 	struct cmdqRecStruct *handle = NULL;
 	struct cmdq_client *client = NULL;
 	struct cmdq_pkt_buffer *buf;
@@ -1252,13 +1253,15 @@ int cmdq_core_print_status_seq(struct seq_file *m, void *v)
 		cmdq_dev_get_dma_mask_result());
 
 	seq_puts(m, "====== SRAM Usage Status =======\n");
-	index = 0;
-	list_for_each_entry(p_sram_chunk, &cmdq_ctx.sram_allocated_list,
-		list_node) {
-		seq_printf(m, "SRAM Chunk(%d)-32bit unit: start:0x%x count:%zu Name:%s\n",
-			index, p_sram_chunk->start_offset, p_sram_chunk->count,
-			p_sram_chunk->owner);
-		index++;
+	if (cmdq_ctx.sram_pool) {
+		const size_t total = gen_pool_size(cmdq_ctx.sram_pool);
+		const size_t free = gen_pool_avail(cmdq_ctx.sram_pool);
+
+		seq_printf(m,
+			"SRAM pool-32bit unit: used:%zu free:%zu total:%zu\n",
+			total - free, free, total);
+	} else {
+		seq_puts(m, "SRAM pool unavailable\n");
 	}
 
 	/* call to dump other infos */
@@ -1578,103 +1581,88 @@ EXPORT_SYMBOL(cmdq_core_free_hw_buffer);
 
 void cmdq_core_dump_sram(void)
 {
-	struct SRAMChunk *p_sram_chunk;
-	s32 index = 0;
+	size_t total;
+	size_t free;
 
-	list_for_each_entry(p_sram_chunk, &cmdq_ctx.sram_allocated_list,
-		list_node) {
-		CMDQ_LOG(
-			"SRAM Chunk(%d)-32bit unit: start:0x%x count:%zu Name:%s\n",
-			index, p_sram_chunk->start_offset,
-			p_sram_chunk->count, p_sram_chunk->owner);
-		index++;
+	if (!cmdq_ctx.sram_pool) {
+		CMDQ_LOG("SRAM pool unavailable\n");
+		return;
 	}
+
+	total = gen_pool_size(cmdq_ctx.sram_pool);
+	free = gen_pool_avail(cmdq_ctx.sram_pool);
+	CMDQ_LOG("SRAM pool-32bit unit: used:%zu free:%zu total:%zu\n",
+		total - free, free, total);
 }
 EXPORT_SYMBOL(cmdq_core_dump_sram);
+
+static size_t cmdq_core_sram_cpr_count(size_t size)
+{
+	size_t count = DIV_ROUND_UP(size, sizeof(u32));
+
+	return ALIGN(count, 2);
+}
 
 s32 cmdq_core_alloc_sram_buffer(size_t size,
 	const char *owner_name, u32 *out_cpr_offset)
 {
-	u32 cpr_offset = 0;
-	struct SRAMChunk *p_sram_chunk, *p_last_chunk;
-	/* Normalize from byte unit to 32bit unit */
-	size_t normalized_count = size / sizeof(u32);
+	unsigned long addr;
+	size_t normalized_count = cmdq_core_sram_cpr_count(size);
 
-	/* Align allocated buffer to 64bit due to instruction alignment */
-	if (normalized_count % 2 != 0)
-		normalized_count++;
+	if (!out_cpr_offset || !normalized_count)
+		return -EINVAL;
 
-	/* Get last entry to calculate new SRAM start address */
-	if (!list_empty(&cmdq_ctx.sram_allocated_list)) {
-		p_last_chunk = list_last_entry(&cmdq_ctx.sram_allocated_list,
-			struct SRAMChunk, list_node);
-		cpr_offset = p_last_chunk->start_offset + p_last_chunk->count;
-	}
+	if (!cmdq_ctx.sram_pool)
+		return -ENOMEM;
 
-	if (cpr_offset + normalized_count > cmdq_dts.cpr_size) {
+	addr = gen_pool_alloc(cmdq_ctx.sram_pool, normalized_count);
+	if (!addr) {
 		CMDQ_LOG(
-			"[WARN]SRAM count is out of memory, start:%u want:%zu owner:%s\n",
-			cpr_offset, normalized_count, owner_name);
+			"[WARN]SRAM count is out of memory, want:%zu owner:%s\n",
+			normalized_count, owner_name ? owner_name : "unknown");
 		cmdq_core_dump_sram();
 		return -ENOMEM;
 	}
 
-	p_sram_chunk = kzalloc(sizeof(struct SRAMChunk), GFP_KERNEL);
-	if (p_sram_chunk) {
-		p_sram_chunk->start_offset = cpr_offset;
-		p_sram_chunk->count = normalized_count;
-		strncpy(p_sram_chunk->owner, owner_name,
-			sizeof(p_sram_chunk->owner) - 1);
-		list_add_tail(&(p_sram_chunk->list_node),
-			&cmdq_ctx.sram_allocated_list);
-		cmdq_ctx.allocated_sram_count += normalized_count;
-		CMDQ_LOG(
-			"SRAM Chunk New-32bit unit: start:0x%x count:%zu Name:%s\n",
-			p_sram_chunk->start_offset, p_sram_chunk->count,
-			p_sram_chunk->owner);
-	}
+	*out_cpr_offset = addr - CMDQ_SRAM_POOL_BASE;
+	CMDQ_MSG(
+		"SRAM alloc-32bit unit: start:0x%x count:%zu Name:%s\n",
+		*out_cpr_offset, normalized_count,
+		owner_name ? owner_name : "unknown");
 
-	*out_cpr_offset = cpr_offset;
 	return 0;
 }
 EXPORT_SYMBOL(cmdq_core_alloc_sram_buffer);
 
 void cmdq_core_free_sram_buffer(u32 cpr_offset, size_t size)
 {
-	struct SRAMChunk *p_sram_chunk;
-	bool released = false;
-	/* Normalize from byte unit to 32bit unit */
-	size_t normalized_count = size / sizeof(u32);
+	size_t normalized_count = cmdq_core_sram_cpr_count(size);
 
-	/* Find and remove */
-	list_for_each_entry(p_sram_chunk, &cmdq_ctx.sram_allocated_list,
-		list_node) {
-		if (p_sram_chunk->start_offset == cpr_offset &&
-			p_sram_chunk->count == normalized_count) {
-			CMDQ_MSG(
-				"SRAM Chunk Free-32bit unit: start:0x%x count:%zu Name:%s\n",
-				p_sram_chunk->start_offset,
-				p_sram_chunk->count, p_sram_chunk->owner);
-			list_del_init(&(p_sram_chunk->list_node));
-			cmdq_ctx.allocated_sram_count -= normalized_count;
-			released = true;
-			break;
-		}
-	}
+	if (!cmdq_ctx.sram_pool || !normalized_count)
+		return;
 
-	if (!released) {
+	if (cpr_offset >= cmdq_dts.cpr_size ||
+		normalized_count > cmdq_dts.cpr_size - cpr_offset) {
 		CMDQ_ERR(
-			"SRAM Chunk Free-32bit unit: start:0x%x count:%zu failed\n",
+			"SRAM free-32bit unit invalid: start:0x%x count:%zu\n",
 			cpr_offset, normalized_count);
 		cmdq_core_dump_sram();
+		return;
 	}
+
+	CMDQ_MSG("SRAM free-32bit unit: start:0x%x count:%zu\n",
+		cpr_offset, normalized_count);
+	gen_pool_free(cmdq_ctx.sram_pool, CMDQ_SRAM_POOL_BASE + cpr_offset,
+		normalized_count);
 }
 EXPORT_SYMBOL(cmdq_core_free_sram_buffer);
 
 size_t cmdq_core_get_free_sram_size(void)
 {
-	return (cmdq_dts.cpr_size - cmdq_ctx.allocated_sram_count) *
-		sizeof(u32);
+	if (!cmdq_ctx.sram_pool)
+		return 0;
+
+	return gen_pool_avail(cmdq_ctx.sram_pool) * sizeof(u32);
 }
 EXPORT_SYMBOL(cmdq_core_get_free_sram_size);
 
@@ -5081,7 +5069,6 @@ void cmdq_core_initialize(void)
 
 	/* Initialize task lists */
 	INIT_LIST_HEAD(&cmdq_ctx.handle_active);
-	INIT_LIST_HEAD(&cmdq_ctx.sram_allocated_list);
 
 	/* Initialize writable address */
 	INIT_LIST_HEAD(&cmdq_ctx.writeAddrList);
@@ -5095,20 +5082,18 @@ void cmdq_core_initialize(void)
 	/* Reset overall first error dump */
 	cmdq_core_reset_first_dump();
 
-	/* pre-allocate fake SPR SRAM area */
-	{
-		u32 fake_spr_sram = 0;
-
-		status = cmdq_core_alloc_sram_buffer(max_thread_count *
-			CMDQ_THR_CPR_MAX * sizeof(u32),
-			"Fake SPR", &fake_spr_sram);
+	cmdq_ctx.delay_cpr_start = CMDQ_INVALID_CPR_OFFSET;
+	cmdq_ctx.sram_pool = gen_pool_create(1, -1);
+	if (!cmdq_ctx.sram_pool) {
+		CMDQ_ERR("Create SRAM pool failed\n");
+	} else {
+		status = gen_pool_add(cmdq_ctx.sram_pool, CMDQ_SRAM_POOL_BASE,
+			cmdq_dts.cpr_size, -1);
 		if (status < 0) {
-			CMDQ_ERR("Allocate Fake SPR failed !!");
-		} else {
-			CMDQ_LOG(
-				"CPR for thread allocated, thread:%u free:%zu\n",
-				max_thread_count,
-				cmdq_core_get_free_sram_size());
+			CMDQ_ERR("Add SRAM pool failed status:%d size:%u\n",
+				status, cmdq_dts.cpr_size);
+			gen_pool_destroy(cmdq_ctx.sram_pool);
+			cmdq_ctx.sram_pool = NULL;
 		}
 	}
 
@@ -5174,6 +5159,16 @@ void cmdq_core_deinitialize(void)
 	cmdq_dts.prefetch_size = NULL;
 	kfree(cmdq_wait_queue);
 	cmdq_wait_queue = NULL;
+	if (cmdq_ctx.delay_cpr_start != CMDQ_INVALID_CPR_OFFSET) {
+		cmdq_core_free_sram_buffer(cmdq_ctx.delay_cpr_start,
+			CMDQ_DELAY_MAX_SET * CMDQ_DELAY_SET_MAX_CPR *
+			sizeof(u32));
+		cmdq_ctx.delay_cpr_start = CMDQ_INVALID_CPR_OFFSET;
+	}
+	if (cmdq_ctx.sram_pool) {
+		gen_pool_destroy(cmdq_ctx.sram_pool);
+		cmdq_ctx.sram_pool = NULL;
+	}
 	cmdq_helper_mbox_clear_pools();
 }
 EXPORT_SYMBOL(cmdq_core_deinitialize);
