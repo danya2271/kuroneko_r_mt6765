@@ -4316,7 +4316,7 @@ void cmdq_pkt_release_handle(struct cmdqRecStruct *handle)
 {
 	s32 ref;
 	struct ContextStruct *ctx;
-	struct cmdqRecStruct **pmqos_handle_list = NULL;
+	struct cmdqRecStruct *pmqos_handle_list[CMDQ_MAX_TASK_IN_THREAD];
 	u32 handle_count;
 
 	CMDQ_MSG("release handle:0x%p pkt:0x%p thread:%d engine:0x%llx\n",
@@ -4345,21 +4345,20 @@ void cmdq_pkt_release_handle(struct cmdqRecStruct *handle)
 		handle_count =
 			--ctx->thread[(u32)handle->thread].handle_count;
 
+		if (handle_count > ARRAY_SIZE(pmqos_handle_list)) {
+			CMDQ_ERR("PMQoS handle_count overflow:%u\n",
+				handle_count);
+			handle_count = ARRAY_SIZE(pmqos_handle_list);
+		}
 		if (handle_count) {
-			pmqos_handle_list = kcalloc(handle_count + 1,
-				sizeof(*pmqos_handle_list), GFP_KERNEL);
-
-			if (pmqos_handle_list)
-				cmdq_core_get_pmqos_handle_list(
-					handle,
-					pmqos_handle_list,
-					handle_count);
+			cmdq_core_get_pmqos_handle_list(handle,
+				pmqos_handle_list, handle_count);
 		}
 
-		cmdq_core_group_end_task(handle, pmqos_handle_list,
+		cmdq_core_group_end_task(handle,
+			handle_count ? pmqos_handle_list : NULL,
 			handle_count);
 
-		kfree(pmqos_handle_list);
 		mutex_unlock(&cmdq_thread_mutex);
 	}
 
@@ -4694,7 +4693,7 @@ static s32 cmdq_pkt_flush_async_ex_impl(struct cmdqRecStruct *handle,
 {
 	s32 err;
 	struct cmdq_client *client = NULL;
-	struct cmdqRecStruct **pmqos_handle_list = NULL;
+	struct cmdqRecStruct *pmqos_handle_list[CMDQ_MAX_TASK_IN_THREAD + 1];
 	struct ContextStruct *ctx;
 	u32 handle_count;
 
@@ -4779,21 +4778,20 @@ static s32 cmdq_pkt_flush_async_ex_impl(struct cmdqRecStruct *handle,
 		ctx = cmdq_core_get_context();
 		handle_count = ctx->thread[(u32)handle->thread].handle_count;
 
-		pmqos_handle_list = kcalloc(handle_count + 1,
-			sizeof(*pmqos_handle_list), GFP_KERNEL);
-
-		if (pmqos_handle_list) {
-			if (handle_count)
-				cmdq_core_get_pmqos_handle_list(handle,
-					pmqos_handle_list, handle_count);
-
-			pmqos_handle_list[handle_count] = handle;
+		if (handle_count >= ARRAY_SIZE(pmqos_handle_list)) {
+			CMDQ_ERR("PMQoS handle_count overflow:%u\n",
+				handle_count);
+			handle_count = ARRAY_SIZE(pmqos_handle_list) - 1;
 		}
 
+		if (handle_count)
+			cmdq_core_get_pmqos_handle_list(handle,
+				pmqos_handle_list, handle_count);
+
+		pmqos_handle_list[handle_count] = handle;
 		cmdq_core_group_begin_task(handle, pmqos_handle_list,
 			handle_count + 1);
 
-		kfree(pmqos_handle_list);
 		ctx->thread[(u32)handle->thread].handle_count++;
 		mutex_unlock(&cmdq_thread_mutex);
 	}
