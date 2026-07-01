@@ -143,7 +143,6 @@ struct cmdq {
 	struct clk		*clock_timer;
 	bool			suspended;
 	atomic_t		usage;
-	struct workqueue_struct *timeout_wq;
 	struct wakeup_source	wake_lock;
 	bool			wake_locked;
 	spinlock_t		lock;
@@ -1074,7 +1073,6 @@ unlock_free_done:
 static void cmdq_thread_handle_timeout(struct timer_list *t)
 {
 	struct cmdq_thread *thread = from_timer(thread, t, timeout);
-	struct cmdq *cmdq = container_of(thread->chan->mbox, struct cmdq, mbox);
 	unsigned long flags;
 	bool empty;
 
@@ -1086,7 +1084,7 @@ static void cmdq_thread_handle_timeout(struct timer_list *t)
 
 	if (!work_pending(&thread->timeout_work)) {
 		cmdq_log("queue cmdq timeout thread:%u", thread->idx);
-		queue_work(cmdq->timeout_wq, &thread->timeout_work);
+		schedule_work(&thread->timeout_work);
 	} else {
 		cmdq_msg("ignore cmdq timeout thread:%u", thread->idx);
 	}
@@ -1773,9 +1771,6 @@ static int cmdq_probe(struct platform_device *pdev)
 			"%s", WQ_MEM_RECLAIM | WQ_HIGHPRI,
 			"cmdq_buf_dump");
 #endif
-
-	cmdq->timeout_wq = create_singlethread_workqueue(
-		"cmdq_timeout_handler");
 
 	platform_set_drvdata(pdev, cmdq);
 	WARN_ON(clk_prepare(cmdq->clock) < 0);
