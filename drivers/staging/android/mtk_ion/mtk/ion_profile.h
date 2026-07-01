@@ -29,26 +29,26 @@ enum ION_PROFILE_TYPE {
 	PROFILE_MAX,
 };
 
-#define ION_PROFILE
-
 #define mmp_root_event 1
 
-void ion_profile_init(void);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
+#include <mmprofile.h>
+#include <mmprofile_function.h>
+void mmprofile_enable(int enable);
+void mmprofile_start(int start);
 
-#ifndef ION_PROFILE
+void ion_profile_init(void);
+extern mmp_event ion_mmp_events[PROFILE_MAX];
+#else
 #define mmprofile_enable_event(...) 0
 #define mmprofile_log_ex(...)
 #define mmprofile_enable(...)
 #define mmprofile_start(...)
 #define mmprofile_register_event(...) 0
 #define mmp_event unsigned int
-#else
-#include <mmprofile.h>
-#include <mmprofile_function.h>
-void mmprofile_enable(int enable);
-void mmprofile_start(int start);
+static inline void ion_profile_init(void)
+{
+}
 #endif
-
-extern mmp_event ion_mmp_events[PROFILE_MAX];
 
 #endif

@@ -38,7 +38,8 @@
 /* history record */
 /* ============================================== */
 
-#if IS_ENABLED(CONFIG_DEBUG_FS) || IS_ENABLED(CONFIG_PROC_FS)
+#if defined(ION_HISTORY_RECORD) && \
+	(IS_ENABLED(CONFIG_DEBUG_FS) || IS_ENABLED(CONFIG_PROC_FS))
 struct history_record {
 	void *record;
 	unsigned int record_num;
