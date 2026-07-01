@@ -1471,10 +1471,6 @@ s32 cmdq_mdp_flush_async(struct cmdqCommandStruct *desc, bool user_space,
 		}
 	}
 
-	if (user_space && !cmdq_core_check_user_valid(
-		(void *)(unsigned long)desc->pVABase, copy_size))
-		return -EFAULT;
-
 	if (desc->regRequest.count &&
 			desc->regRequest.count <= CMDQ_MAX_DUMP_REG_COUNT &&
 			desc->regRequest.regAddresses) {
@@ -3852,4 +3848,3 @@ void cmdq_mdp_platform_function_setting(void)
 {
 }
 #endif
-

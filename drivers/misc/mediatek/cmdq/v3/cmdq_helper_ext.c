@@ -53,7 +53,6 @@ static DEFINE_MUTEX(cmdq_res_mutex);
 static DEFINE_MUTEX(cmdq_err_mutex);
 static DEFINE_MUTEX(cmdq_handle_list_mutex);
 static DEFINE_MUTEX(cmdq_thread_mutex);
-static DEFINE_MUTEX(cmdq_inst_check_mutex);
 
 static DEFINE_SPINLOCK(cmdq_write_addr_lock);
 static DEFINE_SPINLOCK(cmdq_record_lock);
@@ -205,60 +204,6 @@ static bool cmdq_core_check_instr_valid(const u64 instr)
 	CMDQ_ERR("instr:%#llx\n", instr);
 	return false;
 }
-
-bool cmdq_core_check_user_valid(void *src, u32 size)
-{
-	void *buffer;
-	u64 *va;
-	bool ret = true;
-	u32 copy_size;
-	u32 remain_size = size;
-	void *cur_src = src;
-	CMDQ_TIME cost = sched_clock();
-
-	mutex_lock(&cmdq_inst_check_mutex);
-	if (!cmdq_ctx.inst_check_buffer) {
-		cmdq_ctx.inst_check_buffer = kmalloc(CMDQ_CMD_BUFFER_SIZE,
-			GFP_KERNEL);
-		if (!cmdq_ctx.inst_check_buffer) {
-			CMDQ_ERR("fail to alloc check buffer\n");
-			mutex_unlock(&cmdq_inst_check_mutex);
-			return false;
-		}
-	}
-
-	buffer = cmdq_ctx.inst_check_buffer;
-
-	while (remain_size > 0 && ret) {
-		copy_size = remain_size > CMDQ_CMD_BUFFER_SIZE ?
-			CMDQ_CMD_BUFFER_SIZE : remain_size;
-		if (copy_from_user(buffer, cur_src, copy_size)) {
-			CMDQ_ERR("copy from user fail size:%u\n", size);
-			ret = false;
-			break;
-		}
-
-		for (va = (u64 *)buffer;
-			va < (u64 *)(buffer + copy_size); va++) {
-			ret = cmdq_core_check_instr_valid(*va);
-			if (unlikely(!ret))
-				break;
-		}
-
-		remain_size -= copy_size;
-		cur_src += copy_size;
-	}
-
-	mutex_unlock(&cmdq_inst_check_mutex);
-
-	cost = div_u64(sched_clock() - cost, 1000);
-
-	CMDQ_MSG("%s size:%u cost:%lluus ret:%s\n", __func__, size, (u64)cost,
-		ret ? "true" : "false");
-
-	return ret;
-}
-EXPORT_SYMBOL(cmdq_core_check_user_valid);
 
 static void cmdq_core_config_prefetch_gsize(void)
 {
@@ -4198,6 +4143,11 @@ s32 cmdq_pkt_copy_cmd(struct cmdqRecStruct *handle, void *src, const u32 size,
 	void *va;
 	struct cmdq_pkt_buffer *buf;
 
+	if (is_copy_from_user && size % CMDQ_INST_SIZE) {
+		CMDQ_ERR("invalid user cmd size:%u\n", size);
+		return -EINVAL;
+	}
+
 	while (remaind_cmd_size > 0) {
 		/* extend buffer to copy more instruction */
 		if (!handle->pkt->avail_buf_size) {
@@ -4214,6 +4164,16 @@ s32 cmdq_pkt_copy_cmd(struct cmdqRecStruct *handle, void *src, const u32 size,
 			copy_size, is_copy_from_user);
 		if (status < 0)
 			return status;
+
+		if (is_copy_from_user) {
+			u64 *instr = va;
+			u64 *end = va + copy_size;
+
+			for (; instr < end; instr++) {
+				if (unlikely(!cmdq_core_check_instr_valid(*instr)))
+					return -EFAULT;
+			}
+		}
 
 		/* update last instruction position */
 		pkt->avail_buf_size -= copy_size;
@@ -5214,8 +5174,6 @@ void cmdq_core_deinitialize(void)
 	cmdq_dts.prefetch_size = NULL;
 	kfree(cmdq_wait_queue);
 	cmdq_wait_queue = NULL;
-	kfree(cmdq_ctx.inst_check_buffer);
-	cmdq_ctx.inst_check_buffer = NULL;
 	cmdq_helper_mbox_clear_pools();
 }
 EXPORT_SYMBOL(cmdq_core_deinitialize);
