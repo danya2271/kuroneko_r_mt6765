@@ -4110,11 +4110,11 @@ static s32 cmdq_pkt_copy_buffer(void *dst, void *src, const u32 size,
 		memcpy(dst, src, size);
 	} else {
 		CMDQ_VERBOSE("copy user to 0x%p\n", dst);
-		if (copy_from_user(dst, src, size)) {
+		if (__copy_from_user(dst, (const void __user *)src, size)) {
 			CMDQ_AEE("CMDQ",
 				"CRDISPATCH_KEY:CMDQ Fail to copy from user 0x%p, size:%d\n",
 				src, size);
-			status = -ENOMEM;
+			status = -EFAULT;
 		}
 	}
 
@@ -4134,6 +4134,12 @@ s32 cmdq_pkt_copy_cmd(struct cmdqRecStruct *handle, void *src, const u32 size,
 	if (is_copy_from_user && size % CMDQ_INST_SIZE) {
 		CMDQ_ERR("invalid user cmd size:%u\n", size);
 		return -EINVAL;
+	}
+
+	if (is_copy_from_user && !access_ok(VERIFY_READ, src, size)) {
+		CMDQ_ERR("invalid user cmd region src:0x%p size:%u\n",
+			src, size);
+		return -EFAULT;
 	}
 
 	while (remaind_cmd_size > 0) {
