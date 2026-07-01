@@ -974,11 +974,7 @@ static s32 cmdq_mdp_consume_handle(void)
 	/* loop waiting list for pending handles */
 	list_for_each_entry_safe(handle, temp, &mdp_ctx.tasks_wait,
 		list_entry) {
-		/* operations for thread list need thread lock */
-		mutex_lock(&mdp_thread_mutex);
-
 		if (force_inorder && handle->force_inorder) {
-			mutex_unlock(&mdp_thread_mutex);
 			CMDQ_LOG(
 				"skip force inorder handle:0x%p engine:0x%llx\n",
 				handle, handle->engineFlag);
@@ -986,12 +982,14 @@ static s32 cmdq_mdp_consume_handle(void)
 		}
 
 		if (secure_run != handle->secData.is_secure) {
-			mutex_unlock(&mdp_thread_mutex);
 			CMDQ_LOG(
 				"skip secure inorder handle:%p engine:%#llx\n",
 				handle, handle->engineFlag);
 			break;
 		}
+
+		/* operations for thread list need thread lock */
+		mutex_lock(&mdp_thread_mutex);
 
 		handle->thread = cmdq_mdp_find_free_thread(handle);
 		if (handle->thread == CMDQ_INVALID_THREAD) {
