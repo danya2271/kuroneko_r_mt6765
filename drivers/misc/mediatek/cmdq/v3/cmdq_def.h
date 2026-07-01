@@ -58,7 +58,7 @@
 #define CMDQ_MAX_ERROR_COUNT            (2)
 #define CMDQ_MAX_RETRY_COUNT            (1)
 /* ram optimization related configuration */
-#define CMDQ_MAX_RECORD_COUNT           (64)
+#define CMDQ_MAX_RECORD_COUNT           (8)
 
 #define CMDQ_INITIAL_CMD_BLOCK_SIZE     (PAGE_SIZE)
 /* instruction is 64-bit */
