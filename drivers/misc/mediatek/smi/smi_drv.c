@@ -296,6 +296,9 @@ smi_bwl_update(const u32 id, const u32 bwl, const bool soft, const char *user)
 	comm = id >> 16;
 #endif
 	val = (soft ? 0x1000 : 0x3000) | SMI_PMQOS_BWL_MASK(bwl);
+	if (smi_scen_pair[SMI_LARB_NUM + comm][SMI_ESL_INIT][id & 0xffff].val
+		== val)
+		return;
 	smi_scen_pair[SMI_LARB_NUM + comm][SMI_ESL_INIT][id & 0xffff].val = val;
 
 	if (ATOMR_CLK(SMI_LARB_NUM + comm)) {
