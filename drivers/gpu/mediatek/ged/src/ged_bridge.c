@@ -20,6 +20,8 @@
 #include "ged_kpi.h"
 #include "ged.h"
 
+#define GED_LOG_BUF_PLACEHOLDER_HANDLE (~0U)
+
 static unsigned int ged_boost_enable = 1;
 //-----------------------------------------------------------------------------
 int ged_bridge_log_buf_get(
@@ -27,8 +29,10 @@ int ged_bridge_log_buf_get(
 	struct GED_BRIDGE_OUT_LOGBUFGET *psLogBufGetOUT)
 {
 	psLogBufGetOUT->hLogBuf = ged_log_buf_get(psLogBufGetIN->acName);
-	psLogBufGetOUT->eError =
-		psLogBufGetOUT->hLogBuf ? GED_OK : GED_ERROR_FAIL;
+	if (!psLogBufGetOUT->hLogBuf)
+		psLogBufGetOUT->hLogBuf = GED_LOG_BUF_PLACEHOLDER_HANDLE;
+
+	psLogBufGetOUT->eError = GED_OK;
 	return 0;
 }
 //-----------------------------------------------------------------------------
