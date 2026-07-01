@@ -1093,7 +1093,9 @@ struct ion_client *ion_client_create(struct ion_device *dev,
 	if (!client)
 		goto err_put_task_struct;
 
+#ifdef ION_RECORD_TOTAL_SIZE_SUPPORT
 	client->threshold_size = CLIENT_THRESHOLD_SIZE;
+#endif
 	client->dev = dev;
 	client->handles = RB_ROOT;
 	idr_init(&client->idr);

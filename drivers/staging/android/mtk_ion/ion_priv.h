@@ -153,10 +153,12 @@ struct ion_client {
 	struct proc_dir_entry *proc_root;
 #endif
 	char dbg_name[ION_MM_DBG_NAME_LEN]; /* add by K for debug! */
+#ifdef ION_RECORD_TOTAL_SIZE_SUPPORT
 	atomic64_t total_size[HEAP_NUM];
 	int hnd_cnt;
-	int dbg_hnd_cnt;
 	unsigned long long threshold_size;
+#endif
+	int dbg_hnd_cnt;
 };
 
 struct ion_handle_debug {
