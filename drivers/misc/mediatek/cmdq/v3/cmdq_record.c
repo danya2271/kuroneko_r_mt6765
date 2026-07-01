@@ -678,16 +678,12 @@ s32 cmdq_check_before_append(struct cmdqRecStruct *handle)
 	return cmdq_task_check_available(handle);
 }
 
-static s32 cmdq_append_command_pkt(struct cmdq_pkt *pkt, enum cmdq_code code,
-	u32 arg_a, u32 arg_b)
+static inline void cmdq_append_command_pkt_unchecked(struct cmdq_pkt *pkt,
+	enum cmdq_code code, u32 arg_a, u32 arg_b)
 {
 	struct cmdq_pkt_buffer *buf;
 	u64 *va = NULL;
 
-	if (unlikely(!pkt->avail_buf_size)) {
-		if (cmdq_pkt_add_cmd_buffer(pkt) < 0)
-			return -ENOMEM;
-	}
 	buf = list_last_entry(&pkt->buf, typeof(*buf), list_entry);
 	va = (u64 *)(buf->va_base + CMDQ_CMD_BUFFER_SIZE -
 		pkt->avail_buf_size);
@@ -695,6 +691,17 @@ static s32 cmdq_append_command_pkt(struct cmdq_pkt *pkt, enum cmdq_code code,
 	*va = (u64)((code << CMDQ_OP_CODE_SHIFT) | arg_a) << 32 | arg_b;
 	pkt->cmd_buf_size += CMDQ_INST_SIZE;
 	pkt->avail_buf_size -= CMDQ_INST_SIZE;
+}
+
+static s32 cmdq_append_command_pkt(struct cmdq_pkt *pkt, enum cmdq_code code,
+	u32 arg_a, u32 arg_b)
+{
+	if (unlikely(!pkt->avail_buf_size)) {
+		if (cmdq_pkt_add_cmd_buffer(pkt) < 0)
+			return -ENOMEM;
+	}
+
+	cmdq_append_command_pkt_unchecked(pkt, code, arg_a, arg_b);
 	return 0;
 }
 
@@ -709,7 +716,8 @@ static s32 cmdq_append_command_pkt(struct cmdq_pkt *pkt, enum cmdq_code code,
  */
 static s32 cmdq_append_wpr_command(
 	struct cmdqRecStruct *handle, enum cmdq_code code,
-	u32 arg_a, u32 arg_b, u32 arg_a_type, u32 arg_b_type)
+	u32 arg_a, u32 arg_b, u32 arg_a_type, u32 arg_b_type,
+	bool slot_checked)
 {
 	s32 status = 0;
 	s32 subsys;
@@ -798,8 +806,17 @@ static s32 cmdq_append_wpr_command(
 	 * bit 54: arg_b type, 1 for GPR
 	 * argType: ('new_arg_a_type', 'arg_b_type', '0')
 	 */
-	cmdq_append_command_pkt(handle->pkt, code,
-		new_arg_a | (arg_type << 21), arg_b);
+	if (bUseGPR)
+		status = cmdq_append_command_pkt(handle->pkt, code,
+			new_arg_a | (arg_type << 21), arg_b);
+	else if (slot_checked)
+		cmdq_append_command_pkt_unchecked(handle->pkt, code,
+			new_arg_a | (arg_type << 21), arg_b);
+	else
+		status = cmdq_append_command_pkt(handle->pkt, code,
+			new_arg_a | (arg_type << 21), arg_b);
+	if (status < 0)
+		return status;
 
 	if (bUseGPR) {
 		/* Set for GPR mutex token to leave mutex */
@@ -821,7 +838,7 @@ static s32 cmdq_append_wpr_command(
  */
 static s32 cmdq_append_rw_s_command(struct cmdqRecStruct *handle,
 	enum cmdq_code code, u32 arg_a, u32 arg_b, u32 arg_a_type,
-	u32 arg_b_type)
+	u32 arg_b_type, bool slot_checked)
 {
 	s32 status = 0;
 	u32 new_arg_a, new_arg_b;
@@ -830,6 +847,7 @@ static s32 cmdq_append_rw_s_command(struct cmdqRecStruct *handle,
 	u32 arg_type = 0;
 	s32 subsys = 0;
 	bool save_op = false;
+	bool inserted_cmd = false;
 
 	/* be careful that subsys encoding position is different
 	 * among platforms
@@ -870,9 +888,13 @@ static s32 cmdq_append_rw_s_command(struct cmdqRecStruct *handle,
 				"REC: Special handle memory base address 0x%08x\n",
 				arg_a);
 			/* Assign extra handle APB address to SPR */
-			cmdq_append_command_pkt(handle->pkt, CMDQ_CODE_LOGIC,
+			status = cmdq_append_command_pkt(handle->pkt,
+				CMDQ_CODE_LOGIC,
 				(4 << 21) | (CMDQ_LOGIC_ASSIGN << 16) |
 				CMDQ_SPR_FOR_TEMP, arg_addr);
+			if (status < 0)
+				return status;
+			inserted_cmd = true;
 			/* change final arg_addr to GPR */
 			subsys = 0;
 			arg_addr = CMDQ_SPR_FOR_TEMP;
@@ -933,8 +955,15 @@ static s32 cmdq_append_rw_s_command(struct cmdqRecStruct *handle,
 	 * bit 54: arg_b type, 1 for HW register
 	 * argType: ('new_arg_a_type', 'arg_b_type', '0')
 	 */
-	cmdq_append_command_pkt(handle->pkt, code,
-		new_arg_a | (arg_type << 21), new_arg_b);
+	if (inserted_cmd || !slot_checked)
+		status = cmdq_append_command_pkt(handle->pkt, code,
+			new_arg_a | (arg_type << 21), new_arg_b);
+	else
+		cmdq_append_command_pkt_unchecked(handle->pkt, code,
+			new_arg_a | (arg_type << 21), new_arg_b);
+	if (status < 0)
+		return status;
+
 	if (save_op)
 		cmdq_save_op_variable_position(handle,
 			cmdq_task_get_inst_cnt(handle) - 1);
@@ -948,6 +977,7 @@ s32 cmdq_append_command(struct cmdqRecStruct *handle,
 {
 	s32 status;
 	u32 new_arg_a, new_arg_b, new_code = code;
+	bool slot_checked = true;
 
 	status = cmdq_check_before_append(handle);
 	if (status < 0) {
@@ -976,6 +1006,7 @@ s32 cmdq_append_command(struct cmdqRecStruct *handle,
 			cmdqRecDisablePrefetch(handle);
 			/* BEGING of next prefetch section */
 			cmdqRecMark(handle);
+			slot_checked = false;
 		} else {
 			/* prefetch enabled marker exist */
 			if (handle->prefetchCount >= 1) {
@@ -999,12 +1030,12 @@ s32 cmdq_append_command(struct cmdqRecStruct *handle,
 		 * handle them together
 		 */
 		return cmdq_append_wpr_command(handle, code, arg_a, arg_b,
-			arg_a_type, arg_b_type);
+			arg_a_type, arg_b_type, slot_checked);
 	case CMDQ_CODE_READ_S:
 	case CMDQ_CODE_WRITE_S:
 	case CMDQ_CODE_WRITE_S_W_MASK:
 		return cmdq_append_rw_s_command(handle, code, arg_a, arg_b,
-			arg_a_type, arg_b_type);
+			arg_a_type, arg_b_type, slot_checked);
 	case CMDQ_CODE_MOVE:
 		new_arg_b = arg_b;
 		new_arg_a = arg_a & 0xffffff;
@@ -1075,8 +1106,14 @@ s32 cmdq_append_command(struct cmdqRecStruct *handle,
 		return -EFAULT;
 	}
 
-	status = cmdq_append_command_pkt(handle->pkt, new_code,
-		new_arg_a, new_arg_b);
+	if (slot_checked) {
+		cmdq_append_command_pkt_unchecked(handle->pkt, new_code,
+			new_arg_a, new_arg_b);
+		status = 0;
+	} else {
+		status = cmdq_append_command_pkt(handle->pkt, new_code,
+			new_arg_a, new_arg_b);
+	}
 	if (status < 0) {
 		CMDQ_ERR(
 			"append cmd fail:%d handle:0x%p op:0x%02x arg a:0x%08x arg b:0x%08x size:%zu\n",
@@ -2941,7 +2978,7 @@ static s32 cmdq_append_logic_command(struct cmdqRecStruct *handle,
 					CMDQ_THR_SPR_MAX);
 		}
 
-		cmdq_append_command_pkt(handle->pkt, CMDQ_CODE_LOGIC,
+		cmdq_append_command_pkt_unchecked(handle->pkt, CMDQ_CODE_LOGIC,
 			(arg_abc_type << 21) | (s_op << 16) | arg_a_i,
 			(arg_b_i << 16) | (arg_c_i & 0xFFFF));
 
@@ -3196,7 +3233,8 @@ s32 cmdq_append_jump_c_command(struct cmdqRecStruct *handle,
 			CMDQ_ERR("jump_c arg_c value is over 16 bit:0x%08x\n",
 			arg_c_i);
 
-		cmdq_append_command_pkt(handle->pkt, CMDQ_CODE_JUMP_C_RELATIVE,
+		cmdq_append_command_pkt_unchecked(handle->pkt,
+			CMDQ_CODE_JUMP_C_RELATIVE,
 			(arg_abc_type << 21) | (instr_condition << 16) |
 			(arg_a_i),
 			(arg_b_i << 16) | (arg_c_i));
@@ -4094,4 +4132,3 @@ s32 cmdqRecWriteAndReleaseResource(struct cmdqRecStruct *handle,
 	return cmdq_resource_release_and_write(handle, resourceEvent, addr,
 		value, mask);
 }
-
