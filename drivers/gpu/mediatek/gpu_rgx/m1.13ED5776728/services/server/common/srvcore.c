@@ -103,7 +103,7 @@ PVRSRV_BRIDGE_DISPATCH_TABLE_ENTRY g_BridgeDispatchTable[BRIDGE_DISPATCH_TABLE_E
 static IMG_UINT16 g_BridgeDispatchTableStartOffsets[BRIDGE_DISPATCH_TABLE_START_ENTRY_COUNT][PVR_DISPATCH_OFFSET_ARRAY_MAX];
 
 
-#define PVRSRV_MAX_POOLED_BRIDGE_BUFFERS 8	/*!< Initial number of pooled bridge buffers */
+#define PVRSRV_MAX_POOLED_BRIDGE_BUFFERS 4	/*!< Maximum number of idle pooled bridge buffers */
 
 static PVRSRV_POOL *g_psBridgeBufferPool;	/*! Pool of bridge buffers */
 
