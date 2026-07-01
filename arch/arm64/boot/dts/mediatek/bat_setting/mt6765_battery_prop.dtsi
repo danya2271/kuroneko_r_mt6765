@@ -7,7 +7,7 @@
  */
 
 &mtk_gauge {
-	DIFFERENCE_FULLOCV_ITH = <(290)>;
+	DIFFERENCE_FULLOCV_ITH = <(200)>;
 	/* Charging termination current */
 	SHUTDOWN_1_TIME = <(2)>;
 	/* If ui_soc shows 1% more than X minites, system will shutdown */
@@ -40,15 +40,15 @@
 	/* Battery temperature T4 */
 	TEMPERATURE_T5 = <(-10)>;
 	/* Battery temperature T5 */
-	g_FG_PSEUDO100_T0 = <(98)>;
+	g_FG_PSEUDO100_T0 = <(100)>;
 	/* Pseudo 100% percentage at T0 */
-	g_FG_PSEUDO100_T1 = <(97)>;
+	g_FG_PSEUDO100_T1 = <(100)>;
 	/* Pseudo 100% percentage at T1 */
-	g_FG_PSEUDO100_T2 = <(95)>;
+	g_FG_PSEUDO100_T2 = <(100)>;
 	/* Pseudo 100% percentage at T2 */
-	g_FG_PSEUDO100_T3 = <(85)>;
+	g_FG_PSEUDO100_T3 = <(100)>;
 	/* Pseudo 100% percentage at T3 */
-	g_FG_PSEUDO100_T4 = <(85)>;
+	g_FG_PSEUDO100_T4 = <(100)>;
 	/* Pseudo 100% percentage at T4 */
 	Q_MAX_SYS_VOLTAGE_BAT0 = <(3400)>;
 	/* Pseudo1 for hide percentage */
