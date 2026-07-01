@@ -57,7 +57,6 @@ static DEFINE_MUTEX(cmdq_inst_check_mutex);
 
 static DEFINE_SPINLOCK(cmdq_write_addr_lock);
 static DEFINE_SPINLOCK(cmdq_record_lock);
-static DEFINE_SPINLOCK(cmdq_first_err_lock);
 
 static struct dma_pool *mdp_rb_pool;
 static atomic_t mdp_rb_pool_cnt;
@@ -72,7 +71,6 @@ static atomic_t cmdq_thread_usage;
 
 static wait_queue_head_t *cmdq_wait_queue; /* task done notify */
 static struct ContextStruct cmdq_ctx; /* cmdq driver context */
-static struct DumpFirstErrorStruct cmdq_first_err;
 static struct DumpCommandBufferStruct cmdq_command_dump;
 static struct CmdqCBkStruct cmdq_group_cb[CMDQ_MAX_GROUP_COUNT];
 static struct CmdqDebugCBkStruct cmdq_debug_cb;
@@ -1282,35 +1280,6 @@ int cmdq_core_print_status_seq(struct seq_file *m, void *v)
 	struct cmdq_pkt_buffer *buf;
 	const u32 max_thread_count = cmdq_dev_get_thread_count();
 
-#ifdef CMDQ_DUMP_FIRSTERROR
-	if (cmdq_first_err.cmdqCount > 0) {
-		unsigned long long saveTimeSec = cmdq_first_err.savetime;
-		unsigned long rem_nsec = do_div(saveTimeSec, 1000000000);
-		struct tm nowTM;
-
-		time_to_tm(cmdq_first_err.savetv.tv_sec,
-			sys_tz.tz_minuteswest * 60, &nowTM);
-		seq_puts(m, "================= [CMDQ] Dump first error ================\n");
-		seq_printf(m, "kernel time:[%5llu.%06lu],",
-			saveTimeSec, rem_nsec / 1000);
-		seq_printf(m, " UTC time:[%04ld-%02d-%02d %02d:%02d:%02d.%06ld],",
-			   (nowTM.tm_year + 1900), (nowTM.tm_mon + 1),
-			   nowTM.tm_mday, nowTM.tm_hour, nowTM.tm_min,
-			   nowTM.tm_sec, cmdq_first_err.savetv.tv_usec);
-		seq_printf(m, " Pid:%d Name:%s\n", cmdq_first_err.callerPid,
-			cmdq_first_err.callerName);
-		if (cmdq_first_err.cmdqString)
-			seq_printf(m, "%s", cmdq_first_err.cmdqString);
-		else
-			seq_puts(m, "\nWARNING: first error unavailable\n");
-		if (cmdq_first_err.cmdqMaxSize <= 0)
-			seq_printf(m, "\nWARNING: MAX size:%d is full\n",
-			CMDQ_MAX_FIRSTERROR);
-		seq_puts(m, "\n\n");
-	}
-#endif
-
-
 	/* Save command buffer dump */
 	if (cmdq_command_dump.count > 0) {
 		s32 buffer_id;
@@ -1496,185 +1465,25 @@ EXPORT_SYMBOL(cmdq_core_dump_trigger_loop_thread);
 
 void cmdq_core_turnon_first_dump(const struct cmdqRecStruct *task)
 {
-	int len;
-
-	if (cmdq_first_err.cmdqCount || !task)
-		return;
-
-	cmdq_first_err.flag = true;
-	/* save kernel time, pid, and caller name */
-	cmdq_first_err.callerPid = task->caller_pid;
-	len = snprintf(cmdq_first_err.callerName, TASK_COMM_LEN, "%s",
-		task->caller_name);
-	if (len >= TASK_COMM_LEN)
-		pr_debug("%s:%d len:%d over TASK_COMM_LEN:%d callerName:%s\n",
-			__func__, __LINE__,
-			len, TASK_COMM_LEN, task->caller_name);
-	cmdq_first_err.savetime = sched_clock();
-	do_gettimeofday(&cmdq_first_err.savetv);
 }
 EXPORT_SYMBOL(cmdq_core_turnon_first_dump);
 
 void cmdq_core_turnoff_first_dump(void)
 {
-	cmdq_first_err.flag = false;
 }
 EXPORT_SYMBOL(cmdq_core_turnoff_first_dump);
 
 void cmdq_core_reset_first_dump(void)
 {
-	memset(&cmdq_first_err, 0, sizeof(cmdq_first_err));
-	cmdq_first_err.cmdqMaxSize = CMDQ_MAX_FIRSTERROR;
 	cmdq_ctx.errNum = 0;
 }
 EXPORT_SYMBOL(cmdq_core_reset_first_dump);
 
 s32 cmdq_core_save_first_dump(const char *string, ...)
 {
-	int logLen;
-	va_list argptr;
-	char *buffer;
-	unsigned long flags;
-
-	if (!cmdq_first_err.flag)
-		return -EFAULT;
-
-	spin_lock_irqsave(&cmdq_first_err_lock, flags);
-
-	if (!cmdq_first_err.cmdqString) {
-		cmdq_first_err.cmdqString = kmalloc(CMDQ_MAX_FIRSTERROR,
-			GFP_ATOMIC);
-		if (!cmdq_first_err.cmdqString) {
-			spin_unlock_irqrestore(&cmdq_first_err_lock, flags);
-			cmdq_first_err.flag = false;
-			CMDQ_LOG("[ERR] Error0 dump buffer allocate fail\n");
-			return -ENOMEM;
-		}
-	}
-
-	va_start(argptr, string);
-	buffer = cmdq_first_err.cmdqString + cmdq_first_err.cmdqCount;
-	logLen = vsnprintf(buffer, cmdq_first_err.cmdqMaxSize, string, argptr);
-	if (logLen >= cmdq_first_err.cmdqMaxSize)
-		pr_debug("%s:%d logLen:%d over MaxSize:%d\n",
-			__func__, __LINE__, logLen, cmdq_first_err.cmdqMaxSize);
-	cmdq_first_err.cmdqMaxSize -= logLen;
-	cmdq_first_err.cmdqCount += logLen;
-
-	spin_unlock_irqrestore(&cmdq_first_err_lock, flags);
-
-	if (cmdq_first_err.cmdqMaxSize <= 0) {
-		cmdq_first_err.flag = false;
-		CMDQ_LOG("[ERR] Error0 dump saving buffer is full\n");
-	}
-	va_end(argptr);
 	return 0;
 }
 EXPORT_SYMBOL(cmdq_core_save_first_dump);
-
-static void cmdq_core_hex_dump_to_buffer(const void *buf, size_t len,
-	int rowsize, int groupsize, char *linebuf, size_t linebuflen)
-{
-	const u8 *ptr = buf;
-	u8 ch;
-	int j, lx = 0;
-
-	if (rowsize != 16 && rowsize != 32)
-		rowsize = 16;
-
-	if (!len)
-		goto nil;
-	if (len > rowsize)	/* limit to one line at a time */
-		len = rowsize;
-	if ((len % groupsize) != 0)	/* no mixed size output */
-		groupsize = 1;
-
-	switch (groupsize) {
-	case 8:{
-			const u64 *ptr8 = buf;
-			int ngroups = len / groupsize;
-
-			for (j = 0; j < ngroups; j++)
-				lx += scnprintf(linebuf + lx, linebuflen - lx,
-				"%s%16.16llx", j ? " " : "",
-				(unsigned long long)*(ptr8 + j));
-			break;
-		}
-
-	case 4:{
-			const u32 *ptr4 = buf;
-			int ngroups = len / groupsize;
-
-			for (j = 0; j < ngroups; j++)
-				lx += scnprintf(linebuf + lx, linebuflen - lx,
-				"%s%8.8x", j ? " " : "", *(ptr4 + j));
-			break;
-		}
-
-	case 2:{
-			const u16 *ptr2 = buf;
-			int ngroups = len / groupsize;
-
-			for (j = 0; j < ngroups; j++)
-				lx += scnprintf(linebuf + lx, linebuflen - lx,
-				"%s%4.4x", j ? " " : "", *(ptr2 + j));
-			break;
-		}
-
-	default:
-		for (j = 0; (j < len) && (lx + 3) <= linebuflen; j++) {
-			ch = ptr[j];
-			linebuf[lx++] = hex_asc_hi(ch);
-			linebuf[lx++] = hex_asc_lo(ch);
-			linebuf[lx++] = ' ';
-		}
-		if (j)
-			lx--;
-		break;
-	}
-nil:
-	linebuf[lx++] = '\0';
-}
-
-static void cmdq_core_save_hex_first_dump(const char *prefix_str,
-	int rowsize, int groupsize, const void *buf, size_t len)
-{
-	const u8 *ptr = buf;
-	int i, linelen, remaining = len;
-	unsigned char linebuf[32 * 3 + 2 + 32 + 1];
-	int logLen;
-	char *pBuffer;
-
-	if (cmdq_first_err.flag == false)
-		return;
-
-	if (rowsize != 16 && rowsize != 32)
-		rowsize = 16;
-
-	for (i = 0; i < len; i += rowsize) {
-		linelen = min(remaining, rowsize);
-		remaining -= rowsize;
-
-		cmdq_core_hex_dump_to_buffer(ptr + i, linelen, rowsize,
-			groupsize, linebuf, sizeof(linebuf));
-
-		pBuffer = cmdq_first_err.cmdqString +
-			cmdq_first_err.cmdqCount;
-		logLen = snprintf(pBuffer, cmdq_first_err.cmdqMaxSize,
-			"%s%p:%s\n", prefix_str, ptr + i, linebuf);
-		if (logLen >= cmdq_first_err.cmdqMaxSize)
-			pr_debug("%s:%d logLen:%d over cmdqMaxSize:%d\n",
-				__func__, __LINE__, logLen,
-				cmdq_first_err.cmdqMaxSize);
-		cmdq_first_err.cmdqMaxSize -= logLen;
-		cmdq_first_err.cmdqCount += logLen;
-
-		if (cmdq_first_err.cmdqMaxSize <= 0) {
-			cmdq_first_err.flag = false;
-			CMDQ_LOG("[ERR] Error0 dump saving buffer is full\n");
-		}
-	}
-}
 
 static void *mdp_pool_alloc_impl(struct dma_pool *pool,
 	dma_addr_t *pa_out, atomic_t *cnt, u32 limit)
@@ -2679,22 +2488,6 @@ static void cmdq_core_track_handle_record(struct cmdqRecStruct *handle,
 void cmdq_core_turnon_first_dump_by_handle(
 	const struct cmdqRecStruct *handle)
 {
-	int len;
-
-	if (cmdq_first_err.cmdqCount != 0 || !handle)
-		return;
-
-	cmdq_first_err.flag = true;
-	/* save kernel time, pid, and caller name */
-
-	cmdq_first_err.callerPid = handle->caller_pid;
-	len = snprintf(cmdq_first_err.callerName, TASK_COMM_LEN, "%s",
-		handle->caller_name);
-	if (len >= TASK_COMM_LEN)
-		pr_debug("%s:%d len:%d over LEN:%d caller:%s\n", __func__,
-			__LINE__, len, TASK_COMM_LEN, handle->caller_name);
-	cmdq_first_err.savetime = sched_clock();
-	do_gettimeofday(&cmdq_first_err.savetv);
 }
 EXPORT_SYMBOL(cmdq_core_turnon_first_dump_by_handle);
 
@@ -3287,8 +3080,6 @@ static void cmdq_core_dump_error_buffer(const struct cmdqRecStruct *handle,
 			cnt, buf->va_base, &buf->pa_base);
 		print_hex_dump(KERN_ERR, "", DUMP_PREFIX_ADDRESS,
 			16, 4, buf->va_base, dump_size, true);
-		cmdq_core_save_hex_first_dump("", 16, 4,
-			buf->va_base, dump_size);
 		if (dump)
 			break;
 		if (dump_buff_count++ >= 2) {

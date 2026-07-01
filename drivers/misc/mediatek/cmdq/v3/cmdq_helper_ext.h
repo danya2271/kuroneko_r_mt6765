@@ -51,24 +51,6 @@ enum TASK_STATE_ENUM {
 #define CMDQ_MAX_DBG_STR_LEN		(1024)
 #define CMDQ_MAX_USER_PROP_SIZE		(1024)
 
-#ifdef CMDQ_DUMP_FIRSTERROR
-#ifdef CMDQ_LARGE_MAX_FIRSTERROR_BUFFER
-#define CMDQ_MAX_FIRSTERROR	(128*1024)
-#else
-#define CMDQ_MAX_FIRSTERROR	(32*1024)
-#endif
-struct DumpFirstErrorStruct {
-	pid_t callerPid;
-	char callerName[TASK_COMM_LEN];
-	unsigned long long savetime;	/* epoch time of first error occur */
-	char *cmdqString;
-	u32 cmdqCount;
-	s32 cmdqMaxSize;
-	bool flag;
-	struct timeval savetv;
-};
-#endif
-
 #define CMDQ_LOG(string, args...) pr_notice("[CMDQ] " string, ##args)
 
 #define CMDQ_MSG(string, args...) pr_debug("[CMDQ] " string, ##args)
