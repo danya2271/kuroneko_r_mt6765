@@ -1404,6 +1404,25 @@ s32 cmdq_op_write_reg(struct cmdqRecStruct *handle, u32 addr,
 		arg_b_type);
 }
 
+static s32 cmdq_op_write_reg_value(struct cmdqRecStruct *handle, u32 addr,
+	u32 value, u32 mask)
+{
+	s32 status = 0;
+	enum cmdq_code op_code;
+
+	if (mask != 0xFFFFFFFF) {
+		status = cmdq_append_command(handle, CMDQ_CODE_MOVE, 0,
+			~mask, 0, 0);
+		if (status != 0)
+			return status;
+		op_code = CMDQ_CODE_WRITE_S_W_MASK;
+	} else {
+		op_code = CMDQ_CODE_WRITE_S;
+	}
+
+	return cmdq_append_command(handle, op_code, addr, value, 0, 0);
+}
+
 s32 cmdq_op_write_reg_secure(struct cmdqRecStruct *handle, u32 addr,
 	enum CMDQ_SEC_ADDR_METADATA_TYPE type, u64 baseHandle,
 	u32 offset, u32 size, u32 port)
@@ -2885,7 +2904,7 @@ s32 cmdq_resource_acquire_and_write(struct cmdqRecStruct *handle,
 	if (status < 0)
 		return status;
 
-	return cmdq_op_write_reg(handle, addr, value, mask);
+	return cmdq_op_write_reg_value(handle, addr, value, mask);
 }
 
 s32 cmdq_resource_release(struct cmdqRecStruct *handle,
@@ -2909,7 +2928,7 @@ s32 cmdq_resource_release_and_write(struct cmdqRecStruct *handle,
 
 	cmdq_mdp_release_resource(resourceEvent,
 		&handle->res_flag_release);
-	result = cmdq_op_write_reg(handle, addr, value, mask);
+	result = cmdq_op_write_reg_value(handle, addr, value, mask);
 	if (result >= 0)
 		return cmdq_op_set_event(handle, resourceEvent);
 
@@ -3890,7 +3909,7 @@ s32 cmdqRecMark(struct cmdqRecStruct *handle)
 
 s32 cmdqRecWrite(struct cmdqRecStruct *handle, u32 addr, u32 value, u32 mask)
 {
-	return cmdq_op_write_reg(handle, addr, (CMDQ_VARIABLE)value, mask);
+	return cmdq_op_write_reg_value(handle, addr, value, mask);
 }
 
 s32 cmdqRecWriteSecure(struct cmdqRecStruct *handle, u32 addr,
