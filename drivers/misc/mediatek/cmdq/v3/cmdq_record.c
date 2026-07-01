@@ -1233,6 +1233,7 @@ s32 cmdq_task_reset(struct cmdqRecStruct *handle)
 	handle->durAlloc = 0;
 	handle->durReclaim = 0;
 	handle->durRelease = 0;
+	memset(&handle->pmqos_record, 0, sizeof(handle->pmqos_record));
 	handle->prepare = cmdq_task_prepare;
 	handle->unprepare = cmdq_task_unprepare;
 

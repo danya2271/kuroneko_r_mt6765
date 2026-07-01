@@ -2188,16 +2188,13 @@ void cmdq_mdp_begin_task_virtual(struct cmdqRecStruct *handle,
 	if (!handle->prop_addr)
 		return;
 
-	pmqos_curr_record =
-		kzalloc(sizeof(struct mdp_pmqos_record), GFP_KERNEL);
-	handle->user_private = pmqos_curr_record;
-
 	do_gettimeofday(&curr_time);
 
 	CMDQ_LOG_PMQOS("enter %s with handle:0x%p engine:0x%llx thread:%u\n",
 		__func__, handle, handle->engineFlag, handle->thread);
 
 	mdp_curr_pmqos = (struct mdp_pmqos *)handle->prop_addr;
+	pmqos_curr_record = &handle->pmqos_record;
 	pmqos_curr_record->submit_tm = curr_time;
 	pmqos_curr_record->end_tm.tv_sec = mdp_curr_pmqos->tv_sec;
 	pmqos_curr_record->end_tm.tv_usec = mdp_curr_pmqos->tv_usec;
@@ -2219,12 +2216,11 @@ void cmdq_mdp_begin_task_virtual(struct cmdqRecStruct *handle,
 			if (!curTask)
 				continue;
 
-			if (!curTask->user_private)
+			if (!curTask->prop_addr)
 				continue;
 
 			mdp_list_pmqos = (struct mdp_pmqos *)curTask->prop_addr;
-			pmqos_list_record =
-			    (struct mdp_pmqos_record *)curTask->user_private;
+			pmqos_list_record = &curTask->pmqos_record;
 			total_pixel = mdp_list_pmqos->mdp_total_pixel ?
 				mdp_list_pmqos->mdp_total_pixel :
 				mdp_list_pmqos->isp_total_pixel;
@@ -2264,13 +2260,12 @@ void cmdq_mdp_begin_task_virtual(struct cmdqRecStruct *handle,
 				if (!prevTask)
 					continue;
 
+				if (!prevTask->prop_addr)
+					continue;
+
 				mdp_prev_pmqos =
 					(struct mdp_pmqos *)prevTask->prop_addr;
-				mdp_prev_record =
-					(struct mdp_pmqos_record *)
-					prevTask->user_private;
-				if (!mdp_prev_record)
-					continue;
+				mdp_prev_record = &prevTask->pmqos_record;
 				DP_TIMER_GET_DURATION_IN_US(
 					pmqos_curr_record->submit_tm,
 					pmqos_list_record->end_tm, denominator);
@@ -2475,7 +2470,7 @@ void cmdq_mdp_end_task_virtual(struct cmdqRecStruct *handle,
 		return;
 
 	mdp_curr_pmqos = (struct mdp_pmqos *)handle->prop_addr;
-	pmqos_curr_record = (struct mdp_pmqos_record *)handle->user_private;
+	pmqos_curr_record = &handle->pmqos_record;
 	pmqos_curr_record->submit_tm = curr_time;
 	for (i = 0; i < size; i++) {
 		struct cmdqRecStruct *curTask = handle_list[i];
@@ -2483,12 +2478,11 @@ void cmdq_mdp_end_task_virtual(struct cmdqRecStruct *handle,
 		if (!curTask)
 			continue;
 
-		if (!curTask->user_private)
+		if (!curTask->prop_addr)
 			continue;
 
 		mdp_list_pmqos = (struct mdp_pmqos *)curTask->prop_addr;
-		pmqos_list_record =
-			(struct mdp_pmqos_record *)curTask->user_private;
+		pmqos_list_record = &curTask->pmqos_record;
 
 		if (curTask->engineFlag & ((1LL << CMDQ_ENG_MDP_CAMIN)
 			| CMDQ_ENG_ISP_GROUP_BITS))
@@ -2539,13 +2533,11 @@ void cmdq_mdp_end_task_virtual(struct cmdqRecStruct *handle,
 			if (!curTask)
 				continue;
 
-			if (!curTask->user_private)
+			if (!curTask->prop_addr)
 				continue;
 
 			mdp_list_pmqos = (struct mdp_pmqos *)curTask->prop_addr;
-			pmqos_list_record =
-				(struct mdp_pmqos_record *)
-					curTask->user_private;
+			pmqos_list_record = &curTask->pmqos_record;
 
 			total_pixel = mdp_list_pmqos->mdp_total_pixel ?
 				mdp_list_pmqos->mdp_total_pixel :
@@ -2612,8 +2604,6 @@ void cmdq_mdp_end_task_virtual(struct cmdqRecStruct *handle,
 		thread_id, mdp_curr_bandwidth, isp_curr_bandwidth,
 		act_throughput);
 
-	kfree(handle->user_private);
-	handle->user_private = NULL;
 	if (act_throughput == 0) {
 		update_isp_throughput = true;
 	}

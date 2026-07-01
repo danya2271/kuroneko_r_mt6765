@@ -9,6 +9,7 @@
 #include <linux/kernel.h>
 #include <linux/printk.h>
 #include <linux/soc/mediatek/mtk-cmdq.h>
+#include <linux/time.h>
 #include <linux/trace_events.h>
 
 #include "cmdq_def.h"
@@ -498,6 +499,12 @@ struct task_private {
 	bool ignore_timeout;	/* timeout is expected */
 };
 
+struct mdp_pmqos_record {
+	uint32_t mdp_throughput;
+	struct timeval submit_tm;
+	struct timeval end_tm;
+};
+
 enum cmdq_thread_dispatch {
 	CMDQ_THREAD_NOTSET = 0,
 	CMDQ_THREAD_STATIC,
@@ -539,7 +546,6 @@ struct cmdqRecStruct {
 	const char *sram_owner_name;
 	u32 sram_base;	/* Original PA address of SRAM buffer content */
 	void *node_private;
-	void *user_private;
 
 	struct cmdqSecDataStruct secData;	/* secure execution data */
 
@@ -606,6 +612,7 @@ struct cmdqRecStruct {
 	/* PMQoS information */
 	void *prop_addr;
 	u32 prop_size;
+	struct mdp_pmqos_record pmqos_record;
 
 	/* secure world */
 	struct iwcCmdqSecStatus_t *secStatus;

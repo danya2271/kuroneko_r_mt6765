@@ -10,12 +10,6 @@
 #include "cmdq_helper_ext.h"
 #include <linux/types.h>
 
-struct mdp_pmqos_record {
-	uint32_t mdp_throughput;
-	struct timeval submit_tm;
-	struct timeval end_tm;
-};
-
 /* track MDP task */
 #define DEBUG_STR_LEN 1024 /* debug str length */
 #define MDP_MAX_TASK_NUM 5 /* num of tasks to be keep */
