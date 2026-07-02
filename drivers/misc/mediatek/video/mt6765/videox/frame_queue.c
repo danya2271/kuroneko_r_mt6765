@@ -151,13 +151,14 @@ struct frame_queue_t *frame_queue_node_create(void)
 {
 	struct frame_queue_t *node;
 
-	node = kzalloc(sizeof(struct frame_queue_t), GFP_KERNEL);
+	node = kmalloc(sizeof(struct frame_queue_t), GFP_KERNEL);
 	if (!node) {
-		pr_err("fail to kzalloc %zu of frame_queue\n", sizeof(*node));
+		pr_err("fail to kmalloc %zu of frame_queue\n", sizeof(*node));
 		return ERR_PTR(-ENOMEM);
 	}
 
 	INIT_LIST_HEAD(&node->link);
+	node->do_frame_cfg = NULL;
 	return node;
 }
 

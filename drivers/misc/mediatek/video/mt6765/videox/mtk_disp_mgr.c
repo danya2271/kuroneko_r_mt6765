@@ -511,32 +511,32 @@ static int do_frame_config(struct frame_queue_t *frame_node)
 
 static long _frame_queue_config(unsigned long arg)
 {
-	void *ret_val = NULL;
+	long ret;
 	struct frame_queue_head_t *head;
 	struct disp_frame_cfg_t *frame_cfg;
 	struct sync_fence *present_fence = NULL;
 	struct frame_queue_t *frame_node;
 
 	frame_node = frame_queue_node_create();
-	if (IS_ERR_OR_NULL(frame_node)) {
-		ret_val = ERR_PTR(-ENOMEM);
-		goto Error;
-	}
+	if (IS_ERR(frame_node)) return PTR_ERR(frame_node);
 
 	frame_cfg = &frame_node->frame_cfg;
 
 	if (copy_from_user(frame_cfg, (void __user *)arg, sizeof(*frame_cfg))) {
-		ret_val = ERR_PTR(-EFAULT);
-		goto Error;
+		ret = -EFAULT;
+		goto FreeNode;
 	}
 
 	if (disp_validate_ioctl_params(frame_cfg)) {
-		ret_val = ERR_PTR(-EINVAL);
-		goto Error;
+		ret = -EINVAL;
+		goto FreeNode;
 	}
 
 	head = get_frame_queue_head(frame_cfg->session_id);
-	if (!head) return -EINVAL;
+	if (!head) {
+		ret = -EINVAL;
+		goto FreeNode;
+	}
 
 	frame_cfg->setter = SESSION_USER_HWC;
 
@@ -555,9 +555,9 @@ static long _frame_queue_config(unsigned long arg)
 
 	return 0;
 
-Error:
-	if (frame_node) frame_queue_node_destroy(frame_node);
-	return PTR_ERR(ret_val);
+FreeNode:
+	kfree(frame_node);
+	return ret;
 }
 
 long _frame_config(unsigned long arg)
