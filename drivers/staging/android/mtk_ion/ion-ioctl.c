@@ -9,7 +9,9 @@
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/uaccess.h>
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 #include <linux/sched/clock.h>
+#endif
 
 #include "ion.h"
 #include "ion_priv.h"
@@ -93,9 +95,6 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case ION_IOC_ALLOC:
 	{
 		struct ion_handle *handle;
-		int heap_mask;
-
-		heap_mask = data.allocation.heap_id_mask;
 
 		handle = ion_alloc(client, data.allocation.len,
 				   data.allocation.align,
@@ -115,6 +114,7 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case ION_IOC_FREE:
 	{
 		struct ion_handle *handle;
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 		unsigned long long time_s, time_e;
 		unsigned long long time_s_lock, time_e_lock;
 		struct task_struct *task = current->group_leader;
@@ -124,8 +124,11 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		get_task_comm(task_comm, task);
 		pid = task_pid_nr(task);
 		time_s_lock = sched_clock();
+#endif
 		mutex_lock(&client->lock);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 		time_s = sched_clock();
+#endif
 		handle = ion_handle_get_by_id_nolock(client, data.handle.handle);
 		if (IS_ERR(handle)) {
 			mutex_unlock(&client->lock);
@@ -135,16 +138,20 @@ long ion_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		}
 		user_ion_free_nolock(client, handle);
 		ion_handle_put_nolock(handle);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 		time_e = sched_clock();
 		if ((time_e - time_s) > 100000000) //100ms
 			IONMSG("ion_free unlock warnning, time:%llu, task:%s (%d)\n",
 			       (time_e - time_s), task_comm, pid);
 
+#endif
 		mutex_unlock(&client->lock);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 		time_e_lock = sched_clock();
 		if ((time_e_lock - time_s_lock) > 150000000) //150ms
 			IONMSG("ion_free warnning, time:%llu, task:%s (%d)\n",
 			       (time_e_lock - time_s_lock), task_comm, pid);
+#endif
 		break;
 	}
 	case ION_IOC_SHARE:
