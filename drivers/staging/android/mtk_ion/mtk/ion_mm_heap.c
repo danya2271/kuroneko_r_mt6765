@@ -2302,7 +2302,8 @@ long ion_mm_ioctl(struct ion_client *client, unsigned int cmd,
 	case ION_MM_ACQ_CACHE_POOL:
 	{
 		ion_comm_event_notify(1, param.pool_info_param.len);
-		IONMSG("[ion_heap]: ION_MM_ACQ_CACHE_POOL-%d.\n", param.mm_cmd);
+		IONDBG("[ion_heap]: ION_MM_ACQ_CACHE_POOL-%d.\n",
+		       param.mm_cmd);
 	}
 	break;
 	case ION_MM_QRY_CACHE_POOL:
@@ -2316,7 +2317,7 @@ long ion_mm_ioctl(struct ion_client *client, unsigned int cmd,
 			ion_mm_heap_pool_size(ion_cam_heap,
 					      __GFP_HIGHMEM,
 					      true);
-		IONMSG("ION_MM_QRY_CACHE_POOL, heap 0x%p, id %d, ret: %d.\n",
+		IONDBG("ION_MM_QRY_CACHE_POOL, heap 0x%p, id %d, ret: %d.\n",
 		       ion_cam_heap, param.pool_info_param.heap_id_mask,
 		       param.pool_info_param.ret);
 	}

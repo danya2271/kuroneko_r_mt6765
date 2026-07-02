@@ -37,7 +37,7 @@ static int ion_comm_cache_pool(void *data)
 	int cache_buffer = 0;
 	int ret = 0;
 	unsigned int gfp_flags = __GFP_HIGHMEM;
-	struct ion_buffer *buffer = NULL;
+	struct ion_buffer buffer;
 	struct ion_heap *ion_cam_heap;
 
 	ion_cam_heap = ion_drv_get_heap(g_ion_device,
@@ -71,42 +71,35 @@ static int ion_comm_cache_pool(void *data)
 						    gfp_flags,
 						    cache_buffer);
 
-		buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
-		if (!buffer || cached_size >= req_cache_size) {
-			kfree(buffer);
-			buffer = NULL;
+		if (cached_size >= req_cache_size) {
 			atomic_set(&ion_comm_event, 0);
-			IONMSG("%s err alloc buffer: size %u, cached %u\n",
+			IONDBG("%s cache ready: size %u, cached %u\n",
 			       __func__, req_cache_size, cached_size);
 			continue;
 		}
 
-		IONMSG("%s alloc start, req %u, cached %u\n", __func__,
+		IONDBG("%s alloc start, req %u, cached %u\n", __func__,
 		       req_cache_size, cached_size);
 
-		buffer->heap = ion_cam_heap;
-		buffer->flags = 3;
-		if (cache_buffer == 0)
-			buffer->flags = 0;
-		buffer->size = req_cache_size;
+		memset(&buffer, 0, sizeof(buffer));
+		buffer.heap = ion_cam_heap;
+		buffer.flags = cache_buffer ? 3 : 0;
+		buffer.size = req_cache_size;
+
 		ret = ion_mm_heap_cache_allocate(ion_cam_heap,
-						 buffer,
-						 buffer->size,
+						 &buffer,
+						 buffer.size,
 						 0,
 						 0);
 		if (ret) {
 			IONMSG("%s cache alloc failed: ret %d, req %u, cached %u\n",
 			       __func__, ret, req_cache_size, cached_size);
-			kfree(buffer);
-			buffer = NULL;
 			continue;
 		}
-		IONMSG("%s push buffer to cam_pool\n", __func__);
-		ion_mm_heap_cache_free(buffer);
-		kfree(buffer);
-		buffer = NULL;
+		IONDBG("%s push buffer to cam_pool\n", __func__);
+		ion_mm_heap_cache_free(&buffer);
 
-		IONMSG("%s alloc done\n", __func__);
+		IONDBG("%s alloc done\n", __func__);
 	}
 
 	return 0;
@@ -136,7 +129,7 @@ void ion_comm_event_notify(bool cache, size_t len)
 {
 	unsigned int req_cache_size = (unsigned int)len;
 
-	IONMSG("%s event %d, new len %zu\n", __func__,
+	IONDBG("%s event %d, new len %zu\n", __func__,
 	       atomic_read(&ion_comm_event), len);
 	atomic_set(&ion_comm_event, req_cache_size);
 	if (cache)
