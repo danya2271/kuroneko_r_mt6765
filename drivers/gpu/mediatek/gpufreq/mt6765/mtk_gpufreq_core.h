@@ -80,8 +80,6 @@
  **************************************************/
 #define VGPU_MAX_VOLT				(SEG3_GPU_DVFS_VOLT0)
 #define VSRAM_GPU_MAX_VOLT			(SEG3_GPU_DVFS_VSRAM0)
-#define VCORE_MIN_VOLT				(51875)		/* mV x 100 */
-#define VCORE_MAX_VOLT				(131250)	/* mV x 100 */
 #define DELAY_FACTOR				(625)
 #define PMIC_SRCLKEN_HIGH_TIME_US		(1000)	/* spec is 1(ms) */
 #define BUCK_VARIATION_MAX			(25000)	/* mV x 100 */
