@@ -1460,14 +1460,19 @@ int primary_display_is_idle(void)
 
 void primary_display_idlemgr_kick(const char *source, int need_lock)
 {
+#ifndef CONFIG_MTK_DISPLAY_LOW_MEMORY_DEBUG_SUPPORT
 	char log[128] = "";
+#endif
+	unsigned long long now = local_clock();
 
 	mmprofile_log_ex(ddp_mmp_get_events()->idlemgr, MMPROFILE_FLAG_PULSE,
 		1, 0);
 
+#ifndef CONFIG_MTK_DISPLAY_LOW_MEMORY_DEBUG_SUPPORT
 	snprintf(log, sizeof(log), "[kick]%s kick at %lld\n",
-		source, sched_clock());
+		source, now);
 	kick_logger_dump(log);
+#endif
 
 	/* get primary lock to protect idlemgr_last_kick_time and
 	 * primary_display_is_idle()
@@ -1476,7 +1481,7 @@ void primary_display_idlemgr_kick(const char *source, int need_lock)
 		primary_display_manual_lock();
 
 	/* update kick timestamp */
-	idlemgr_pgc->idlemgr_last_kick_time = sched_clock();
+	idlemgr_pgc->idlemgr_last_kick_time = now;
 
 	if (primary_display_is_idle()) {
 		primary_display_idlemgr_leave_idle_nolock();
@@ -1872,19 +1877,24 @@ void enable_ext_idlemgr(unsigned int flag)
 
 void external_display_idlemgr_kick(const char *source, int need_lock)
 {
+#ifndef CONFIG_MTK_DISPLAY_LOW_MEMORY_DEBUG_SUPPORT
 	char log[128] = "";
+#endif
+	unsigned long long now = local_clock();
 
 	/* DISP_SYSTRACE_BEGIN("%s\n", __func__); */
+#ifndef CONFIG_MTK_DISPLAY_LOW_MEMORY_DEBUG_SUPPORT
 	snprintf(log, sizeof(log), "[kick]%s kick at %lld\n",
-		source, sched_clock());
+		source, now);
 	kick_logger_dump(log);
+#endif
 	/* get primary lock to protect idlemgr_last_kick_time and
 	 * primary_display_is_idle()
 	 */
 	if (need_lock)
 		ext_disp_manual_lock();
 	/* update kick timestamp */
-	idlemgr_pgc->ext_idlemgr_last_kick_time = sched_clock();
+	idlemgr_pgc->ext_idlemgr_last_kick_time = now;
 	if (external_display_is_idle()) {
 		external_display_idlemgr_leave_idle_nolock();
 		external_display_set_idle_stat(0);
