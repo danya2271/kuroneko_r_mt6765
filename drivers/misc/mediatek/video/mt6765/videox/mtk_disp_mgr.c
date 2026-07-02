@@ -914,7 +914,7 @@ static long mtk_disp_mgr_compat_ioctl(struct file *file, unsigned int cmd, unsig
 #ifndef NO_PQ_IOCTL
 	case DISP_IOCTL_AAL_GET_HIST: case DISP_IOCTL_AAL_EVENTCTL: case DISP_IOCTL_AAL_INIT_REG:
 	case DISP_IOCTL_AAL_SET_PARAM: case DISP_IOCTL_AAL_GET_SIZE: case DISP_IOCTL_SET_SMARTBACKLIGHT:
-		return file->f_op->unlocked_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+		return mtk_disp_mgr_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
 
 	case DISP_IOCTL_SET_GAMMALUT: case DISP_IOCTL_SET_CCORR: case DISP_IOCTL_CCORR_EVENTCTL:
 	case DISP_IOCTL_CCORR_GET_IRQ: case DISP_IOCTL_SUPPORT_COLOR_TRANSFORM: case DISP_IOCTL_SET_PQPARAM:
@@ -930,7 +930,7 @@ static long mtk_disp_mgr_compat_ioctl(struct file *file, unsigned int cmd, unsig
 		return primary_display_user_cmd(cmd, arg);
 #endif
 	default:
-		return file->f_op->unlocked_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
+		return mtk_disp_mgr_ioctl(file, cmd, (unsigned long)compat_ptr(arg));
 	}
 	return ret;
 }
