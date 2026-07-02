@@ -92,6 +92,7 @@ static void __mt_gpufreq_set_fixed_volt(int fixed_volt);
 static void __mt_gpufreq_set_fixed_freq(int fixed_freq);
 static void __mt_gpufreq_bucks_enable(void);
 static void __mt_gpufreq_bucks_disable(void);
+static void __mt_gpufreq_vcore_volt_switch(unsigned int volt_target);
 static unsigned int __mt_gpufreq_get_cur_volt(void);
 static unsigned int __mt_gpufreq_get_cur_freq(void);
 static unsigned int __mt_gpufreq_get_cur_vsram_volt(void);
@@ -189,6 +190,7 @@ static bool g_opp_stress_test_state;
 static bool g_fixed_freq_volt_state;
 static bool g_pbm_limited_ignore_state;
 static bool g_thermal_protect_limited_ignore_state;
+static unsigned int g_cur_vcore_volt_req;
 static unsigned int g_efuse_id;
 static unsigned int g_segment_id;
 static unsigned int g_opp_idx_num;
@@ -473,6 +475,10 @@ void mt_gpufreq_restore_default_volt(void)
 
 	__mt_gpufreq_calculate_springboard_opp_index();
 
+	if (g_volt_enable_state)
+		__mt_gpufreq_vcore_volt_switch(
+			g_opp_table[g_cur_opp_cond_idx].gpufreq_volt);
+
 	g_cur_opp_volt = g_opp_table[g_cur_opp_cond_idx].gpufreq_volt;
 	g_cur_opp_vsram_volt = g_opp_table[g_cur_opp_cond_idx].gpufreq_vsram;
 
@@ -499,6 +505,10 @@ mt_gpufreq_update_volt(unsigned int pmic_volt[], unsigned int array_size)
 	}
 
 	__mt_gpufreq_calculate_springboard_opp_index();
+
+	if (g_volt_enable_state)
+		__mt_gpufreq_vcore_volt_switch(
+			g_opp_table[g_cur_opp_cond_idx].gpufreq_volt);
 
 	g_cur_opp_volt = g_opp_table[g_cur_opp_cond_idx].gpufreq_volt;
 	g_cur_opp_vsram_volt = g_opp_table[g_cur_opp_cond_idx].gpufreq_vsram;
@@ -1370,6 +1380,9 @@ static int __mt_gpufreq_create_procfs(void)
 
 static void __mt_gpufreq_vcore_volt_switch(unsigned int volt_target)
 {
+	unsigned int volt_req;
+	int ret;
+
 	if (volt_target > 70000) {
 		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_0);
 		g_cur_vcore_opp = VCORE_OPP_0;
@@ -1379,9 +1392,35 @@ static void __mt_gpufreq_vcore_volt_switch(unsigned int volt_target)
 	} else if (volt_target > 0) {
 		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu, VCORE_OPP_3);
 		g_cur_vcore_opp = VCORE_OPP_3;
-	} else /* UNREQUEST */
+	} else { /* UNREQUEST */
 		mtk_pm_qos_update_request(&g_pmic->mtk_pm_vgpu,
 			VCORE_OPP_UNREQ);
+		g_cur_vcore_opp = VCORE_OPP_UNREQ;
+		if (g_cur_vcore_volt_req) {
+			ret = regulator_set_voltage(g_pmic->reg_vcore, 0,
+				VCORE_MAX_VOLT * 10 + 125);
+			if (ret)
+				gpufreq_pwarn("@%s: clear vcore request failed, ret = %d\n",
+					__func__, ret);
+			else
+				g_cur_vcore_volt_req = 0;
+		}
+		return;
+	}
+
+	volt_req = max(volt_target, (unsigned int)VCORE_MIN_VOLT);
+	if (volt_req == g_cur_vcore_volt_req)
+		return;
+
+	ret = regulator_set_voltage(g_pmic->reg_vcore, volt_req * 10,
+		VCORE_MAX_VOLT * 10 + 125);
+	if (ret) {
+		gpufreq_pwarn("@%s: set vcore request %u failed, ret = %d\n",
+			__func__, volt_req, ret);
+		return;
+	}
+
+	g_cur_vcore_volt_req = volt_req;
 }
 
 /*
