@@ -354,7 +354,10 @@ static int ion_mm_heap_allocate(struct ion_heap *heap,
 	unsigned long size_remaining = PAGE_ALIGN(size);
 	unsigned int max_order = orders[0];
 	struct ion_mm_buffer_info *buffer_info = NULL;
-	unsigned long long start, end;
+	unsigned long long start;
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
+	unsigned long long end;
+#endif
 	unsigned long user_va = 0;
 
 	INIT_LIST_HEAD(&pages);
@@ -395,12 +398,14 @@ static int ion_mm_heap_allocate(struct ion_heap *heap,
 		max_order = info->order;
 		i++;
 	}
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	end = sched_clock();
 
 	if (end - start > 10000000ULL) {	/* unit is ns, 10ms */
 		IONMSG(" %s warn: size: %lu time: %lld ns --%d\n",
 		       __func__, size, end - start, heap->id);
 	}
+#endif
 	table = kzalloc(sizeof(*table), GFP_KERNEL);
 	if (!table) {
 		IONMSG("%s kzalloc failed table is null.\n", __func__);
