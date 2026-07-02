@@ -74,7 +74,7 @@ static u32 suspend_pcm_flags = {
 };
 
 static u32 suspend_pcm_flags1 = {
-	0
+	SPM_FLAG1_ENABLE_CPU_SLEEP_VOLT
 };
 
 static inline void spm_suspend_footprint(enum spm_suspend_step step)
