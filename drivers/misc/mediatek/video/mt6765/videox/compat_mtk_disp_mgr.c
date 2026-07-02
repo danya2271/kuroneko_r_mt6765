@@ -1058,7 +1058,7 @@ int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
 	struct disp_caps_info __user *data = compat_alloc_user_space(sizeof(*data));
 	int ret;
 
-	if (!data || compat_get_disp_caps_info(data32, data))
+	if (!data)
 		return -EFAULT;
 
 	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_GET_DISPLAY_CAPS,
