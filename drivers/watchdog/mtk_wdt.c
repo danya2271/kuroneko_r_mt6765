@@ -267,12 +267,11 @@ static int mtk_wdt_reboot_notify(struct notifier_block *nb,
 		return NOTIFY_DONE;
 
 	/*
-	 * Recovery/bootloader reboots can stall before the restart handler,
-	 * leaving the panel off while USB stays attached. Latch the boot mode
-	 * and reset immediately instead of depending on a later timeout reset.
+	 * Latch the boot mode before device_shutdown(); the restart handler
+	 * will perform the reset. Triggering WDT reset from this notifier can
+	 * strand the device at a black screen before the restart chain runs.
 	 */
 	mtk_wdt_set_restart_mode(mtk_wdt, cmd);
-	mtk_wdt_trigger_sw_reset(mtk_wdt);
 
 	return NOTIFY_DONE;
 }
