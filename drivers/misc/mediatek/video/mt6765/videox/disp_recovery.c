@@ -527,18 +527,13 @@ int primary_display_esd_check(void)
 {
 	int ret = 0;
 	unsigned int mode;
-	mmp_event mmp_te = ddp_mmp_get_events()->esd_extte;
-	mmp_event mmp_rd = ddp_mmp_get_events()->esd_rdlcm;
-	mmp_event mmp_chk = ddp_mmp_get_events()->esd_check_t;
 	struct LCM_PARAMS *params;
 
 	dprec_logger_start(DPREC_LOGGER_ESD_CHECK, 0, 0);
-	mmprofile_log_ex(mmp_chk, MMPROFILE_FLAG_START, 0, 0);
 	DISPCHECK("[ESD]ESD check begin\n");
 
 	primary_display_manual_lock();
 	if (primary_get_state() == DISP_SLEPT) {
-		mmprofile_log_ex(mmp_chk, MMPROFILE_FLAG_PULSE, 1, 0);
 		DISPCHECK("[ESD]Primary DISP slept. Skip esd check\n");
 		primary_display_manual_unlock();
 		goto done;
@@ -549,7 +544,6 @@ int primary_display_esd_check(void)
 	params = primary_get_lcm()->params;
 	if (params->dsi.customization_esd_check_enable == 0) {
 		/* use te for esd check */
-		mmprofile_log_ex(mmp_te, MMPROFILE_FLAG_START, 0, 0);
 		if (primary_display_is_video_mode()) {
 			mode = get_esd_check_mode();
 			if (mode == GPIO_EINT_MODE) {
@@ -563,22 +557,14 @@ int primary_display_esd_check(void)
 			}
 		} else
 			ret = do_esd_check_eint();
-		mmprofile_log_ex(mmp_te, MMPROFILE_FLAG_END, 0, ret);
 		goto done;
 	}
 
 	/*  Esd Check : Read from lcm */
-	mmprofile_log_ex(mmp_rd, MMPROFILE_FLAG_START,
-			 0, primary_display_cmdq_enabled());
-
 	if (primary_display_cmdq_enabled() == 0) {
 		DISPCHECK("[ESD]not support cpu read do esd check\n");
-		mmprofile_log_ex(mmp_rd, MMPROFILE_FLAG_END, 0, ret);
 		goto done;
 	}
-
-	mmprofile_log_ex(mmp_rd, MMPROFILE_FLAG_PULSE,
-			 0, primary_display_is_video_mode());
 
 	/* only cmd mode read & with disable mmsys clk will kick */
 	if (disp_helper_get_option(DISP_OPT_IDLEMGR_ENTER_ULPS) &&
@@ -587,11 +573,8 @@ int primary_display_esd_check(void)
 
 	ret = do_esd_check_read();
 
-	mmprofile_log_ex(mmp_rd, MMPROFILE_FLAG_END, 0, ret);
-
 done:
 	DISPCHECK("[ESD]ESD check end, ret = %d\n", ret);
-	mmprofile_log_ex(mmp_chk, MMPROFILE_FLAG_END, 0, ret);
 	dprec_logger_done(DPREC_LOGGER_ESD_CHECK, 0, 0);
 	return ret;
 }
@@ -673,16 +656,12 @@ int primary_display_esd_recovery(void)
 {
 	enum DISP_STATUS ret = DISP_STATUS_OK;
 	struct LCM_PARAMS *lcm_param = NULL;
-	mmp_event mmp_r = ddp_mmp_get_events()->esd_recovery_t;
 
 	DISPFUNC();
 	dprec_logger_start(DPREC_LOGGER_ESD_RECOVERY, 0, 0);
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_START, 0, 0);
 	DISPCHECK("[ESD]ESD recovery begin\n");
 
 	primary_display_manual_lock();
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE,
-		       primary_display_is_video_mode(), 1);
 
 	lcm_param = disp_lcm_get_params(primary_get_lcm());
 	if (primary_get_state() == DISP_SLEPT) {
@@ -693,24 +672,18 @@ int primary_display_esd_recovery(void)
 	/* In video mode, recovery don't need kick and blocking flush */
 	if (!primary_display_is_video_mode()) {
 		primary_display_idlemgr_kick((char *)__func__, 0);
-		mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 2);
 
 		/* blocking flush before stop trigger loop */
 		_blocking_flush();
 	}
 
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 3);
-
 	DISPINFO("[ESD]display cmdq trigger loop stop[begin]\n");
 	_cmdq_stop_trigger_loop();
 	DISPINFO("[ESD]display cmdq trigger loop stop[end]\n");
 
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 4);
-
 	DISPDBG("[ESD]stop dpmgr path[begin]\n");
 	dpmgr_path_stop(primary_get_dpmgr_handle(), CMDQ_DISABLE);
 	DISPCHECK("[ESD]stop dpmgr path[end]\n");
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 0xff);
 
 	if (dpmgr_path_is_busy(primary_get_dpmgr_handle())) {
 		DISPCHECK("[ESD]primary display path is busy after stop\n");
@@ -718,13 +691,10 @@ int primary_display_esd_recovery(void)
 			DISP_PATH_EVENT_FRAME_DONE, HZ * 1);
 		DISPCHECK("[ESD]wait frame done ret:%d\n", ret);
 	}
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 5);
 
 	DISPDBG("[ESD]reset display path[begin]\n");
 	dpmgr_path_reset(primary_get_dpmgr_handle(), CMDQ_DISABLE);
 	DISPCHECK("[ESD]reset display path[end]\n");
-
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 6);
 
 	DISPDBG("[POWER]lcm suspend[begin]\n");
 	/*after dsi_stop, we should enable the dsi basic irq.*/
@@ -741,8 +711,6 @@ int primary_display_esd_recovery(void)
 
 	disp_lcm_suspend(primary_get_lcm());
 	DISPCHECK("[POWER]lcm suspend[end]\n");
-
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 7);
 
 	DISPDBG("[ESD]dsi power reset[begine]\n");
 	dpmgr_path_dsi_power_off(primary_get_dpmgr_handle(), NULL);
@@ -767,7 +735,6 @@ int primary_display_esd_recovery(void)
 	/*2020.5.29 longcheer TaoCheng add for NVT IC Frozen screen issue end*/
 
 	DISPCHECK("[ESD]lcm recover[end]\n");
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 8);
 
 	DISPDBG("[ESD]start dpmgr path[begin]\n");
 	if (disp_partial_is_support()) {
@@ -786,11 +753,9 @@ int primary_display_esd_recovery(void)
 		/* goto done; */
 	}
 
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 9);
 	DISPDBG("[ESD]start cmdq trigger loop[begin]\n");
 	_cmdq_start_trigger_loop();
 	DISPCHECK("[ESD]start cmdq trigger loop[end]\n");
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 10);
 	if (primary_display_is_video_mode()) {
 		/*
 		 * for video mode, we need to force trigger here
@@ -801,7 +766,6 @@ int primary_display_esd_recovery(void)
 			CMDQ_DISABLE);
 
 	}
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_PULSE, 0, 11);
 
 	/*
 	 * (in suspend) when we stop trigger loop
@@ -820,7 +784,6 @@ int primary_display_esd_recovery(void)
 done:
 	primary_display_manual_unlock();
 	DISPCHECK("[ESD]ESD recovery end\n");
-	mmprofile_log_ex(mmp_r, MMPROFILE_FLAG_END, 0, 0);
 	dprec_logger_done(DPREC_LOGGER_ESD_RECOVERY, 0, 0);
 	return ret;
 }
