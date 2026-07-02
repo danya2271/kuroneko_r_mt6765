@@ -7,10 +7,6 @@
 #define LOG_TAG "IRQ"
 
 #include <linux/interrupt.h>
-#include <linux/wait.h>
-#include <linux/spinlock.h>
-#include <linux/kthread.h>
-#include <linux/timer.h>
 
 /* #include <mach/mt_irq.h> */
 #include "disp_drv_platform.h"	/* must be at the top-most */
@@ -27,24 +23,12 @@
 #include "disp_lowpower.h"
 #include "layering_rule.h"
 
-#include <asm/arch_timer.h>
-
-#if 0
-/* IRQ log print kthread */
-static struct task_struct *disp_irq_log_task;
-static wait_queue_head_t disp_irq_log_wq;
-static int disp_irq_log_module;
-#endif
-static int disp_irq_rdma_underflow;
 static int irq_init;
 
 static unsigned int cnt_rdma_underflow[2];
 static unsigned int cnt_rdma_abnormal[2];
 static unsigned int cnt_ovl_underflow[OVL_NUM];
 static unsigned int cnt_wdma_underflow[2];
-
-unsigned long long rdma_start_time[2] = { 0 };
-unsigned long long rdma_end_time[2] = { 0 };
 
 #define DISP_MAX_IRQ_CALLBACK   10
 
@@ -178,10 +162,7 @@ void disp_invoke_irq_callbacks(enum DISP_MODULE_ENUM module, unsigned int param)
 }
 
 /* TODO:  move each irq to module driver */
-unsigned int rdma_start_irq_cnt[2] = { 0, 0 };
-unsigned int rdma_done_irq_cnt[2] = { 0, 0 };
 unsigned int rdma_underflow_irq_cnt[2] = { 0, 0 };
-unsigned int rdma_targetline_irq_cnt[2] = { 0, 0 };
 
 irqreturn_t disp_irq_handler(int irq, void *dev_id)
 {
@@ -341,18 +322,14 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 				ddp_mmp_get_events()->SCREEN_UPDATE[index],
 				MMPROFILE_FLAG_END, reg_val,
 				DISP_REG_GET(DISPSYS_RDMA0_BASE + 0x4));
-			rdma_end_time[index] = sched_clock();
 			DDPIRQ("IRQ: RDMA%d frame done!\n", index);
-			rdma_done_irq_cnt[index]++;
 		}
 		if (reg_val & (1 << 1)) {
 			mmprofile_log_ex(
 				ddp_mmp_get_events()->SCREEN_UPDATE[index],
 				MMPROFILE_FLAG_START, reg_val,
 				DISP_REG_GET(DISPSYS_RDMA0_BASE + 0x4));
-			rdma_start_time[index] = sched_clock();
 			DDPIRQ("IRQ: RDMA%d frame start!\n", index);
-			rdma_start_irq_cnt[index]++;
 			if (!primary_display_is_video_mode())
 				primary_display_wakeup_pf_thread();
 		}
@@ -387,12 +364,9 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 					    DISP_RDMA_INDEX_OFFSET * index));
 			//disp_irq_log_module |= 1 << module;
 			rdma_underflow_irq_cnt[index]++;
-			disp_irq_rdma_underflow = 1;
 		}
-		if (reg_val & (1 << 5)) {
+		if (reg_val & (1 << 5))
 			DDPIRQ("IRQ: RDMA%d target line!\n", index);
-			rdma_targetline_irq_cnt[index]++;
-		}
 		/* clear intr */
 		DISP_CPU_REG_SET(DISP_REG_RDMA_INT_STATUS +
 			index * DISP_RDMA_INDEX_OFFSET, ~reg_val);
@@ -472,71 +446,6 @@ irqreturn_t disp_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-static void disp_irq_rdma_underflow_aee_trigger(void)
-{
-	static unsigned long long last_timer;
-	static unsigned int considerable_cnt;
-
-	if (disp_irq_rdma_underflow) {
-		/* Request highest dvfs */
-		primary_display_request_dvfs_perf(SMI_BWC_SCEN_UI_IDLE,
-				HRT_LEVEL_LEVEL2,
-				layering_rule_get_mm_freq_table
-					(HRT_OPP_LEVEL_LEVEL0));
-
-		if (disp_helper_get_option(DISP_OPT_RDMA_UNDERFLOW_AEE)) {
-			/* Just count underflow which happens more frequently */
-			if (last_timer != 0) {
-				unsigned long long freq = 1000 * 1000000;
-
-				do_div(freq, sched_clock() - last_timer);
-				if (freq > 0)
-					considerable_cnt++;
-				else
-					considerable_cnt = 0;
-			}
-			/* Should trigger AEE as */
-			/* more than 5 times continuous underflow happens */
-			/* TODO: need more precise data from test */
-			/*need trigger aee when RDMA underflow*/
-			/*trigger sspm to collect SMI, EMI debug info */
-			/*increase cnt to 20 to avoid too many underflow aee*/
-			if (considerable_cnt >= 20) {
-#if 0	/*SHANG: TODO: wait smi offer this API */
-				smi_dumpDebugMsg();
-#endif
-				considerable_cnt = 0;
-			}
-			last_timer = sched_clock();
-		}
-		disp_irq_rdma_underflow = 0;
-	}
-
-}
-
-#if 0
-static int disp_irq_log_kthread_func(void *data)
-{
-	unsigned int i = 0;
-
-	while (1) {
-		wait_event_interruptible(disp_irq_log_wq, disp_irq_log_module);
-		DDPMSG("%s dump intr register: disp_irq_log_module=%d\n",
-		       __func__, disp_irq_log_module);
-		for (i = 0; i < DISP_MODULE_NUM; i++) {
-			if ((disp_irq_log_module & (1 << i)) != 0)
-				ddp_dump_reg(i);
-
-		}
-		disp_irq_log_module = 0;
-
-		/* rdma underflow trigger aee */
-		disp_irq_rdma_underflow_aee_trigger();
-	}
-	return 0;
-}
-#endif
-
 int disp_init_irq(void)
 {
 	if (irq_init)
@@ -545,15 +454,5 @@ int disp_init_irq(void)
 	irq_init = 1;
 	DDPMSG("disp_init_irq\n");
 
-#if 0
-	/* create irq log thread */
-	init_waitqueue_head(&disp_irq_log_wq);
-	disp_irq_log_task = kthread_create(disp_irq_log_kthread_func,
-		NULL, "ddp_irq_log_kthread");
-	if (IS_ERR(disp_irq_log_task))
-		DDPERR(" can not create disp_irq_log_task kthread\n");
-#endif
-
-	/* wake_up_process(disp_irq_log_task); */
 	return 0;
 }

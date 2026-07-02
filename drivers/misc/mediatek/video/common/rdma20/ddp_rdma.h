@@ -13,12 +13,7 @@
 #include "ddp_info.h"
 #include "ddp_hal.h"
 
-extern unsigned long long rdma_start_time[];
-extern unsigned long long rdma_end_time[];
-extern unsigned int rdma_start_irq_cnt[];
-extern unsigned int rdma_done_irq_cnt[];
 extern unsigned int rdma_underflow_irq_cnt[];
-extern unsigned int rdma_targetline_irq_cnt[];
 
 /* init module */
 int rdma_init(enum DISP_MODULE_ENUM module, void *handle);

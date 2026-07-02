@@ -1172,11 +1172,7 @@ void rdma_dump_analysis(enum DISP_MODULE_ENUM module)
 		REG_FLD_VAL_GET(RDMA_BG_CON_1_BOTTOM + offset, bg1),
 		REG_FLD_VAL_GET(RDMA_BG_CON_0_LEFT + offset, bg0),
 		REG_FLD_VAL_GET(RDMA_BG_CON_0_RIGHT + offset, bg0));
-	DDPDUMP("start=%lld ns,end=%lld ns\n",
-		rdma_start_time[idx], rdma_end_time[idx]);
-	DDPDUMP("irq cnt: start=%d, end=%d, underflow=%d, targetline=%d\n",
-		rdma_start_irq_cnt[idx], rdma_done_irq_cnt[idx],
-		rdma_underflow_irq_cnt[idx], rdma_targetline_irq_cnt[idx]);
+	DDPDUMP("underflow irq cnt=%d\n", rdma_underflow_irq_cnt[idx]);
 
 	rdma_dump_golden_setting_context(module);
 }
