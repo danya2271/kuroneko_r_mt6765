@@ -1188,21 +1188,16 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 	}
 	case MTKFB_SET_OVERLAY_LAYER:
 	{		/* no function */
-		struct fb_overlay_layer *layerInfo;
+		struct fb_overlay_layer layerInfo;
 		struct disp_input_config *input;
 		int layer_num;
 
 		DISPMSG(" mtkfb_ioctl():MTKFB_SET_OVERLAY_LAYER\n");
 
-		layerInfo = kmalloc(sizeof(*layerInfo), GFP_KERNEL);
-		if (!layerInfo)
-			return -ENOMEM;
-
-		if (copy_from_user(layerInfo, (void __user *)arg,
-				sizeof(*layerInfo))) {
+		if (copy_from_user(&layerInfo, (void __user *)arg,
+				sizeof(layerInfo))) {
 			MTKFB_LOG("[FB]: copy_from_user failed! line:%d\n",
 				__LINE__);
-			kfree(layerInfo);
 			return -EFAULT;
 		}
 
@@ -1211,7 +1206,6 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		 */
 		if (primary_display_is_sleepd()) {
 			DISPWARN("[FB] set overlay in early suspend ,skip!\n");
-			kfree(layerInfo);
 			return MTKFB_ERROR_IS_EARLY_SUSPEND;
 		}
 
@@ -1220,11 +1214,10 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		input = &session_input.config[layer_num];
 		session_input.config_layer_num++;
 		session_input.setter = SESSION_USER_PANDISP;
-		_convert_fb_layer_to_disp_input(layerInfo, input);
+		_convert_fb_layer_to_disp_input(&layerInfo, input);
 		primary_display_config_input_multiple(&session_input);
 		primary_display_trigger(1, NULL, 0);
 
-		kfree(layerInfo);
 		return r;
 	}
 	case MTKFB_ERROR_INDEX_UPDATE_TIMEOUT:
@@ -1250,24 +1243,17 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 			struct fb_overlay_layer Layer3;
 		};
 
-		struct fb_overlay_layer *layerInfo;
-		int layerInfo_size = sizeof(struct fb_overlay_layer) *
-			VIDEO_LAYER_COUNT;
+		struct fb_overlay_layer layerInfo[VIDEO_LAYER_COUNT];
 		int32_t i;
 		struct disp_input_config *input;
 		int layer_num;
 
 		DISPMSG(" mtkfb_ioctl():MTKFB_SET_VIDEO_LAYERS\n");
 
-		layerInfo = kmalloc(layerInfo_size, GFP_KERNEL);
-		if (!layerInfo)
-			return -ENOMEM;
-
 		if (copy_from_user(layerInfo, (void __user *)arg,
-				layerInfo_size)) {
+				sizeof(layerInfo))) {
 			MTKFB_LOG("[FB]: copy_from_user failed! line:%d\n",
 				__LINE__);
-			kfree(layerInfo);
 			return -EFAULT;
 		}
 
@@ -1288,7 +1274,6 @@ static int mtkfb_ioctl(struct fb_info *info, unsigned int cmd,
 		session_input.setter = SESSION_USER_PANDISP;
 		primary_display_config_input_multiple(&session_input);
 		primary_display_trigger(1, NULL, 0);
-		kfree(layerInfo);
 
 		return r;
 	}
@@ -1609,18 +1594,13 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 	}
 	case COMPAT_MTKFB_SET_OVERLAY_LAYER:
 	{
-		struct compat_fb_overlay_layer *compat_layerInfo;
-
-		compat_layerInfo = kmalloc(sizeof(*compat_layerInfo),
-			GFP_KERNEL);
-		if (!compat_layerInfo)
-			return -ENOMEM;
+		struct compat_fb_overlay_layer compat_layerInfo;
 
 		MTKFB_LOG("mtkfb_compat_ioctl():MTKFB_SET_OVERLAY_LAYER\n");
 
 		arg = (unsigned long)compat_ptr(arg);
-		if (copy_from_user(compat_layerInfo, (void __user *)arg,
-			sizeof(*compat_layerInfo))) {
+		if (copy_from_user(&compat_layerInfo, (void __user *)arg,
+			sizeof(compat_layerInfo))) {
 			MTKFB_LOG(
 				"[FB Driver]: copy_from_user failed! line:%d\n",
 				__LINE__);
@@ -1629,7 +1609,7 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			struct disp_input_config *input;
 			int layer_num;
 
-			compat_convert(compat_layerInfo, &layerInfo);
+			compat_convert(&compat_layerInfo, &layerInfo);
 
 			/* in early suspend mode ,will not update buffer index,
 			 * info SF by return value
@@ -1637,7 +1617,6 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			if (primary_display_is_sleepd()) {
 				DISPWARN(
 					"[FB Driver] set overlay in early suspend ,skip!\n");
-				kfree(compat_layerInfo);
 				return MTKFB_ERROR_IS_EARLY_SUSPEND;
 			}
 			memset((void *)&session_input, 0,
@@ -1650,30 +1629,22 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 			primary_display_config_input_multiple(&session_input);
 			/* primary_display_trigger(1, NULL, 0); */
 		}
-		kfree(compat_layerInfo);
 		break;
 	}
 	case COMPAT_MTKFB_SET_VIDEO_LAYERS:
 	{
 		int32_t i;
 		struct disp_input_config *input;
-		struct compat_fb_overlay_layer *compat_layerInfo;
+		struct compat_fb_overlay_layer compat_layerInfo[VIDEO_LAYER_COUNT];
 		int layer_num;
-		int l_info_size = sizeof(struct compat_fb_overlay_layer) *
-			VIDEO_LAYER_COUNT;
-
-		compat_layerInfo = kmalloc(l_info_size, GFP_KERNEL);
-		if (!compat_layerInfo)
-			return -ENOMEM;
 
 		MTKFB_LOG("mtkfb_compat_ioctl():MTKFB_SET_VIDEO_LAYERS\n");
 
 		if (copy_from_user(compat_layerInfo, (void __user *)arg,
-				l_info_size)) {
+				sizeof(compat_layerInfo))) {
 			MTKFB_LOG(
 				"[FB Driver]: copy_from_user failed! line:%d\n",
 				__LINE__);
-			kfree(compat_layerInfo);
 			return -EFAULT;
 		}
 
@@ -1687,7 +1658,6 @@ static int mtkfb_compat_ioctl(struct fb_info *info, unsigned int cmd,
 		}
 		session_input.setter = SESSION_USER_PANDISP;
 		primary_display_config_input_multiple(&session_input);
-		kfree(compat_layerInfo);
 		break;
 	}
 	case COMPAT_MTKFB_AEE_LAYER_EXIST:
