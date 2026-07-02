@@ -562,13 +562,11 @@ Error:
 
 long _frame_config(unsigned long arg)
 {
-	struct disp_frame_cfg_t *frame_cfg = kzalloc(sizeof(struct disp_frame_cfg_t), GFP_KERNEL);
+	struct disp_frame_cfg_t *frame_cfg;
 
-	if (frame_cfg == NULL) return -EFAULT;
-	if (copy_from_user(frame_cfg, (void __user *)arg, sizeof(*frame_cfg))) {
-		kfree(frame_cfg);
-		return -EFAULT;
-	}
+	frame_cfg = memdup_user((void __user *)arg, sizeof(*frame_cfg));
+	if (IS_ERR(frame_cfg)) return PTR_ERR(frame_cfg);
+
 	if (disp_validate_ioctl_params(frame_cfg)) {
 		kfree(frame_cfg);
 		return -EINVAL;
