@@ -650,11 +650,8 @@ int _ioctl_get_info(unsigned long arg)
 int _ioctl_get_display_caps(unsigned long arg)
 {
 	int ret = 0;
-	struct disp_caps_info caps_info;
+	struct disp_caps_info caps_info = {0};
 	void __user *argp = (void __user *)arg;
-
-	if (copy_from_user(&caps_info, argp, sizeof(caps_info))) return -EFAULT;
-	memset(&caps_info, 0, sizeof(caps_info));
 
 #ifdef DISP_HW_MODE_CAP
 	caps_info.output_mode = DISP_HW_MODE_CAP;
