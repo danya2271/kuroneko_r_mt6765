@@ -62,8 +62,6 @@ struct mtkfb_fence_buf_info {
 	unsigned int trigger_ticket;
 	unsigned int release_ticket;
 	unsigned int enable;
-	unsigned long long ts_create;
-	unsigned long long ts_period_keep;
 	unsigned int seq;
 	unsigned int layer_type;
 };
