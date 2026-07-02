@@ -18,12 +18,6 @@ else
 	MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_PLATFORM))
 endif
 
-# remove this after k79 config CONFIG_MACH_MT6779 & CONFIG_MTK_PLATFORM in defconfig
-ifeq ($(CONFIG_MTK_DISP_PLATFORM), "mt6779")
-	CONFIG_MACH_MT6779 := y
-	MTK_PLATFORM := $(subst ",,$(CONFIG_MTK_DISP_PLATFORM))
-endif
-
 obj-y += ddp_rdma.o
 
 ccflags-y += \
@@ -44,8 +38,4 @@ else
 ccflags-y += \
                                 -I$(srctree)/drivers/misc/mediatek/cmdq/v3/ \
                                 -I$(srctree)/drivers/misc/mediatek/cmdq/v3/$(MTK_PLATFORM)/
-endif
-
-ifeq ($(CONFIG_MACH_MT6779), y)
-    ccflags-y += -DCONFIG_MACH_MT6779
 endif
