@@ -33,7 +33,9 @@
 #include <linux/dma-buf.h>
 #include <linux/idr.h>
 #include <linux/sched/task.h>
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG) || defined(MTK_ION_MAPPING_PERF_DEBUG)
 #include <linux/sched/clock.h>
+#endif
 #include <linux/delay.h>
 #include "ion.h"
 #include "ion_priv.h"
@@ -1164,32 +1166,38 @@ void ion_client_destroy(struct ion_client *client)
 {
 	struct ion_device *dev = client->dev;
 	struct rb_node *n;
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	struct task_struct *task = current->group_leader;
 	char task_comm[TASK_COMM_LEN];
 	pid_t pid;
 	unsigned long long time_s, time_e_lock, time_e_unlock;
+#endif
 
 	pr_debug("%s: %d\n", __func__, __LINE__);
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	get_task_comm(task_comm, task);
 	pid = task_pid_nr(task);
 	time_s = sched_clock();
+#endif
 	while ((n = rb_first(&client->handles))) {
 		struct ion_handle *handle = rb_entry(n, struct ion_handle,
 						     node);
 
 		mutex_lock(&client->lock);
-		IONMSG("%s:dbg=%s\n",__func__,client->dbg_name);
+		IONDBG("%s:dbg=%s\n", __func__, client->dbg_name);
 		ion_handle_destroy(&handle->ref);
 		mutex_unlock(&client->lock);
 	}
 
 	idr_destroy(&client->idr);
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	time_e_unlock = sched_clock();
 	if ((time_e_unlock - time_s) > 50000000) // 50ms
 		IONMSG("%s unlock warnning, time:%llu, task:%s (%d)\n",
 		       __func__, (time_e_unlock - time_s),
 		       task_comm, pid);
+#endif
 
 	down_write(&dev->lock);
 	if (client->task)
@@ -1203,11 +1211,13 @@ void ion_client_destroy(struct ion_client *client)
 #endif
 	up_write(&dev->lock);
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	time_e_lock = sched_clock();
 	if ((time_e_lock - time_s) > 100000000) // 100ms
 		IONMSG("%s warnning, time:%llu, task:%s (%d)\n",
 		       __func__, (time_e_lock - time_s),
 		       task_comm, pid);
+#endif
 
 	kfree(client->display_name);
 	kfree(client->name);
@@ -2137,7 +2147,9 @@ static int ion_open(struct inode *inode, struct file *file)
 	struct ion_client *client;
 	int name_length = 0;
 	char debug_name[64];
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	unsigned long long start, end;
+#endif
 
 	pr_debug("%s: %d\n", __func__, __LINE__);
 	name_length = snprintf(debug_name, 64, "%u",
@@ -2146,7 +2158,9 @@ static int ion_open(struct inode *inode, struct file *file)
 		IONMSG("%s ion set debug name error, pid %u\n",
 		       __func__, task_pid_nr(current->group_leader));
 
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	start = sched_clock();
+#endif
 	client = ion_client_create(dev, debug_name);
 	if (IS_ERR(client)) {
 		IONMSG("%s ion client create failed 0x%lx.\n",
@@ -2154,11 +2168,13 @@ static int ion_open(struct inode *inode, struct file *file)
 		return PTR_ERR(client);
 	}
 	file->private_data = client;
+#if IS_ENABLED(CONFIG_MTK_ION_DEBUG)
 	end = sched_clock();
 
 	if (end - start > 10000000ULL) {/* unit is ns */
 		IONMSG("warn: ion open time: %lld ns\n", end - start);
 	}
+#endif
 
 	return 0;
 }
