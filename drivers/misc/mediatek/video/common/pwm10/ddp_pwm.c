@@ -5,7 +5,6 @@
  */
 
 #include <linux/kernel.h>
-#include <linux/time.h>
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/of.h>
@@ -59,8 +58,6 @@ static int pwm_dbg_en;
 #define PWM_DBG(fmt, arg...) \
 	do { if (pwm_dbg_en) pr_no_debug("[PWM] %s: " fmt "\n", __func__, ##arg); \
 		} while (0)
-
-#define PWM_LOG_BUFFER_SIZE 8
 
 static enum disp_pwm_id_t g_pwm_main_id = DISP_PWM0;
 static ddp_module_notify g_ddp_notify;
@@ -118,30 +115,15 @@ static atomic_t g_pwm_is_change_state[PWM_TOTAL_MODULE_NUM] = {
 
 static int g_pwm_led_mode = MT65XX_LED_MODE_NONE;
 
-struct PWM_LOG {
-	int value;
-	unsigned long tsec;
-	unsigned long tusec;
-};
-
-enum PWM_LOG_TYPE {
-	NOTICE_LOG = 0,
-	MSG_LOG,
-};
-
 #if defined(CONFIG_MACH_MT6757) || defined(CONFIG_MACH_KIBOPLUS)
 #define PWM_USE_HIGH_ULPOSC_FQ
 #endif
 
 #ifndef CONFIG_FPGA_EARLY_PORTING
-static DEFINE_SPINLOCK(g_pwm_log_lock);
-static struct PWM_LOG g_pwm_log_buffer[PWM_LOG_BUFFER_SIZE + 1];
-static int g_pwm_log_index;
 #if defined(PWM_USE_HIGH_ULPOSC_FQ)
 static bool g_pwm_first_config[PWM_TOTAL_MODULE_NUM];
 #endif		/* PWM_USE_HIGH_ULPOSC_FQ */
 #endif		/* CONFIG_FPGA_EARLY_PORTING */
-static int g_pwm_log_num = PWM_LOG_BUFFER_SIZE;
 
 int disp_pwm_get_cust_led(unsigned int *clocksource, unsigned int *clockdiv)
 {
@@ -444,60 +426,6 @@ static int disp_pwm_level_remap(enum disp_pwm_id_t id, int level_1024)
 	return level_1024;
 }
 
-#define LOGBUFFERSIZE 384
-static void disp_pwm_log(int level_1024, int log_type)
-{
-	int i;
-	struct timeval pwm_time;
-	char buffer[LOGBUFFERSIZE] = "";
-	int print_log;
-
-	do_gettimeofday(&pwm_time);
-
-	spin_lock(&g_pwm_log_lock);
-
-	g_pwm_log_buffer[g_pwm_log_index].value = level_1024;
-	g_pwm_log_buffer[g_pwm_log_index].tsec =
-		(unsigned long)pwm_time.tv_sec % 1000;
-	g_pwm_log_buffer[g_pwm_log_index].tusec =
-		(unsigned long)pwm_time.tv_usec / 1000;
-	g_pwm_log_index += 1;
-	print_log = 0;
-
-	if (g_pwm_log_index >= g_pwm_log_num || level_1024 == 0) {
-		scnprintf(buffer + strlen(buffer),
-			sizeof(buffer) - strlen(buffer),
-			"(latest=%2u): ",
-			g_pwm_log_index);
-		for (i = 0; i < g_pwm_log_index; i += 1) {
-			scnprintf(buffer + strlen(buffer),
-				sizeof(buffer) - strlen(buffer),
-				"%5d(%4lu,%4lu)",
-				g_pwm_log_buffer[i].value,
-				g_pwm_log_buffer[i].tsec,
-				g_pwm_log_buffer[i].tusec);
-		}
-
-		g_pwm_log_index = 0;
-		print_log = 1;
-
-		for (i = 0; i < PWM_LOG_BUFFER_SIZE; i += 1) {
-			g_pwm_log_buffer[i].tsec = 0;
-			g_pwm_log_buffer[i].tusec = 0;
-			g_pwm_log_buffer[i].value = -1;
-		}
-	}
-
-	spin_unlock(&g_pwm_log_lock);
-
-	if (print_log == 1) {
-		if (log_type == MSG_LOG)
-			PWM_MSG("%s", buffer);
-		else
-			PWM_NOTICE("%s", buffer);
-	}
-
-}
 #endif				/* not define CONFIG_FPGA_EARLY_PORTING */
 
 int disp_bls_set_max_backlight(unsigned int level_1024)
@@ -589,9 +517,6 @@ int disp_pwm_set_backlight_cmdq(enum disp_pwm_id_t id,
 		abs_diff = level_1024 - old_pwm;
 		if (abs_diff < 0)
 			abs_diff = -abs_diff;
-
-		/* To be printed in UART log */
-		disp_pwm_log(level_1024, MSG_LOG);
 
 		if ((old_pwm == 0 || level_1024 == 0 || abs_diff > 64) &&
 			old_pwm != level_1024) {
@@ -1011,17 +936,6 @@ void disp_pwm_test(const char *cmd, char *debug_output)
 
 		clksrc = (unsigned int)(cmd[7] - '0');
 		disp_pwm_set_pwmmux(clksrc);
-	} else if (strncmp(cmd, "log_num:", 8) == 0) {
-		unsigned long log_num = 0;
-
-		pwm_simple_strtoul((char *)(cmd+8),
-			(unsigned long *)(&log_num));
-		log_num = (log_num < 1) ?
-			1 : ((log_num > PWM_LOG_BUFFER_SIZE) ?
-			PWM_LOG_BUFFER_SIZE : log_num);
-		g_pwm_log_num = (int)log_num;
-		PWM_MSG("combine %lu backlight change log in one line",
-			log_num);
 	} else if (strncmp(cmd, "queryBL", 7) == 0) {
 		disp_pwm_query_backlight(debug_output);
 	} else if (strncmp(cmd, "pwm_dbg:", 8) == 0) {
@@ -1041,4 +955,3 @@ void disp_pwm_test(const char *cmd, char *debug_output)
 	}
 #endif
 }
-
