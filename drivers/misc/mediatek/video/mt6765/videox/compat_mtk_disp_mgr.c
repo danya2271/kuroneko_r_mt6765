@@ -901,7 +901,8 @@ int _compat_ioctl_create_session(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_config(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_CREATE_SESSION, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_CREATE_SESSION,
+		(unsigned long)data);
 
 	if (compat_put_disp_session_config(data32, data))
 		return -EFAULT;
@@ -917,7 +918,8 @@ int _compat_ioctl_destroy_session(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_DESTROY_SESSION, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_DESTROY_SESSION,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_trigger_session(struct file *file, unsigned long arg)
@@ -928,7 +930,8 @@ int _compat_ioctl_trigger_session(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_TRIGGER_SESSION, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_TRIGGER_SESSION,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_prepare_present_fence(struct file *file, unsigned long arg)
@@ -940,7 +943,8 @@ int _compat_ioctl_prepare_present_fence(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_present_fence(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_GET_PRESENT_FENCE, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_GET_PRESENT_FENCE,
+		(unsigned long)data);
 
 	if (compat_put_disp_present_fence(data32, data))
 		return -EFAULT;
@@ -957,7 +961,8 @@ int _compat_ioctl_query_valid_layer(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_layer_info(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_QUERY_VALID_LAYER, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_QUERY_VALID_LAYER,
+		(unsigned long)data);
 
 	if (compat_put_disp_layer_info(data32, data))
 		return -EFAULT;
@@ -974,7 +979,8 @@ int _compat_ioctl_get_info(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_info(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_GET_SESSION_INFO, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_GET_SESSION_INFO,
+		(unsigned long)data);
 
 	if (compat_put_disp_session_info(data32, data))
 		return -EFAULT;
@@ -992,9 +998,11 @@ int _compat_ioctl_prepare_buffer(struct file *file, unsigned long arg, enum PREP
 		return -EFAULT;
 
 	if (type == PREPARE_INPUT_FENCE)
-		ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_PREPARE_INPUT_BUFFER, (unsigned long)data);
+		ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_PREPARE_INPUT_BUFFER,
+			(unsigned long)data);
 	else
-		ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_PREPARE_OUTPUT_BUFFER, (unsigned long)data);
+		ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_PREPARE_OUTPUT_BUFFER,
+			(unsigned long)data);
 
 	if (compat_put_disp_buffer_info(data32, data))
 		return -EFAULT;
@@ -1011,7 +1019,8 @@ int _compat_ioctl_wait_vsync(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_vsync_config(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_WAIT_FOR_VSYNC, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_WAIT_FOR_VSYNC,
+		(unsigned long)data);
 
 	if (compat_put_disp_session_vsync_config(data32, data))
 		return -EFAULT;
@@ -1027,7 +1036,8 @@ int _compat_ioctl_set_scenario(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_scenario_input_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_SET_SCENARIO, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_SET_SCENARIO,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_set_input_buffer(struct file *file, unsigned long arg)
@@ -1038,7 +1048,8 @@ int _compat_ioctl_set_input_buffer(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_input_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_SET_INPUT_BUFFER, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_SET_INPUT_BUFFER,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
@@ -1050,7 +1061,8 @@ int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_caps_info(data32, data))
 		return -EFAULT;
 
-	ret = file->f_op->unlocked_ioctl(file, DISP_IOCTL_GET_DISPLAY_CAPS, (unsigned long)data);
+	ret = mtk_disp_mgr_ioctl(file, DISP_IOCTL_GET_DISPLAY_CAPS,
+		(unsigned long)data);
 
 	if (compat_put_disp_caps_info(data32, data))
 		return -EFAULT;
@@ -1060,12 +1072,12 @@ int _compat_ioctl_get_display_caps(struct file *file, unsigned long arg)
 
 int _compat_ioctl_get_vsync(struct file *file, unsigned long arg)
 {
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_GET_VSYNC_FPS, arg);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_GET_VSYNC_FPS, arg);
 }
 
 int _compat_ioctl_wait_all_jobs_done(struct file *file, unsigned long arg)
 {
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_WAIT_ALL_JOBS_DONE, arg);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_WAIT_ALL_JOBS_DONE, arg);
 }
 
 int _compat_ioctl_set_vsync(struct file *file, unsigned long arg)
@@ -1077,7 +1089,7 @@ int _compat_ioctl_set_vsync(struct file *file, unsigned long arg)
 		return -EFAULT;
 	}
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_SET_VSYNC_FPS, arg);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_SET_VSYNC_FPS, arg);
 }
 
 int _compat_ioctl_set_session_mode(struct file *file, unsigned long arg)
@@ -1088,7 +1100,8 @@ int _compat_ioctl_set_session_mode(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_SET_SESSION_MODE, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_SET_SESSION_MODE,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_inset_session_buffer(struct file *file, unsigned long arg)
@@ -1099,7 +1112,8 @@ int _compat_ioctl_inset_session_buffer(struct file *file, unsigned long arg)
 	if (!data || compat_get_inset_session_buffer(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_INSERT_SESSION_BUFFERS, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_INSERT_SESSION_BUFFERS,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_set_output_buffer(struct file *file, unsigned long arg)
@@ -1110,7 +1124,8 @@ int _compat_ioctl_set_output_buffer(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_session_output_config(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_SET_OUTPUT_BUFFER, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_SET_OUTPUT_BUFFER,
+		(unsigned long)data);
 }
 
 int _compat_ioctl_frame_config(struct file *file, unsigned long arg)
@@ -1121,7 +1136,8 @@ int _compat_ioctl_frame_config(struct file *file, unsigned long arg)
 	if (!data || compat_get_disp_frame_cfg(data32, data))
 		return -EFAULT;
 
-	return file->f_op->unlocked_ioctl(file, DISP_IOCTL_FRAME_CONFIG, (unsigned long)data);
+	return mtk_disp_mgr_ioctl(file, DISP_IOCTL_FRAME_CONFIG,
+		(unsigned long)data);
 }
 
 #endif
