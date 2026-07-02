@@ -63,25 +63,23 @@ struct ion_system_heap {
  */
 static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 				      struct ion_buffer *buffer,
-				      unsigned long order)
+				      unsigned int order_idx)
 {
 	bool cached = ion_buffer_cached(buffer);
 	struct ion_page_pool *pool;
 	struct page *page;
-	int idx = order_to_index(order);
-
-	if (idx < 0)
-		return NULL;
 
 	if (!cached)
-		pool = heap->uncached_pools[idx];
+		pool = heap->uncached_pools[order_idx];
 	else
-		pool = heap->cached_pools[idx];
+		pool = heap->cached_pools[order_idx];
 
 	page = ion_page_pool_alloc(pool);
+	if (!page)
+		return NULL;
 
 	ion_pages_sync_for_device(g_ion_device->dev.this_device,
-				  page, PAGE_SIZE << order,
+				  page, PAGE_SIZE << orders[order_idx],
 				  DMA_BIDIRECTIONAL);
 	return page;
 }
@@ -132,7 +130,7 @@ static struct page *alloc_largest_available(struct ion_system_heap *heap,
 		if (max_order < orders[i])
 			continue;
 
-		page = alloc_buffer_page(heap, buffer, orders[i]);
+		page = alloc_buffer_page(heap, buffer, i);
 		if (!page)
 			continue;
 

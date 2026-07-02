@@ -122,12 +122,12 @@ unsigned long long alloc_large_fail_ts;
 
 static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 				      struct ion_buffer *buffer,
-				      unsigned long order)
+				      unsigned int order_idx)
 {
 	bool cached = ion_buffer_cached(buffer);
 	struct ion_page_pool *pool;
 	struct page *page;
-	int order_idx = order_to_index(order);
+	unsigned int order = orders[order_idx];
 
 	if (!cached)
 		pool = heap->pools[order_idx];
@@ -152,14 +152,12 @@ static void free_buffer_page(struct ion_system_heap *heap,
 {
 	bool cached = ion_buffer_cached(buffer);
 	int order_idx = order_to_index(order);
+	struct ion_page_pool *pool;
 	unsigned long private_flags = buffer->private_flags;
 
-	if (!cached && !(private_flags & ION_PRIV_FLAG_SHRINKER_FREE)) {
-		struct ion_page_pool *pool = heap->pools[order_idx];
-
-		ion_page_pool_free(pool, page);
-	} else if (cached && !(private_flags & ION_PRIV_FLAG_SHRINKER_FREE)) {
-		struct ion_page_pool *pool = heap->cached_pools[order_idx];
+	if (!(private_flags & ION_PRIV_FLAG_SHRINKER_FREE)) {
+		pool = cached ? heap->cached_pools[order_idx] :
+				heap->pools[order_idx];
 
 		ion_page_pool_free(pool, page);
 	} else {
@@ -187,7 +185,7 @@ static struct page *alloc_largest_available(struct ion_system_heap *heap,
 		if (max_order < orders[i])
 			continue;
 
-		page = alloc_buffer_page(heap, buffer, orders[i]);
+		page = alloc_buffer_page(heap, buffer, i);
 		if (!page)
 			continue;
 
@@ -201,17 +199,11 @@ static int ion_mm_pool_total(struct ion_system_heap *heap,
 			     unsigned long order, bool cached)
 {
 	struct ion_page_pool *pool;
-	int count;
+	int order_idx = order_to_index(order);
 
-	if (!cached) {
-		pool = heap->pools[order_to_index(order)];
-		count = pool->low_count + pool->high_count;
-	} else {
-		pool = heap->cached_pools[order_to_index(order)];
-		count = (pool->low_count + pool->high_count);
-	}
+	pool = cached ? heap->cached_pools[order_idx] : heap->pools[order_idx];
 
-	return count;
+	return pool->low_count + pool->high_count;
 }
 
 #define MTK_GET_DOMAIN_IGNORE (DOMAIN_NUM + 1)
