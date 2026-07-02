@@ -23,6 +23,29 @@ struct mode_info {
 	struct list_head list;
 };
 
+static bool reboot_mode_token_matches(const char *cmd, const char *mode)
+{
+	size_t len;
+
+	len = strlen(mode);
+
+	return !strcmp(cmd, mode) ||
+	       (!strncmp(cmd, mode, len) && cmd[len] == ',') ||
+	       (!strncmp(cmd, "reboot,", 7) &&
+		!strncmp(cmd + 7, mode, len) &&
+		(cmd[7 + len] == '\0' || cmd[7 + len] == ','));
+}
+
+static bool reboot_mode_matches(const char *cmd, const char *mode)
+{
+	return reboot_mode_token_matches(cmd, mode) ||
+	       (!strcmp(mode, "recovery") &&
+		(!strcmp(cmd, "recovery-update") ||
+		 !strcmp(cmd, "reboot,recovery-update"))) ||
+	       (!strcmp(mode, "bootloader") &&
+		reboot_mode_token_matches(cmd, "fastboot"));
+}
+
 static unsigned int get_reboot_mode_magic(struct reboot_mode_driver *reboot,
 					  const char *cmd)
 {
@@ -34,7 +57,7 @@ static unsigned int get_reboot_mode_magic(struct reboot_mode_driver *reboot,
 		cmd = normal;
 
 	list_for_each_entry(info, &reboot->head, list) {
-		if (!strcmp(info->mode, cmd)) {
+		if (reboot_mode_matches(cmd, info->mode)) {
 			magic = info->magic;
 			break;
 		}
