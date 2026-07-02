@@ -216,7 +216,6 @@ unsigned int mtkfb_query_buf_mva(unsigned int session_id, unsigned int layer_id,
 	mutex_unlock(&layer_info->sync_lock);
 
 	if (mva) {
-		buf->ts_create = sched_clock();
 		if (buf->cache_sync) mtkfb_ion_cache_flush(ion_client, buf->hnd, buf->size);
 	}
 
@@ -500,7 +499,6 @@ void mtkfb_release_fence(unsigned int session_id, unsigned int layer_id, int fen
 		mutex_lock(&fence_buffer_mutex);
 		list_add_tail(&buf->list, &info_pool_head);
 		mutex_unlock(&fence_buffer_mutex);
-		buf->ts_period_keep = sched_clock() - buf->ts_create;
 	}
 
 	mutex_unlock(&layer_info->sync_lock);
@@ -743,7 +741,6 @@ static unsigned int __disp_sync_query_buf_info(unsigned int session_id, unsigned
 	if (dst_mva) {
 		*mva = dst_mva;
 		*size = dst_size;
-		buf->ts_create = sched_clock();
 		if (buf->cache_sync && need_sync) mtkfb_ion_cache_flush(ion_client, buf->hnd, buf->size);
 	}
 
