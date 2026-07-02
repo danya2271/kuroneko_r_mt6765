@@ -484,8 +484,8 @@ static void mtk_charger_start_timer(struct mtk_charger *info)
 	info->endtime = timespec_add(time_now, time);
 	ktime = ktime_set(info->endtime.tv_sec, info->endtime.tv_nsec);
 
-	chr_err("%s: alarm timer start:%d, %ld %ld\n", __func__, ret,
-		info->endtime.tv_sec, info->endtime.tv_nsec);
+	chr_debug("%s: alarm timer start:%d, %ld %ld\n", __func__, ret,
+		  info->endtime.tv_sec, info->endtime.tv_nsec);
 	alarm_start(&info->charger_timer, ktime);
 }
 
@@ -1654,8 +1654,8 @@ static int charger_pm_event(struct notifier_block *notifier,
 		if (timespec_compare(&now, &info->endtime) >= 0 &&
 			info->endtime.tv_sec != 0 &&
 			info->endtime.tv_nsec != 0) {
-			chr_err("%s: alarm timeout, wake up charger\n",
-				__func__);
+			chr_debug("%s: alarm timeout, wake up charger\n",
+				  __func__);
 			__pm_relax(info->charger_wakelock);
 			info->endtime.tv_sec = 0;
 			info->endtime.tv_nsec = 0;
@@ -1676,10 +1676,10 @@ static enum alarmtimer_restart
 	container_of(alarm, struct mtk_charger, charger_timer);
 
 	if (info->is_suspend == false) {
-		chr_err("%s: not suspend, wake up charger\n", __func__);
+		chr_debug("%s: not suspend, wake up charger\n", __func__);
 		_wake_up_charger(info);
 	} else {
-		chr_err("%s: alarm timer timeout\n", __func__);
+		chr_debug("%s: alarm timer timeout\n", __func__);
 		__pm_stay_awake(info->charger_wakelock);
 	}
 
