@@ -806,9 +806,6 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 {
 	long ret = 0;
 
-	if (!file->f_op || !file->f_op->unlocked_ioctl)
-		return -ENOTTY;
-
 	switch (cmd) {
 	case COMPAT_GET_DSI_ID:
 	{
@@ -827,7 +824,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, GET_DSI_ID,
+		ret = fbconfig_ioctl(file, GET_DSI_ID,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -850,7 +847,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, SET_DSI_ID,
+		ret = fbconfig_ioctl(file, SET_DSI_ID,
 			(unsigned long)data);
 
 		err |= get_user(d, data);
@@ -872,7 +869,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_TEST_DSI_CLK,
+		ret = fbconfig_ioctl(file, LCM_TEST_DSI_CLK,
 			(unsigned long)data);
 		err = compat_put_lcm_type_fb(data32, data);
 		return ret ? ret : err;
@@ -894,7 +891,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_ID,
+		ret = fbconfig_ioctl(file, LCM_GET_ID,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -915,7 +912,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, DRIVER_IC_CONFIG,
+		ret = fbconfig_ioctl(file, DRIVER_IC_CONFIG,
 			(unsigned long)data);
 		err = compat_put_config_record(data32, data);
 		return ret ? ret : err;
@@ -937,7 +934,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, DRIVER_IC_CONFIG_DONE,
+		ret = fbconfig_ioctl(file, DRIVER_IC_CONFIG_DONE,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -960,7 +957,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, MIPI_SET_CC,
+		ret = fbconfig_ioctl(file, MIPI_SET_CC,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -984,7 +981,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_CONTINU,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_CONTINU,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1007,7 +1004,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, MIPI_SET_CLK,
+		ret = fbconfig_ioctl(file, MIPI_SET_CLK,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1030,7 +1027,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_CLK,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_CLK,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1051,7 +1048,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, MIPI_SET_SSC,
+		ret = fbconfig_ioctl(file, MIPI_SET_SSC,
 			(unsigned long)data);
 		err = compat_put_dsi_ret(data32, data);
 		return ret ? ret : err;
@@ -1074,7 +1071,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_SSC,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_SSC,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1097,7 +1094,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_LANE_NUM,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_LANE_NUM,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1120,7 +1117,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_TE,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_TE,
 			(unsigned long)data);
 		err |= get_user(i, data);
 		err |= put_user(i, data32);
@@ -1141,7 +1138,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_DSI_TIMING,
+		ret = fbconfig_ioctl(file, LCM_GET_DSI_TIMING,
 			(unsigned long)data);
 		err = compat_put_mipi_timing(data32, data);
 		return ret ? ret : err;
@@ -1161,7 +1158,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, MIPI_SET_TIMING,
+		ret = fbconfig_ioctl(file, MIPI_SET_TIMING,
 			(unsigned long)data);
 		err = compat_put_mipi_timing(data32, data);
 		return ret ? ret : err;
@@ -1181,7 +1178,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, FB_LAYER_GET_EN,
+		ret = fbconfig_ioctl(file, FB_LAYER_GET_EN,
 			(unsigned long)data);
 		err = compat_put_pm_layer_en(data32, data);
 		return ret ? ret : err;
@@ -1201,14 +1198,14 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, FB_LAYER_GET_INFO,
+		ret = fbconfig_ioctl(file, FB_LAYER_GET_INFO,
 			(unsigned long)data);
 		err = compat_put_pm_layer_info(data32, data);
 		return ret ? ret : err;
 	}
 	case COMPAT_FB_LAYER_DUMP:
 	{
-		ret = file->f_op->unlocked_ioctl(file, FB_LAYER_DUMP,
+		ret = fbconfig_ioctl(file, FB_LAYER_DUMP,
 			(unsigned long)arg);
 		return ret;
 	}
@@ -1227,7 +1224,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, LCM_GET_ESD,
+		ret = fbconfig_ioctl(file, LCM_GET_ESD,
 			(unsigned long)data);
 		err = compat_put_esd_para(data32, data);
 		return ret ? ret : err;
@@ -1249,7 +1246,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, TE_SET_ENABLE,
+		ret = fbconfig_ioctl(file, TE_SET_ENABLE,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1272,7 +1269,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, DRIVER_IC_RESET,
+		ret = fbconfig_ioctl(file, DRIVER_IC_RESET,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
@@ -1295,7 +1292,7 @@ static long compat_fbconfig_ioctl(struct file *file, unsigned int cmd,
 		if (err)
 			return err;
 
-		ret = file->f_op->unlocked_ioctl(file, FB_GET_MISC,
+		ret = fbconfig_ioctl(file, FB_GET_MISC,
 			(unsigned long)data);
 		err |= get_user(d, data);
 		err |= put_user(d, data32);
