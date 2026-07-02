@@ -133,11 +133,12 @@ static struct page *alloc_buffer_page(struct ion_system_heap *heap,
 	bool cached = ion_buffer_cached(buffer);
 	struct ion_page_pool *pool;
 	struct page *page;
+	int order_idx = order_to_index(order);
 
 	if (!cached)
-		pool = heap->pools[order_to_index(order)];
+		pool = heap->pools[order_idx];
 	else
-		pool = heap->cached_pools[order_to_index(order)];
+		pool = heap->cached_pools[order_idx];
 
 	page = ion_page_pool_alloc(pool);
 
