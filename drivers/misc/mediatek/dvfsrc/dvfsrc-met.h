@@ -28,7 +28,5 @@ struct mtk_dvfsrc_met {
 	const struct dvfsrc_met_data *dvd;
 };
 
-extern const struct dvfsrc_met_config mt6779_met_config;
 extern const struct dvfsrc_met_config mt6761_met_config;
 #endif
-

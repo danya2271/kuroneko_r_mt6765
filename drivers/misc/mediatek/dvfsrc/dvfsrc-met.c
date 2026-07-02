@@ -223,10 +223,6 @@ static int mtk_dvfsrc_met_probe(struct platform_device *pdev)
 	return 0;
 }
 
-static const struct dvfsrc_met_data mt6779_data = {
-	.met = &mt6779_met_config,
-};
-
 static const struct dvfsrc_met_data mt6761_data = {
 	.met = &mt6761_met_config,
 };
@@ -243,9 +239,6 @@ static int mtk_dvfsrc_met_remove(struct platform_device *pdev)
 
 static const struct of_device_id mtk_dvfsrc_met_of_match[] = {
 	{
-		.compatible = "mediatek,mt6779-dvfsrc-met",
-		.data = &mt6779_data,
-	}, {
 		.compatible = "mediatek,mt6761-dvfsrc-met",
 		.data = &mt6761_data,
 	}, {
@@ -279,4 +272,3 @@ module_exit(mtk_dvfsrc_met_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("MTK DVFSRC met driver");
-

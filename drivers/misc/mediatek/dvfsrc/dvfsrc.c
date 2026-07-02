@@ -313,33 +313,6 @@ static int mtk_dvfsrc_up_probe(struct platform_device *pdev)
 	return 0;
 }
 
-static struct dvfsrc_opp dvfsrc_opp_mt6779_lp4[] = {
-	{0, 0, 0, 0},
-	{0, 1, 0, 0},
-	{0, 2, 0, 0},
-	{0, 3, 0, 0},
-	{1, 1, 0, 0},
-	{1, 2, 0, 0},
-	{1, 3, 0, 0},
-	{1, 4, 0, 0},
-	{2, 1, 0, 0},
-	{2, 2, 0, 0},
-	{2, 3, 0, 0},
-	{2, 4, 0, 0},
-	{2, 5, 0, 0},
-};
-
-static struct dvfsrc_opp_desc dvfsrc_opp_mt6779_desc[] = {
-	MT_DVFSRC_OPP(3, 6, dvfsrc_opp_mt6779_lp4),
-};
-
-static const struct dvfsrc_up_data mt6779_data = {
-	.opps_desc = dvfsrc_opp_mt6779_desc,
-	.num_opp_desc = ARRAY_SIZE(dvfsrc_opp_mt6779_desc),
-	.qos = &mt6779_qos_config,
-	.setup_opp_table = dvfsrc_setup_opp_table,
-};
-
 static struct dvfsrc_opp dvfsrc_opp_mt6761[] = {
 	{0, 0, 0, 0},
 	{1, 0, 0, 0},
@@ -382,9 +355,6 @@ static int mtk_dvfsrc_up_remove(struct platform_device *pdev)
 
 static const struct of_device_id mtk_dvfsrc_up_of_match[] = {
 	{
-		.compatible = "mediatek,mt6779-dvfsrc-up",
-		.data = &mt6779_data,
-	}, {
 		.compatible = "mediatek,mt6761-dvfsrc-up",
 		.data = &mt6761_data,
 	}, {

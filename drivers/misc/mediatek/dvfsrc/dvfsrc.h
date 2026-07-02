@@ -44,7 +44,5 @@ struct mtk_dvfsrc_up {
 };
 
 extern const struct dvfsrc_qos_config mt6761_qos_config;
-extern const struct dvfsrc_qos_config mt6779_qos_config;
 
 #endif
-

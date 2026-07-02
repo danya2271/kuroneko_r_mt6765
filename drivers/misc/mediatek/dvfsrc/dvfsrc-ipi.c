@@ -47,14 +47,7 @@ static const int mt6761_qos_ipi_pin[] = {
 	[IPI_DDR_OPP] = 3,
 };
 
-static const int mt6779_qos_ipi_pin[] = {
-	[IPI_DVFSRC_ENABLE] = 1,
-	[IPI_OPP_TABLE] = 2,
-	[IPI_VCORE_OPP] = 3,
-	[IPI_DDR_OPP] = 4,
-};
-
-static int mt6779_qos_ipi_to_sspm(void *buffer, int slot)
+static int dvfsrc_qos_ipi_to_sspm(void *buffer, int slot)
 {
 #if IS_ENABLED(CONFIG_MTK_TINYSYS_SSPM_SUPPORT)
 	int ack_data = 0;
@@ -66,7 +59,7 @@ static int mt6779_qos_ipi_to_sspm(void *buffer, int slot)
 #endif
 }
 
-static int mt6779_qos_dvfsrc_init(struct mtk_dvfsrc_up *dvfsrc)
+static int dvfsrc_qos_dvfsrc_init(struct mtk_dvfsrc_up *dvfsrc)
 {
 	int i;
 	const int *ipi_pin;
@@ -87,36 +80,29 @@ static int mt6779_qos_dvfsrc_init(struct mtk_dvfsrc_up *dvfsrc)
 		ipi_d.cmd = ipi_pin[IPI_VCORE_OPP];
 		ipi_d.u.vcore_opp.vcore_dvfs_opp = opp_idx;
 		ipi_d.u.vcore_opp.vcore_opp = v_opp_idx;
-		mt6779_qos_ipi_to_sspm(&ipi_d, 3);
+		dvfsrc_qos_ipi_to_sspm(&ipi_d, 3);
 
 		ipi_d.cmd = ipi_pin[IPI_DDR_OPP];
 		ipi_d.u.ddr_opp.vcore_dvfs_opp = opp_idx;
 		ipi_d.u.ddr_opp.ddr_opp = d_opp_idx;
-		mt6779_qos_ipi_to_sspm(&ipi_d, 3);
+		dvfsrc_qos_ipi_to_sspm(&ipi_d, 3);
 
 
 		ipi_d.cmd = ipi_pin[IPI_OPP_TABLE];
 		ipi_d.u.opp_table.vcore_dvfs_opp = opp_idx;
 		ipi_d.u.opp_table.vcore_uv = opp->vcore_uv;
 		ipi_d.u.opp_table.ddr_khz = opp->dram_khz;
-		mt6779_qos_ipi_to_sspm(&ipi_d, 4);
+		dvfsrc_qos_ipi_to_sspm(&ipi_d, 4);
 	}
 
 	ipi_d.cmd = ipi_pin[IPI_DVFSRC_ENABLE];
 	ipi_d.u.dvfsrc_enable.dvfsrc_en = 1;
-	mt6779_qos_ipi_to_sspm(&ipi_d, 2);
+	dvfsrc_qos_ipi_to_sspm(&ipi_d, 2);
 
 	return 0;
 }
 
-
-const struct dvfsrc_qos_config mt6779_qos_config = {
-	.ipi_pin = mt6779_qos_ipi_pin,
-	.qos_dvfsrc_init = mt6779_qos_dvfsrc_init,
-};
-
 const struct dvfsrc_qos_config mt6761_qos_config = {
 	.ipi_pin = mt6761_qos_ipi_pin,
-	.qos_dvfsrc_init = mt6779_qos_dvfsrc_init,
+	.qos_dvfsrc_init = dvfsrc_qos_dvfsrc_init,
 };
-

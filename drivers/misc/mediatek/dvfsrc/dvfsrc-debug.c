@@ -277,11 +277,6 @@ static int mtk_dvfsrc_debug_probe(struct platform_device *pdev)
 	return 0;
 }
 
-static const struct dvfsrc_debug_data mt6779_data = {
-	.pmqos_enable = true,
-	.config = &mt6779_dvfsrc_config,
-};
-
 static const struct dvfsrc_debug_data mt6761_data = {
 	.pmqos_enable = true,
 	.config = &mt6761_dvfsrc_config,
@@ -301,9 +296,6 @@ static int mtk_dvfsrc_debug_remove(struct platform_device *pdev)
 
 static const struct of_device_id mtk_dvfsrc_debug_of_match[] = {
 	{
-		.compatible = "mediatek,mt6779-dvfsrc-debug",
-		.data = &mt6779_data,
-	}, {
 		.compatible = "mediatek,mt6761-dvfsrc-debug",
 		.data = &mt6761_data,
 	}, {
@@ -337,4 +329,3 @@ module_exit(mtk_dvfsrc_debug_exit);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("MTK DVFSRC debug driver");
-
