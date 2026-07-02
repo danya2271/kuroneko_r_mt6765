@@ -88,25 +88,6 @@ enum MFC_STATUS MFC_LowMemory_Printf(MFC_HANDLE handle, const char *str,
 enum MFC_STATUS MFC_SetMem(MFC_HANDLE handle, const char *str, UINT32 color);
 UINT32 MFC_Get_Cursor_Offset(MFC_HANDLE handle);
 
-/* screen logger */
-struct screen_logger {
-	struct list_head list;
-	char *obj;
-	char *message;
-};
-
-enum message_mode {
-	MESSAGE_REPLACE = 0,
-	MESSAGE_APPEND = 1
-};
-
-void screen_logger_init(void);
-void screen_logger_add_message(char *obj, enum message_mode mode,
-	char *message);
-void screen_logger_remove_message(char *obj);
-void screen_logger_print(MFC_HANDLE handle);
-void screen_logger_empty(void);
-void screen_logger_test_case(MFC_HANDLE handle);
 #ifdef __cplusplus
 }
 #endif
