@@ -37,6 +37,8 @@
 #include "bq2560x_reg.h"
 #include "bq2560x.h"
 
+#define BQ2560X_TERM_CURRENT_LIMIT_MA	120
+
 #if 1
 #undef pr_debug
 #define pr_debug pr_err
@@ -553,6 +555,9 @@ static struct bq2560x_platform_data* bq2560x_parse_dt(struct device *dev,
     ret = of_property_read_u32(np,"ti,bq2560x,termination-current",&pdata->iterm);
     if(ret) {
 		pr_err("Failed to read node of ti,bq2560x,termination-current\n");
+	} else {
+		pdata->iterm = min_t(int, pdata->iterm,
+				     BQ2560X_TERM_CURRENT_LIMIT_MA);
 	}
 	
     ret = of_property_read_u32(np,"ti,bq2560x,boost-voltage",&pdata->boostv);
