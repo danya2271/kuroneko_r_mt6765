@@ -29,16 +29,9 @@ enum {
 };
 
 #define C0_OFFSET (0)
-#if defined(CONFIG_MACH_MT6799)
-#define C1_OFFSET (DISPSYS_COLOR1_BASE - DISPSYS_COLOR0_BASE)
-#define color_get_offset(module) \
-	((module == DISP_MODULE_COLOR0) ? C0_OFFSET : C1_OFFSET)
-#define is_color1_module(module) ((module == DISP_MODULE_COLOR1) ? 1 : 0)
-#else
 #define C1_OFFSET (0)
 #define color_get_offset(module) (0)
 #define is_color1_module(module) (0)
-#endif
 
 /* ------------------------------------------------------------------------- */
 #define GAMMA_SIZE 1024
@@ -107,75 +100,23 @@ enum LUT_REG {
 #define MIRAVISION_SW_VERSION_SHIFT (16)
 #define MIRAVISION_SW_FEATURE_SHIFT (0)
 
-#if defined(CONFIG_MACH_MT6595)
-#define MIRAVISION_HW_VERSION       (1)
-#elif defined(CONFIG_MACH_MT6752)
-#define MIRAVISION_HW_VERSION       (2)
-#elif defined(CONFIG_MACH_MT6795)
-#define MIRAVISION_HW_VERSION       (3)
-#elif defined(CONFIG_MACH_MT6735) || defined(CONFIG_MACH_MT8167)
-#define MIRAVISION_HW_VERSION       (4)
-#elif defined(CONFIG_MACH_MT6735M)
-#define MIRAVISION_HW_VERSION       (5)
-#elif defined(CONFIG_MACH_MT6753)
-#define MIRAVISION_HW_VERSION       (6)
-#elif defined(CONFIG_MACH_MT6580)
-#define MIRAVISION_HW_VERSION       (7)
-#elif defined(CONFIG_MACH_MT6755)
-#define MIRAVISION_HW_VERSION       (8)
-#elif defined(CONFIG_MACH_MT6797)
-#define MIRAVISION_HW_VERSION       (9)
-#elif defined(CONFIG_MACH_MT6750)
-#define MIRAVISION_HW_VERSION       (10)
-#elif defined(CONFIG_MACH_MT6757)
-#define MIRAVISION_HW_VERSION       (11)
-#define MIRAVISION_HW_P_VERSION     (13)
-#elif defined(CONFIG_MACH_MT6799)
-#define MIRAVISION_HW_VERSION       (12)
-#elif defined(CONFIG_MACH_MT6763)
-#define MIRAVISION_HW_VERSION       (14)
-#elif defined(CONFIG_MACH_MT6758)
-#define MIRAVISION_HW_VERSION       (15)
-#elif defined(CONFIG_MACH_MT6739)
-#define MIRAVISION_HW_VERSION       (16)
-#elif defined(CONFIG_MACH_MT6775)
-#define MIRAVISION_HW_VERSION       (17)
-#elif defined(CONFIG_MACH_MT6771)
-#define MIRAVISION_HW_VERSION       (18)
-#elif defined(CONFIG_MACH_MT6765)
 #define MIRAVISION_HW_VERSION       (19)
-#else
-#define MIRAVISION_HW_VERSION       (0)
-#endif
 
 #define MIRAVISION_SW_VERSION       (3)	/* 3:Android N*/
 #define MIRAVISION_SW_FEATURE_VIDEO_DC  (0x1)
 #define MIRAVISION_SW_FEATURE_AAL       (0x2)
 #define MIRAVISION_SW_FEATURE_PQDS       (0x4)
 
-#if defined(CONFIG_MACH_MT6757)
-#define MIRAVISION_VERSION \
-	((color_get_chip_ver() << MIRAVISION_HW_VERSION_SHIFT) | \
-	(MIRAVISION_SW_VERSION << MIRAVISION_SW_VERSION_SHIFT) | \
-	MIRAVISION_SW_FEATURE_VIDEO_DC | \
-	MIRAVISION_SW_FEATURE_AAL | \
-	MIRAVISION_SW_FEATURE_PQDS)
-#else
 #define MIRAVISION_VERSION \
 	((MIRAVISION_HW_VERSION << MIRAVISION_HW_VERSION_SHIFT) | \
 	(MIRAVISION_SW_VERSION << MIRAVISION_SW_VERSION_SHIFT) | \
 	MIRAVISION_SW_FEATURE_VIDEO_DC | \
 	MIRAVISION_SW_FEATURE_AAL | \
 	MIRAVISION_SW_FEATURE_PQDS)
-#endif
 
 #define SW_VERSION_VIDEO_DC         (1)
 #define SW_VERSION_AAL              (1)
-#if defined(CONFIG_MACH_MT6755)
-#define SW_VERSION_PQDS             (2)
-#else
 #define SW_VERSION_PQDS             (1)
-#endif
 
 #if defined(DISP_COLOR_ON)
 #define COLOR_MODE			(1)

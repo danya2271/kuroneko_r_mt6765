@@ -191,17 +191,6 @@ int ddp_clk_set_parent(enum DDP_CLK_ID id, enum DDP_CLK_ID parent)
 
 static int __ddp_set_mipi26m(int idx, int en)
 {
-#if 0
-	if (en) {
-		DISP_REG_SET_FIELD(NULL, FLD_PLL_MIPI_DSI0_26M_CK_EN,
-			APMIXEDSYS_PLL_BASE + APMIXED_PLL_CON0, 1);
-		apmixed_refcnt++;
-	} else {
-		DISP_REG_SET_FIELD(NULL, FLD_PLL_MIPI_DSI0_26M_CK_EN,
-			APMIXEDSYS_PLL_BASE + APMIXED_PLL_CON0, 0);
-		apmixed_refcnt--;
-	}
-#else
 	if (en) {
 		ddp_clk_prepare_enable(MIPI_26M);
 		apmixed_refcnt++;
@@ -209,7 +198,6 @@ static int __ddp_set_mipi26m(int idx, int en)
 		ddp_clk_disable_unprepare(MIPI_26M);
 		apmixed_refcnt--;
 	}
-#endif
 	return 0;
 }
 
@@ -244,13 +232,8 @@ int ddp_parse_apmixed_base(void)
 	if (parsed_apmixed)
 		return ret;
 
-#if defined(CONFIG_MACH_MT6761)
-	node = of_find_compatible_node(NULL, NULL,
-		"mediatek,mt6761-apmixedsys");
-#elif defined(CONFIG_MACH_MT6765)
 	node = of_find_compatible_node(NULL, NULL,
 		"mediatek,mt6765-apmixedsys");
-#endif
 
 	if (!node) {
 		DDPERR("[DDP_APMIXED] DISP find apmixed node failed\n");

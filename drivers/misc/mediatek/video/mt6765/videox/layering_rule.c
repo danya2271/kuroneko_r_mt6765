@@ -44,11 +44,7 @@ int larb_bound_table[HRT_BOUND_NUM][HRT_LEVEL_NUM] = {
 };
 
 int mm_freq_table[HRT_DRAMC_TYPE_NUM][HRT_OPP_LEVEL_NUM] = {
-	#if defined(CONFIG_MACH_MT6765)
 	{457, 312, 228}, {457, 312, 228}, {457, 312, 228},
-	#elif defined(CONFIG_MACH_MT6761)
-	{436, 312, 227}, {436, 312, 227}, {436, 312, 227},
-	#endif
 };
 
 #ifndef CONFIG_MTK_ROUND_CORNER_SUPPORT
