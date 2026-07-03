@@ -18,13 +18,10 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
-#include <linux/string.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
 #include <linux/delay.h>
 #include <linux/of_platform.h>
-#include <dt-bindings/soc/mediatek,boot-mode.h>
-#include <asm/system_misc.h>
 
 #define WDT_MAX_TIMEOUT		31
 #define WDT_MIN_TIMEOUT		1
@@ -51,7 +48,6 @@
 #define WDT_SWRST_KEY		0x1209
 
 #define WDT_NONRST2		0x24
-#define RGU_REBOOT_MASK		0xF
 #define WDT_NONRST2_STAGE_OFS	29
 #define RGU_STAGE_MASK		0x7
 #define RGU_STAGE_KERNEL	0x3
@@ -170,78 +166,6 @@ static void mtk_wdt_mark_stage(struct mtk_wdt_dev *mtk_wdt)
 	writel(reg, wdt_base + WDT_NONRST2);
 }
 
-static bool mtk_wdt_cmd_matches(const char *cmd, const char *mode)
-{
-	size_t len;
-
-	if (!cmd)
-		return false;
-
-	len = strlen(mode);
-
-	return !strcmp(cmd, mode) ||
-	       (!strncmp(cmd, mode, len) && cmd[len] == ',') ||
-	       (!strncmp(cmd, "reboot,", 7) &&
-		!strncmp(cmd + 7, mode, len) &&
-		(cmd[7 + len] == '\0' || cmd[7 + len] == ','));
-}
-
-static void mtk_wdt_set_restart_mode(struct mtk_wdt_dev *mtk_wdt,
-				     const char *cmd)
-{
-	void __iomem *wdt_base;
-	u32 magic = 0;
-	u32 reg;
-
-	if (!mtk_wdt || !cmd)
-		return;
-
-	if (mtk_wdt_cmd_matches(cmd, "recovery") ||
-	    !strcmp(cmd, "recovery-update") ||
-	    !strcmp(cmd, "reboot,recovery-update"))
-		magic = BOOT_RECOVERY;
-	else if (mtk_wdt_cmd_matches(cmd, "bootloader") ||
-		 mtk_wdt_cmd_matches(cmd, "fastboot"))
-		magic = BOOT_BOOTLOADER;
-
-	if (!magic)
-		return;
-
-	wdt_base = mtk_wdt->wdt_base;
-	if (!wdt_base)
-		return;
-
-	reg = readl(wdt_base + WDT_NONRST2);
-	reg &= ~RGU_REBOOT_MASK;
-	reg |= magic & RGU_REBOOT_MASK;
-	writel(reg, wdt_base + WDT_NONRST2);
-	readl(wdt_base + WDT_NONRST2);
-}
-
-static void mtk_wdt_force_reset_mode(struct mtk_wdt_dev *mtk_wdt)
-{
-	void __iomem *wdt_base = mtk_wdt->wdt_base;
-	u32 mode;
-
-	mode = readl(wdt_base + WDT_MODE);
-	mode &= ~(WDT_MODE_DUAL_EN | WDT_MODE_IRQ_EN);
-	mode |= WDT_MODE_EN | WDT_MODE_EXRST_EN | WDT_BYPASS_PWR_KEY;
-	writel(WDT_MODE_KEY | mode, wdt_base + WDT_MODE);
-	readl(wdt_base + WDT_MODE);
-}
-
-static void mtk_wdt_trigger_sw_reset(struct mtk_wdt_dev *mtk_wdt)
-{
-	void __iomem *wdt_base = mtk_wdt->wdt_base;
-
-	mtk_wdt_force_reset_mode(mtk_wdt);
-
-	while (1) {
-		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
-		mdelay(5);
-	}
-}
-
 static void mtk_wdt_parse_dt(struct device_node *np,
 			     struct mtk_wdt_dev *mtk_wdt)
 {
@@ -296,9 +220,19 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 			   unsigned long action, void *data)
 {
 	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
+	void __iomem *wdt_base = mtk_wdt->wdt_base;
+	u32 reg;
 
-	mtk_wdt_set_restart_mode(mtk_wdt, data);
-	mtk_wdt_trigger_sw_reset(mtk_wdt);
+	reg = readl(wdt_base + WDT_MODE);
+	reg &= ~(WDT_MODE_DUAL_EN | WDT_MODE_IRQ_EN);
+	reg |= WDT_MODE_EN | WDT_MODE_EXRST_EN | WDT_BYPASS_PWR_KEY;
+	writel(WDT_MODE_KEY | reg, wdt_base + WDT_MODE);
+	readl(wdt_base + WDT_MODE);
+
+	while (1) {
+		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
+		mdelay(5);
+	}
 
 	return 0;
 }
@@ -423,31 +357,20 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 
 	watchdog_init_timeout(&mtk_wdt->wdt_dev, timeout, &pdev->dev);
 	watchdog_set_nowayout(&mtk_wdt->wdt_dev, nowayout);
-	watchdog_set_restart_priority(&mtk_wdt->wdt_dev, 128);
+	watchdog_set_restart_priority(&mtk_wdt->wdt_dev, 0);
 
 	watchdog_set_drvdata(&mtk_wdt->wdt_dev, mtk_wdt);
 
 	mtk_wdt_hw_init(pdev->dev.of_node, mtk_wdt);
 
-	/*
-	 * LK can leave TOPRGU running. Keeping that watchdog alive from the
-	 * generic watchdog worker makes random resets possible if the worker is
-	 * starved, and those resets do not create panic/pstore records. Leave
-	 * the watchdog stopped until userspace opens it or a restart path arms
-	 * it explicitly.
-	 */
-	mtk_wdt_stop(&mtk_wdt->wdt_dev);
+	if (readl(mtk_wdt->wdt_base + WDT_MODE) & WDT_MODE_EN)
+		mtk_wdt_start(&mtk_wdt->wdt_dev);
+	else
+		mtk_wdt_stop(&mtk_wdt->wdt_dev);
 
 	err = watchdog_register_device(&mtk_wdt->wdt_dev);
 	if (unlikely(err))
 		return err;
-
-	/*
-	 * PSCI reset can leave this platform stuck after reboot-mode notifiers
-	 * have already stored the boot reason. Route restart through the
-	 * watchdog core so the TOPRGU software reset is used.
-	 */
-	arm_pm_restart = NULL;
 
 	/* register reset controller for reset source setting */
 	mtk_wdt->rcdev.owner = THIS_MODULE;
@@ -468,9 +391,6 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 static void mtk_wdt_shutdown(struct platform_device *pdev)
 {
 	struct mtk_wdt_dev *mtk_wdt = platform_get_drvdata(pdev);
-
-	if (system_state == SYSTEM_RESTART)
-		return;
 
 	if (watchdog_hw_running(&mtk_wdt->wdt_dev))
 		mtk_wdt_stop(&mtk_wdt->wdt_dev);
