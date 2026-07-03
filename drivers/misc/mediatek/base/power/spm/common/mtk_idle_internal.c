@@ -53,7 +53,7 @@ static idle_footprint_t fp[NR_IDLE_TYPES] = {
 	fp[idle_type]( \
 		((op_cond & MTK_IDLE_OPT_SLEEP_DPIDLE) \
 					? IDLE_FP_SLEEP_DEEPIDLE : 0) | \
-		(smp_processor_id() << 24) | value)
+		(raw_smp_processor_id() << 24) | value)
 #define __mtk_idle_footprint_reset(idle_type) \
 	fp[idle_type](0)
 #else /* CONFIG_MTK_AEE_IPANIC */
@@ -395,4 +395,3 @@ void mtk_idle_notifier_unregister(struct notifier_block *n)
 	raw_notifier_chain_unregister(&mtk_idle_notifier, n);
 }
 EXPORT_SYMBOL_GPL(mtk_idle_notifier_unregister);
-

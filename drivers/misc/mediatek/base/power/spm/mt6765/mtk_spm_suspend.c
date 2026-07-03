@@ -81,7 +81,7 @@ static inline void spm_suspend_footprint(enum spm_suspend_step step)
 {
 #ifdef CONFIG_MTK_RAM_CONSOLE
 	aee_rr_rec_spm_suspend_val(step |
-		(smp_processor_id() << CPU_FOOTPRINT_SHIFT));
+		(raw_smp_processor_id() << CPU_FOOTPRINT_SHIFT));
 #endif
 }
 

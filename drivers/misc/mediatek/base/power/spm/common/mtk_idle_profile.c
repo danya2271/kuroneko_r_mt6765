@@ -565,6 +565,9 @@ void mtk_idle_latency_profile_result(unsigned int idle_type)
 	char *p = plog;
 	unsigned int *data;
 	struct idle_profile_data *pdata;
+#if defined(CONFIG_MTK_CPU_FREQ)
+	unsigned int cpu = raw_smp_processor_id();
+#endif
 
 	if (!profile_latency_enabled)
 		return;
@@ -574,8 +577,8 @@ void mtk_idle_latency_profile_result(unsigned int idle_type)
 
 	#if defined(CONFIG_MTK_CPU_FREQ)
 	log("%s (cpu%d/%u),", mtk_idle_name(idle_type)
-		, smp_processor_id()
-		, mt_cpufreq_get_cur_freq(smp_processor_id()/4));
+		, cpu
+		, mt_cpufreq_get_cur_freq(cpu / 4));
 	#endif
 
 	for (i = 0; i < NR_PIDX; i++)
@@ -598,4 +601,3 @@ void mtk_idle_latency_profile_result(unsigned int idle_type)
 
 	pr_debug("[name:spm&]Power/latency_profile %s\n", plog);
 }
-

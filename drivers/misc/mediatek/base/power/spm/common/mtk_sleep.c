@@ -152,6 +152,8 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 	int ret = 0;
 
 #if SLP_SLEEP_DPIDLE_EN
+	int cpu;
+
 #if defined(CONFIG_MTK_SND_SOC_NEW_ARCH) \
 || defined(CONFIG_SND_SOC_MTK_SMART_PHONE)
 	int fm_radio_is_playing = 0;
@@ -209,10 +211,10 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 #else
 	if (slp_ck26m_on) {
 #endif /* CONFIG_MTK_SND_SOC_NEW_ARCH */
-		mtk_idle_enter(IDLE_TYPE_DP, smp_processor_id(),
-					MTK_IDLE_OPT_SLEEP_DPIDLE, 0);
+		cpu = raw_smp_processor_id();
+		mtk_idle_enter(IDLE_TYPE_DP, cpu, MTK_IDLE_OPT_SLEEP_DPIDLE, 0);
 		slp_wake_reason = get_slp_dp_last_wr();
-		slp_dp_cnt[smp_processor_id()]++;
+		slp_dp_cnt[cpu]++;
 	} else {
 #endif
 		mtk_suspend_cond_info();

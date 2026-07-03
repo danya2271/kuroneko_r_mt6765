@@ -791,7 +791,7 @@ bool _mcdi_task_pause(bool paused)
 
 	if (paused) {
 
-		trace_mcdi_task_pause_rcuidle(smp_processor_id(), true);
+		trace_mcdi_task_pause_rcuidle(raw_smp_processor_id(), true);
 
 		/* Notify SSPM to disable MCDI */
 		mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 1);
@@ -813,7 +813,7 @@ bool _mcdi_task_pause(bool paused)
 	}
 
 	if (!paused)
-		trace_mcdi_task_pause_rcuidle(smp_processor_id(), 0);
+		trace_mcdi_task_pause_rcuidle(raw_smp_processor_id(), 0);
 
 	return true;
 }
