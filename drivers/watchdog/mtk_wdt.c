@@ -17,14 +17,20 @@
 #include <linux/moduleparam.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
+#include <linux/reboot.h>
 #include <linux/reset-controller.h>
+#include <linux/string.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
 #include <linux/delay.h>
 #include <linux/of_platform.h>
+#include <dt-bindings/soc/mediatek,boot-mode.h>
+#include <asm/system_misc.h>
 
 #define WDT_MAX_TIMEOUT		31
 #define WDT_MIN_TIMEOUT		1
+#define WDT_RESTART_FALLBACK_TIMEOUT	10
+#define WDT_RESTART_DIRECT_TIMEOUT	2
 #define WDT_LENGTH_TIMEOUT(n)	((n) << 5)
 
 #define WDT_LENGTH		0x04
@@ -48,6 +54,7 @@
 #define WDT_SWRST_KEY		0x1209
 
 #define WDT_NONRST2		0x24
+#define RGU_REBOOT_MASK		0xF
 #define WDT_NONRST2_STAGE_OFS	29
 #define RGU_STAGE_MASK		0x7
 #define RGU_STAGE_KERNEL	0x3
@@ -73,9 +80,11 @@ static unsigned int timeout;
 struct mtk_wdt_dev {
 	struct watchdog_device wdt_dev;
 	struct reset_controller_dev rcdev;
+	struct notifier_block reboot_nb;
 	void __iomem *wdt_base;
 	u32 dfd_timeout;
 	bool suspend_wdt_running;
+	bool restart_timeout_reset;
 };
 
 /* Reset controller driver support.
@@ -166,6 +175,66 @@ static void mtk_wdt_mark_stage(struct mtk_wdt_dev *mtk_wdt)
 	writel(reg, wdt_base + WDT_NONRST2);
 }
 
+static bool mtk_wdt_cmd_matches(const char *cmd, const char *mode)
+{
+	size_t len;
+
+	if (!cmd)
+		return false;
+
+	len = strlen(mode);
+
+	return !strcmp(cmd, mode) ||
+	       (!strncmp(cmd, mode, len) && cmd[len] == ',') ||
+	       (!strncmp(cmd, "reboot,", 7) &&
+		!strncmp(cmd + 7, mode, len) &&
+		(cmd[7 + len] == '\0' || cmd[7 + len] == ','));
+}
+
+static bool mtk_wdt_needs_restart_fallback(const char *cmd)
+{
+	if (!cmd)
+		return false;
+
+	return mtk_wdt_cmd_matches(cmd, "recovery") ||
+	       !strcmp(cmd, "recovery-update") ||
+	       !strcmp(cmd, "reboot,recovery-update") ||
+	       mtk_wdt_cmd_matches(cmd, "bootloader") ||
+	       mtk_wdt_cmd_matches(cmd, "fastboot");
+}
+
+static void mtk_wdt_set_restart_mode(struct mtk_wdt_dev *mtk_wdt,
+				     const char *cmd)
+{
+	void __iomem *wdt_base;
+	u32 magic = 0;
+	u32 reg;
+
+	if (!mtk_wdt || !cmd)
+		return;
+
+	if (mtk_wdt_cmd_matches(cmd, "recovery") ||
+	    !strcmp(cmd, "recovery-update") ||
+	    !strcmp(cmd, "reboot,recovery-update"))
+		magic = BOOT_RECOVERY;
+	else if (mtk_wdt_cmd_matches(cmd, "bootloader") ||
+		 mtk_wdt_cmd_matches(cmd, "fastboot"))
+		magic = BOOT_BOOTLOADER;
+
+	if (!magic)
+		return;
+
+	wdt_base = mtk_wdt->wdt_base;
+	if (!wdt_base)
+		return;
+
+	reg = readl(wdt_base + WDT_NONRST2);
+	reg &= ~RGU_REBOOT_MASK;
+	reg |= magic & RGU_REBOOT_MASK;
+	writel(reg, wdt_base + WDT_NONRST2);
+	readl(wdt_base + WDT_NONRST2);
+}
+
 static void mtk_wdt_parse_dt(struct device_node *np,
 			     struct mtk_wdt_dev *mtk_wdt)
 {
@@ -216,10 +285,8 @@ static void mtk_wdt_hw_init(struct device_node *np,
 	writel(reg, wdt_base + WDT_MODE);
 }
 
-static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
-			   unsigned long action, void *data)
+static void mtk_wdt_force_reset_mode(struct mtk_wdt_dev *mtk_wdt)
 {
-	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
 	void __iomem *wdt_base = mtk_wdt->wdt_base;
 	u32 reg;
 
@@ -228,11 +295,74 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 	reg |= WDT_MODE_EN | WDT_MODE_EXRST_EN | WDT_BYPASS_PWR_KEY;
 	writel(WDT_MODE_KEY | reg, wdt_base + WDT_MODE);
 	readl(wdt_base + WDT_MODE);
+}
+
+static void mtk_wdt_arm_restart_timeout(struct mtk_wdt_dev *mtk_wdt,
+					unsigned int timeout)
+{
+	void __iomem *wdt_base = mtk_wdt->wdt_base;
+	u32 reg;
+
+	reg = WDT_LENGTH_TIMEOUT(timeout << 6) | WDT_LENGTH_KEY;
+	writel(reg, wdt_base + WDT_LENGTH);
+	writel(WDT_RST_RELOAD, wdt_base + WDT_RST);
+	mtk_wdt_force_reset_mode(mtk_wdt);
+
+	set_bit(WDOG_HW_RUNNING, &mtk_wdt->wdt_dev.status);
+}
+
+static void mtk_wdt_trigger_sw_reset(struct mtk_wdt_dev *mtk_wdt)
+{
+	void __iomem *wdt_base = mtk_wdt->wdt_base;
+
+	mtk_wdt_force_reset_mode(mtk_wdt);
 
 	while (1) {
 		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
 		mdelay(5);
 	}
+}
+
+static int mtk_wdt_reboot_notify(struct notifier_block *nb,
+				 unsigned long action, void *data)
+{
+	struct mtk_wdt_dev *mtk_wdt =
+		container_of(nb, struct mtk_wdt_dev, reboot_nb);
+	const char *cmd = data;
+
+	if (action != SYS_RESTART || !mtk_wdt_needs_restart_fallback(cmd))
+		return NOTIFY_DONE;
+
+	mtk_wdt->restart_timeout_reset = true;
+	mtk_wdt_set_restart_mode(mtk_wdt, cmd);
+	mtk_wdt_arm_restart_timeout(mtk_wdt, WDT_RESTART_FALLBACK_TIMEOUT);
+
+	/*
+	 * Plain reboot is reliable through PSCI, but this board needs the
+	 * TOPRGU timeout path to carry recovery/bootloader intent.
+	 */
+	arm_pm_restart = NULL;
+
+	return NOTIFY_DONE;
+}
+
+static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
+			   unsigned long action, void *data)
+{
+	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
+	bool timeout_reset = mtk_wdt->restart_timeout_reset ||
+			     mtk_wdt_needs_restart_fallback(data);
+
+	mtk_wdt_set_restart_mode(mtk_wdt, data);
+
+	if (timeout_reset) {
+		mtk_wdt_arm_restart_timeout(mtk_wdt,
+					    WDT_RESTART_DIRECT_TIMEOUT);
+		while (1)
+			mdelay(100);
+	}
+
+	mtk_wdt_trigger_sw_reset(mtk_wdt);
 
 	return 0;
 }
@@ -372,6 +502,14 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 	if (unlikely(err))
 		return err;
 
+	mtk_wdt->reboot_nb.notifier_call = mtk_wdt_reboot_notify;
+	mtk_wdt->reboot_nb.priority = 128;
+	err = register_reboot_notifier(&mtk_wdt->reboot_nb);
+	if (unlikely(err)) {
+		watchdog_unregister_device(&mtk_wdt->wdt_dev);
+		return err;
+	}
+
 	/* register reset controller for reset source setting */
 	mtk_wdt->rcdev.owner = THIS_MODULE;
 	mtk_wdt->rcdev.nr_resets =  MTK_WDT_REQ_MODE_LEN;
@@ -392,6 +530,9 @@ static void mtk_wdt_shutdown(struct platform_device *pdev)
 {
 	struct mtk_wdt_dev *mtk_wdt = platform_get_drvdata(pdev);
 
+	if (system_state == SYSTEM_RESTART && mtk_wdt->restart_timeout_reset)
+		return;
+
 	if (watchdog_hw_running(&mtk_wdt->wdt_dev))
 		mtk_wdt_stop(&mtk_wdt->wdt_dev);
 }
@@ -400,6 +541,7 @@ static int mtk_wdt_remove(struct platform_device *pdev)
 {
 	struct mtk_wdt_dev *mtk_wdt = platform_get_drvdata(pdev);
 
+	unregister_reboot_notifier(&mtk_wdt->reboot_nb);
 	watchdog_unregister_device(&mtk_wdt->wdt_dev);
 
 	return 0;
