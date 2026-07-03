@@ -536,7 +536,10 @@ static int get_vbus_voltage(struct mtk_charger_type *info,
 void do_charger_detect(struct mtk_charger_type *info, bool en)
 {
 	union power_supply_propval prop, prop2, prop3;
-	int ret = 0;
+	enum power_supply_type old_psy_type = info->psy_desc.type;
+	enum power_supply_usb_type old_usb_type = info->type;
+	bool old_online = old_usb_type != POWER_SUPPLY_USB_TYPE_UNKNOWN;
+	bool online;
 
 #ifndef CONFIG_TCPC_CLASS
 	if (!mt_usb_is_device()) {
@@ -545,13 +548,16 @@ void do_charger_detect(struct mtk_charger_type *info, bool en)
 	}
 #endif
 
+	prop2.intval = old_psy_type;
+	prop3.intval = old_usb_type;
 	prop.intval = en;
 	if (en) {
-		ret = power_supply_set_property(info->psy,
-				POWER_SUPPLY_PROP_ONLINE, &prop);
-		ret = power_supply_get_property(info->psy,
+		if (power_supply_set_property(info->psy,
+				POWER_SUPPLY_PROP_ONLINE, &prop) < 0)
+			return;
+		power_supply_get_property(info->psy,
 				POWER_SUPPLY_PROP_TYPE, &prop2);
-		ret = power_supply_get_property(info->psy,
+		power_supply_get_property(info->psy,
 				POWER_SUPPLY_PROP_USB_TYPE, &prop3);
 	} else {
 		prop2.intval = POWER_SUPPLY_TYPE_UNKNOWN;
@@ -562,7 +568,10 @@ void do_charger_detect(struct mtk_charger_type *info, bool en)
 
 	pr_notice("%s type:%d usb_type:%d\n", __func__, prop2.intval, prop3.intval);
 
-	power_supply_changed(info->psy);
+	online = info->type != POWER_SUPPLY_USB_TYPE_UNKNOWN;
+	if (old_online != online || old_psy_type != info->psy_desc.type ||
+	    old_usb_type != info->type)
+		power_supply_changed(info->psy);
 }
 
 static void do_charger_detection_work(struct work_struct *data)
@@ -942,4 +951,3 @@ module_exit(mt6357_charger_type_exit);
 MODULE_AUTHOR("wy.chuang <wy.chuang@mediatek.com>");
 MODULE_DESCRIPTION("MTK Charger Type Detection Driver");
 MODULE_LICENSE("GPL");
-
