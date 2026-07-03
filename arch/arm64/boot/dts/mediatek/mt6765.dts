@@ -486,6 +486,14 @@ firmware_class.path=/vendor/firmware";
 		#size-cells = <2>;
 		ranges;
 
+		ramoops_mem: ramoops@b0000000 {
+			compatible = "ramoops";
+			reg = <0 0xb0000000 0 0x00400000>;
+			record-size = <0x00040000>;
+			console-size = <0x00100000>;
+			pmsg-size = <0x00100000>;
+		};
+
 		reserve-memory-sspm_share {
 			compatible = "mediatek,reserve-memory-sspm_share";
 			no-map;
