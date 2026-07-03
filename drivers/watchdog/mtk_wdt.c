@@ -17,7 +17,6 @@
 #include <linux/moduleparam.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
-#include <linux/reboot.h>
 #include <linux/reset-controller.h>
 #include <linux/string.h>
 #include <linux/types.h>
@@ -78,7 +77,6 @@ static unsigned int timeout;
 struct mtk_wdt_dev {
 	struct watchdog_device wdt_dev;
 	struct reset_controller_dev rcdev;
-	struct notifier_block reboot_nb;
 	void __iomem *wdt_base;
 	u32 dfd_timeout;
 	bool suspend_wdt_running;
@@ -220,18 +218,6 @@ static void mtk_wdt_set_restart_mode(struct mtk_wdt_dev *mtk_wdt,
 	readl(wdt_base + WDT_NONRST2);
 }
 
-static bool mtk_wdt_needs_restart_fallback(const char *cmd)
-{
-	if (!cmd)
-		return false;
-
-	return mtk_wdt_cmd_matches(cmd, "recovery") ||
-	       !strcmp(cmd, "recovery-update") ||
-	       !strcmp(cmd, "reboot,recovery-update") ||
-	       mtk_wdt_cmd_matches(cmd, "bootloader") ||
-	       mtk_wdt_cmd_matches(cmd, "fastboot");
-}
-
 static void mtk_wdt_force_reset_mode(struct mtk_wdt_dev *mtk_wdt)
 {
 	void __iomem *wdt_base = mtk_wdt->wdt_base;
@@ -254,26 +240,6 @@ static void mtk_wdt_trigger_sw_reset(struct mtk_wdt_dev *mtk_wdt)
 		writel(WDT_SWRST_KEY, wdt_base + WDT_SWRST);
 		mdelay(5);
 	}
-}
-
-static int mtk_wdt_reboot_notify(struct notifier_block *nb,
-				 unsigned long action, void *data)
-{
-	struct mtk_wdt_dev *mtk_wdt =
-		container_of(nb, struct mtk_wdt_dev, reboot_nb);
-	const char *cmd = data;
-
-	if (action != SYS_RESTART || !mtk_wdt_needs_restart_fallback(cmd))
-		return NOTIFY_DONE;
-
-	/*
-	 * Latch the boot mode before device_shutdown(); the restart handler
-	 * will perform the reset. Triggering WDT reset from this notifier can
-	 * strand the device at a black screen before the restart chain runs.
-	 */
-	mtk_wdt_set_restart_mode(mtk_wdt, cmd);
-
-	return NOTIFY_DONE;
 }
 
 static void mtk_wdt_parse_dt(struct device_node *np,
@@ -476,14 +442,6 @@ static int mtk_wdt_probe(struct platform_device *pdev)
 	if (unlikely(err))
 		return err;
 
-	mtk_wdt->reboot_nb.notifier_call = mtk_wdt_reboot_notify;
-	mtk_wdt->reboot_nb.priority = 128;
-	err = register_reboot_notifier(&mtk_wdt->reboot_nb);
-	if (unlikely(err)) {
-		watchdog_unregister_device(&mtk_wdt->wdt_dev);
-		return err;
-	}
-
 	/*
 	 * PSCI reset can leave this platform stuck after reboot-mode notifiers
 	 * have already stored the boot reason. Route restart through the
@@ -522,7 +480,6 @@ static int mtk_wdt_remove(struct platform_device *pdev)
 {
 	struct mtk_wdt_dev *mtk_wdt = platform_get_drvdata(pdev);
 
-	unregister_reboot_notifier(&mtk_wdt->reboot_nb);
 	watchdog_unregister_device(&mtk_wdt->wdt_dev);
 
 	return 0;
