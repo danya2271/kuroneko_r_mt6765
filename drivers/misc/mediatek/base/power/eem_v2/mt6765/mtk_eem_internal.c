@@ -77,12 +77,16 @@ struct eem_det_ops eem_det_base_ops = {
 	BASE_OP(eem_2_pmic),
 };
 
+#ifdef EEM_OFFSET_PROC_SHOW
+#define EEM_DEFAULT_VOLT_OFFSET		(-1)
+#endif
+
 struct eem_det eem_detectors[NR_EEM_DET] = {
 	[EEM_DET_L] = {
 		.name		= __stringify(EEM_DET_L),
 		.ops		= &cpu_det_ops,
 #ifdef EEM_OFFSET_PROC_SHOW
-		.volt_offset	= 0,
+		.volt_offset	= EEM_DEFAULT_VOLT_OFFSET,
 #endif
 		.ctrl_id	= EEM_CTRL_L,
 		.features	= FEA_INIT01 | FEA_INIT02 | FEA_MON,
@@ -121,7 +125,7 @@ struct eem_det eem_detectors[NR_EEM_DET] = {
 		.name		= __stringify(EEM_DET_2L),
 		.ops		= &cpu_det_ops,
 #ifdef EEM_OFFSET_PROC_SHOW
-		.volt_offset	= 0,
+		.volt_offset	= EEM_DEFAULT_VOLT_OFFSET,
 #endif
 		.ctrl_id	= EEM_CTRL_2L,
 		.features	= FEA_INIT01 | FEA_INIT02 | FEA_MON,
@@ -160,7 +164,7 @@ struct eem_det eem_detectors[NR_EEM_DET] = {
 		.name		= __stringify(EEM_DET_CCI),
 		.ops		= &cci_det_ops,
 #ifdef EEM_OFFSET_PROC_SHOW
-		.volt_offset = 0,
+		.volt_offset	= EEM_DEFAULT_VOLT_OFFSET,
 #endif
 		.ctrl_id	= EEM_CTRL_CCI,
 		.features	= 0,
@@ -192,7 +196,7 @@ struct eem_det eem_detectors[NR_EEM_DET] = {
 		.name		= __stringify(EEM_DET_L_HI),
 		.ops		= &cpu_det_ops,
 #ifdef EEM_OFFSET_PROC_SHOW
-		.volt_offset	= 0,
+		.volt_offset	= EEM_DEFAULT_VOLT_OFFSET,
 #endif
 		.ctrl_id	= EEM_CTRL_L_HI,
 		.features	= FEA_INIT02 | FEA_MON,
@@ -223,7 +227,7 @@ struct eem_det eem_detectors[NR_EEM_DET] = {
 		.name		= __stringify(EEM_DET_2L_HI),
 		.ops		= &cpu_det_ops,
 #ifdef EEM_OFFSET_PROC_SHOW
-		.volt_offset	= 0,
+		.volt_offset	= EEM_DEFAULT_VOLT_OFFSET,
 #endif
 		.ctrl_id	= EEM_CTRL_2L_HI,
 		.features	= FEA_INIT02 | FEA_MON,
