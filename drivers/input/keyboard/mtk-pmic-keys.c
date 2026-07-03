@@ -18,11 +18,14 @@
 #include <linux/kernel.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
+#include <linux/jiffies.h>
+#include <linux/kmsg_dump.h>
 #include <linux/platform_device.h>
 #include <linux/kernel.h>
 #include <linux/of.h>
 #include <linux/of_device.h>
 #include <linux/regmap.h>
+#include <linux/workqueue.h>
 #include <linux/mfd/mt6323/registers.h>
 #include <linux/mfd/mt6359/registers.h>
 #include <linux/mfd/mt6397/registers.h>
@@ -50,6 +53,7 @@
 #define HOMEKEY_RST_EN			0x1
 #define RST_DU_MASK				0x3
 #define INVALID_VALUE			0
+#define PWRKEY_PSTORE_DUMP_DELAY_MS	5000
 
 struct mtk_pmic_keys_regs {
 	u32 deb_reg;
@@ -152,6 +156,7 @@ struct mtk_pmic_keys {
 	struct input_dev *input_dev;
 	struct device *dev;
 	struct regmap *regmap;
+	struct delayed_work pwrkey_pstore_work;
 	struct mtk_pmic_keys_info keys[MTK_PMIC_MAX_KEY_COUNT];
 };
 
@@ -215,11 +220,42 @@ static void mtk_pmic_keys_lp_reset_setup(struct mtk_pmic_keys *keys,
 	}
 }
 
+static void mtk_pmic_keys_pstore_work(struct work_struct *work)
+{
+	struct mtk_pmic_keys *keys =
+		container_of(to_delayed_work(work), struct mtk_pmic_keys,
+			     pwrkey_pstore_work);
+
+	dev_info(keys->dev, "power key held, snapshotting kmsg to pstore\n");
+	kmsg_dump(KMSG_DUMP_OOPS);
+}
+
+static void mtk_pmic_keys_cancel_pstore_work(void *data)
+{
+	struct mtk_pmic_keys *keys = data;
+
+	cancel_delayed_work_sync(&keys->pwrkey_pstore_work);
+}
+
+static void mtk_pmic_keys_update_pstore_work(struct mtk_pmic_keys_info *info,
+					     bool pressed)
+{
+	if (info->keycode != KEY_POWER)
+		return;
+
+	if (pressed)
+		schedule_delayed_work(&info->keys->pwrkey_pstore_work,
+			msecs_to_jiffies(PWRKEY_PSTORE_DUMP_DELAY_MS));
+	else
+		cancel_delayed_work(&info->keys->pwrkey_pstore_work);
+}
+
 static irqreturn_t mtk_pmic_keys_release_irq_handler_thread(
 				int irq, void *data)
 {
 	struct mtk_pmic_keys_info *info = data;
 
+	mtk_pmic_keys_update_pstore_work(info, false);
 	input_report_key(info->keys->input_dev, info->keycode, 0);
 	input_sync(info->keys->input_dev);
 
@@ -244,6 +280,7 @@ static irqreturn_t mtk_pmic_keys_irq_handler_thread(int irq, void *data)
 
 	input_report_key(info->keys->input_dev, info->keycode, pressed);
 	input_sync(info->keys->input_dev);
+	mtk_pmic_keys_update_pstore_work(info, pressed);
 
 	dev_dbg(info->keys->dev, "(%s) key =%d using PMIC\n",
 		 pressed ? "pressed" : "released", info->keycode);
@@ -362,6 +399,13 @@ static int mtk_pmic_keys_probe(struct platform_device *pdev)
 	keys->dev = &pdev->dev;
 	keys->regmap = pmic_chip->regmap;
 	mtk_pmic_regs = of_id->data;
+	INIT_DELAYED_WORK(&keys->pwrkey_pstore_work,
+			  mtk_pmic_keys_pstore_work);
+	error = devm_add_action_or_reset(keys->dev,
+					 mtk_pmic_keys_cancel_pstore_work,
+					 keys);
+	if (error)
+		return error;
 
 	keys->input_dev = input_dev = devm_input_allocate_device(keys->dev);
 	if (!input_dev) {
