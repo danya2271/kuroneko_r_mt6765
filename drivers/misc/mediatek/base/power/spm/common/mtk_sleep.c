@@ -195,7 +195,10 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 	}
 #endif /* CONFIG_FPGA_EARLY_PORTING */
 
-	mcdi_task_pause(true);
+	if (!mcdi_task_pause(true)) {
+		ret = -EBUSY;
+		goto LEAVE_SLEEP;
+	}
 
 	mtk_idle_cond_update_state();
 

@@ -40,6 +40,8 @@
 
 #define MCDI_DEBUG_INFO_MAGIC_NUM           0x1eef9487
 #define MCDI_DEBUG_INFO_NON_REPLACE_OFFSET  0x0008
+#define MCDI_MBOX_ACK_TIMEOUT_US            10000
+#define MCDI_MBOX_ACK_POLL_US               2
 
 static unsigned long mcdi_cnt_wfi[NF_CPU];
 static unsigned long mcdi_cnt_cpu[NF_CPU];
@@ -134,8 +136,17 @@ void wakeup_all_cpu(void)
 
 void wait_until_all_cpu_powered_on(void)
 {
-	while (!(mcdi_get_gov_data_num_mcusys() == 0x0))
-		;
+	unsigned int wait_us = 0;
+
+	while (mcdi_get_gov_data_num_mcusys() != 0) {
+		if (wait_us >= MCDI_MBOX_ACK_TIMEOUT_US) {
+			pr_debug("MCDI: wait all CPU on timeout\n");
+			return;
+		}
+
+		udelay(MCDI_MBOX_ACK_POLL_US);
+		wait_us += MCDI_MBOX_ACK_POLL_US;
+	}
 }
 
 void mcdi_wakeup_all_cpu(void)
@@ -772,8 +783,11 @@ bool __mcdi_pause(unsigned int id, bool paused)
 
 bool _mcdi_task_pause(bool paused)
 {
+	unsigned int wait_us = 0;
+	unsigned int ack = paused ? 1 : 0;
+
 	if (!is_mcdi_working())
-		return false;
+		return true;
 
 	if (paused) {
 
@@ -781,20 +795,25 @@ bool _mcdi_task_pause(bool paused)
 
 		/* Notify SSPM to disable MCDI */
 		mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 1);
-
-		/* Polling until MCDI Task stopped */
-		while (!(mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) == 1))
-			;
 	} else {
 		/* Notify SSPM to enable MCDI */
 		mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 0);
-
-		/* Polling until MCDI Task resume */
-		while (!(mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) == 0))
-			;
-
-		trace_mcdi_task_pause_rcuidle(smp_processor_id(), 0);
 	}
+
+	while (mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) != ack) {
+		if (wait_us >= MCDI_MBOX_ACK_TIMEOUT_US) {
+			pr_debug("MCDI: pause %u ack timeout\n", paused);
+			if (paused)
+				mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 0);
+			return false;
+		}
+
+		udelay(MCDI_MBOX_ACK_POLL_US);
+		wait_us += MCDI_MBOX_ACK_POLL_US;
+	}
+
+	if (!paused)
+		trace_mcdi_task_pause_rcuidle(smp_processor_id(), 0);
 
 	return true;
 }
