@@ -32,10 +32,15 @@ static int syscon_reboot_mode_write(struct reboot_mode_driver *reboot,
 
 	syscon_rbm = container_of(reboot, struct syscon_reboot_mode, reboot);
 
+	dev_emerg(reboot->dev,
+		  "syscon-reboot-mode: write begin magic=0x%x offset=0x%x mask=0x%x\n",
+		  magic, syscon_rbm->offset, syscon_rbm->mask);
 	ret = regmap_update_bits(syscon_rbm->map, syscon_rbm->offset,
 				 syscon_rbm->mask, magic);
 	if (ret < 0)
 		dev_err(reboot->dev, "update reboot mode bits failed\n");
+	dev_emerg(reboot->dev, "syscon-reboot-mode: write done ret=%d\n",
+		  ret);
 
 	return ret;
 }

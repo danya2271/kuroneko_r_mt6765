@@ -71,11 +71,19 @@ static int reboot_mode_notify(struct notifier_block *this,
 {
 	struct reboot_mode_driver *reboot;
 	unsigned int magic;
+	const char *reboot_cmd = cmd ? cmd : "<null>";
 
 	reboot = container_of(this, struct reboot_mode_driver, reboot_notifier);
 	magic = get_reboot_mode_magic(reboot, cmd);
-	if (magic)
+	dev_emerg(reboot->dev, "reboot-mode: notify cmd='%s' magic=0x%x\n",
+		  reboot_cmd, magic);
+	if (magic) {
+		dev_emerg(reboot->dev, "reboot-mode: write begin magic=0x%x\n",
+			  magic);
 		reboot->write(reboot, magic);
+		dev_emerg(reboot->dev, "reboot-mode: write done magic=0x%x\n",
+			  magic);
+	}
 
 	return NOTIFY_DONE;
 }

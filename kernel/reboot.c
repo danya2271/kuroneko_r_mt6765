@@ -68,10 +68,18 @@ EXPORT_SYMBOL_GPL(emergency_restart);
 
 void kernel_restart_prepare(char *cmd)
 {
+	pr_emerg("restart_prepare: notifiers begin cmd='%s'\n",
+		 cmd ? cmd : "<null>");
 	blocking_notifier_call_chain(&reboot_notifier_list, SYS_RESTART, cmd);
+	pr_emerg("restart_prepare: notifiers done cmd='%s'\n",
+		 cmd ? cmd : "<null>");
 	system_state = SYSTEM_RESTART;
+	pr_emerg("restart_prepare: usermodehelper_disable begin\n");
 	usermodehelper_disable();
+	pr_emerg("restart_prepare: usermodehelper_disable done\n");
+	pr_emerg("restart_prepare: device_shutdown begin\n");
 	device_shutdown();
+	pr_emerg("restart_prepare: device_shutdown done\n");
 }
 
 /**
@@ -210,7 +218,11 @@ EXPORT_SYMBOL(unregister_restart_handler);
  */
 void do_kernel_restart(char *cmd)
 {
+	pr_emerg("do_kernel_restart: handlers begin cmd='%s'\n",
+		 cmd ? cmd : "<null>");
 	atomic_notifier_call_chain(&restart_handler_list, reboot_mode, cmd);
+	pr_emerg("do_kernel_restart: handlers returned cmd='%s'\n",
+		 cmd ? cmd : "<null>");
 }
 
 void migrate_to_reboot_cpu(void)
@@ -246,9 +258,13 @@ void kernel_restart(char *cmd)
 	else
 		pr_emerg("Restarting system with command '%s'\n", cmd);
 	kmsg_dump(KMSG_DUMP_RESTART);
+	pr_emerg("restart: prepare begin cmd='%s'\n", cmd ? cmd : "<null>");
 	kernel_restart_prepare(cmd);
+	pr_emerg("restart: prepare done\n");
 	migrate_to_reboot_cpu();
+	pr_emerg("restart: migrated to reboot cpu\n");
 	syscore_shutdown();
+	pr_emerg("restart: syscore_shutdown done\n");
 	machine_restart(cmd);
 }
 EXPORT_SYMBOL_GPL(kernel_restart);

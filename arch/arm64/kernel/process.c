@@ -150,6 +150,9 @@ void machine_power_off(void)
  */
 void machine_restart(char *cmd)
 {
+	pr_emerg("machine_restart: enter cmd='%s' arm_pm_restart=%ps\n",
+		 cmd ? cmd : "<null>", arm_pm_restart);
+
 	/* Disable interrupts first */
 	local_irq_disable();
 	smp_send_stop();
@@ -162,13 +165,18 @@ void machine_restart(char *cmd)
 		efi_reboot(reboot_mode, NULL);
 
 	/* Now call the architecture specific reboot code. */
-	if (arm_pm_restart)
+	if (arm_pm_restart) {
+		pr_emerg("machine_restart: call arm_pm_restart=%ps\n",
+			 arm_pm_restart);
 		arm_pm_restart(reboot_mode, cmd);
+		pr_emerg("machine_restart: arm_pm_restart returned\n");
+	}
 
 	/*
 	 * If firmware reset returns, give registered restart handlers one
 	 * last chance before falling through to the halt loop.
 	 */
+	pr_emerg("machine_restart: call restart handlers\n");
 	do_kernel_restart(cmd);
 
 	/*
