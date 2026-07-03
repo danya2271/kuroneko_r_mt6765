@@ -29,6 +29,8 @@
 
 #define WDT_MAX_TIMEOUT		31
 #define WDT_MIN_TIMEOUT		1
+#define WDT_RESTART_FALLBACK_TIMEOUT	10
+#define WDT_RESTART_DIRECT_TIMEOUT	2
 #define WDT_LENGTH_TIMEOUT(n)	((n) << 5)
 
 #define WDT_LENGTH		0x04
@@ -82,6 +84,7 @@ struct mtk_wdt_dev {
 	void __iomem *wdt_base;
 	u32 dfd_timeout;
 	bool suspend_wdt_running;
+	bool restart_timeout_reset;
 };
 
 /* Reset controller driver support.
@@ -244,6 +247,20 @@ static void mtk_wdt_force_reset_mode(struct mtk_wdt_dev *mtk_wdt)
 	readl(wdt_base + WDT_MODE);
 }
 
+static void mtk_wdt_arm_restart_timeout(struct mtk_wdt_dev *mtk_wdt,
+					unsigned int timeout)
+{
+	void __iomem *wdt_base = mtk_wdt->wdt_base;
+	u32 reg;
+
+	reg = WDT_LENGTH_TIMEOUT(timeout << 6) | WDT_LENGTH_KEY;
+	writel(reg, wdt_base + WDT_LENGTH);
+	writel(WDT_RST_RELOAD, wdt_base + WDT_RST);
+	mtk_wdt_force_reset_mode(mtk_wdt);
+
+	set_bit(WDOG_HW_RUNNING, &mtk_wdt->wdt_dev.status);
+}
+
 static void mtk_wdt_trigger_sw_reset(struct mtk_wdt_dev *mtk_wdt)
 {
 	void __iomem *wdt_base = mtk_wdt->wdt_base;
@@ -271,7 +288,9 @@ static int mtk_wdt_reboot_notify(struct notifier_block *nb,
 	 * will perform the reset. Triggering WDT reset from this notifier can
 	 * strand the device at a black screen before the restart chain runs.
 	 */
+	mtk_wdt->restart_timeout_reset = true;
 	mtk_wdt_set_restart_mode(mtk_wdt, cmd);
+	mtk_wdt_arm_restart_timeout(mtk_wdt, WDT_RESTART_FALLBACK_TIMEOUT);
 
 	return NOTIFY_DONE;
 }
@@ -330,8 +349,23 @@ static int mtk_wdt_restart(struct watchdog_device *wdt_dev,
 			   unsigned long action, void *data)
 {
 	struct mtk_wdt_dev *mtk_wdt = watchdog_get_drvdata(wdt_dev);
+	bool timeout_reset = mtk_wdt->restart_timeout_reset ||
+			     mtk_wdt_needs_restart_fallback(data);
 
 	mtk_wdt_set_restart_mode(mtk_wdt, data);
+
+	if (timeout_reset) {
+		/*
+		 * On this platform a direct WDT_SWRST can store the boot mode
+		 * and then leave the AP at a black screen. Let TOPRGU expire
+		 * instead; plain reboot still uses the direct reset path below.
+		 */
+		mtk_wdt_arm_restart_timeout(mtk_wdt,
+					    WDT_RESTART_DIRECT_TIMEOUT);
+		while (1)
+			mdelay(100);
+	}
+
 	mtk_wdt_trigger_sw_reset(mtk_wdt);
 
 	return 0;
