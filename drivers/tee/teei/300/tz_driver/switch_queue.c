@@ -5,6 +5,8 @@
  *
  */
 
+#define IMSG_TAG "[tz_driver]"
+
 #include <linux/version.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -36,7 +38,6 @@
 #include <notify_queue.h>
 #include <teei_secure_api.h>
 
-#define IMSG_TAG "[tz_driver]"
 #include <imsg_log.h>
 
 struct completion teei_switch_comp;
@@ -95,7 +96,7 @@ static int teei_bind_current_cpu(void)
 	int cpu_id = 0;
 
 	/* Get current CPU ID */
-	cpu_id = smp_processor_id();
+	cpu_id = raw_smp_processor_id();
 
 	cpumask_clear(&mask);
 	cpumask_set_cpu(cpu_id, &mask);
