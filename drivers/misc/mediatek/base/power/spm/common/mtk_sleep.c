@@ -52,7 +52,7 @@ static int slp_suspend_ops_valid(suspend_state_t state)
 static int slp_suspend_ops_begin(suspend_state_t state)
 {
 	/* legacy log */
-	pr_debug("[name:spm&][SLP] @@@@@@@@@@@@\tChip_pm_begin(%u)(%u)\t@@@@@@@@@@@@@\n",
+	printk_deferred("[name:spm&][SLP] @@@@@@@@@@@@\tChip_pm_begin(%u)(%u)\t@@@@@@@@@@@@@\n",
 			spm_get_is_cpu_pdn(), spm_get_is_infra_pdn());
 
 	slp_wake_reason = WR_NONE;
@@ -69,7 +69,7 @@ static int slp_suspend_ops_prepare(void)
 || defined(CONFIG_SND_SOC_MTK_SMART_PHONE)
 bool __attribute__ ((weak)) ConditionEnterSuspend(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 	return true;
 }
 #endif /* MTK_SUSPEND_AUDIO_SUPPORT */
@@ -77,25 +77,25 @@ bool __attribute__ ((weak)) ConditionEnterSuspend(void)
 #ifdef CONFIG_MTK_SYSTRACKER
 void __attribute__ ((weak)) systracker_enable(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 }
 #endif /* CONFIG_MTK_SYSTRACKER */
 
 #ifdef CONFIG_MTK_BUS_TRACER
 void __attribute__ ((weak)) bus_tracer_enable(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 }
 #endif /* CONFIG_MTK_BUS_TRACER */
 
 void __attribute__((weak)) subsys_if_on(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 }
 
 void __attribute__((weak)) pll_if_on(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 }
 
 void __attribute__((weak))
@@ -136,14 +136,14 @@ spm_go_to_sleep(void)
 bool __attribute__((weak))
 spm_get_is_cpu_pdn(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 	return false;
 }
 
 bool __attribute__((weak))
 spm_get_is_infra_pdn(void)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 	return false;
 }
 
@@ -152,8 +152,6 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 	int ret = 0;
 
 #if SLP_SLEEP_DPIDLE_EN
-	int cpu;
-
 #if defined(CONFIG_MTK_SND_SOC_NEW_ARCH) \
 || defined(CONFIG_SND_SOC_MTK_SMART_PHONE)
 	int fm_radio_is_playing = 0;
@@ -176,14 +174,14 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 #endif /* CONFIG_FPGA_EARLY_PORTING */
 
 	if (spm_get_is_infra_pdn() && !spm_get_is_cpu_pdn()) {
-		pr_debug("[name:spm&][SLP] CANNOT SLEEP DUE TO INFRA PDN BUT CPU PDN\n");
+		printk_deferred("[name:spm&][SLP] CANNOT SLEEP DUE TO INFRA PDN BUT CPU PDN\n");
 		ret = -EPERM;
 		goto LEAVE_SLEEP;
 	}
 
 #ifdef CONFIG_MTK_TINYSYS_SSPM_SUPPORT
 	if (is_sspm_ipi_lock_spm()) {
-		pr_debug("[name:spm&][SLP] CANNOT SLEEP DUE TO SSPM IPI\n");
+		printk_deferred("[name:spm&][SLP] CANNOT SLEEP DUE TO SSPM IPI\n");
 		ret = -EPERM;
 		goto LEAVE_SLEEP;
 	}
@@ -191,16 +189,13 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 
 #if !defined(CONFIG_FPGA_EARLY_PORTING)
 	if (spm_load_firmware_status() < 1) {
-		pr_debug("[name:spm&]SPM FIRMWARE IS NOT READY\n");
+		printk_deferred("[name:spm&]SPM FIRMWARE IS NOT READY\n");
 		ret = -EPERM;
 		goto LEAVE_SLEEP;
 	}
 #endif /* CONFIG_FPGA_EARLY_PORTING */
 
-	if (!mcdi_task_pause(true)) {
-		ret = -EBUSY;
-		goto LEAVE_SLEEP;
-	}
+	mcdi_task_pause(true);
 
 	mtk_idle_cond_update_state();
 
@@ -211,10 +206,10 @@ static int slp_suspend_ops_enter(suspend_state_t state)
 #else
 	if (slp_ck26m_on) {
 #endif /* CONFIG_MTK_SND_SOC_NEW_ARCH */
-		cpu = raw_smp_processor_id();
-		mtk_idle_enter(IDLE_TYPE_DP, cpu, MTK_IDLE_OPT_SLEEP_DPIDLE, 0);
+		mtk_idle_enter(IDLE_TYPE_DP, smp_processor_id(),
+					MTK_IDLE_OPT_SLEEP_DPIDLE, 0);
 		slp_wake_reason = get_slp_dp_last_wr();
-		slp_dp_cnt[cpu]++;
+		slp_dp_cnt[smp_processor_id()]++;
 	} else {
 #endif
 		mtk_suspend_cond_info();
@@ -257,7 +252,7 @@ static const struct platform_suspend_ops slp_suspend_ops = {
 __attribute__ ((weak))
 int spm_set_dpidle_wakesrc(u32 wakesrc, bool enable, bool replace)
 {
-	pr_debug("[name:spm&]NO %s !!!\n", __func__);
+	printk_deferred("[name:spm&]NO %s !!!\n", __func__);
 	return 0;
 }
 
@@ -271,7 +266,7 @@ int slp_set_wakesrc(u32 wakesrc, bool enable, bool ck26m_on)
 	int r;
 	unsigned long flags;
 
-	pr_debug("[name:spm&][SLP] wakesrc = 0x%x, enable = %u, ck26m_on = %u\n",
+	printk_deferred("[name:spm&][SLP] wakesrc = 0x%x, enable = %u, ck26m_on = %u\n",
 		wakesrc, enable, ck26m_on);
 
 #if SLP_REPLACE_DEF_WAKESRC

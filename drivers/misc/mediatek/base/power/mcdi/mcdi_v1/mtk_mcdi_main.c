@@ -40,8 +40,6 @@
 
 #define MCDI_DEBUG_INFO_MAGIC_NUM           0x1eef9487
 #define MCDI_DEBUG_INFO_NON_REPLACE_OFFSET  0x0008
-#define MCDI_MBOX_ACK_TIMEOUT_US            10000
-#define MCDI_MBOX_ACK_POLL_US               2
 
 static unsigned long mcdi_cnt_wfi[NF_CPU];
 static unsigned long mcdi_cnt_cpu[NF_CPU];
@@ -66,7 +64,7 @@ static const char *ac_cpu_cond_name[NF_ANY_CORE_CPU_COND_INFO] = {
 static unsigned long long mcdi_heart_beat_log_prev;
 static DEFINE_SPINLOCK(mcdi_heart_beat_spin_lock);
 
-static unsigned int mcdi_heart_beat_log_dump_thd = 60000;          /* 1 minute */
+static unsigned int mcdi_heart_beat_log_dump_thd = 5000;          /* 5 sec */
 
 static bool mcdi_stress_en;
 static unsigned int mcdi_stress_us = 10 * 1000;
@@ -136,17 +134,8 @@ void wakeup_all_cpu(void)
 
 void wait_until_all_cpu_powered_on(void)
 {
-	unsigned int wait_us = 0;
-
-	while (mcdi_get_gov_data_num_mcusys() != 0) {
-		if (wait_us >= MCDI_MBOX_ACK_TIMEOUT_US) {
-			pr_debug("MCDI: wait all CPU on timeout\n");
-			return;
-		}
-
-		udelay(MCDI_MBOX_ACK_POLL_US);
-		wait_us += MCDI_MBOX_ACK_POLL_US;
-	}
+	while (!(mcdi_get_gov_data_num_mcusys() == 0x0))
+		;
 }
 
 void mcdi_wakeup_all_cpu(void)
@@ -783,37 +772,29 @@ bool __mcdi_pause(unsigned int id, bool paused)
 
 bool _mcdi_task_pause(bool paused)
 {
-	unsigned int wait_us = 0;
-	unsigned int ack = paused ? 1 : 0;
-
 	if (!is_mcdi_working())
-		return true;
+		return false;
 
 	if (paused) {
 
-		trace_mcdi_task_pause_rcuidle(raw_smp_processor_id(), true);
+		trace_mcdi_task_pause_rcuidle(smp_processor_id(), true);
 
 		/* Notify SSPM to disable MCDI */
 		mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 1);
+
+		/* Polling until MCDI Task stopped */
+		while (!(mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) == 1))
+			;
 	} else {
 		/* Notify SSPM to enable MCDI */
 		mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 0);
+
+		/* Polling until MCDI Task resume */
+		while (!(mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) == 0))
+			;
+
+		trace_mcdi_task_pause_rcuidle(smp_processor_id(), 0);
 	}
-
-	while (mcdi_mbox_read(MCDI_MBOX_PAUSE_ACK) != ack) {
-		if (wait_us >= MCDI_MBOX_ACK_TIMEOUT_US) {
-			pr_debug("MCDI: pause %u ack timeout\n", paused);
-			if (paused)
-				mcdi_mbox_write(MCDI_MBOX_PAUSE_ACTION, 0);
-			return false;
-		}
-
-		udelay(MCDI_MBOX_ACK_POLL_US);
-		wait_us += MCDI_MBOX_ACK_POLL_US;
-	}
-
-	if (!paused)
-		trace_mcdi_task_pause_rcuidle(raw_smp_processor_id(), 0);
 
 	return true;
 }

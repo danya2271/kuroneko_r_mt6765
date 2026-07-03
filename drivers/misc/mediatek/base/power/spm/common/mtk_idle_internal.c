@@ -53,7 +53,7 @@ static idle_footprint_t fp[NR_IDLE_TYPES] = {
 	fp[idle_type]( \
 		((op_cond & MTK_IDLE_OPT_SLEEP_DPIDLE) \
 					? IDLE_FP_SLEEP_DEEPIDLE : 0) | \
-		(raw_smp_processor_id() << 24) | value)
+		(smp_processor_id() << 24) | value)
 #define __mtk_idle_footprint_reset(idle_type) \
 	fp[idle_type](0)
 #else /* CONFIG_MTK_AEE_IPANIC */
@@ -69,7 +69,7 @@ static idle_footprint_t fp[NR_IDLE_TYPES] = {
 int __attribute__((weak)) mtk_idle_trigger_wfi(
 	int idle_type, unsigned int idle_flag, int cpu)
 {
-	pr_debug("[name:spm&]Power/swap %s is not implemented!\n"
+	printk_deferred("[name:spm&]Power/swap %s is not implemented!\n"
 			, __func__);
 
 	do {
