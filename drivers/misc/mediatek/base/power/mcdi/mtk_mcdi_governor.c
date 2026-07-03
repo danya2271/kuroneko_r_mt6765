@@ -210,8 +210,9 @@ static enum hrtimer_restart mcdi_hrtimer_func(struct hrtimer *timer)
 
 static void mcdi_set_timer(int cpu)
 {
-	unsigned int time_us, thresh;
+	unsigned int time_us, thresh, predict_us, next_timer_us;
 	unsigned long flags;
+	struct mcdi_status *sta = get_mcdi_status(cpu);
 
 	if (!mcdi_cluster.tmr_en)
 		return;
@@ -219,8 +220,12 @@ static void mcdi_set_timer(int cpu)
 	if (!tick_nohz_tick_stopped())
 		return;
 
-	thresh = get_mcdi_status(cpu)->next_timer_us
-			- get_mcdi_status(cpu)->predict_us;
+	predict_us = sta->predict_us;
+	next_timer_us = sta->next_timer_us;
+	if (next_timer_us <= predict_us)
+		return;
+
+	thresh = next_timer_us - predict_us;
 
 	if (thresh < GET_STATE_RES(cpu, MCDI_STATE_CPU_OFF))
 		return;
@@ -228,7 +233,7 @@ static void mcdi_set_timer(int cpu)
 	time_us = GET_STATE_RES(cpu, MCDI_STATE_CLUSTER_OFF)
 			+ TMR_RESIDENCY_US;
 
-	if (time_us > get_mcdi_status(cpu)->next_timer_us)
+	if (time_us > next_timer_us)
 		return;
 
 	tick_broadcast_exit();
@@ -289,16 +294,23 @@ static bool remain_sleep_residency_allowable(unsigned int cpu_mask, int state)
 	spin_lock_irqsave(&mcdi_cluster_spin_lock, flags);
 
 	for (i = 0; i < NF_CPU; i++) {
+		unsigned long long elapsed_us;
 
 		if (!(cpu_mask & (1 << i)))
 			continue;
 
 		target_residency = GET_STATE_RES(i, state);
 		sta = &mcdi_gov_data.status[i];
+		if (!sta->valid) {
+			mcdi_cluster.chk_res_fail++;
+			spin_unlock_irqrestore(&mcdi_cluster_spin_lock, flags);
+			return false;
+		}
 
 		if (mcdi_cluster.use_max_remain) {
-			remain_sleep_us = sta->next_timer_us
-					- (curr_time_us - sta->enter_time_us);
+			elapsed_us = curr_time_us - sta->enter_time_us;
+			remain_sleep_us = (elapsed_us < sta->next_timer_us) ?
+				sta->next_timer_us - elapsed_us : 0;
 		} else {
 			/**
 			 * An inaccurate idle prediction might be too small
@@ -557,6 +569,8 @@ int mcdi_governor_select(int cpu, int cluster_idx)
 	mcdi_sta->enter_time_us = idle_get_current_time_us();
 	mcdi_sta->predict_us    = get_menu_predict_us();
 	mcdi_sta->next_timer_us = get_menu_next_timer_us();
+	if (mcdi_sta->predict_us > mcdi_sta->next_timer_us)
+		mcdi_sta->predict_us = mcdi_sta->next_timer_us;
 
 	if (last_core_in_mcusys && last_core_token == -1) {
 		last_core_token      = cpu;
