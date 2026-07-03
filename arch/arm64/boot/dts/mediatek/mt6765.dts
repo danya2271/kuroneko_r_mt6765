@@ -492,6 +492,7 @@ firmware_class.path=/vendor/firmware";
 			record-size = <0x00040000>;
 			console-size = <0x00100000>;
 			pmsg-size = <0x00100000>;
+			unbuffered;
 		};
 
 		reserve-memory-sspm_share {
