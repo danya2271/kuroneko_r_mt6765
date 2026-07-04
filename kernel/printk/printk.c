@@ -35,7 +35,6 @@
 #include <linux/crash_core.h>
 #include <linux/kdb.h>
 #include <linux/ratelimit.h>
-#include <linux/reboot.h>
 #include <linux/kmsg_dump.h>
 #include <linux/syslog.h>
 #include <linux/cpu.h>
@@ -996,9 +995,6 @@ static ssize_t devkmsg_write(struct kiocb *iocb, struct iov_iter *from)
 			line = endp;
 		}
 	}
-
-	if (!strcmp(current->comm, "init"))
-		reboot_watch_init_kmsg(line, len);
 
 	printk_emit(facility, level, NULL, 0, "%s", line);
 	kfree(buf);

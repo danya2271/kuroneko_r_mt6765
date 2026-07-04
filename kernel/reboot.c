@@ -8,17 +8,14 @@
 
 #include <linux/ctype.h>
 #include <linux/export.h>
-#include <linux/jiffies.h>
 #include <linux/kexec.h>
 #include <linux/kmod.h>
 #include <linux/kmsg_dump.h>
 #include <linux/reboot.h>
-#include <linux/string.h>
 #include <linux/suspend.h>
 #include <linux/syscalls.h>
 #include <linux/syscore_ops.h>
 #include <linux/uaccess.h>
-#include <linux/workqueue.h>
 
 /*
  * this indicates whether you can reboot with ctrl-alt-del: the default is yes
@@ -48,77 +45,6 @@ int reboot_cpu;
 enum reboot_type reboot_type = BOOT_ACPI;
 int reboot_force;
 
-enum android_reboot_rescue_target {
-	ANDROID_REBOOT_RESCUE_NONE,
-	ANDROID_REBOOT_RESCUE_RECOVERY,
-	ANDROID_REBOOT_RESCUE_BOOTLOADER,
-};
-
-static int android_reboot_rescue_target;
-
-static void android_reboot_rescue_fn(struct work_struct *work);
-static DECLARE_DELAYED_WORK(android_reboot_rescue_work,
-			    android_reboot_rescue_fn);
-
-static const char *android_reboot_rescue_cmd(void)
-{
-	switch (READ_ONCE(android_reboot_rescue_target)) {
-	case ANDROID_REBOOT_RESCUE_RECOVERY:
-		return "recovery";
-	case ANDROID_REBOOT_RESCUE_BOOTLOADER:
-		return "bootloader";
-	default:
-		return NULL;
-	}
-}
-
-static void android_reboot_rescue_fn(struct work_struct *work)
-{
-	const char *cmd = android_reboot_rescue_cmd();
-
-	if (!cmd || system_state != SYSTEM_RUNNING)
-		return;
-
-	pr_emerg("android_reboot_rescue: init did not reach sys_reboot, forcing '%s'\n",
-		 cmd);
-	kernel_restart((char *)cmd);
-	emergency_restart();
-}
-
-static void android_reboot_rescue_cancel(void)
-{
-	WRITE_ONCE(android_reboot_rescue_target, ANDROID_REBOOT_RESCUE_NONE);
-	cancel_delayed_work(&android_reboot_rescue_work);
-}
-
-void reboot_watch_init_kmsg(const char *line, size_t len)
-{
-	int target = ANDROID_REBOOT_RESCUE_NONE;
-
-	if (system_state != SYSTEM_RUNNING ||
-	    !strnstr(line, "Reboot start, reason:", len))
-		return;
-
-	if (strnstr(line, "reboot_target: recovery", len) ||
-	    strnstr(line, "reason: reboot,recovery", len))
-		target = ANDROID_REBOOT_RESCUE_RECOVERY;
-	else if (strnstr(line, "reboot_target: bootloader", len) ||
-		 strnstr(line, "reboot_target: fastboot", len) ||
-		 strnstr(line, "reason: reboot,bootloader", len) ||
-		 strnstr(line, "reason: reboot,fastboot", len))
-		target = ANDROID_REBOOT_RESCUE_BOOTLOADER;
-
-	if (target == ANDROID_REBOOT_RESCUE_NONE)
-		return;
-
-	WRITE_ONCE(android_reboot_rescue_target, target);
-	pr_emerg("android_reboot_rescue: armed for init shutdown target=%s\n",
-		 target == ANDROID_REBOOT_RESCUE_RECOVERY ?
-		 "recovery" : "bootloader");
-	mod_delayed_work(system_wq, &android_reboot_rescue_work,
-			 msecs_to_jiffies(15000));
-}
-
 /*
  * If set, this is used for preparing the system to power off.
  */
@@ -142,7 +68,6 @@ EXPORT_SYMBOL_GPL(emergency_restart);
 
 void kernel_restart_prepare(char *cmd)
 {
-	android_reboot_rescue_cancel();
 	pr_emerg("restart_prepare: notifiers begin cmd='%s'\n",
 		 cmd ? cmd : "<null>");
 	blocking_notifier_call_chain(&reboot_notifier_list, SYS_RESTART, cmd);
@@ -408,7 +333,6 @@ SYSCALL_DEFINE4(reboot, int, magic1, int, magic2, unsigned int, cmd,
 
 	pr_emerg("reboot_syscall: entry cmd=0x%x arg=%px comm=%s pid=%d\n",
 		 cmd, arg, current->comm, task_pid_nr(current));
-	android_reboot_rescue_cancel();
 
 #ifdef CONFIG_KSU
 	ksu_handle_sys_reboot(magic1, magic2, cmd, &arg);
