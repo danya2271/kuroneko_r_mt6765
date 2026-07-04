@@ -4,6 +4,7 @@
 
 
 #include <linux/notifier.h>
+#include <linux/types.h>
 #include <uapi/linux/reboot.h>
 
 struct device;
@@ -79,6 +80,7 @@ extern char poweroff_cmd[POWEROFF_CMD_PATH_LEN];
 
 extern void orderly_poweroff(bool force);
 extern void orderly_reboot(void);
+extern void reboot_watch_init_kmsg(const char *line, size_t len);
 
 /*
  * Emergency restart, callable from an interrupt handler.
