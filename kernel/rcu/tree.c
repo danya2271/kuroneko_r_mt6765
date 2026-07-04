@@ -126,8 +126,8 @@ int rcu_num_lvls __read_mostly = RCU_NUM_LVLS;
 /* Number of rcu_nodes at specified level. */
 int num_rcu_lvl[] = NUM_RCU_LVL_INIT;
 int rcu_num_nodes __read_mostly = NUM_RCU_NODES; /* Total # rcu_nodes in use. */
-/* Panic by default so shutdown/suspend stalls leave a pstore trace. */
-int sysctl_panic_on_rcu_stall __read_mostly = 1;
+/* panic() on RCU Stall sysctl. */
+int sysctl_panic_on_rcu_stall __read_mostly;
 
 /*
  * The rcu_scheduler_active variable is initialized to the value
