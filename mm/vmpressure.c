@@ -467,7 +467,7 @@ void vmpressure_prio(gfp_t gfp, struct mem_cgroup *memcg, int prio, int order)
 	 * to the vmpressure() basically means that we signal 'critical'
 	 * level.
 	 */
-	vmpressure(gfp, memcg, true, true, 0, 0);
+	vmpressure(gfp, memcg, true, vmpressure_win, 0, order);
 }
 
 #define MAX_VMPRESSURE_ARGS_LEN	(strlen("critical") + strlen("hierarchy") + 2)

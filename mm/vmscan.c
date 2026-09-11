@@ -2389,13 +2389,14 @@ static bool swap_is_allowed(void)
 	}
 #endif
 
-	/* Only kswapd is allowed to do more jobs */
+#ifdef CONFIG_VM_EVENT_COUNTERS
+	/* Avoid swap storms while kswapd observes swap thrashing. */
 	if (!current_is_kswapd())
 		return false;
 
-#ifdef CONFIG_VM_EVENT_COUNTERS
 	return no_thrashing;
 #else
+	/* Without VM counters, direct reclaim must be allowed to use ZRAM. */
 	return true;
 #endif
 }
